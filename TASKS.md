@@ -35,8 +35,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
 | **18** The client's palette, and the shop tidied | UI | 17 | ✅ done | 5/5 | 11/11 | 0 | `██████████` 100% |
 | **19** The shop in Cobalt | UI | 18 | ✅ done | 3/3 | 8/8 | 0 | `██████████` 100% |
-| **20** The shop in its own brand: the real logo, in Heritage | UI | 19 | 🔄 in progress | 0/2 | 4/6 | 0 | `███████░░░`  67% |
-| **All** | 20 phases | | | **92/99** | **308/327** | **8** | `█████████░`  94% |
+| **20** The shop in its own brand: the real logo, in Heritage | UI | 19 | ✅ done | 2/2 | 6/6 | 0 | `██████████` 100% |
+| **All** | 20 phases | | | **94/99** | **310/327** | **8** | `██████████`  95% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -88,8 +88,6 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
-| 20·W1 | 20.1 Heritage and the real logo | orchestrator | `feat/p20-dsg` | 2026-10-14 | |
-| 20·W1 | 20.1 Heritage and the real logo | orchestrator | `feat/p20-dsg` | 2026-10-14 | |
 
 ## Decisions for the owner
 
@@ -1262,7 +1260,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, every shop page wears Heritage and the real logo at 390 and 1280 in both languages, axe clean, no sideways scroll; the gallery's pages match their before-shots; DESIGN.md records Heritage.
 **Waves:** W1 — 20.1 · W2 — 20.2
 
-- [ ] **20.1 Heritage and the real logo** · needs: phase 19 — 🔄 20·W1
+- [x] **20.1 Heritage and the real logo** · needs: phase 19 — ✅ 2026-10-14 9b9b0202
   - **Lane** DSG · **Agent** orchestrator · **Wave** W1
   - **Owns** the token files, `engine/apps/web/public/{shop,gallery}/**`, `engine/packages/http/src/manifest.ts`, `engine/apps/web/src/shell/{site,site-footer}.ts*`, the shop home's and the `Crossing`'s comments
   - **Read** this phase's goal; DESIGN.md "Cobalt"
@@ -1270,15 +1268,15 @@ Paste this into a Claude Code session opened at the repo root:
   - [x] 20.1.a the shop's roles on a new Heritage ramp from the logo and the catalogues, contrast checked; Cobalt retired; the gallery's ramps untouched
   - [x] 20.1.b the real logo traced: the one-line lockup in umber in the header, in cream on the footer's espresso (a `logo-on-dark` site file; the gallery's is its current logo)
   - [x] 20.1.c the favicon, home-screen icon, social image and manifest from the stacked logo on its cream paper
-  - [ ] 20.1.d **Check:** tokens, lint, types and the shared tests pass; the shop's home and product on staging at 390 and 1280.
+  - [x] 20.1.d **Check:** tokens, lint, types and the shared tests pass; the shop's home and product on staging at 390 and 1280.
 
-- [ ] **20.2 On staging** · needs: 20.1
+- [x] **20.2 On staging** · needs: 20.1 — ✅ 2026-10-14 9b9b0202
   - **Lane** DSG · **Agent** orchestrator · **Wave** W2
   - **Owns** `DESIGN.md`, `docs/gates/heritage.md`, `docs/gates/heritage/**`
   - **Read** this phase's **Done when**
   - _Requirements: 12.1_
   - [x] 20.2.a released to staging; every shop page captured and axe-checked there; the gallery compared with its before-shots
-  - [ ] 20.2.b **Check:** `docs/gates/heritage.md` — the screens, axe clean; DESIGN.md records Heritage.
+  - [x] 20.2.b **Check:** `docs/gates/heritage.md` — the screens, axe clean; DESIGN.md records Heritage.
 
 ---
 
@@ -1301,6 +1299,8 @@ Each line is a thing we chose not to build now; design it against the real need 
 - [ ] v2.12 The made-to-order configurator and room plates — _Requirements: 5.1_
 
 ## Log
+
+- 2026-10-14 — ✅ **phase 20 — the shop in its own brand: the owner's real logo, in Heritage, closed** (2/2 tasks; the user: "this is new data from old east indies. make the changes to the site with these new data and see the ui design and make it suitable to it", with the logo PNG and six catalogue PDFs). **The PDFs match the 2026-10-08 import byte for byte** (md5), so the 152 designs were already on the shop and no data changed; the new thing was the logo (brown hand lettering on cream paper) and the catalogues' look (cream mats on a walnut wall). Cobalt being the client's choice of the day before, a palette board on the real staging pages (CSS injected, nothing released; https://claude.ai/artifact/MDqJQsH74ZGBxkw3TBpMgz) offered A Heritage, B Umber on white, C Cobalt kept; the user chose **Heritage** (Q16, shop). A `--primitive-heritage-*` ramp from the logo and catalogues replaces Cobalt's: the logo's cream `#f6f1e7` as the page, linen tiles, the walnut `#2e1f16` hero field with cream type, the logo's umber `#5d3c1d` on the action, an espresso footer; every text pair AA. The logo traced to vectors (potrace per word, 4×, lightly smoothed): one line from its own letters in the header (umber) and the footer (cream, a new `logo-on-dark` site file; the gallery's a copy of its logo); favicon, home-screen icon, social image ("Heritage Art Collection") and manifest from the stacked logo. Orchestrator alone (tokens, assets and a small wiring change). **Evidence** (`docs/gates/heritage.md`): staging `production-20261014T060219Z-84aefe3b`, axe 0 and no sideways scroll on 18 shop pages × 390/1280 in en and id with the real logo on every one; the gallery 0 px different in 10 before/after shots; unit suite 2,750 passed, tsc, lint, tokens clean. **Open:** the REHEARSAL 10.4 product still leads staging's hero and grid (the owner unpublishes it in the admin); CI waits for a push (the user's OK); the finish review not run.
 
 - 2026-10-13 — ✅ **phase 19 — the shop in Cobalt, closed** (3/3 tasks; the user, as the owner's proxy: "fully upgrade the UI … brighter, and better theme color, so it feels like exclusive merchandize store … premium … the fastest and quickest UI update"; the name sounds historical, but the store has nothing to do with the old East Indies). The client chose **Cobalt** from three palettes: a bright white page, prints on pale cool tiles, the home's hero a full cobalt field with white type (the shared `Crossing` gained an opt-in `strength="full"`), cobalt on the one action, a navy footer; logo, icons, manifest and the social image (no longer "placeholder") in cobalt. A premium layout pass for phone and desktop (Sonnet), then, from the user's review of staging, the home's "Shop by" as the real collections in picture tiles, the placeholder sets retired and the numbered process a ruled list (two Sonnet agents in parallel, orchestrator review and wiring). Checked on staging only, at the user's word. **The gallery did not change:** 20 before/after shots, 0 pixels differ. **Evidence** (`docs/gates/cobalt.md`): axe 0 and no sideways scroll on 18 shop pages × 390/1280 in en and id on `production-20261013T133020Z-ed3bbb15`; CI green on `ed3bbb15` (run 38404810061, e2e 168 passed) after one fix (the cobalt hero's copy wears the field's colour so axe reads white on cobalt). **Open:** staging's placeholder seed picture and the REHEARSAL 10.4 products undercut the look (content, not code); Helios builds fetch fonts from Google and failed twice (self-host them); the finish review was skipped for speed.
 - 2026-10-12 — ✅ **phase 18 — the client's palette, Ivory and ink, closed** (5/5 tasks; the user's request, as the owner's proxy: "change the color theme … clean, exclusive and premium … tidy up … especially the ecommerce page … a 1 man shop with 2 storefronts"). From a palette board the client chose **Ivory and ink** as two distinct shops: the gallery on ivory with a deep green action and an ink footer, its antiques uncropped on the paper; the shop on a warmer white with a warm-stone hero panel, bronze on its action, an espresso footer and every print hung at its own shape on an even stone tile with one soft shadow (the new shared `PrintTile`). A page's head sits on its paper; Outline Colour's bands and stripes are retired; each bridge wears the sister's ground. The shop's grids (Sonnet), product page (Sonnet), home (orchestrator), collections and stores tidied; the finish review's eight material fixes applied in one round (`14ae321b`). Merged `efc859c1`; axe 0 on 56 pages × 390/1280/1920 locally and 54 × 3 on staging; 723 unit tests; sort, paging, tabs and Add to bag checked. Record: `docs/gates/ivory-and-ink.md`, DESIGN.md "Ivory and ink". Pushed on the user's OK; CI green on `0aefa272` (run 38228030820, e2e 167 passed) after one fix (the add button's class order the e2e reads; the gallery scan ignores the CSP nonce); live on staging `production-20261012T091240Z-0aefa272`. **Open, the owner's:** VG grades, scan margins, logos, and the 26 rehearsal products published on staging.
