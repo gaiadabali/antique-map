@@ -35,7 +35,7 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
 | **18** The client's palette, and the shop tidied | UI | 17 | ✅ done | 5/5 | 11/11 | 0 | `██████████` 100% |
 | **19** The shop in Cobalt | UI | 18 | ✅ done | 3/3 | 8/8 | 0 | `██████████` 100% |
-| **20** The shop in its own brand: the real logo, in Heritage | UI | 19 | · not started | 0/2 | 0/6 | 0 | `░░░░░░░░░░`   0% |
+| **20** The shop in its own brand: the real logo, in Heritage | UI | 19 | 🔄 in progress | 0/2 | 0/6 | 0 | `░░░░░░░░░░`   0% |
 | **All** | 20 phases | | | **92/99** | **304/327** | **8** | `█████████░`  93% |
 <!-- progress:end -->
 
@@ -88,6 +88,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
+| 20·W1 | 20.1 Heritage and the real logo | orchestrator | `feat/p20-dsg` | 2026-10-14 | |
 | 20·W1 | 20.1 Heritage and the real logo | orchestrator | `feat/p20-dsg` | 2026-10-14 | |
 
 ## Decisions for the owner
@@ -1261,7 +1262,7 @@ Paste this into a Claude Code session opened at the repo root:
 **Done when:** on staging, every shop page wears Heritage and the real logo at 390 and 1280 in both languages, axe clean, no sideways scroll; the gallery's pages match their before-shots; DESIGN.md records Heritage.
 **Waves:** W1 — 20.1 · W2 — 20.2
 
-- [ ] **20.1 Heritage and the real logo** · needs: phase 19
+- [ ] **20.1 Heritage and the real logo** · needs: phase 19 — 🔄 20·W1
   - **Lane** DSG · **Agent** orchestrator · **Wave** W1
   - **Owns** the token files, `engine/apps/web/public/{shop,gallery}/**`, `engine/packages/http/src/manifest.ts`, `engine/apps/web/src/shell/{site,site-footer}.ts*`, the shop home's and the `Crossing`'s comments
   - **Read** this phase's goal; DESIGN.md "Cobalt"
