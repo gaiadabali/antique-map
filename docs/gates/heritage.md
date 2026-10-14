@@ -63,4 +63,8 @@ files, 2,750 tests passed).
   "Antique Prints" collection. It waits for the owner to unpublish it in the admin (task 10.4's data).
 - **The prints' white mounts** are in the images themselves (cut from the catalogues' matted mockups), so they stay
   white on the linen tiles; the catalogues' mats are cream.
-- **CI** has not run on `84aefe3b`: pushing to GitHub waits for the user's OK.
+- **CI** is green on `26af0347` (run 38521749344, pushed on the user's OK): static checks, unit, database, Lighthouse,
+  and end-to-end 163 passed, 25 skipped, 5 flaky (passed on retry). Three are the known admin "invalid save" flakes.
+  Two are new to this run and worth hardening: the Indonesian home's smoke saw two `h1`s for a moment (the hero's
+  streaming placeholder from `8064261d` and the streamed hero, a strict-mode locator), and the phone header's menu
+  did not open on the first Enter (pressed before the page was interactive). Neither touches the palette or the logo.
