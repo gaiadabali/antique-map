@@ -35,8 +35,8 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **17** Both sites full width, in their own world | UI | 12, 14 | ✅ done | 8/8 | 19/19 | 0 | `██████████` 100% |
 | **18** The client's palette, and the shop tidied | UI | 17 | ✅ done | 5/5 | 11/11 | 0 | `██████████` 100% |
 | **19** The shop in Cobalt | UI | 18 | ✅ done | 3/3 | 8/8 | 0 | `██████████` 100% |
-| **20** The shop in its own brand: the real logo, in Heritage | UI | 19 | 🔄 in progress | 0/2 | 3/6 | 0 | `█████░░░░░`  50% |
-| **All** | 20 phases | | | **92/99** | **307/327** | **8** | `█████████░`  94% |
+| **20** The shop in its own brand: the real logo, in Heritage | UI | 19 | 🔄 in progress | 0/2 | 4/6 | 0 | `███████░░░`  67% |
+| **All** | 20 phases | | | **92/99** | **308/327** | **8** | `█████████░`  94% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -1277,7 +1277,7 @@ Paste this into a Claude Code session opened at the repo root:
   - **Owns** `DESIGN.md`, `docs/gates/heritage.md`, `docs/gates/heritage/**`
   - **Read** this phase's **Done when**
   - _Requirements: 12.1_
-  - [ ] 20.2.a released to staging; every shop page captured and axe-checked there; the gallery compared with its before-shots
+  - [x] 20.2.a released to staging; every shop page captured and axe-checked there; the gallery compared with its before-shots
   - [ ] 20.2.b **Check:** `docs/gates/heritage.md` — the screens, axe clean; DESIGN.md records Heritage.
 
 ---
