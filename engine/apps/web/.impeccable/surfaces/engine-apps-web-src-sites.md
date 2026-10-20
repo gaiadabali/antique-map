@@ -1,5 +1,5 @@
 ---
-version: 4
+version: 5
 slug: "engine-apps-web-src-sites"
 primary_target: "engine/apps/web/src/sites"
 related_targets: ["engine/apps/web/src/shared/ui","engine/apps/web/src/shell","engine/apps/web/src/styles","engine/apps/web/src/shared/styles/tokens","engine/apps/web/src/app/(gallery)","engine/apps/web/src/app/(shop)"]
@@ -23,9 +23,13 @@ exclusive merchandise store, premium; the name sounds historical, but the store 
 Indies: the client loves collecting things and buying and selling. Fastest route: tokens and the shop's own CSS,
 checked on staging. **Then (2026-10-14):** the owner's real logo arrived (brown hand lettering on cream paper) with
 his six catalogues (prints in cream mats on a walnut wall); the site to suit them. From a palette board of three on
-staging the user chose Heritage. **Must stay:** Cormorant Garamond and Karla (the client's pick); the owner's logo as
+staging the user chose Heritage. **Then (2026-10-20):** the user's design handoff replaced Heritage for the shop
+only: Gallery white (DESIGN.md) — a white page, framed prints on grey wells, one warm band, umber on hover — on The
+Poster Club's skeleton and King & McGaw's product page, the stacked logo, no filter panel, and a partner sign-in on
+the partnership page. **Must stay:** Cormorant Garamond and Karla (the client's pick); the owner's logo as
 drawn; full width on a desktop; every behaviour, price rule, access rule and word in the lexicons; the gallery
-exactly as it is. **Feels wrong:** dark and moody, stark white minimal, costume vintage or colonial (no props, no
+exactly as it is. **Feels wrong:** dark and moody, a white page with no warmth or frame (the shop's white carries its wells,
+frames and warm band), costume vintage or colonial (no props, no
 sepia filters, no aged-paper textures: the shop's warmth is the logo's own paper and ink).
 
 ## Direction contract

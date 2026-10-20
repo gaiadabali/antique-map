@@ -37,7 +37,37 @@ it exposes a three-tier token model (primitive → brand → semantic) and expec
 - **Lint gate.** `engine/tooling/token-lint/cli.mjs` fails the build on any raw hex, `rgb()/rgba()/hsl()/hsla()`,
   or `font-family` outside the token files.
 
-## Heritage — the shop (phase 20, 2026-10-14)
+## Gallery white — the shop (the redesign of 2026-10-20; supersedes Heritage)
+
+The user's design handoff (Claude Design export, `oei.css` of 17 Oct) rebuilt the shop on The Poster
+Club's measured skeleton (home, listings, bag, track, partnership) and King & McGaw's product page,
+in the shop's own copy, type (Cormorant Garamond + Karla) and assets. The gallery is unchanged.
+
+**Palette (`--primitive-oei-*` in `shared/styles/tokens/primitives.css`, mapped in
+`sites/shop/tokens/brand.css`; contrast checked 2026-10-20).** White page; ink `#2b2b2b` (14.2:1)
+and muted `#5f5f5f` (6.4:1 on white, 5.7:1 on warm, 5.4:1 on the well); hairlines `#eaeaea`, a
+mid rule `#c9c9c9` for decorative outlines, `#858585` (3.7:1) for a control's boundary; the grey
+well `#ebebeb` (hover `#e3e3e3`) every print hangs on; one warm band `#f5f2ec` (the hero's text half,
+the process band, summaries, the footer); the logo's umber `#5d3c1d` only where the pointer rests on
+the action and on small eyebrows and numerals.
+
+**Layout knobs (`sites/shop/tokens/layout.css`).** Margins 25 / gutter 10 (12 / 6 under 900 px),
+sections 50 (36), header 80 (68), the stacked logo 56 (48); the type roles (`--shop-title-*`,
+`--shop-text-*`, 12 px capitals tracked 0.08em). Shared components read knobs whose fallbacks are
+the gallery's values: `--button-*` (height, padding, capitals), `--print-*` (a 10:13 well, a
+soft-black frame `clamp(4px, .5cqi, 8px)` and a 7 % mount drawn in code), `--pager-*` (the boxed
+pager), `--dialog-width` (Enlarge).
+
+**Shell and pages.** A sticky three-column header (links | stacked logo | languages, search, bag
+with its count), clear over the home's hero until 30 px of scroll; a full-screen drawer on a phone;
+no announcement bar; a warm footer with a white legal bar. Pages are composed from `sites/shop/ui`
+(`ShopCard`, `Rail`, `Crumb`, `CapsLink`, `PageHead`) and their own modules. Partnership ends on
+"Already a partner": the partner sign-in (SECURITY.md A9).
+
+**Gates kept.** Token lint clean; axe clean at 390 and 1280 on every shop page, both locales; the
+production build touches no database.
+
+## Heritage — the shop (phase 20, 2026-10-14; superseded by Gallery white, 2026-10-20)
 
 The owner's real logo arrived: "old east indies" in brown hand lettering on cream paper, with his six catalogue PDFs
 (each print in a cream mat on a walnut wall; covers under a cream "Heritage Art Collection" band). The user asked
@@ -239,13 +269,13 @@ no eyebrows, grids that gain columns) is what phase 18 kept; its colour and stri
 
 The owner's later look-and-feel pass changes only these:
 
-| What to change                    | File(s)                                                                                                                            |
-| --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| Final colours (Q16)               | the ivory and cobalt ramps in `shared/styles/tokens/primitives.css`; their use per site in `sites/{gallery,shop}/tokens/brand.css` |
-| Font family                       | `engine/apps/web/src/shared/styles/fonts.ts`                                                                                       |
-| Hero media (film, poster, images) | CMS `pages` and `media` (not code)                                                                                                 |
-| Logo lock-up                      | `site-settings` assets + the logo component in 4.3                                                                                 |
-| Motion per site                   | `shared/styles/tokens/primitives.css` motion section + component CSS Modules in 4.2                                                |
+| What to change                    | File(s)                                                                                                                                                                                   |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Final colours (Q16)               | the ivory and oei ramps in `shared/styles/tokens/primitives.css`; their use per site in `sites/{gallery,shop}/tokens/brand.css` (the shop's layout knobs: `sites/shop/tokens/layout.css`) |
+| Font family                       | `engine/apps/web/src/shared/styles/fonts.ts`                                                                                                                                              |
+| Hero media (film, poster, images) | CMS `pages` and `media` (not code)                                                                                                                                                        |
+| Logo lock-up                      | `site-settings` assets + the logo component in 4.3                                                                                                                                        |
+| Motion per site                   | `shared/styles/tokens/primitives.css` motion section + component CSS Modules in 4.2                                                                                                       |
 
 No dark mode. No raw colour or `font-family` is allowed outside the token files.
 
