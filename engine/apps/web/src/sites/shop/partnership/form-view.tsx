@@ -8,7 +8,7 @@
  * not a field's (the security check, the rate limit) shows above the button. Tokens and shared
  * components only.
  */
-import { Button, FormMessage, Input, Textarea } from '../../../shared/ui'
+import { Button, FormMessage, Input } from '../../../shared/ui'
 
 import type { FormText } from './form-text'
 import styles from './partnership-form.module.css'
@@ -100,25 +100,14 @@ export function PartnershipFormView({
         <FormMessage tone="error">{say(errors.contact)}</FormMessage>
       )}
       <Input
-        label={text['partnership.formWhatsapp']}
-        id="p-whatsapp"
-        name="whatsapp"
-        type="tel"
-        autoComplete="tel"
-        inputMode="tel"
-        defaultValue={values.whatsapp}
-        hint={text['partnership.formWhatsappHint']}
-        error={say(errors.whatsapp)}
-      />
-      <Input
         label={text['partnership.formEmail']}
         id="p-email"
         name="email"
         type="email"
         autoComplete="email"
         defaultValue={values.email}
-        hint={text['partnership.formContactNote']}
         error={say(errors.email)}
+        required
       />
       <Input
         label={asked.org}
@@ -129,7 +118,7 @@ export function PartnershipFormView({
       />
       <Input label={asked.scale} id="p-scale" name="scale" defaultValue={values.scale} />
       <Input label={asked.context} id="p-context" name="context" defaultValue={values.context} />
-      <Textarea
+      <Input
         label={segments.more}
         id="p-message"
         name="message"

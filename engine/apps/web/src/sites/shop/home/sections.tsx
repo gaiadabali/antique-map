@@ -2,8 +2,7 @@
  * The shop home's last sections (the redesign of 2026-10-20, the handoff's Poster Club story and
  * editorial skeletons): the trade offer — its words at the left, two of the shop's framed prints
  * beside them (no photographs of shops or hotels exist yet) — and the bridge to the originals: two
- * of the gallery's own antiques, one on the left half, one framed in the sister gallery's warm panel
- * with its title and date. Every word is the lexicon.
+ * of the gallery's own antiques, one on the left half, one framed in the sister gallery's warm panel. Every word is the lexicon.
  */
 import { Caps, CapsLink } from '../ui/caps-link'
 import { FeaturedPrint } from './featured-print'
@@ -40,7 +39,12 @@ export function Trade({ locale, href, t }: SectionProps) {
         </ul>
         <CapsLink href={href('partnership', {}, locale)}>{t('home.shop.tradeCta')}</CapsLink>
       </div>
-      <div className={styles.storyPhotos}>
+      <div
+        className={styles.storyPhotos}
+        role="group"
+        aria-label={t('home.shop.tradeTitle')}
+        tabIndex={0}
+      >
         <FeaturedPrint
           locale={locale}
           index={1}
@@ -79,13 +83,7 @@ export function Originals({
           {t('home.shop.originalsTitle')}
         </h2>
         <div className={styles.editArt}>
-          <OriginalPrint
-            locale={locale}
-            index={1}
-            sizes="20rem"
-            className={styles.editTile}
-            captioned
-          />
+          <OriginalPrint locale={locale} index={1} sizes="20rem" className={styles.editTile} />
         </div>
         <p className={styles.editBody}>{t('home.shop.originalsBody')}</p>
         <CapsLink href={sisterHref}>{t('home.shop.originalsCta')}</CapsLink>

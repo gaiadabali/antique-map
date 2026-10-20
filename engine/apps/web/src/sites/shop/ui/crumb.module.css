@@ -18,7 +18,6 @@
 .crumb a {
   display: inline-flex;
   align-items: center;
-  min-block-size: 2rem;
   color: var(--color-text-muted);
   text-decoration: none;
 }

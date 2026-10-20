@@ -70,7 +70,7 @@ a.category:hover {
 }
 
 .proof {
-  margin: var(--space-5) 0 0;
+  margin: 1.25rem 0 0;
   padding: 0;
   list-style: none;
   border-block-start: var(--rule-hair) solid var(--shop-rule-mid);

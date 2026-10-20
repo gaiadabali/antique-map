@@ -52,7 +52,7 @@ export function FindOrder({ locale }: FindOrderProps): React.ReactElement {
           autoComplete="off"
           required
         />
-        <Button type="submit" loading={pending}>
+        <Button type="submit" size="small" loading={pending} className={styles.findSubmit}>
           {pending ? text('tracking.find.sending') : text('tracking.find.submit')}
         </Button>
       </form>

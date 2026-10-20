@@ -5,10 +5,10 @@
   text-transform: uppercase;
 }
 
+/* 18 px tall as drawn; on touch the target grows to 44 px. */
 .link {
   display: inline-flex;
   align-items: center;
-  min-block-size: 44px;
   color: var(--color-text);
   text-decoration: underline;
   text-decoration-thickness: var(--rule-hair);
@@ -18,4 +18,10 @@
 
 .link:hover {
   color: var(--color-text-muted);
+}
+
+@media (pointer: coarse) {
+  .link {
+    min-block-size: 44px;
+  }
 }

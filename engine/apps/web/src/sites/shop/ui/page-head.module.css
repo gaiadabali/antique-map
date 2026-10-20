@@ -6,6 +6,7 @@
 .title {
   margin: 0;
   font: var(--shop-title-page);
+  line-height: 1.1;
   text-wrap: balance;
 }
 

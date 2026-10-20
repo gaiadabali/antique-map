@@ -22,8 +22,10 @@
   text-align: center;
 }
 
+/* two lines, as drawn ("Old maps, / new walls.") */
 .title {
-  margin: 0;
+  max-inline-size: 6.4em;
+  margin: 0 auto;
   font: var(--shop-title-hero);
   text-wrap: balance;
 }
@@ -31,6 +33,7 @@
 .lede {
   margin: 0.9375rem 0 0;
   font: var(--shop-text-body);
+  line-height: 1.5;
   color: var(--color-text-muted);
   text-wrap: pretty;
 }
@@ -52,6 +55,7 @@
   margin: var(--space-5) 0 0;
   padding: 0;
   list-style: none;
+  font: var(--shop-text-caps);
   color: var(--color-text-muted);
 }
 

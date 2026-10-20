@@ -30,6 +30,7 @@
 .heroBlock {
   inline-size: 26.875rem;
   max-inline-size: calc(100% - 2 * var(--shop-gutter));
+  padding: 1.5625rem 1.5625rem 2.1875rem;
   text-align: center;
 }
 
@@ -72,8 +73,9 @@
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: var(--shop-gap);
   margin: 0;
-  padding: var(--space-7) var(--shop-gutter) var(--shop-section);
+  padding: 2.5rem var(--shop-gutter) var(--shop-section);
   list-style: none;
+  font: var(--shop-text-caps);
   text-align: center;
   background: var(--shop-warm);
   border-block-start: var(--rule-hair) solid var(--shop-rule-mid);
@@ -85,7 +87,7 @@
   grid-template-columns: 25.875rem minmax(0, 1fr);
   gap: var(--space-5);
   align-items: start;
-  padding: var(--shop-section) var(--shop-gutter);
+  padding: 1.5625rem var(--shop-gutter) 1.75rem;
 }
 
 .story[data-warm] {
@@ -103,13 +105,13 @@
 }
 
 .storyBody {
-  margin: var(--space-5) 0 0;
+  margin: 1.25rem 0 0;
   font: var(--shop-text-body);
   color: var(--color-text-muted);
 }
 
 .specs {
-  margin: var(--space-6) 0 var(--space-3);
+  margin: 1.875rem 0 1.125rem;
 }
 
 .spec {
@@ -119,6 +121,7 @@
   padding-block: var(--shop-gap);
   border-block-start: var(--rule-hair) solid var(--color-border);
   font: var(--shop-text-body);
+  line-height: 1.5;
 }
 
 .spec dt {
@@ -163,26 +166,26 @@
   font: var(--shop-title-page);
 }
 
+.applyBody {
+  margin: 0.9375rem 0 0;
+  font: var(--shop-text-body);
+  color: var(--color-text-muted);
+}
+
 .talk {
-  margin-block-start: var(--space-6);
-  padding-block-start: var(--space-5);
+  margin: 1.875rem 0 0;
+  padding-block-start: 1.25rem;
   border-block-start: var(--rule-hair) solid var(--shop-rule-mid);
+  font: var(--shop-text-body);
+  color: var(--color-text-muted);
 }
 
-.talk .storyBody {
-  margin: 0;
-}
-
-.talkActions {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-3) var(--space-5);
-  margin-block-start: var(--space-4);
+.talkLink {
+  color: var(--color-text);
 }
 
 .note {
-  margin: var(--space-3) 0 0;
+  margin: 0;
   font: var(--shop-text-meta);
   color: var(--color-text-muted);
 }
@@ -236,9 +239,26 @@
     font-size: 1.75rem;
   }
 
-  /* two prints side by side above the words: decorative, so no scroller to reach by keyboard */
+  /* the prints become a sideways slider of 311 px, as drawn; the slider is a named, focusable
+     group, so a keyboard can scroll it too */
   .storyPhotos {
     order: -1;
+    display: flex;
+    margin-inline: calc(-1 * var(--shop-gutter));
+    padding-inline: var(--shop-gutter);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .storyPhotos > * {
+    flex: 0 0 19.4375rem;
+    scroll-snap-align: start;
+  }
+
+  .storyPhotos:focus-visible {
+    outline: var(--focus-width) solid var(--color-focus);
+    outline-offset: -2px;
   }
 
   .apply {

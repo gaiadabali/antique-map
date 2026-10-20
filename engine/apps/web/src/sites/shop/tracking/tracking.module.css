@@ -25,7 +25,13 @@
 
 .find {
   max-inline-size: 29.0625rem;
-  margin-block-start: var(--space-6);
+  margin-block-start: 1.875rem;
+}
+
+/* the button keeps its own width, 21 below the last field, as drawn */
+.findSubmit {
+  align-self: flex-start;
+  margin-block-start: 0.3125rem;
 }
 
 .find + * {

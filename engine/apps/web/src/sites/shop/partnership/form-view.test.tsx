@@ -44,7 +44,6 @@ describe('the partnership form', () => {
       errors: {
         name: 'lead.error.name',
         contact: 'lead.error.contact',
-        whatsapp: 'lead.error.whatsapp',
         email: 'lead.error.email',
         form: 'lead.error.challenge',
       },
@@ -52,7 +51,6 @@ describe('the partnership form', () => {
     for (const key of [
       'lead.error.name',
       'lead.error.contact',
-      'lead.error.whatsapp',
       'lead.error.email',
       'lead.error.challenge',
     ]) {

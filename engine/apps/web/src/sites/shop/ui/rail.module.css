@@ -23,14 +23,14 @@
 .arrows {
   display: flex;
   flex: none;
-  gap: var(--space-1);
+  gap: var(--shop-gap);
 }
 
 .arrows button {
   display: grid;
   place-items: center;
-  inline-size: 2rem;
-  block-size: 2rem;
+  inline-size: 1.375rem;
+  block-size: 1.375rem;
   padding: 0;
   border: 0;
   background: none;

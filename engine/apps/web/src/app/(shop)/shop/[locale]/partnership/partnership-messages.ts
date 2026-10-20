@@ -53,6 +53,7 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
   'partnership.enquireBody':
     'Tell us what you are buying for and we will only ask what matters for that. Most applications are answered within two working days.',
   'partnership.talkFirst': 'Prefer to talk first?',
+  'partnership.talkWhatsapp': 'WhatsApp {number}',
   'partnership.ctaWhatsapp': 'WhatsApp us',
   'partnership.ctaEmail': 'Email us',
   'partnership.whatsappMessage':

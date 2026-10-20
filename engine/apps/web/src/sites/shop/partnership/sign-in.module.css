@@ -20,7 +20,7 @@
 
 .title {
   margin: var(--space-3) 0 0;
-  font: var(--shop-title-page);
+  font: var(--shop-title-hero);
 }
 
 .body {

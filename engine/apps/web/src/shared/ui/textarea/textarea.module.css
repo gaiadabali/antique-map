@@ -1,7 +1,7 @@
 .root {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--field-gap, var(--space-2));
 }
 
 /* A site may set the knobs (the shop: 12 px muted capitals); the fallbacks are the gallery's. */
@@ -19,7 +19,7 @@
   padding: var(--space-3);
   background: var(--color-surface-raised);
   color: var(--color-text);
-  border: var(--rule-hair) solid var(--color-border-strong);
+  border: var(--rule-hair) solid var(--field-border, var(--color-border-strong));
   border-radius: var(--radius-control);
   font: var(--text-body);
   resize: vertical;

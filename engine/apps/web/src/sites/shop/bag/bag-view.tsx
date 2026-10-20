@@ -15,6 +15,7 @@ import { createHref, SITES } from '@engine/config/sites'
 import { Button, Mat, MatNote } from '../../../shared/ui'
 import { productText } from '../product/copy'
 import { imageAlt } from '../product/synthetic'
+import { CapsLink } from '../ui/caps-link'
 import { bagText } from './copy'
 import styles from './bag.module.css'
 import summary from './bag-summary.module.css'
@@ -60,9 +61,7 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
         <div className={styles.empty}>
           <p className={styles.emptyText}>{text.shared('cart.empty')}</p>
           <div>
-            <Button variant="quiet" className={styles.emptyLink} href={href('browse', {}, locale)}>
-              {text.shared('cart.emptyAction')}
-            </Button>
+            <CapsLink href={href('browse', {}, locale)}>{text.shared('cart.emptyAction')}</CapsLink>
           </div>
         </div>
       ) : (

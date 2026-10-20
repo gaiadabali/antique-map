@@ -145,7 +145,7 @@ export function Partnership({ contact, t, locale, turnstileSiteKey }: Props) {
             </dl>
             <CapsLink href="#enquire">{t(offer.cta)}</CapsLink>
           </div>
-          <div className={styles.storyPhotos}>
+          <div className={styles.storyPhotos} role="group" aria-label={t(offer.title)} tabIndex={0}>
             <FeaturedPrint
               locale={locale}
               index={index * 2}
@@ -187,22 +187,23 @@ function Enquire({ contact, t, locale, turnstileSiteKey }: Props) {
         <h2 id="partnership-enquire" className={styles.applyTitle}>
           {t('partnership.enquireTitle')}
         </h2>
-        <p className={styles.storyBody}>{t('partnership.enquireBody')}</p>
-        <div className={styles.talk}>
-          <p className={styles.storyBody}>{t('partnership.talkFirst')}</p>
-          {wa || mail ? (
-            <div className={styles.talkActions}>
-              {wa && (
-                <Button variant="secondary" size="small" href={wa}>
-                  {t('partnership.ctaWhatsapp')}
-                </Button>
-              )}
-              {mail && <CapsLink href={mail}>{t('partnership.ctaEmail')}</CapsLink>}
-            </div>
+        <p className={styles.applyBody}>{t('partnership.enquireBody')}</p>
+        {/* "Prefer to talk first?" over the WhatsApp number, as drawn (email when there is none). */}
+        <p className={styles.talk}>
+          {t('partnership.talkFirst')}
+          <br />
+          {wa && contact.whatsapp ? (
+            <a href={wa} className={styles.talkLink}>
+              {t('partnership.talkWhatsapp', { number: spacedNumber(contact.whatsapp) })}
+            </a>
+          ) : mail ? (
+            <a href={mail} className={styles.talkLink}>
+              {t('partnership.ctaEmail')}
+            </a>
           ) : (
-            <p className={styles.note}>{t('partnership.contactMissing')}</p>
+            <span className={styles.note}>{t('partnership.contactMissing')}</span>
           )}
-        </div>
+        </p>
       </div>
       <div className={styles.panel}>
         <PartnershipForm
@@ -249,4 +250,10 @@ function panelText(t: PartnershipText, contact: Props['contact']): PartnerPanelT
       },
     },
   }
+}
+
+/** An E.164 number as people read it: +62 813 1900 4269 (other countries as stored). */
+function spacedNumber(e164: string): string {
+  const match = /^\+62(\d{3})(\d{4})(\d+)$/.exec(e164)
+  return match ? `+62 ${match[1]} ${match[2]} ${match[3]}` : e164
 }

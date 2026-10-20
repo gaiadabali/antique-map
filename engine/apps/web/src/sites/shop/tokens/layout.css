@@ -72,6 +72,9 @@
   --field-label-tracking: var(--shop-tracking-caps);
   --field-label-case: uppercase;
   --field-label-color: var(--color-text-muted);
+  --field-height: 2.75rem;
+  --field-gap: 0.375rem;
+  --field-border: var(--color-text);
   /* the floating chat: the handoff's ink button, white words, umber under the pointer */
   --chat-launcher-bg: var(--primitive-oei-ink);
   --chat-launcher-ink: var(--primitive-oei-white);

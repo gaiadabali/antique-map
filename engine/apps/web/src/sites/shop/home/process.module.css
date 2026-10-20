@@ -1,13 +1,13 @@
 /* The process band (the handoff's oei.css §band). Every value is a token. */
 
 .band {
-  padding: var(--space-7) var(--shop-gutter) var(--shop-section);
+  padding: 2.5rem var(--shop-gutter) var(--shop-section);
   background: var(--shop-warm);
 }
 
 .title {
   max-inline-size: 45rem;
-  margin: 0 auto var(--space-6);
+  margin: 0 auto 1.875rem;
   font: var(--shop-title-page);
   text-align: center;
   text-wrap: balance;
@@ -23,7 +23,7 @@
 }
 
 .step {
-  padding-inline: var(--space-5);
+  padding-inline: 1.25rem;
   text-align: center;
 }
 
@@ -34,8 +34,9 @@
 }
 
 .stepTitle {
-  margin: var(--space-5) 0 0;
+  margin: 1.25rem 0 0;
   font: var(--shop-title-sub);
+  line-height: 1.1;
 }
 
 .stepBody {
@@ -46,19 +47,11 @@
 
 @media (max-width: 56.25rem) {
   .band {
-    padding-block: var(--space-6);
+    padding-block: 1.3125rem 1.4375rem;
   }
 
   .steps {
     grid-template-columns: 1fr;
     gap: var(--space-5);
-  }
-
-  .step {
-    padding-inline: 0;
-  }
-
-  .stepTitle {
-    margin-block-start: var(--space-2);
   }
 }
