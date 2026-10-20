@@ -13,7 +13,7 @@ maps to, §8).
 - **Drafts are Payload's `_status`, and only that.** Collections with drafts: `works`, `products`, `makers`,
   `places`, `terms`, `pages`. No status field holds a second "draft" value.
 - **Public reads are published-only and projected**: `overrideAccess: false`, `_status: 'published'`, and a
-  `select` of the fields the page shows. Fields marked *staff* below are never selected by a public read.
+  `select` of the fields the page shows. Fields marked _staff_ below are never selected by a public read.
 - **Languages** (DR-12): `en` is the default and required where a field is required; `id` is optional and falls
   back to `en`. Localised fields are marked **L**. Each localised collection has `translationStatus` per locale
   (`entered` · `machine` · `reviewed`, staff only) — machine translation is allowed and shown as such to staff.
@@ -47,71 +47,71 @@ maps to, §8).
 
 ### `works` — admin label **Antiques** (gallery)
 
-| Field | Type | Notes |
-| --- | --- | --- |
-| `stockNumber` | text, unique, required | as the gallery writes it: `M.1044`, `P.2098`, `F.…`; trimmed, case kept. The import's key |
-| `publicId` | integer, unique, required | the old site's product id for a migrated work, otherwise a number from a sequence starting at 100000 (DATA.md §3); part of the item's address, `/product/{publicId}-{slug}` (ARCHITECTURE.md §5) |
-| `title` **L** | text, required | the title buyers read: "Bali by François Valentijn, 1726" |
-| `originalTitle` | text | diplomatic transcription: *Kaart van het Eyland Bali* |
-| `slug` | text | §1 |
-| `objectType` | select, required | `map` · `sea-chart` · `city-plan` · `view` · `print` · `photograph` · `book` · `atlas` · `poster` · `document` · `other` |
-| `makers` | array `{ maker → makers, role, certainty }` | role: `cartographer` · `engraver` · `publisher` · `author` · `artist` · `photographer` · `studio` · `printer`; certainty: `certain` · `attributed` · `after` · `workshop` |
-| `date` | group `{ from, to, precision, display }` | precision: `exact` · `circa` · `before` · `after` · `range` · `unknown` — a date is never implied certain; `display` ("1724–26") wins over the formatter |
-| `places` | array `{ place → places, role }` | the first row is the primary place; role: `depicts` · `published-at` · `photographed-at` |
-| `technique` | → terms (`technique`) | engraving, lithograph, albumen print… |
-| `colour` | select | `original-hand` · `later-hand` · `printed` · `uncoloured` · `unknown` |
-| `dimensions` | group `{ image {h, w}, sheet {h, w} }`, mm | inches are derived on the page, never typed |
-| `condition` | group `{ grade → terms (grade), notes L }` | the grade is the gallery's published scale (VG+ · VG · G+ · G · Fair · As-is), each term with its definition |
-| `subjects` | → terms (`subject`), many | Wayang, Batik, Temples, Spices, VOC… |
-| `description` **L** | rich text | the essay |
-| `references` | array `{ citation, note }` | "Tooley (Australia) 1268", Parry numbers — text, as catalogued |
-| `images` | array `{ media → media, caption L }` | roles and the primary: §5 |
-| `status` | select, required | `available` · `on-hold` · `sold` — set by staff; default `available` |
-| `location` | select, required | `singapore` · `jakarta` (G2) |
-| `askingPrice` | group `{ amount, currency }` | **owner only** (read and write) — the start of a negotiation and the insured value. Never on a page, a feed, structured data, an event or an AI answer (DR-3, G4) |
-| `aiDraft` | group `{ fields[] { path, state, model, promptVersion, at, verifiedBy, verifiedAt }, runs[] }` *staff* | what the drafting tool filled (AI.md §5); `state` is `drafted` until a person ticks **Verified** |
-| `legacy` | group `{ id, url }` *staff* | the old site's product id and URL — the redirect source (DR-11) |
-| `seo` | group `{ title L, description L }` | overrides; the image is always the primary |
-| `notes` | textarea *staff* | internal |
+| Field               | Type                                                                                                   | Notes                                                                                                                                                                                            |
+| ------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `stockNumber`       | text, unique, required                                                                                 | as the gallery writes it: `M.1044`, `P.2098`, `F.…`; trimmed, case kept. The import's key                                                                                                        |
+| `publicId`          | integer, unique, required                                                                              | the old site's product id for a migrated work, otherwise a number from a sequence starting at 100000 (DATA.md §3); part of the item's address, `/product/{publicId}-{slug}` (ARCHITECTURE.md §5) |
+| `title` **L**       | text, required                                                                                         | the title buyers read: "Bali by François Valentijn, 1726"                                                                                                                                        |
+| `originalTitle`     | text                                                                                                   | diplomatic transcription: _Kaart van het Eyland Bali_                                                                                                                                            |
+| `slug`              | text                                                                                                   | §1                                                                                                                                                                                               |
+| `objectType`        | select, required                                                                                       | `map` · `sea-chart` · `city-plan` · `view` · `print` · `photograph` · `book` · `atlas` · `poster` · `document` · `other`                                                                         |
+| `makers`            | array `{ maker → makers, role, certainty }`                                                            | role: `cartographer` · `engraver` · `publisher` · `author` · `artist` · `photographer` · `studio` · `printer`; certainty: `certain` · `attributed` · `after` · `workshop`                        |
+| `date`              | group `{ from, to, precision, display }`                                                               | precision: `exact` · `circa` · `before` · `after` · `range` · `unknown` — a date is never implied certain; `display` ("1724–26") wins over the formatter                                         |
+| `places`            | array `{ place → places, role }`                                                                       | the first row is the primary place; role: `depicts` · `published-at` · `photographed-at`                                                                                                         |
+| `technique`         | → terms (`technique`)                                                                                  | engraving, lithograph, albumen print…                                                                                                                                                            |
+| `colour`            | select                                                                                                 | `original-hand` · `later-hand` · `printed` · `uncoloured` · `unknown`                                                                                                                            |
+| `dimensions`        | group `{ image {h, w}, sheet {h, w} }`, mm                                                             | inches are derived on the page, never typed                                                                                                                                                      |
+| `condition`         | group `{ grade → terms (grade), notes L }`                                                             | the grade is the gallery's published scale (VG+ · VG · G+ · G · Fair · As-is), each term with its definition                                                                                     |
+| `subjects`          | → terms (`subject`), many                                                                              | Wayang, Batik, Temples, Spices, VOC…                                                                                                                                                             |
+| `description` **L** | rich text                                                                                              | the essay                                                                                                                                                                                        |
+| `references`        | array `{ citation, note }`                                                                             | "Tooley (Australia) 1268", Parry numbers — text, as catalogued                                                                                                                                   |
+| `images`            | array `{ media → media, caption L }`                                                                   | roles and the primary: §5                                                                                                                                                                        |
+| `status`            | select, required                                                                                       | `available` · `on-hold` · `sold` — set by staff; default `available`                                                                                                                             |
+| `location`          | select, required                                                                                       | `singapore` · `jakarta` (G2)                                                                                                                                                                     |
+| `askingPrice`       | group `{ amount, currency }`                                                                           | **owner only** (read and write) — the start of a negotiation and the insured value. Never on a page, a feed, structured data, an event or an AI answer (DR-3, G4)                                |
+| `aiDraft`           | group `{ fields[] { path, state, model, promptVersion, at, verifiedBy, verifiedAt }, runs[] }` _staff_ | what the drafting tool filled (AI.md §5); `state` is `drafted` until a person ticks **Verified**                                                                                                 |
+| `legacy`            | group `{ id, url }` _staff_                                                                            | the old site's product id and URL — the redirect source (DR-11)                                                                                                                                  |
+| `seo`               | group `{ title L, description L }`                                                                     | overrides; the image is always the primary                                                                                                                                                       |
+| `notes`             | textarea _staff_                                                                                       | internal                                                                                                                                                                                         |
 
 ### `products` (shop)
 
-| Field | Type | Notes |
-| --- | --- | --- |
-| `sku` | text, unique, required | the import's key; also the SKU of a product without variants |
-| `name` **L** | text, required | |
-| `slug` | text | §1 |
-| `description` **L** | rich text | |
-| `category` | → terms (`category`), required | prints, stationery, homeware, gifts… |
-| `images` | array `{ media → media, caption L }` | §5 |
-| `price` | integer IDR, required, > 0 | the one list price; priced on the server only (COMMERCE.md §2) |
-| `variants` | array `{ sku (unique across all products), label L, price?, active }` | optional: "A3", "Indigo". A variant without its own price takes the product's |
-| `relatedWork` | → works, optional | "See the original" — shown only while that work is published |
-| `seo` | group `{ title L, description L }` | |
+| Field               | Type                                                                  | Notes                                                                         |
+| ------------------- | --------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `sku`               | text, unique, required                                                | the import's key; also the SKU of a product without variants                  |
+| `name` **L**        | text, required                                                        |                                                                               |
+| `slug`              | text                                                                  | §1                                                                            |
+| `description` **L** | rich text                                                             |                                                                               |
+| `category`          | → terms (`category`), required                                        | prints, stationery, homeware, gifts…                                          |
+| `images`            | array `{ media → media, caption L }`                                  | §5                                                                            |
+| `price`             | integer IDR, required, > 0                                            | the one list price; priced on the server only (COMMERCE.md §2)                |
+| `variants`          | array `{ sku (unique across all products), label L, price?, active }` | optional: "A3", "Indigo". A variant without its own price takes the product's |
+| `relatedWork`       | → works, optional                                                     | "See the original" — shown only while that work is published                  |
+| `seo`               | group `{ title L, description L }`                                    |                                                                               |
 
 Availability is never typed on a product: it is read from `stock-levels` (COMMERCE.md §4).
 
 ### Vocabularies
 
-| Collection | Key fields | Notes |
-| --- | --- | --- |
-| `makers` | `name`, `sortName` ("BLAEU, Willem Janszoon"), `slug`, `aliases[]` (Valentyn, Valentijn), `roles` (the list above), `born`/`died` `{ precision, from, to, display }`, `nationality` **L**, `bio` **L** rich text, `portrait` → media, `sameAs[]` (Wikidata, ULAN; https only) | a maker page per maker |
-| `places` | `name` **L**, `slug`, `type` (`region` · `country` · `island-group` · `island` · `province` · `kingdom` · `city` · `town` · `sea` · `strait` · `ocean`), `parent` → places, `historicalNames[] { name, language, period }` (Batavia, Iava, Celebes), `geo { lat, lng, bbox }` (WGS 84) | the gazetteer; search finds a place under every historical name; no cycles in `parent` |
-| `terms` | `kind` (`subject` · `technique` · `grade` · `category`, fixed once created), `label` **L**, `slug` (unique within its kind), `position`, and for a grade `definition` **L** + `equivalent` (A–D) | `category` serves the shop; the rest the gallery |
+| Collection | Key fields                                                                                                                                                                                                                                                                             | Notes                                                                                  |
+| ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `makers`   | `name`, `sortName` ("BLAEU, Willem Janszoon"), `slug`, `aliases[]` (Valentyn, Valentijn), `roles` (the list above), `born`/`died` `{ precision, from, to, display }`, `nationality` **L**, `bio` **L** rich text, `portrait` → media, `sameAs[]` (Wikidata, ULAN; https only)          | a maker page per maker                                                                 |
+| `places`   | `name` **L**, `slug`, `type` (`region` · `country` · `island-group` · `island` · `province` · `kingdom` · `city` · `town` · `sea` · `strait` · `ocean`), `parent` → places, `historicalNames[] { name, language, period }` (Batavia, Iava, Celebes), `geo { lat, lng, bbox }` (WGS 84) | the gazetteer; search finds a place under every historical name; no cycles in `parent` |
+| `terms`    | `kind` (`subject` · `technique` · `grade` · `category`, fixed once created), `label` **L**, `slug` (unique within its kind), `position`, and for a grade `definition` **L** + `equivalent` (A–D)                                                                                       | `category` serves the shop; the rest the gallery                                       |
 
 Reshape note: the code's `terms` kinds (`mood`, `room`, `occasion`, `recipient`) and the `sources` collection give
 way to `technique`, `category` and text references.
 
 ## 4. Shop operations
 
-| Collection | Key fields | Notes |
-| --- | --- | --- |
-| `stores` | `code` (unique, required — the import's key), `name`, `address`, `area` ("Ubud"), `lat`, `lng` (required, decimal degrees, inside Indonesia), `whatsapp` (+62…), `hours` **L** (text), `images[]` (role `showroom`, photographs only), `active`, `notes` *staff* | an inactive store is never assigned an order |
-| `stock-levels` | `store` → stores, `product` → products, `variantSku` (null for a product without variants), `quantity` (integer ≥ 0): what the store can still sell — its physical count less the units held by its orders in `pending_payment`, `paid`, `processing` or `waiting_driver` | unique `(store, product, variantSku)`. Written by the atomic decrement and its release (COMMERCE.md §4); a staff count or the stock import enters the physical count and the server stores count − held (DATA.md §3), so a count never re-sells a held unit |
-| `orders` | `number`, `site` (`shop`), `lines[]` (snapshots), `contact`, `delivery { address, notes, lat, lng }`, `store` → stores, `distanceKm`, totals, `discount`, `status`, `history[]`, `driverImage`, `payment`, `trackingTokenHash`, `expiresAt` | the full shape and its rules are COMMERCE.md §8. Written only by the server's order code and the staff actions it allows |
-| `payment-events` | `provider` (`midtrans`), `dedupeKey` (unique), `order` → orders, `transactionStatus`, `fraudStatus`, `grossAmount`, `source` (`webhook` · `reconcile` · `simulate`), `outcome`, `payloadHash`, `receivedAt` | append-only ledger (COMMERCE.md §6); the payload itself is never stored or logged. Nobody edits a row |
-| `discounts` | `code` (unique, stored upper-case), `kind` (`percent` · `fixed`), `value`, `minSpend`, `oncePerBuyer`, `startsAt`, `endsAt`, `usageLimit`, `usedCount` (server only), `active` | the welcome code (S13). Free shipping is a setting, not a discount |
-| `partners` | `name`, `kind` (`hotel` · `shop` · `restaurant` · `other`), `site`, `contact { person, whatsapp, email, phone }`, `address`, `terms` (textarea — negotiated case by case, S5), `productsCarried` → products (many), `status` (`prospect` · `active` · `paused` · `ended`), `notes` | records only, no login (DR-8) |
+| Collection       | Key fields                                                                                                                                                                                                                                                                                                                                                                          | Notes                                                                                                                                                                                                                                                       |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `stores`         | `code` (unique, required — the import's key), `name`, `address`, `area` ("Ubud"), `lat`, `lng` (required, decimal degrees, inside Indonesia), `whatsapp` (+62…), `hours` **L** (text), `images[]` (role `showroom`, photographs only), `active`, `notes` _staff_                                                                                                                    | an inactive store is never assigned an order                                                                                                                                                                                                                |
+| `stock-levels`   | `store` → stores, `product` → products, `variantSku` (null for a product without variants), `quantity` (integer ≥ 0): what the store can still sell — its physical count less the units held by its orders in `pending_payment`, `paid`, `processing` or `waiting_driver`                                                                                                           | unique `(store, product, variantSku)`. Written by the atomic decrement and its release (COMMERCE.md §4); a staff count or the stock import enters the physical count and the server stores count − held (DATA.md §3), so a count never re-sells a held unit |
+| `orders`         | `number`, `site` (`shop`), `lines[]` (snapshots), `contact`, `delivery { address, notes, lat, lng }`, `store` → stores, `distanceKm`, totals, `discount`, `status`, `history[]`, `driverImage`, `payment`, `trackingTokenHash`, `expiresAt`                                                                                                                                         | the full shape and its rules are COMMERCE.md §8. Written only by the server's order code and the staff actions it allows                                                                                                                                    |
+| `payment-events` | `provider` (`midtrans`), `dedupeKey` (unique), `order` → orders, `transactionStatus`, `fraudStatus`, `grossAmount`, `source` (`webhook` · `reconcile` · `simulate`), `outcome`, `payloadHash`, `receivedAt`                                                                                                                                                                         | append-only ledger (COMMERCE.md §6); the payload itself is never stored or logged. Nobody edits a row                                                                                                                                                       |
+| `discounts`      | `code` (unique, stored upper-case), `kind` (`percent` · `fixed`), `value`, `minSpend`, `oncePerBuyer`, `startsAt`, `endsAt`, `usageLimit`, `usedCount` (server only), `active`                                                                                                                                                                                                      | the welcome code (S13). Free shipping is a setting, not a discount                                                                                                                                                                                          |
+| `partners`       | `name`, `kind` (`hotel` · `shop` · `restaurant` · `other`), `site`, `contact { person, whatsapp, email, phone }`, `address`, `terms` (textarea — negotiated case by case, S5), `productsCarried` → products (many), `status` (`prospect` · `active` · `paused` · `ended`), `notes`, `signIn { enabled, email, lockedUntil }` (the password set by the owner is kept only as a hash) | records; since 2026-10-20 an approved partner may sign in on the shop (SECURITY.md A9), never to the admin                                                                                                                                                  |
 
 ## 5. Images: media and masters
 
@@ -122,7 +122,7 @@ object — from which the derivatives and deep-zoom tiles are made. An image's *
 
 **`media`** — `alt` **L** (required, not blank, ≤ 500 characters), `altSource` (`baseline` · `cataloguer` ·
 `ai-draft`), `caption` **L**, `credit`, `licence`, `role` (required), `provenance` (required, **no default**),
-`master` → masters (*staff*), focal point, and the pipeline's read-only `assetId`, `derivatives { status,
+`master` → masters (_staff_), focal point, and the pipeline's read-only `assetId`, `derivatives { status,
 version, blurDataUri }` and `iiif { status }` (deep zoom). `role` and `provenance` never change after creation.
 
 - **The upload is never public.** It lands under the private `uploads/` prefix; the public reads only
@@ -134,12 +134,12 @@ version, blurDataUri }` and `iiif { status }` (deep zoom). `role` and `provenanc
 - **A synthetic image is labelled at render, from `provenance`** ("Digital mockup", "AI-generated image") — on
   the image, at the start of the rendered alt and in the caption. The label is never stored in `alt`.
 
-| Subject | Roles, in page order | Provenance allowed |
-| --- | --- | --- |
-| work | `recto` · `verso` · `detail` · `raking` · `transmitted` · `framed` · `in-room` · `scale` | photographs only, except an `in-room` view, which may be a labelled composite or render and is never first. **Nothing AI-generated on a work**; the images of condition (`recto` to `transmitted`) are never retouched |
-| product | `in-room` · `flat` · `detail` · `lifestyle` · `scale` · `packaging` | any, labelled; photographs sort before mockups within a role |
-| store | `showroom` | photographs only — they prove the place is real |
-| other | `editorial` (a story image, a banner, a maker's portrait) | any, labelled |
+| Subject | Roles, in page order                                                                     | Provenance allowed                                                                                                                                                                                                     |
+| ------- | ---------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| work    | `recto` · `verso` · `detail` · `raking` · `transmitted` · `framed` · `in-room` · `scale` | photographs only, except an `in-room` view, which may be a labelled composite or render and is never first. **Nothing AI-generated on a work**; the images of condition (`recto` to `transmitted`) are never retouched |
+| product | `in-room` · `flat` · `detail` · `lifestyle` · `scale` · `packaging`                      | any, labelled; photographs sort before mockups within a role                                                                                                                                                           |
+| store   | `showroom`                                                                               | photographs only — they prove the place is real                                                                                                                                                                        |
+| other   | `editorial` (a story image, a banner, a maker's portrait)                                | any, labelled                                                                                                                                                                                                          |
 
 **The primary** a page leads with (its LCP, card and social image): for a work, its first photographed `recto`
 — never a detail or a synthetic image; for a product, its first photographed `in-room` or `flat`, else its first
@@ -159,14 +159,14 @@ Reshape note: the code's `masters.brand`, `design` and the `print-file` kind, an
 
 ## 6. People, leads and site
 
-| Collection | Key fields | Notes |
-| --- | --- | --- |
-| `users` | `email`, `name`, `role` (`owner` · `editor` · `store`), `store` → stores (required when role is `store`, empty otherwise), `language` (`en` · `id` — the admin's language, G15), `active` | Payload auth. Only the owner sets `role` or `store`; nobody can remove the last owner |
-| `leads` | `kind` (`ask` · `sell` · `partnership` · `contact` · `chat`), `site`, `source` (`chat` · `form` · `page`), `payload` (name, WhatsApp in E.164 and/or email, preferred channel, message, locale, the consent text's version and time), `items` → works or products, `chatSession` → chat-sessions, `status` (`new` · `contacted` · `in_progress` · `closed` · `spam`, each change with who and when), `firstReplyAt`, `notes` | the shape is AI.md §4's. Created only by the server's lead service, never by a public REST write. The sell form takes **no files**: photos travel on WhatsApp or email |
-| `chat-sessions` | `site`, `locale`, `startedAt`, `lastMessageAt`, `items` → works or products, `transcript[]` (masked text), `ipHash` (daily-salted), labels, usage, `outcome` (`refused` · `blocked` · `handoff` · `lead`), `lead` → leads | written by the chat only; deleted 30 days after the last message (AI.md §3.4) |
-| `pages` | `site`, `kind` (`page` · `story` · `collection`), `title` **L**, `slug`, `intro` **L**, `hero` → media, `body` **L** rich text, `products[]` / `works[]` (a `collection` lists them), `seo` | `page`: about, visit, FAQ, delivery, legal pages (counsel's words) · `story`: a gallery or shop article at `/stories/{slug}` · `collection`: a curated shop list at `/collections/{slug}`. Bodies are the restricted rich text of §1 — no blocks, no embeds |
-| `redirects` | `site`, `from` (path, unique per site), `to`, `code` (301 · 302), `source` (`legacy` · `editor` · `slug-change`), `hits` | Payload's redirects plugin with `site` added |
-| `events` | ANALYTICS.md §4 | append-only; read by the dashboard |
+| Collection      | Key fields                                                                                                                                                                                                                                                                                                                                                                                                                   | Notes                                                                                                                                                                                                                                                       |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `users`         | `email`, `name`, `role` (`owner` · `editor` · `store`), `store` → stores (required when role is `store`, empty otherwise), `language` (`en` · `id` — the admin's language, G15), `active`                                                                                                                                                                                                                                    | Payload auth. Only the owner sets `role` or `store`; nobody can remove the last owner                                                                                                                                                                       |
+| `leads`         | `kind` (`ask` · `sell` · `partnership` · `contact` · `chat`), `site`, `source` (`chat` · `form` · `page`), `payload` (name, WhatsApp in E.164 and/or email, preferred channel, message, locale, the consent text's version and time), `items` → works or products, `chatSession` → chat-sessions, `status` (`new` · `contacted` · `in_progress` · `closed` · `spam`, each change with who and when), `firstReplyAt`, `notes` | the shape is AI.md §4's. Created only by the server's lead service, never by a public REST write. The sell form takes **no files**: photos travel on WhatsApp or email                                                                                      |
+| `chat-sessions` | `site`, `locale`, `startedAt`, `lastMessageAt`, `items` → works or products, `transcript[]` (masked text), `ipHash` (daily-salted), labels, usage, `outcome` (`refused` · `blocked` · `handoff` · `lead`), `lead` → leads                                                                                                                                                                                                    | written by the chat only; deleted 30 days after the last message (AI.md §3.4)                                                                                                                                                                               |
+| `pages`         | `site`, `kind` (`page` · `story` · `collection`), `title` **L**, `slug`, `intro` **L**, `hero` → media, `body` **L** rich text, `products[]` / `works[]` (a `collection` lists them), `seo`                                                                                                                                                                                                                                  | `page`: about, visit, FAQ, delivery, legal pages (counsel's words) · `story`: a gallery or shop article at `/stories/{slug}` · `collection`: a curated shop list at `/collections/{slug}`. Bodies are the restricted rich text of §1 — no blocks, no embeds |
+| `redirects`     | `site`, `from` (path, unique per site), `to`, `code` (301 · 302), `source` (`legacy` · `editor` · `slug-change`), `hits`                                                                                                                                                                                                                                                                                                     | Payload's redirects plugin with `site` added                                                                                                                                                                                                                |
+| `events`        | ANALYTICS.md §4                                                                                                                                                                                                                                                                                                                                                                                                              | append-only; read by the dashboard                                                                                                                                                                                                                          |
 
 **Global `site-settings`** — one group per site (`gallery`, `shop`), each: `contact { whatsapp, email, phone }`,
 `replyPromise` **L** (G9: "the same working day, Singapore time"), `hours` **L**, `announcement` **L**,
@@ -179,18 +179,18 @@ discounts, `orderExpiryMinutes` (the payment window, COMMERCE.md §4), `storeAle
 
 Public means a visitor on the site, through the server's projected reads; nobody signs in but staff (DR-10).
 
-| Collection | Public | `owner` | `editor` | `store` |
-| --- | --- | --- | --- | --- |
-| works | published, projected (no `askingPrice`, `aiDraft`, `legacy`, `notes`) | all, incl. `askingPrice` | all but `askingPrice` (not readable) | — |
-| products | published, projected | all | all | read |
-| makers, places, terms, pages, redirects | published, projected | all | all | — |
-| media, masters | through published records only; masters never | all | all | read media |
-| stores | name, area and hours of active stores, through the server | all | read | read own store |
-| stock-levels | never directly — "in stock" is computed on the server | all | read and update: enter the physical count at any store | read own store's rows; update only their counts |
-| orders | the tracking page only, by token, projected (COMMERCE.md §10) | all | read all; move any status, reassign, cancel, upload the driver image (COMMERCE.md §7) | read own store's; move them forward only, upload the driver image, hand one back with a reason |
-| payment-events | — | read | — | — |
-| leads, chat-sessions, partners, discounts, events, site-settings | — (the server writes and reads them) | all | — | — |
-| users | — | all | own name, language, password | own name, language, password |
+| Collection                                                       | Public                                                                | `owner`                  | `editor`                                                                              | `store`                                                                                        |
+| ---------------------------------------------------------------- | --------------------------------------------------------------------- | ------------------------ | ------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| works                                                            | published, projected (no `askingPrice`, `aiDraft`, `legacy`, `notes`) | all, incl. `askingPrice` | all but `askingPrice` (not readable)                                                  | —                                                                                              |
+| products                                                         | published, projected                                                  | all                      | all                                                                                   | read                                                                                           |
+| makers, places, terms, pages, redirects                          | published, projected                                                  | all                      | all                                                                                   | —                                                                                              |
+| media, masters                                                   | through published records only; masters never                         | all                      | all                                                                                   | read media                                                                                     |
+| stores                                                           | name, area and hours of active stores, through the server             | all                      | read                                                                                  | read own store                                                                                 |
+| stock-levels                                                     | never directly — "in stock" is computed on the server                 | all                      | read and update: enter the physical count at any store                                | read own store's rows; update only their counts                                                |
+| orders                                                           | the tracking page only, by token, projected (COMMERCE.md §10)         | all                      | read all; move any status, reassign, cancel, upload the driver image (COMMERCE.md §7) | read own store's; move them forward only, upload the driver image, hand one back with a reason |
+| payment-events                                                   | —                                                                     | read                     | —                                                                                     | —                                                                                              |
+| leads, chat-sessions, partners, discounts, events, site-settings | — (the server writes and reads them)                                  | all                      | —                                                                                     | —                                                                                              |
+| users                                                            | —                                                                     | all                      | own name, language, password                                                          | own name, language, password                                                                   |
 
 Store staff see their store's orders and stock only — enforced by a `Where` on `store` in the access function, so
 lists, counts and lookups are all scoped, never by hiding menu items (SECURITY.md §2.2). Reassigning an order is
@@ -200,19 +200,19 @@ the owner's or an editor's. Whoever enters a count enters the physical count, st
 
 Saving stays cheap, so staff can type what they have and come back; publishing is when a claim becomes public.
 
-| Rule | When |
-| --- | --- |
-| `stockNumber`, `sku`, variant `sku`, store `code`, discount `code` unique (variant SKUs across all products) | save |
-| date: a typed year needs a precision; `to` ≥ `from`; dimensions positive, image ≤ sheet | save |
-| prices and quantities are whole numbers; price > 0; quantity ≥ 0; `askingPrice` ≥ 0 | save |
-| store `lat`/`lng` are numbers inside Indonesia's bounds; a `store` user has exactly one store | save |
-| an image's role is one its subject takes, and its provenance one that role allows there (§5) | save |
-| media alt not blank; a place's parent is not itself or a descendant | save |
+| Rule                                                                                                                                                                                       | When    |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------- |
+| `stockNumber`, `sku`, variant `sku`, store `code`, discount `code` unique (variant SKUs across all products)                                                                               | save    |
+| date: a typed year needs a precision; `to` ≥ `from`; dimensions positive, image ≤ sheet                                                                                                    | save    |
+| prices and quantities are whole numbers; price > 0; quantity ≥ 0; `askingPrice` ≥ 0                                                                                                        | save    |
+| store `lat`/`lng` are numbers inside Indonesia's bounds; a `store` user has exactly one store                                                                                              | save    |
+| an image's role is one its subject takes, and its provenance one that role allows there (§5)                                                                                               | save    |
+| media alt not blank; a place's parent is not itself or a descendant                                                                                                                        | save    |
 | **antique**: `title` (en), `objectType`, a date (a precision other than `unknown`, or a `display` such as "undated"), a **primary image with alt text**, a condition `grade`, a `location` | publish |
-| **antique**: no `aiDraft` field still `drafted` and no `ai-draft` alt on its images — AI-drafted text cannot publish unverified (DR-9) | publish |
-| no image is shown under its role while its master's verdict is `fix-owner` | publish |
-| **product**: `name` (en), `category`, `price`, at least one image with alt text, no unverified AI draft | publish |
-| a grade term has its `definition` and `equivalent` | publish |
+| **antique**: no `aiDraft` field still `drafted` and no `ai-draft` alt on its images — AI-drafted text cannot publish unverified (DR-9)                                                     | publish |
+| no image is shown under its role while its master's verdict is `fix-owner`                                                                                                                 | publish |
+| **product**: `name` (en), `category`, `price`, at least one image with alt text, no unverified AI draft                                                                                    | publish |
+| a grade term has its `definition` and `equivalent`                                                                                                                                         | publish |
 
 Validators are pure functions with unit tests (`engine/packages/cms/src/validators`); hooks only fetch what they
 need. A record the seed or the import creates arrives as a **draft**; a change to an existing record applies only
@@ -248,9 +248,9 @@ match goes to DATA.md's review queue and is never created by guess.
 
 ## Open
 
-- **Asking-price currency** — default `USD` (the old site's prices); the owner confirms. *Owner.*
+- **Asking-price currency** — default `USD` (the old site's prices); the owner confirms. _Owner._
 - **Public store list** — default: active stores are listed on `/stores` (ARCHITECTURE.md §5) with their area and
-  hours, as EXPERIENCE-SHOP.md describes; the tracking page names the sending store. *Owner.*
+  hours, as EXPERIENCE-SHOP.md describes; the tracking page names the sending store. _Owner._
 - **Photos on the sell form** — default none (WhatsApp/email carry them); revisit if leads arrive without
-  photos. *Owner.*
-- **Lead retention** — default 24 months after `closed`, then purged (COMPLIANCE.md §1). *Owner, counsel.*
+  photos. _Owner._
+- **Lead retention** — default 24 months after `closed`, then purged (COMPLIANCE.md §1). _Owner, counsel._

@@ -43,4 +43,34 @@ describe.skipIf(!server)('partners: access on a real database', () => {
     expect((await stack.rest('GET', `/api/partners/${doc.id}`)).status).toBe(403)
     expect((await stack.rest('GET', '/api/partners?limit=100')).status).toBe(403)
   })
+
+  it('a partner sign-in keeps only a hash, which no one reads back — the owner included', async () => {
+    const created = await stack.rest('POST', '/api/partners', {
+      role: 'owner',
+      json: {
+        ...partner(),
+        name: 'Signed-in partner',
+        signIn: {
+          enabled: true,
+          email: 'Trade@Example.test',
+          newPassword: 'a long enough passphrase',
+        },
+      },
+    })
+    expect(created.status).toBe(201)
+    const { doc } = (await created.json()) as { doc: { id: number } }
+    const read = await stack.rest('GET', `/api/partners/${doc.id}`, { role: 'owner' })
+    const body = (await read.json()) as { signIn?: Record<string, unknown> }
+    expect(body.signIn?.email).toBe('trade@example.test')
+    expect(body.signIn).not.toHaveProperty('passwordHash')
+    expect(body.signIn).not.toHaveProperty('newPassword')
+    expect(JSON.stringify(body)).not.toContain('passphrase')
+    expect(JSON.stringify(body)).not.toContain('scrypt$')
+
+    const weak = await stack.rest('PATCH', `/api/partners/${doc.id}`, {
+      role: 'owner',
+      json: { signIn: { newPassword: 'short' } },
+    })
+    expect(weak.status).toBe(400)
+  })
 })

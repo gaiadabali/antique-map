@@ -4,12 +4,17 @@
  * facts, the three offers (resellers, company gifting, hotels and villas) as alternating stories
  * with their terms as a ruled list beside two framed prints, and the enquiry as the last band: the
  * WhatsApp and email buttons with a prepared message, and the short form that creates a
- * `partnership` lead (9.1.c, `sites/shop/partnership`) on white.
+ * `partnership` lead (9.1.c, `sites/shop/partnership`) on white — and, last, "Already a partner":
+ * an approved partner's sign-in, or their account once signed in (`PartnerPanel`).
  */
 import { Button } from '../../../../../shared/ui'
 import { FeaturedPrint } from '../../../../../sites/shop/home/featured-print'
 import { formText } from '../../../../../sites/shop/partnership/form-text'
 import { PartnershipForm } from '../../../../../sites/shop/partnership/partnership-form'
+import {
+  PartnerPanel,
+  type PartnerPanelText,
+} from '../../../../../sites/shop/partnership/partner-panel'
 import { Caps, CapsLink } from '../../../../../sites/shop/ui/caps-link'
 
 import styles from './partnership.module.css'
@@ -97,6 +102,7 @@ export function Partnership({ contact, t, locale, turnstileSiteKey }: Props) {
               <Button variant="primary" size="small" href="#enquire">
                 {t('partnership.ctaApply')}
               </Button>
+              <CapsLink href="#signin">{t('partnership.signInLink')}</CapsLink>
             </div>
           </div>
         </div>
@@ -155,6 +161,7 @@ export function Partnership({ contact, t, locale, turnstileSiteKey }: Props) {
       ))}
 
       <Enquire contact={contact} t={t} locale={locale} turnstileSiteKey={turnstileSiteKey} />
+      <PartnerPanel text={panelText(t)} />
     </div>
   )
 }
@@ -200,4 +207,31 @@ function Enquire({ contact, t, locale, turnstileSiteKey }: Props) {
       </div>
     </section>
   )
+}
+
+/** The partner sign-in's words, resolved here: the form is a Client Component. */
+function panelText(t: PartnershipText): PartnerPanelText {
+  return {
+    eyebrow: t('partnership.signInEyebrow'),
+    title: t('partnership.signInTitle'),
+    body: t('partnership.signInBody'),
+    welcome: (name) => t('partnership.accountTitle', { name }),
+    accountBody: t('partnership.accountBody'),
+    accountEmail: t('partnership.accountEmail'),
+    signOut: t('partnership.signOut'),
+    form: {
+      email: t('partnership.signInEmail'),
+      password: t('partnership.signInPassword'),
+      submit: t('partnership.signInSubmit'),
+      sending: t('partnership.signInSending'),
+      forgot: t('partnership.signInForgot'),
+      reasons: {
+        invalid: t('partnership.signInInvalid'),
+        locked: t('partnership.signInLocked'),
+        rate: t('partnership.signInRate'),
+        missing: t('partnership.signInMissing'),
+        unavailable: t('partnership.signInUnavailable'),
+      },
+    },
+  }
 }

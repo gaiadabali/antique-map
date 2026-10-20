@@ -1417,7 +1417,7 @@ export interface ChatSession {
   createdAt: string
 }
 /**
- * Resellers and partners the owner works with. No login here.
+ * Resellers and partners the owner works with. An approved partner can sign in on the shop, never here.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "partners".
@@ -1441,6 +1441,24 @@ export interface Partner {
   productsCarried?: (number | Product)[] | null
   status: 'prospect' | 'active' | 'paused' | 'ended'
   notes?: string | null
+  /**
+   * Lets an approved partner sign in on the shop’s partnership page. They never see this admin.
+   */
+  signIn?: {
+    enabled?: boolean | null
+    email?: string | null
+    /**
+     * At least 12 characters. Saving signs the partner out everywhere.
+     */
+    newPassword?: string | null
+    /**
+     * Set after five wrong passwords. Clear it to unlock now.
+     */
+    lockedUntil?: string | null
+    passwordHash?: string | null
+    failedAttempts?: number | null
+    sessionVersion?: number | null
+  }
   updatedAt: string
   createdAt: string
 }
@@ -2356,6 +2374,17 @@ export interface PartnersSelect<T extends boolean = true> {
   productsCarried?: T
   status?: T
   notes?: T
+  signIn?:
+    | T
+    | {
+        enabled?: T
+        email?: T
+        newPassword?: T
+        lockedUntil?: T
+        passwordHash?: T
+        failedAttempts?: T
+        sessionVersion?: T
+      }
   updatedAt?: T
   createdAt?: T
 }

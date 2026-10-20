@@ -105,6 +105,30 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
   'partnership.labelSizes': 'Sizes',
   'partnership.labelRepeat': 'Repeat',
   'partnership.labelSample': 'Sample',
+  'partnership.signInLink': 'Partner sign in',
+  'partnership.signInEyebrow': 'Already a partner',
+  'partnership.signInTitle': 'Sign in to your account.',
+  'partnership.signInBody':
+    'Approved partners sign in here with the address and password we set up with you. Only approved partner accounts have one.',
+  'partnership.signInEmail': 'Email address',
+  'partnership.signInPassword': 'Password',
+  'partnership.signInSubmit': 'Sign in',
+  'partnership.signInSending': 'Signing in…',
+  'partnership.signInForgot':
+    'Forgotten your password? Ask us on WhatsApp or by email and we will set a new one.',
+  'partnership.signInMissing': 'Type your email address and your password.',
+  'partnership.signInInvalid': 'That email and password do not match an approved partner account.',
+  'partnership.signInLocked':
+    'Too many wrong passwords: this account is locked for 15 minutes. Ask us if you need it sooner.',
+  'partnership.signInRate':
+    'Too many sign-in attempts from here. Please wait a while and try again.',
+  'partnership.signInUnavailable':
+    'Signing in is not available just now. Please try again in a moment.',
+  'partnership.accountTitle': 'Welcome, {name}.',
+  'partnership.accountBody':
+    'You are signed in to your partner account. Your wholesale prices and one-click reorder will appear here as they open; for an order today, write to your trade desk on WhatsApp or by email.',
+  'partnership.accountEmail': 'Signed in as',
+  'partnership.signOut': 'Sign out',
 })
 
 export type PartnershipMessageKey = keyof typeof PARTNERSHIP_MESSAGES

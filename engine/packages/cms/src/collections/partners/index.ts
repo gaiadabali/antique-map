@@ -1,13 +1,16 @@
 /**
  * `partners` — resellers and partners the owner works with (CONTENT-MODEL.md §6).
  *
- * Records only, no login. Owner-only access. Products carried relate to the products collection.
+ * Owner-only access. Products carried relate to the products collection. Not Payload users: an
+ * approved partner may sign in on the shop's partnership page with the shop's own session
+ * (`./sign-in`, the redesign of 2026-10-20); they never reach the admin.
  */
 import type { CollectionConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
 import { hiddenFromAllButOwner } from '../../admin/hidden'
 import { isOwner } from '../users/roles'
+import { applySignIn, signInFields } from './sign-in'
 
 export const PARTNERS_ACCESS = {
   read: isOwner,
@@ -47,11 +50,12 @@ export const Partners: CollectionConfig = {
     useAsTitle: 'name',
     defaultColumns: ['name', 'kind', 'status', 'productsCarried', 'updatedAt'],
     description: {
-      en: 'Resellers and partners the owner works with. No login here.',
-      id: 'Reseller dan mitra yang bekerja sama dengan pemilik. Tidak ada login di sini.',
+      en: 'Resellers and partners the owner works with. An approved partner can sign in on the shop, never here.',
+      id: 'Reseller dan mitra yang bekerja sama dengan pemilik. Mitra yang disetujui bisa login di toko, tidak di sini.',
     },
   },
   access: PARTNERS_ACCESS,
+  hooks: { beforeChange: [applySignIn] },
   fields: [
     {
       name: 'name',
@@ -162,5 +166,6 @@ export const Partners: CollectionConfig = {
       label: { en: 'Notes', id: 'Catatan' },
       admin: { position: 'sidebar' },
     },
+    ...signInFields,
   ],
 }

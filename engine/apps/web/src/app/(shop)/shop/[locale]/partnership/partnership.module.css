@@ -47,7 +47,10 @@
 
 .heroActions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
+  align-items: center;
+  gap: var(--space-1) var(--space-5);
   margin-block-start: 1.3125rem;
 }
 

@@ -22,7 +22,8 @@
     "./shop/payments/http": "./src/shop/payments/http/index.ts",
     "./shop/fulfilment": "./src/shop/fulfilment/index.ts",
     "./shop/notify": "./src/shop/notify/index.ts",
-    "./jobs/retention": "./src/jobs/retention/index.ts"
+    "./jobs/retention": "./src/jobs/retention/index.ts",
+    "./partners": "./src/partners.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
