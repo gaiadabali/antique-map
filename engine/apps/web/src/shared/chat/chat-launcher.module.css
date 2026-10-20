@@ -22,18 +22,23 @@
   block-size: 3rem;
   padding: 0;
   font: var(--text-label);
-  /* a quiet paper button with a hairline: it floats over any print or footer and reads without
-     covering it in a slab of ink. Chat is never the page's one action, so no accent colour. */
-  color: var(--color-text);
-  background: var(--color-surface-raised);
-  border: var(--rule-hair) solid var(--color-border-strong);
+  /* The gallery: a quiet paper button with a hairline, floating over any print or footer without
+     covering it in a slab of ink. A site may set the knobs (the shop: the handoff's ink button,
+     umber under the pointer, one soft shadow); the fallbacks are the gallery's. */
+  color: var(--chat-launcher-ink, var(--color-text));
+  background: var(--chat-launcher-bg, var(--color-surface-raised));
+  border: var(--chat-launcher-border, var(--rule-hair) solid var(--color-border-strong));
   border-radius: var(--radius-pill);
+  box-shadow: var(--chat-launcher-shadow, none);
   cursor: pointer;
-  transition: background-color var(--dur-out) var(--ease);
+  transition:
+    background-color var(--dur-out) var(--ease),
+    color var(--dur-out) var(--ease);
 }
 
 .launcher:hover {
-  background: var(--color-surface-deep);
+  color: var(--chat-launcher-ink-hover, var(--chat-launcher-ink, var(--color-text)));
+  background: var(--chat-launcher-bg-hover, var(--color-surface-deep));
 }
 
 .launcher:focus-visible {
@@ -77,7 +82,7 @@
     inline-size: auto;
     block-size: auto;
     min-block-size: 3rem;
-    padding: var(--space-3) var(--space-5);
+    padding: var(--chat-launcher-pad, var(--space-3) var(--space-5));
   }
 
   .icon {

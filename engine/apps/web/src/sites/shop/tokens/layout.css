@@ -72,6 +72,13 @@
   --field-label-tracking: var(--shop-tracking-caps);
   --field-label-case: uppercase;
   --field-label-color: var(--color-text-muted);
+  /* the floating chat: the handoff's ink button, white words, umber under the pointer */
+  --chat-launcher-bg: var(--primitive-oei-ink);
+  --chat-launcher-ink: var(--primitive-oei-white);
+  --chat-launcher-bg-hover: var(--shop-umber);
+  --chat-launcher-border: 0;
+  --chat-launcher-shadow: 0 1px 2px #0000001f, 0 12px 28px -12px #00000059;
+  --chat-launcher-pad: 0 1.375rem;
 }
 
 /* On touch every control keeps a 44 px target, whatever the drawing's height. */
