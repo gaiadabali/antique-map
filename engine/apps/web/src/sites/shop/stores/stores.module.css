@@ -31,6 +31,21 @@
   color: var(--color-text-muted);
 }
 
+/* On this page an anchor lands an area's title just under the sticky header and area nav, and
+   the page glides there (the shell's own scroll padding is for the header alone). */
+:global(html):has(.page) {
+  --stores-nav: 3.1875rem;
+
+  scroll-padding-block-start: calc(var(--shop-header) + var(--stores-nav) + var(--space-4));
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global(html):has(.page) {
+    scroll-behavior: auto;
+  }
+}
+
 /* the areas: one row on hairlines, sticking under the header, scrolling inside itself */
 .areas {
   position: sticky;
@@ -40,7 +55,7 @@
   flex-wrap: nowrap;
   align-items: center;
   gap: 0.9375rem;
-  min-block-size: 3.1875rem;
+  min-block-size: var(--stores-nav, 3.1875rem);
   margin-inline: calc(-1 * var(--shop-gutter));
   padding-inline: var(--shop-gutter);
   background: var(--color-surface);
@@ -74,7 +89,6 @@
 
 .area {
   padding-block-start: var(--space-7);
-  scroll-margin-block-start: calc(var(--shop-header) + 3.1875rem + var(--space-4));
 }
 
 .areaHead {
@@ -125,13 +139,12 @@
 }
 
 @media (max-width: 56.25rem) {
-  .areas {
-    min-block-size: 2.6875rem;
+  :global(html):has(.page) {
+    --stores-nav: 2.6875rem;
   }
 
   .area {
     padding-block-start: var(--space-6);
-    scroll-margin-block-start: calc(var(--shop-header) + 2.6875rem + var(--space-3));
   }
 
   .areaTitle {

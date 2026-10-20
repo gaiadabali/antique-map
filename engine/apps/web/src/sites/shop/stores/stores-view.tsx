@@ -1,7 +1,8 @@
 /**
  * The stores page (13.2; the redesign of 2026-10-20, the handoff's `Stores`): the listing's
- * breadcrumb and head, the areas as a hairline sub-nav that sticks under the header, then each area
- * — its name with the count beside it — and its stores three to a row on hairlines: the name in the
+ * breadcrumb and head, the areas as a hairline sub-nav that sticks under the header (each links to
+ * the area's title by its name, `#amed`, and the page glides there to just under the nav), then
+ * each area — its name with the count beside it — and its stores three to a row on hairlines: the name in the
  * serif, the address and hours muted, a map link built from name and address only.
  */
 import type { SiteLocale } from '@engine/config/sites'
@@ -16,7 +17,22 @@ import styles from './stores.module.css'
 
 type Props = { readonly groups: readonly AreaGroup[]; readonly locale: SiteLocale }
 
-const anchor = (index: number): string => `area-${index}`
+/** An area's anchor from its name: `/stores#amed`, `/stores#nusa-dua`; unique on the page. */
+export function areaAnchors(names: readonly string[]): readonly string[] {
+  const seen = new Map<string, number>()
+  return names.map((name) => {
+    const base =
+      name
+        .normalize('NFKD')
+        .replace(/\p{M}/gu, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '') || 'area'
+    const count = (seen.get(base) ?? 0) + 1
+    seen.set(base, count)
+    return count === 1 ? base : `${base}-${count}`
+  })
+}
 
 function StoreCard({ store, t }: { store: StoreVM; t: StoresText }) {
   return (
@@ -45,6 +61,8 @@ export function StoresView({ groups, locale }: Props): React.ReactElement {
   const shell = shopShellText(locale)
   const total = groups.reduce((sum, group) => sum + group.stores.length, 0)
   const label = (group: AreaGroup) => group.area ?? t('stores.otherAreas')
+  const anchors = areaAnchors(groups.map(label))
+  const anchor = (index: number): string => anchors[index] ?? `area-${index}`
   return (
     <div className={styles.page}>
       <Crumb
@@ -69,14 +87,9 @@ export function StoresView({ groups, locale }: Props): React.ReactElement {
             ))}
           </nav>
           {groups.map((group, index) => (
-            <section
-              key={anchor(index)}
-              id={anchor(index)}
-              className={styles.area}
-              aria-labelledby={`${anchor(index)}-title`}
-            >
+            <section key={anchor(index)} className={styles.area} aria-labelledby={anchor(index)}>
               <div className={styles.areaHead}>
-                <h2 id={`${anchor(index)}-title`} className={styles.areaTitle}>
+                <h2 id={anchor(index)} className={styles.areaTitle}>
                   {label(group)}
                 </h2>
                 <span className={styles.count}>
