@@ -31,6 +31,15 @@ export const PRODUCT_KEYS = defineMessages({
   'product.signalWorkshop': 'Printed in our own workshop',
   'product.sku': 'SKU {sku}',
   'product.breadcrumbShop': 'Shop',
+  'product.enlarge': 'Enlarge',
+  'product.enlargeTitle': '{name}, enlarged',
+  'product.closeEnlarge': 'Close',
+  'product.views': 'Other views',
+  'product.view': 'View {n}',
+  'product.optionLabel': 'Option',
+  'product.finishHelp':
+    'Mounted: the print on a thick white mount board, ready to frame. Framed: the same, in a frame, ready to hang.',
+  'product.finishHelpLabel': 'What do mounted and framed mean?',
 })
 
 export type ProductMessageKey = keyof typeof PRODUCT_KEYS
@@ -72,9 +81,17 @@ export type VariantPickerText = {
   readonly refused: string
   readonly addingFailed: string
   readonly viewBag: string
+  /** The option row's label ("Option: A3"). */
+  readonly optionLabel: string
+  /** What the finishes mean, when the options are Mounted and Framed; `null` otherwise. */
+  readonly help: { readonly text: string; readonly label: string } | null
 }
 
-export function variantPickerText(text: ProductText): VariantPickerText {
+export function variantPickerText(
+  text: ProductText,
+  /** The options are the shop's finishes (Mounted, Framed): the row gets its "?". */
+  finishes = false,
+): VariantPickerText {
   return {
     options: text('product.options'),
     optionSoldOut: text('product.optionSoldOut'),
@@ -86,5 +103,9 @@ export function variantPickerText(text: ProductText): VariantPickerText {
     refused: text('product.refused'),
     addingFailed: text('product.addingFailed'),
     viewBag: text('product.viewBag'),
+    optionLabel: text('product.optionLabel'),
+    help: finishes
+      ? { text: text('product.finishHelp'), label: text('product.finishHelpLabel') }
+      : null,
   }
 }

@@ -1,176 +1,132 @@
-/* The shop product page, Ivory and ink: on the warm paper, the print large on its tile beside
-   the details on a desktop, the story below. 390 px first; tokens only. */
+/* The product page (the handoff's oei.css §product, King & McGaw §G): a 12-column grid, gutter
+   36; the gallery in columns 1–6, the details in 8–12, the story in 2–6. Every value is a token. */
 
-/* The full breakout width, as the home's wrap. */
+/* Breaks out of the shell's reading column to the full width. */
 .page {
   width: var(--page-wrap);
   margin-inline-start: 50%;
   translate: -50% 0;
-  padding: var(--space-6) var(--gutter) var(--section-space);
+  margin-block-start: calc(var(--space-8) - var(--space-7));
 }
 
-/* One column on a phone; the gallery and the details side by side from 64rem. */
 .layout {
   display: grid;
-  gap: var(--space-7);
-}
-
-@media (min-width: 64rem) {
-  .layout {
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    column-gap: calc(var(--grid-gap) * 1.5);
-    align-items: start;
-  }
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: 2.25rem;
+  padding: 0 2.25rem var(--space-8);
 }
 
 .gallery {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  min-width: 0;
+  grid-column: 1 / 7;
+  min-inline-size: 0;
 }
 
-/* The lead: a wall of stone the width of its column, 4 : 5 on a phone and never taller than the
-   screen, the print hung in it at its own shape. */
-.lead {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  inline-size: 100%;
-  container-type: inline-size;
-}
-
-.lead .leadTile {
-  aspect-ratio: auto;
-  block-size: min(84svh, 125cqi);
-}
-
-/* On a phone the wall runs edge to edge (the print is the page's first word); the thumbnails and
-   the details stay inside the gutter. */
-@media (max-width: 63.99rem) {
-  .lead {
-    inline-size: calc(100% + 2 * var(--gutter));
-    margin-inline: calc(-1 * var(--gutter));
-  }
-
-  .lead .mockupNote {
-    padding-inline: var(--gutter);
-  }
-}
-
-/* The details: held clear of the sticky header (5.5rem) while the gallery scrolls past. */
 .copy {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  min-width: 0;
+  grid-column: 8 / 13;
+  min-inline-size: 0;
 }
 
-@media (min-width: 64rem) {
-  .copy {
-    position: sticky;
-    top: calc(5.5rem + var(--space-6));
-    align-self: start;
-    max-inline-size: 32rem;
-  }
-}
-
-.proof {
-  margin-block-start: var(--space-4);
-  padding-block-start: var(--space-5);
-  border-block-start: var(--rule-hair) solid var(--color-border);
-}
-
-.category {
-  align-self: flex-start;
-  font: var(--text-label);
-  color: var(--color-text-muted);
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
-  text-decoration-thickness: var(--rule-hair);
-}
-
-.category:focus-visible {
-  outline: var(--focus-width) solid var(--color-focus);
-  outline-offset: var(--space-1);
-}
-
-/* Two selectors deep: the shell's `.site-main h1` sets its own font and margin. */
-.copy .name {
-  /* the print is the page's hero: its name is set at section-title size, not display size */
-  font: var(--text-h2);
-  letter-spacing: var(--tracking-h1);
-  color: var(--color-text);
-  margin: var(--space-1) 0 0;
+.name {
+  max-inline-size: 30.8125rem;
+  margin: 0;
+  font: var(--shop-title-product);
   text-wrap: balance;
 }
 
-.meta {
-  font: var(--text-small);
-  color: var(--color-text-muted);
-  margin: 0;
-}
-
-/* A synthetic image's label, under its tile. */
-.mockupNote {
-  font: var(--text-caption);
-  color: var(--color-text-muted);
-}
-
-/* The other views: small square tiles in a row under the lead print. */
-.thumbs {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.thumb {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  inline-size: clamp(5.5rem, 22%, 7rem);
-}
-
-/* The story across the width: a hairline above, its head at left, the words at right on a desktop. */
-.story {
-  display: grid;
-  gap: var(--space-5) var(--grid-gap);
-  margin-block-start: var(--section-space);
-  padding-block-start: var(--space-7);
-  border-block-start: var(--rule-hair) solid var(--color-border);
-}
-
-/* On the page's own two columns: the story's words start under the details. */
-@media (min-width: 64rem) {
-  .story {
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    column-gap: calc(var(--grid-gap) * 1.5);
-    align-items: start;
-  }
-}
-
-.story .storyHead {
-  margin-block-end: 0;
-}
-
-.storyText {
-  font: var(--text-body-large);
+.category {
+  display: inline-block;
+  margin-block-start: var(--space-3);
+  font: var(--shop-title-sub);
+  font-size: 1.625rem;
+  line-height: 1.875rem;
   color: var(--color-text);
-  margin: 0;
-  max-inline-size: var(--measure-text);
+  text-decoration: none;
+}
+
+a.category:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  text-decoration-thickness: var(--rule-hair);
+}
+
+.meta {
+  margin: var(--space-3) 0 0;
+  font: var(--shop-text-caps);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
 }
 
 .delivery {
-  font: var(--text-small);
-  color: var(--color-text-muted);
-  margin: 0;
+  margin: 2.25rem 0 0;
+  font: var(--shop-text-read);
 }
 
 .original {
-  font: var(--text-small);
+  margin: var(--space-4) 0 0;
+  font: var(--shop-text-body);
   color: var(--color-text-muted);
+}
+
+.proof {
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  list-style: none;
+  border-block-start: var(--rule-hair) solid var(--shop-rule-mid);
+}
+
+.proof li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  min-block-size: 3.9375rem;
+  padding-block: var(--space-4);
+  border-block-end: var(--rule-hair) solid var(--shop-rule-mid);
+  font: var(--shop-text-read);
+}
+
+.proof svg {
+  inline-size: 0.75rem;
+  block-size: 0.75rem;
+}
+
+.story {
+  grid-column: 2 / 7;
+  padding-block-start: var(--space-8);
+}
+
+.storyTitle {
   margin: 0;
+  font: var(--shop-title-about);
+}
+
+.storyText {
+  margin: var(--space-5) 0 0;
+  font: var(--shop-text-read);
+  white-space: pre-line;
+}
+
+@media (max-width: 56.25rem) {
+  .page {
+    margin-block-start: calc(var(--space-6) - var(--space-7));
+  }
+
+  .layout {
+    display: block;
+    padding: 0 1.125rem 9rem;
+  }
+
+  .name {
+    margin-block-start: var(--space-7);
+  }
+
+  .category {
+    font-size: 1.5rem;
+    line-height: 1.75rem;
+  }
+
+  .story {
+    padding-block-start: var(--space-7);
+  }
 }

@@ -1,75 +1,121 @@
-/* The product page's buying block: options as square chips, the price, Add to bag. 390 px first;
-   tokens only. */
+/* The product page's buying block (the handoff's oei.css §product, K&M §G): the price, the ruled
+   option row with its ringed chips, the 60 px Add to bag (a white bar at the screen's foot on a
+   phone), the stock line. Every value is a token. */
 
-/* The buying block stands apart from the name above it: air first, then price, options, button. */
 .picker {
   display: flex;
   flex-direction: column;
-  gap: var(--space-4);
-  margin-block-start: var(--space-5);
+}
+
+.price {
+  margin: var(--space-3) 0 0;
+  font: var(--shop-text-read);
+  font-variant-numeric: var(--numeric-tabular);
 }
 
 .options {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-  border: none;
-  margin: 0;
-  padding: 0;
+  margin-block-start: var(--space-7);
+  padding-block: var(--space-4);
+  border-block: var(--rule-hair) solid var(--shop-rule-mid);
 }
 
-.optionsLegend {
-  font: var(--text-label);
-  color: var(--color-text-muted);
-  padding: 0;
-  margin-bottom: var(--space-1);
+.optionRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.legend {
+  font: var(--shop-text-read);
+}
+
+.chosen {
+  color: var(--color-text);
+}
+
+.help summary {
+  display: grid;
+  place-items: center;
+  inline-size: 1.5rem;
+  block-size: 1.5rem;
+  margin-block-start: var(--space-1);
+  border: var(--rule-hair) solid var(--shop-rule-mid);
+  font: var(--shop-text-caps);
+  list-style: none;
+  cursor: help;
+}
+
+.help summary::-webkit-details-marker {
+  display: none;
+}
+
+.help[open] summary {
+  border-color: var(--color-text);
+}
+
+.help p {
+  position: absolute;
+  inset-inline: 0;
+  z-index: 2;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: var(--rule-hair) solid var(--color-text);
+  font: var(--shop-text-body);
+}
+
+.optionRow {
+  position: relative;
 }
 
 .optionList {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-2);
+  gap: var(--space-1);
+  margin-block-start: var(--space-3);
 }
 
-/* A square chip on the field's colour; chosen, it turns to ink (the shared FacetChip look). */
+/* a chip: a hairline at rest, ink under the pointer, a double ring when chosen */
 .option {
   position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-4);
-  font: var(--text-small);
-  color: var(--color-text);
-  background: var(--color-field);
-  border: 0;
-  border-radius: 0;
-  min-height: 44px;
-  min-width: 44px;
+  min-block-size: 2.25rem;
+  padding: 0 0.875rem;
+  background: var(--color-surface);
+  box-shadow: inset 0 0 0 var(--rule-hair) var(--shop-rule-mid);
+  font: var(--shop-text-body);
+  white-space: nowrap;
   cursor: pointer;
-  transition: background-color var(--dur-out) var(--ease);
+  transition: box-shadow var(--dur-out) var(--ease);
 }
 
 .option:hover {
-  background: var(--color-field-active);
-}
-
-.optionInput {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
+  box-shadow: inset 0 0 0 var(--rule-hair) var(--color-text);
 }
 
 .optionChosen,
 .optionChosen:hover {
-  background: var(--color-accent);
-  color: var(--color-accent-contrast);
+  box-shadow:
+    inset 0 0 0 var(--rule-hair) var(--color-text),
+    inset 0 0 0 0.3125rem var(--color-surface),
+    inset 0 0 0 0.375rem var(--color-text);
 }
 
-.option:has(.optionInput:focus-visible) {
+.option:has(:focus-visible) {
   outline: var(--focus-width) solid var(--color-focus);
-  outline-offset: var(--space-1);
+  outline-offset: 2px;
+}
+
+/* the radio itself stays in the tab order and the accessibility tree, drawn by its label */
+.optionInput {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  cursor: inherit;
 }
 
 .optionSoldOut {
@@ -77,68 +123,104 @@
   cursor: not-allowed;
 }
 
-.optionLabel {
-  display: inline-flex;
-  align-items: center;
+.optionSoldOut:hover {
+  box-shadow: inset 0 0 0 var(--rule-hair) var(--shop-rule-mid);
 }
 
 .optionState {
-  font: var(--text-caption);
-  color: var(--color-text-muted);
+  font: var(--shop-text-caps);
+  font-size: 0.625rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-/* The price leads the picker; figures in the display face at h3 (the chosen variant's, from the server). */
-.price {
-  order: -1;
-  font: var(--text-h3);
-  font-size: 1.75rem;
-  font-variant-numeric: var(--numeric-tabular);
-  color: var(--color-text);
-  margin: 0;
+.optionLabel {
+  pointer-events: none;
 }
 
-.buyRow {
+.buyBar {
+  margin-block-start: var(--space-5);
+}
+
+.add {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  inline-size: 100%;
+  block-size: 3.75rem;
+  border: var(--rule-hair) solid var(--color-action);
+  background: var(--color-action);
+  color: var(--color-action-contrast);
+  font: var(--shop-text-read);
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-out) var(--ease),
+    border-color var(--dur-out) var(--ease);
 }
 
-/* Sold out: no faded bronze slab, a quiet outline that says so (muted ink 5.9:1 on the paper). */
-.buyRow .addSoldOut {
-  opacity: 1;
-  background: transparent;
-  border-color: var(--color-border-strong);
+.add svg {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+
+.add:hover:not(:disabled) {
+  background: var(--color-action-hover);
+  border-color: var(--color-action-hover);
+}
+
+.add:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.add:disabled {
+  cursor: default;
+}
+
+.addSoldOut,
+.addSoldOut:disabled {
+  border-color: var(--shop-well);
+  background: var(--shop-well);
   color: var(--color-text-muted);
 }
 
-.buyRow .addButton {
-  width: 100%;
-  min-height: 56px;
-  height: auto;
+/* the e2e suite's hook (the last class on the button) */
+.addButton {
+  min-inline-size: 0;
 }
 
-.stock {
-  font: var(--text-small);
+.stock,
+.status {
+  margin: var(--space-3) 0 0;
+  font: var(--shop-text-caps);
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--color-text-muted);
 }
 
-.failed {
-  font: var(--text-small);
+.status {
+  text-transform: none;
+  letter-spacing: 0;
+  font: var(--shop-text-body);
   color: var(--color-text);
-  margin: 0;
 }
 
-.optionSoldOut:hover {
-  background: var(--color-field);
-}
+@media (max-width: 56.25rem) {
+  .buyBar {
+    position: fixed;
+    inset-inline: 0;
+    inset-block-end: 0;
+    z-index: 25;
+    margin: 0;
+    padding: var(--space-5) 1.125rem calc(var(--space-5) + env(safe-area-inset-bottom));
+    background: var(--color-surface);
+    box-shadow: var(--shop-sheet-shadow);
+  }
 
-/* A sold-out option still chosen reads in the ink chip's own type (AA), its state included. */
-.optionChosen.optionSoldOut,
-.optionChosen.optionSoldOut:hover,
-.optionChosen .optionState {
-  color: var(--color-accent-contrast);
-}
-
-.optionChosen.optionSoldOut:hover {
-  background: var(--color-accent);
+  .add {
+    block-size: 4rem;
+  }
 }

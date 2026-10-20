@@ -1,15 +1,18 @@
 'use client'
 
 /**
- * The variant picker (6.1.b, 6.1.c; EXPERIENCE-SHOP.md §4): each variant dimension is a real
- * radio group, the price updates to the chosen variant, and an option whose every variant is
- * sold out stays visible marked "Sold out" — never a silent grey. The prices arrive preformatted
- * from the server (the server formats, the client never computes); the button posts to the real
- * bag's `addToBagAction`, which refuses an out-of-stock product or variant on the server.
+ * The variant picker (6.1.b, 6.1.c; the redesign of 2026-10-20, the handoff's King & McGaw option
+ * rows): the price, then the options as one ruled row — "Option: chosen" with a "?" when the
+ * options are the shop's finishes — whose choices are a real radio group drawn as chips (the chosen
+ * one ringed); an option whose every variant is sold out stays visible marked "Sold out", never a
+ * silent grey. Then the 60 px Add to bag, which on a phone sits in a white bar fixed to the foot of
+ * the screen from the first paint, and the stock line. The prices arrive preformatted from the
+ * server (the server formats, the client never computes); the button posts to the real bag's
+ * `addToBagAction`, which refuses an out-of-stock product or variant on the server.
  */
 import { useActionState, useState } from 'react'
 
-import { Button, TextLink } from '../../../shared/ui'
+import { TextLink } from '../../../shared/ui'
 import { addToBagAction } from '../../../server/shop/bag/actions'
 import type { VariantPickerText } from './copy'
 import styles from './picker.module.css'
@@ -49,10 +52,11 @@ export function VariantPicker({
   const priceText = chosenVariant?.priceText ?? productPriceText
   const canAdd = available && (variants.length === 0 || (chosenVariant?.available ?? false))
   const legendId = `variant-${sku}-legend`
+  const added = state?.outcome === 'added' || state?.outcome === 'updated'
   const message =
     state === null
       ? null
-      : state.outcome === 'added' || state.outcome === 'updated'
+      : added
         ? text.added
         : state.outcome === 'capped'
           ? text.capped
@@ -64,11 +68,21 @@ export function VariantPicker({
     <form className={styles.picker} action={add}>
       <input type="hidden" name="productId" value={productId} />
       <input type="hidden" name="qty" value={1} />
+      {priceText !== null && <p className={styles.price}>{priceText}</p>}
+
       {variants.length > 0 && (
-        <fieldset className={styles.options}>
-          <legend id={legendId} className={styles.optionsLegend}>
-            {text.options}
-          </legend>
+        <div className={styles.options}>
+          <div className={styles.optionRow}>
+            <span id={legendId} className={styles.legend}>
+              {text.optionLabel}: <span className={styles.chosen}>{chosenVariant?.label}</span>
+            </span>
+            {text.help !== null && (
+              <details className={styles.help}>
+                <summary aria-label={text.help.label}>?</summary>
+                <p>{text.help.text}</p>
+              </details>
+            )}
+          </div>
           <div className={styles.optionList} role="radiogroup" aria-labelledby={legendId}>
             {variants.map((variant) => (
               <label
@@ -97,31 +111,41 @@ export function VariantPicker({
               </label>
             ))}
           </div>
-        </fieldset>
+        </div>
       )}
 
-      {priceText !== null && <p className={styles.price}>{priceText}</p>}
-
-      {/* `data-chat-clear`: the floating chat button rises above this row on a phone. */}
-      <div className={styles.buyRow} data-chat-clear>
-        <Button
+      {/* `data-chat-clear`: the floating chat button rises above this bar on a phone. */}
+      <div className={styles.buyBar} data-chat-clear>
+        <button
           type="submit"
-          variant="primary"
           // `addButton` last: the e2e suite finds a sold-out product by its class ending the list.
-          className={[canAdd ? '' : styles.addSoldOut, styles.addButton].filter(Boolean).join(' ')}
-          disabled={!canAdd}
-          loading={pending}
+          className={[styles.add, canAdd ? '' : styles.addSoldOut, styles.addButton]
+            .filter(Boolean)
+            .join(' ')}
+          disabled={!canAdd || pending}
+          aria-busy={pending || undefined}
         >
+          {added && canAdd ? (
+            <svg
+              viewBox="0 0 16 16"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              aria-hidden="true"
+            >
+              <path d="m3 8.5 3 3 7-7" />
+            </svg>
+          ) : null}
           {canAdd ? text.addToBag : text.outOfStock}
-        </Button>
-        <span className={styles.stock} aria-live="polite">
-          {canAdd ? text.inStock : text.outOfStock}
-        </span>
+        </button>
       </div>
+      <p className={styles.stock} aria-live="polite">
+        {canAdd ? text.inStock : text.outOfStock}
+      </p>
       {message !== null && (
-        <p className={styles.failed} role="status" aria-live="polite">
+        <p className={styles.status} role="status" aria-live="polite">
           {message}
-          {(state?.outcome === 'added' || state?.outcome === 'updated') && (
+          {added && (
             <>
               {' '}
               <TextLink href={bagHref}>{text.viewBag}</TextLink>

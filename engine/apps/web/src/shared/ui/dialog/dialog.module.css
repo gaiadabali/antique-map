@@ -1,5 +1,6 @@
 .dialog {
-  width: min(560px, calc(100% - 2 * var(--gutter)));
+  /* a caller may widen it (the shop's Enlarge); the fallback is every other dialog's */
+  width: var(--dialog-width, min(560px, calc(100% - 2 * var(--gutter))));
   max-height: calc(100dvh - 2 * var(--gutter));
   padding: 0;
   margin: auto;
