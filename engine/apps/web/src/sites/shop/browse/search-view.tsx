@@ -1,13 +1,15 @@
 /**
- * The search page's results (6.1.b; EXPERIENCE-SHOP.md §4; Ivory and ink): the words as the
- * heading on the paper, then the same cards and grid as the listing. No category tabs here: the
- * search is over the whole shop. It renders inside the page's <Suspense>, so the shell answers while
- * the query runs.
+ * The search page's results (the redesign of 2026-10-20): the breadcrumb, the words as the title
+ * with the count raised beside it, then the same framed cards and grid as the listing. No category
+ * tabs here: the search is over the whole shop. It renders inside the page's <Suspense>, so the
+ * shell answers while the query runs.
  */
 import type { SiteLocale } from '@engine/config/sites'
+import { createHref, SITES } from '@engine/config/sites'
 
 import type { ListingVM, ProductCardVM } from '../../../server/shop/catalogue/view-models'
-import { SectionHead } from '../../../shared/ui'
+import { shopShellText } from '../shell/shell-messages'
+import { Crumb } from '../ui/crumb'
 import { browseText } from './copy'
 import styles from './browse.module.css'
 import { ProductCard } from './product-card'
@@ -28,34 +30,36 @@ export function SearchView({
   readonly productHref: (product: ProductCardVM) => string
 }): React.ReactElement {
   const text = browseText(locale)
+  const shell = shopShellText(locale)
   return (
     <section className={styles.browse} aria-labelledby="search-title">
-      <SectionHead
-        level={1}
-        id="search-title"
-        className={styles.head}
-        title={<>“{query}”</>}
-        lede={
-          listing.items.length > 0 ? text('browse.results', { count: listing.total }) : undefined
-        }
+      <Crumb
+        homeHref={createHref(SITES.shop)('home', {}, locale)}
+        homeLabel={shell('shell.shop.home')}
+        label={shell('shell.shop.breadcrumb')}
+        steps={[{ label: text('search.title') }]}
       />
+      <div className={`${styles.head} ${styles.searchHead}`}>
+        <h1 id="search-title" className={styles.title}>
+          “{query}”
+          {listing.items.length > 0 && <sup className={styles.total}>({listing.total})</sup>}
+        </h1>
+      </div>
       {listing.items.length === 0 ? (
         <p className={styles.empty}>{text('search.empty', { query })}</p>
       ) : (
-        <>
-          <ul className={styles.grid}>
-            {listing.items.map((product, index) => (
-              <li key={product.id}>
-                <ProductCard
-                  product={product}
-                  locale={locale}
-                  href={productHref(product)}
-                  lead={index < LEAD_CARDS}
-                />
-              </li>
-            ))}
-          </ul>
-        </>
+        <ul className={styles.grid}>
+          {listing.items.map((product, index) => (
+            <li key={product.id}>
+              <ProductCard
+                product={product}
+                locale={locale}
+                href={productHref(product)}
+                lead={index < LEAD_CARDS}
+              />
+            </li>
+          ))}
+        </ul>
       )}
     </section>
   )

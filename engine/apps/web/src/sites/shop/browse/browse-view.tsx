@@ -1,8 +1,10 @@
 /**
- * The browse listing (6.1.b; EXPERIENCE-SHOP.md §4; Ivory and ink): a calm head on the paper, one
- * bar with the category tabs and the sort links, then the prints on even tiles and the pages. Every
- * control is a link, so browsing works without JavaScript and never prefetches; the state in each
- * URL is canonicalListing()'s, so one state has one address.
+ * The browse listing (the redesign of 2026-10-20, the handoff's Poster Club listing): a breadcrumb,
+ * the title with its count raised beside it and one line of description, the category tabs on a
+ * hairline sub-nav, a sticky bar with the sort as a segmented control, the framed cards four to a
+ * row (two on a phone), then the boxed pager and the count. No filter panel: the drawing has none.
+ * Every control is a link, so browsing works without JavaScript and never prefetches; the state in
+ * each URL is canonicalListing()'s, so one state has one address.
  */
 import type { SiteLocale } from '@engine/config/sites'
 import { canonicalListing, createHref, listingSearch, SITES } from '@engine/config/sites'
@@ -12,7 +14,9 @@ import type {
   ListingVM,
   ProductCardVM,
 } from '../../../server/shop/catalogue/view-models'
-import { Pagination, SectionHead } from '../../../shared/ui'
+import { Pagination } from '../../../shared/ui'
+import { shopShellText } from '../shell/shell-messages'
+import { Crumb } from '../ui/crumb'
 import { browseText } from './copy'
 import styles from './browse.module.css'
 import { ProductCard } from './product-card'
@@ -40,6 +44,7 @@ export function BrowseView({
   title,
 }: BrowseViewProps): React.ReactElement {
   const text = browseText(locale)
+  const shell = shopShellText(locale)
   const href = createHref(SITES.shop)
   // A state's one address: canonical, page 1 and the default sort left out.
   const listingHref = (sort?: typeof listing.sort, page?: number): string => {
@@ -51,46 +56,54 @@ export function BrowseView({
     href('product', { slug: product.slug }, locale)
   // Pagination turns pages without touching the sort.
   const pageHref = (page: number): string => listingHref(listing.sort, page)
+  const steps =
+    categorySlug === undefined
+      ? [{ label: title }]
+      : [{ label: text('browse.title'), href: href('browse', {}, locale) }, { label: title }]
   return (
     <section className={styles.browse} aria-labelledby="browse-title">
-      <SectionHead
-        level={1}
-        id="browse-title"
-        className={styles.head}
-        title={title}
-        lede={
-          categorySlug === undefined
-            ? text('browse.description')
-            : listing.items.length > 0
-              ? text('browse.results', { count: listing.total })
-              : undefined
-        }
+      <Crumb
+        homeHref={href('home', {}, locale)}
+        homeLabel={shell('shell.shop.home')}
+        label={shell('shell.shop.breadcrumb')}
+        steps={steps}
       />
+      <div className={styles.head}>
+        <h1 id="browse-title" className={styles.title}>
+          {title}
+          <sup className={styles.total}>({listing.total})</sup>
+        </h1>
+        {categorySlug === undefined && (
+          <p className={styles.description}>{text('browse.description')}</p>
+        )}
+      </div>
 
-      <div className={styles.toolbar}>
-        <nav className={styles.tabs} aria-label={text('listing.category')}>
+      <nav className={styles.tabs} aria-label={text('listing.category')}>
+        <a
+          href={href('browse', {}, locale)}
+          aria-current={categorySlug === undefined ? 'page' : undefined}
+          className={styles.tab}
+        >
+          {text('browse.title')}
+        </a>
+        {categories.map((category) => (
           <a
-            href={href('browse', {}, locale)}
-            aria-current={categorySlug === undefined ? 'page' : undefined}
+            key={category.slug}
+            href={href('collection', { slug: category.slug }, locale)}
+            aria-current={category.slug === categorySlug ? 'page' : undefined}
             className={styles.tab}
           >
-            {text('browse.title')}
+            {category.label}
           </a>
-          {categories.map((category) => (
-            <a
-              key={category.slug}
-              href={href('collection', { slug: category.slug }, locale)}
-              aria-current={category.slug === categorySlug ? 'page' : undefined}
-              className={styles.tab}
-            >
-              {category.label}
-            </a>
-          ))}
-        </nav>
+        ))}
+      </nav>
 
+      <div className={styles.toolbar}>
         <div className={styles.sortRow}>
-          <span className={styles.sortLabel}>{text('listing.sortBy')}</span>
-          <ul className={styles.sorts}>
+          <span className={styles.sortLabel} id="browse-sort">
+            {text('listing.sortBy')}
+          </span>
+          <ul className={styles.sorts} aria-labelledby="browse-sort">
             {SORTS.map((sort) => (
               <li key={sort}>
                 <a
@@ -131,13 +144,11 @@ export function BrowseView({
                 ariaLabel={text('listing.pagination')}
                 previousLabel={text('listing.previous')}
                 nextLabel={text('listing.next')}
-                variant="quiet"
+                variant="boxed"
               />
             </div>
           )}
-          {categorySlug === undefined && (
-            <p className={styles.count}>{text('browse.results', { count: listing.total })}</p>
-          )}
+          <p className={styles.count}>{text('browse.results', { count: listing.total })}</p>
         </>
       )}
     </section>

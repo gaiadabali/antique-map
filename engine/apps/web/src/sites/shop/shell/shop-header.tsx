@@ -21,7 +21,8 @@ type Props = {
   readonly logo: ReactNode
   readonly links: readonly ShopNavLink[]
   readonly locales: ReactNode
-  readonly search: { readonly href: string; readonly label: string }
+  /** The search toggle (`./search-bar`). */
+  readonly search: ReactNode
   readonly bag: ReactNode
   /** Clear over the hero until the page scrolls (the home). */
   readonly overlay?: boolean
@@ -116,18 +117,7 @@ export function ShopHeader({
       <div className={styles.logo}>{logo}</div>
       <div className={styles.right}>
         <div className={styles.locales}>{locales}</div>
-        <a className={styles.icon} href={search.href} aria-label={search.label}>
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            aria-hidden="true"
-          >
-            <circle cx="11" cy="11" r="7" />
-            <path d="m20 20-4-4" strokeLinecap="round" />
-          </svg>
-        </a>
+        {search}
         {bag}
       </div>
 

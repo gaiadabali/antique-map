@@ -64,6 +64,8 @@
   --print-frame-color: var(--shop-frame);
   --print-mount-pad: var(--shop-mount-pad);
   --print-mount: var(--shop-mount);
+  --pager-rule: var(--shop-rule-mid);
+  --pager-font: 400 0.75rem / 1 var(--font-body);
 }
 
 /* On touch every control keeps a 44 px target, whatever the drawing's height. */

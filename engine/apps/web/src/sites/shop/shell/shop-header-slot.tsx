@@ -13,6 +13,7 @@ import { headers } from 'next/headers'
 import { isCurrent, navItems } from '../../../shell/primary-nav'
 import { siteHref, type ShellText } from '../../../shell/site'
 import { BagLink } from './bag-link'
+import { SearchBar } from './search-bar'
 import { ShopHeader } from './shop-header'
 import { shopShellText } from './shell-messages'
 
@@ -39,7 +40,15 @@ export async function ShopHeaderSlot({ locale, homeHref, logo, locales, t }: Pro
       logo={logo}
       links={links}
       locales={locales}
-      search={{ href: href('search', { q: '' }, locale), label: words('shell.shop.search') }}
+      search={
+        <SearchBar
+          action={href('search', { q: '' }, locale)}
+          openLabel={words('shell.shop.search')}
+          fieldLabel={words('shell.shop.searchField')}
+          submitLabel={words('shell.shop.searchSubmit')}
+          closeLabel={words('shell.shop.searchClose')}
+        />
+      }
       bag={<BagLink href={href('cart', {}, locale)} t={words} />}
       overlay={here === home}
       navLabel={t('shell.menu')}

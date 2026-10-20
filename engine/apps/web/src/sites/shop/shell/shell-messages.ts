@@ -10,8 +10,13 @@ import { SITE_COPY } from '../../../shell/copy'
 
 export const SHOP_SHELL_MESSAGES = defineMessages({
   'shell.shop.search': 'Search',
+  'shell.shop.searchField': 'Search the shop',
+  'shell.shop.searchSubmit': 'Search',
+  'shell.shop.searchClose': 'Close search',
   'shell.shop.bag': 'Bag',
   'shell.shop.bagCount': 'Bag, {count} items',
+  'shell.shop.home': 'Home',
+  'shell.shop.breadcrumb': 'Breadcrumb',
 })
 
 export type ShopShellMessageKey = keyof typeof SHOP_SHELL_MESSAGES

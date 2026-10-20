@@ -10,9 +10,10 @@ export type PaginationProps = {
   /**
    * `quiet` squares the page links, keeps them unfilled (the current page under a dark hairline)
    * and gives each a 44 px target; on a phone the numbers sit on their own row above Previous and
-   * Next. The luxury pass's pager (DESIGN.md).
+   * Next. The luxury pass's pager (DESIGN.md). `boxed` joins the numbers in outlined squares,
+   * the current one filled (the shop's pager since its redesign of 2026-10-20).
    */
-  readonly variant?: 'default' | 'quiet'
+  readonly variant?: 'default' | 'quiet' | 'boxed'
 }
 
 /** Numbered pagination using plain <a> (prefetching a storefront page costs a database read). */
@@ -33,7 +34,7 @@ export function Pagination({
   return (
     <nav
       aria-label={ariaLabel}
-      className={[styles.nav, variant === 'quiet' && styles.quiet].filter(Boolean).join(' ')}
+      className={[styles.nav, variant !== 'default' && styles[variant]].filter(Boolean).join(' ')}
     >
       <a
         href={prevDisabled ? getHref(currentPage) : getHref(currentPage - 1)}

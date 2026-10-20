@@ -106,9 +106,8 @@ describe('the listing card labels a synthetic lead image', () => {
       }),
     )
     expect(markup).toContain('srcSet="https://m/320.webp 320w, https://m/640.webp 640w"')
-    expect(markup).toContain(
-      'sizes="(min-width: 110rem) 18vw, (min-width: 75rem) 23vw, (min-width: 48rem) 31vw, 47vw"',
-    )
+    // four cards to a row from 900 px, two below (the redesign of 2026-10-20)
+    expect(markup).toContain('sizes="(max-width: 56.25rem) 47vw, 24vw"')
   })
 
   it('adds nothing for a photograph', () => {

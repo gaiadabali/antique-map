@@ -55,6 +55,11 @@
   white-space: nowrap;
 }
 
+/* a Price inside keeps the row's 13 px */
+.aside > * {
+  font: inherit;
+}
+
 .meta {
   justify-content: flex-start;
   flex-wrap: wrap;
