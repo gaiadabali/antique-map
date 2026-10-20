@@ -1,12 +1,16 @@
 /**
- * The stores page (13.2; Ivory and ink): a head on the paper, one quiet row of area links, then
- * each area's stores as a ruled running list. Each store is a row with its name, address, hours
- * and a map link built from name and address only.
+ * The stores page (13.2; the redesign of 2026-10-20, the handoff's `Stores`): the listing's
+ * breadcrumb and head, the areas as a hairline sub-nav that sticks under the header, then each area
+ * — its name with the count beside it — and its stores three to a row on hairlines: the name in the
+ * serif, the address and hours muted, a map link built from name and address only.
  */
 import type { SiteLocale } from '@engine/config/sites'
+import { createHref, SITES } from '@engine/config/sites'
 
 import type { AreaGroup, StoreVM } from '../../../server/shop/stores'
-import { SectionHead, TextLink } from '../../../shared/ui'
+import { shopShellText } from '../shell/shell-messages'
+import { CapsLink } from '../ui/caps-link'
+import { Crumb } from '../ui/crumb'
 import { storesText, type StoresText } from './copy'
 import styles from './stores.module.css'
 
@@ -16,39 +20,43 @@ const anchor = (index: number): string => `area-${index}`
 
 function StoreCard({ store, t }: { store: StoreVM; t: StoresText }) {
   return (
-    <li className={styles.card}>
+    <li className={styles.store}>
       <h3 className={styles.name}>{store.name}</h3>
-      {store.address !== null && <p className={styles.address}>{store.address}</p>}
+      {store.address !== null && <p className={styles.line}>{store.address}</p>}
       {store.hours !== null && (
-        <p className={styles.hours}>
+        <p className={styles.line}>
           <span className={styles.hoursLabel}>{t('stores.hours')}</span> {store.hours}
         </p>
       )}
-      <TextLink
+      <CapsLink
         href={store.mapUrl}
         target="_blank"
         rel="noopener noreferrer"
         aria-label={t('stores.mapFor', { name: store.name })}
-        className={styles.map}
       >
         {t('stores.map')}
-      </TextLink>
+      </CapsLink>
     </li>
   )
 }
 
 export function StoresView({ groups, locale }: Props): React.ReactElement {
   const t = storesText(locale)
+  const shell = shopShellText(locale)
   const total = groups.reduce((sum, group) => sum + group.stores.length, 0)
   const label = (group: AreaGroup) => group.area ?? t('stores.otherAreas')
   return (
     <div className={styles.page}>
-      <SectionHead
-        level={1}
-        className={styles.head}
-        title={t('stores.title')}
-        lede={total > 0 ? t('stores.lede', { count: total }) : undefined}
+      <Crumb
+        homeHref={createHref(SITES.shop)('home', {}, locale)}
+        homeLabel={shell('shell.shop.home')}
+        label={shell('shell.shop.breadcrumb')}
+        steps={[{ label: t('stores.title') }]}
       />
+      <div className={styles.head}>
+        <h1 className={styles.title}>{t('stores.title')}</h1>
+        {total > 0 && <p className={styles.lede}>{t('stores.lede', { count: total })}</p>}
+      </div>
       {total === 0 ? (
         <p className={styles.empty}>{t('stores.empty')}</p>
       ) : (
@@ -67,12 +75,14 @@ export function StoresView({ groups, locale }: Props): React.ReactElement {
               className={styles.area}
               aria-labelledby={`${anchor(index)}-title`}
             >
-              <SectionHead
-                id={`${anchor(index)}-title`}
-                className={styles.areaHead}
-                title={label(group)}
-                lede={t('stores.count', { count: group.stores.length })}
-              />
+              <div className={styles.areaHead}>
+                <h2 id={`${anchor(index)}-title`} className={styles.areaTitle}>
+                  {label(group)}
+                </h2>
+                <span className={styles.count}>
+                  {t('stores.count', { count: group.stores.length })}
+                </span>
+              </div>
               <ul className={styles.grid}>
                 {group.stores.map((store) => (
                   <StoreCard key={`${store.name}|${store.address ?? ''}`} store={store} t={t} />
