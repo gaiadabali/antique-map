@@ -26,7 +26,7 @@ export function sisterHref(sister: SiteKey, locale: LocaleCode): string {
 
 type Column = { readonly title: string; readonly links: readonly NavItemSpec[] }
 
-export function columnsOf(site: SiteKey, locale: LocaleCode, t: ShellText): readonly Column[] {
+function columnsOf(site: SiteKey, locale: LocaleCode, t: ShellText): readonly Column[] {
   const href = siteHref(site)
   const page = (slug: string) => href('page', { slug }, locale)
   if (site === 'gallery') {

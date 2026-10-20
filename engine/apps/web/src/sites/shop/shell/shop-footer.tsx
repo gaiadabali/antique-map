@@ -1,15 +1,17 @@
 /**
- * The shop's footer (the redesign of 2026-10-20, the handoff's Poster Club skeleton): a warm band
- * with the stacked logo at the left and three link columns — Shop, About, Contact — centred in the
- * rest, then a white bar with the legal links and, at its right, the two-way bridge to the gallery
- * of originals. Contact is `site-settings` (WhatsApp, email, phone, the owner's social accounts),
- * or the lexicon's placeholder while it answers none. Every word is the shell's lexicon.
+ * The shop's footer (the redesign of 2026-10-20, the user's drawing of 2026-10-20): a warm band
+ * with the stacked logo at the left and two groups at the right — Explore (the header's four
+ * links) and Contact (WhatsApp, email, phone and the owner's social accounts from `site-settings`,
+ * or the lexicon's placeholder while it answers none) — each a small-capitals title over one row
+ * of links; then a white bar with Privacy and Terms at the left and, at the right, the two-way
+ * bridge to the gallery of originals. Every word is the shell's lexicon.
  */
 import type { LocaleCode } from '@engine/config/constants'
 
 import type { PublicSiteSettings } from '../../../server/site-settings'
 import { socialLinks } from '../../../shell/contact-block'
-import { columnsOf, sisterHref } from '../../../shell/site-footer'
+import { navItems } from '../../../shell/primary-nav'
+import { sisterHref } from '../../../shell/site-footer'
 import { siteHref, type ShellText } from '../../../shell/site'
 import styles from './shop-footer.module.css'
 
@@ -29,25 +31,23 @@ export function ShopFooter({ locale, logo, settings, t }: Props) {
         <div className={styles.logo}>
           <img src={logo} alt="" />
         </div>
-        <div className={styles.columns}>
-          {columnsOf('shop', locale, t).map((column) => (
-            <nav className={styles.column} key={column.title} aria-label={column.title}>
-              <h2 className={styles.title}>{column.title}</h2>
-              <ul>
-                {column.links.map((item) => (
-                  <li key={item.label}>
-                    <a href={item.href(locale)}>{t(item.label)}</a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-          ))}
-          <div className={styles.column}>
+        <div className={styles.groups}>
+          <nav className={styles.group} aria-label={t('footer.title.explore')}>
+            <h2 className={styles.title}>{t('footer.title.explore')}</h2>
+            <ul className={styles.links}>
+              {navItems('shop').map((item) => (
+                <li key={item.label}>
+                  <a href={item.href(locale)}>{t(item.label)}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+          <div className={styles.group}>
             <h2 className={styles.title}>{t('shell.contact')}</h2>
             {contact.length === 0 ? (
               <p className={styles.line}>{t('shell.contactPlaceholder')}</p>
             ) : (
-              <ul>
+              <ul className={styles.links}>
                 {contact.map((link) => (
                   <li key={link.href}>
                     <a href={link.href} rel={link.rel}>
@@ -56,11 +56,6 @@ export function ShopFooter({ locale, logo, settings, t }: Props) {
                   </li>
                 ))}
               </ul>
-            )}
-            {settings.hours && (
-              <p className={styles.line}>
-                {t('shell.hours')}: {settings.hours}
-              </p>
             )}
           </div>
         </div>
