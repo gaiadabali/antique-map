@@ -41,6 +41,9 @@ export const HOME_MESSAGES = defineMessages({
   'home.shop.tradeTitle': 'For shops, hotels and companies',
   'home.shop.tradeBody':
     'More than 100 shops across Indonesia already stock Old East Indies. We also make custom gifts for hotels and corporate orders — Bali-themed, printed from the antique originals we hold.',
+  'home.shop.tradeLead': 'More than 100 shops across Indonesia already stock Old East Indies.',
+  'home.shop.tradeBodyMore':
+    'We also make custom gifts for hotels and corporate orders — Bali-themed, printed from the antique originals we hold.',
   'home.shop.tradeCta': 'See partnership options',
   'home.shop.tradeFact1': '100+ shops supplied',
   'home.shop.tradeFact2': 'Printed in our own workshop',
@@ -50,6 +53,9 @@ export const HOME_MESSAGES = defineMessages({
   'home.shop.originalsBody':
     'Those originals are examined and certified by our curator, and offered to collectors at Antique Maps Indonesia — our sister gallery.',
   'home.shop.originalsCta': 'See the originals',
+  'home.shop.originalsLabel': 'Antique Maps Indonesia',
+  'home.shop.railPrevious': 'Previous',
+  'home.shop.railNext': 'Next',
   'home.shop.posterOriginal': 'An original, beside its print (placeholder)',
   // Browse has no island or room facet yet (qa 4.qa, finding F4); every chip links to the shop
   // until one does. The names are placeholder until the owner's content.

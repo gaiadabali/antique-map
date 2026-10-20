@@ -1,0 +1,130 @@
+/* The shop's footer (the handoff's oei.css §footer): a warm band, logo | 3 columns, then a white
+   bar. Every value is a token. */
+
+.footer {
+  margin-block-start: auto;
+}
+
+.band {
+  display: grid;
+  grid-template-columns: 17.4375rem minmax(0, 1fr);
+  gap: var(--space-7);
+  padding: 2.6875rem var(--shop-gutter) var(--space-7);
+  background: var(--shop-warm);
+}
+
+.logo img {
+  display: block;
+  block-size: var(--shop-footer-logo);
+  inline-size: auto;
+}
+
+.columns {
+  display: flex;
+  justify-content: center;
+  gap: 4.6875rem;
+  padding-inline: var(--space-7);
+}
+
+.column {
+  min-inline-size: 0;
+}
+
+.title {
+  margin: 0 0 var(--space-1);
+  font: var(--shop-text-caps);
+  font-size: 0.6875rem;
+  letter-spacing: var(--shop-tracking-caps);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.column ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.column a {
+  display: block;
+  font: var(--shop-text-meta);
+  line-height: 1.6875rem;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.column a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+}
+
+.line {
+  max-inline-size: 16rem;
+  margin: var(--space-1) 0 0;
+  font: var(--shop-text-meta);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  min-block-size: 2.375rem;
+  padding-inline: var(--shop-gutter);
+  background: var(--color-surface);
+  box-shadow: inset 0 var(--rule-hair) 0 var(--color-border);
+  font: var(--shop-text-caps);
+  font-weight: 400;
+}
+
+.bar a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.375rem;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.bar a:hover {
+  color: var(--color-text);
+}
+
+.sister {
+  margin-inline-start: auto;
+}
+
+@media (max-width: 56.25rem) {
+  .band {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    padding-block-start: var(--space-6);
+    padding-block-end: 0;
+  }
+
+  .columns {
+    flex-direction: column;
+    gap: 0;
+    padding: 0;
+    margin-inline: calc(-1 * var(--shop-gutter));
+  }
+
+  .column {
+    padding: var(--space-4) var(--shop-gutter);
+    box-shadow: inset 0 var(--rule-hair) 0 var(--shop-rule-mid);
+  }
+
+  .column a {
+    line-height: 2.75rem;
+  }
+
+  .bar {
+    flex-wrap: wrap;
+    gap: var(--space-1) var(--space-5);
+    padding-block: var(--space-2);
+  }
+
+  .sister {
+    margin-inline-start: 0;
+  }
+}

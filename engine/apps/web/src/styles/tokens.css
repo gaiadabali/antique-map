@@ -9,3 +9,4 @@
 @import '../shared/styles/tokens/semantic.css';
 @import '../sites/gallery/tokens/brand.css';
 @import '../sites/shop/tokens/brand.css';
+@import '../sites/shop/tokens/layout.css';

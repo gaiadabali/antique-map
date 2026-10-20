@@ -18,7 +18,7 @@ type ShellPart = {
 }
 
 /** The sister site's home on its own host: an absolute URL, or the path when no origin is known. */
-function sisterHref(sister: SiteKey, locale: LocaleCode): string {
+export function sisterHref(sister: SiteKey, locale: LocaleCode): string {
   const path = siteHref(sister)('home', {}, locale)
   const origin = siteOrigin(sister)
   return origin === null ? path : `${origin}${path}`
@@ -26,7 +26,7 @@ function sisterHref(sister: SiteKey, locale: LocaleCode): string {
 
 type Column = { readonly title: string; readonly links: readonly NavItemSpec[] }
 
-function columnsOf(site: SiteKey, locale: LocaleCode, t: ShellText): readonly Column[] {
+export function columnsOf(site: SiteKey, locale: LocaleCode, t: ShellText): readonly Column[] {
   const href = siteHref(site)
   const page = (slug: string) => href('page', { slug }, locale)
   if (site === 'gallery') {

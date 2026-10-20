@@ -109,6 +109,27 @@
   --primitive-heritage-foot-ink: #efe6d6; /* 14.5:1 */
   --primitive-heritage-foot-muted: #b8a58b; /* 7.5:1 */
 
+  /* Gallery white (the shop's redesign, 2026-10-20, replacing Heritage): the handoff's white page,
+     soft-black ink, grey wells under framed prints, one warm band colour, and the logo's umber
+     only where the pointer rests on the action. Contrast checked 2026-10-20: ink 14.2:1 and muted
+     6.4:1 on white, muted 5.7:1 on the warm band and 5.4:1 on the well; the control boundary
+     3.7:1 on white. */
+  --primitive-oei-white: #ffffff;
+  --primitive-oei-ink: #2b2b2b;
+  --primitive-oei-muted: #5f5f5f;
+  --primitive-oei-rule: #eaeaea;
+  --primitive-oei-rule-soft: #f2f2f2; /* a quiet hover fill, the shop's sub-nav rules */
+  --primitive-oei-rule-mid: #c9c9c9; /* decorative outlines: pager, swatch rings at rest */
+  --primitive-oei-rule-strong: #858585; /* a control's boundary, 3.7:1 */
+  --primitive-oei-well: #ebebeb; /* the wall a framed print hangs on */
+  --primitive-oei-well-hover: #e3e3e3;
+  --primitive-oei-warm: #f5f2ec; /* the hero's text half, the process band, the footer */
+  --primitive-oei-mount: #fbfaf7; /* the mount board inside a frame */
+  --primitive-oei-umber: #5d3c1d; /* the logo's ink: the action under the pointer, numerals */
+  --primitive-oei-umber-deep: #472c14;
+  --primitive-oei-shadow-print: 0 1px 1px #00000014, 0 10px 18px -10px #00000059;
+  --primitive-oei-shadow-lift: 0 2px 2px #00000014, 0 18px 28px -14px #00000066;
+
   /* a print hung on its tile: a soft, low shadow */
   --primitive-shadow-print: 0 1px 2px #0000001f, 0 10px 22px -6px #00000026;
   --primitive-shadow-print-lift: 0 2px 4px #00000024, 0 18px 32px -8px #0000002e;

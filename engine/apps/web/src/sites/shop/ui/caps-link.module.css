@@ -1,0 +1,21 @@
+.link,
+.caps {
+  font: var(--shop-text-caps);
+  letter-spacing: var(--shop-tracking-caps);
+  text-transform: uppercase;
+}
+
+.link {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 0.42em;
+  transition: color var(--dur-out) var(--ease);
+}
+
+.link:hover {
+  color: var(--color-text-muted);
+}

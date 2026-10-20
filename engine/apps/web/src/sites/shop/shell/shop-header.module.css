@@ -1,0 +1,253 @@
+/* The shop's header (the handoff's oei.css §header): 3 equal columns, sticky, a hairline under it;
+   clear over the home's hero until the page scrolls. Every value is a token. */
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  block-size: var(--shop-header);
+  padding-inline: var(--shop-gutter);
+  background: var(--color-surface);
+  box-shadow: inset 0 calc(-1 * var(--rule-hair)) 0 var(--color-border);
+  transition:
+    background-color var(--dur-in) var(--ease),
+    box-shadow var(--dur-in) var(--ease);
+}
+
+.header[data-clear] {
+  background: transparent;
+  box-shadow: inset 0 calc(-1 * var(--rule-hair)) 0 var(--shop-overlay-rule);
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.navList {
+  display: flex;
+  align-items: center;
+  gap: clamp(var(--space-2), 1.6vw, 0.9375rem);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navLink {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  font: var(--shop-text-caps);
+  letter-spacing: var(--shop-tracking-caps);
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--color-text);
+}
+
+.navLink::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0.6875rem;
+  block-size: var(--rule-hair);
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-in) var(--ease);
+}
+
+.navLink:hover::after,
+.navLink[aria-current='page']::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.logo {
+  justify-self: center;
+  line-height: 0;
+}
+
+.logo :global(.site-logo),
+.drawerLogo :global(.site-logo) {
+  block-size: var(--shop-logo);
+  inline-size: auto;
+  max-inline-size: none;
+}
+
+.logo :global(.site-brand) {
+  min-block-size: 0;
+}
+
+.right {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.locales {
+  margin-inline-end: var(--space-3);
+}
+
+.locales :global(.site-locales) ul,
+.drawerLocales :global(.site-locales) ul {
+  gap: var(--space-3);
+}
+
+.locales :global(.site-locales) a,
+.drawerLocales :global(.site-locales) a {
+  padding-inline: 0;
+  font: var(--shop-text-caps);
+  letter-spacing: var(--shop-tracking-caps);
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+.locales :global(.site-locales) a[aria-current='true'],
+.drawerLocales :global(.site-locales) a[aria-current='true'] {
+  text-decoration: underline;
+  text-underline-offset: 0.45em;
+}
+
+.icon {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  inline-size: 44px;
+  block-size: 44px;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.icon svg {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+
+.burger,
+.cross {
+  display: none;
+  place-items: center;
+  inline-size: 44px;
+  block-size: 44px;
+  margin-inline-start: calc(-1 * var(--space-3));
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.burger span {
+  display: block;
+  inline-size: 1.25rem;
+  block-size: 1.5px;
+  margin-block: 2px;
+  background: currentColor;
+}
+
+@media (max-width: 56.25rem) {
+  .nav,
+  .locales {
+    display: none;
+  }
+
+  .burger {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+/* The phone's drawer: a full white sheet, the links as serif rows on hairlines. */
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+  overflow-y: auto;
+}
+
+.drawerTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  block-size: var(--shop-header);
+  flex: none;
+  padding-inline: var(--shop-gutter);
+  box-shadow: inset 0 calc(-1 * var(--rule-hair)) 0 var(--color-border);
+}
+
+.drawerLogo {
+  line-height: 0;
+}
+
+.cross {
+  position: relative;
+  display: grid;
+  margin-inline: 0 calc(-1 * var(--space-3));
+}
+
+.cross span {
+  position: absolute;
+  inline-size: 1.25rem;
+  block-size: 1.5px;
+  background: currentColor;
+  rotate: 45deg;
+}
+
+.cross span + span {
+  rotate: -45deg;
+}
+
+.drawerNav ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.drawerNav a {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-4) var(--shop-gutter);
+  font: var(--shop-title-sub);
+  font-size: 1.375rem;
+  color: var(--color-text);
+  text-decoration: none;
+  box-shadow: inset 0 calc(-1 * var(--rule-hair)) 0 var(--color-border);
+}
+
+.drawerNav a::after {
+  content: '›';
+  font: var(--shop-text-body);
+  font-size: 1.125rem;
+  color: var(--color-text-muted);
+}
+
+.drawerNav a[aria-current='page'] {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: var(--rule-hair);
+}
+
+.drawerLocales {
+  margin-block-start: auto;
+  padding: var(--space-4) var(--shop-gutter) calc(var(--space-4) + env(safe-area-inset-bottom));
+  box-shadow: inset 0 var(--rule-hair) 0 var(--color-border);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .header,
+  .navLink::after {
+    transition: none;
+  }
+}

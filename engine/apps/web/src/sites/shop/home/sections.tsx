@@ -1,12 +1,13 @@
 /**
- * The shop home's last sections (12.3; Cobalt 19): the trade offer and the bridge to the originals.
- * The placeholder "sets" (walls in words, no picture, no link) were retired in phase 19: the
- * collections in "Shop by" carry the walls. Every word comes from the lexicon.
+ * The shop home's last sections (the redesign of 2026-10-20, the handoff's Poster Club story and
+ * editorial skeletons): the trade offer — its words at the left, two framed prints beside them —
+ * and the bridge to the originals, a framed print on the left half and the sister gallery's words
+ * on a warm right half. Every word is the lexicon.
  */
-import { Band, Button, ProofPoints, SectionHead } from '../../../shared/ui'
-
-import styles from './home.module.css'
+import { Caps, CapsLink } from '../ui/caps-link'
+import { FeaturedPrint } from './featured-print'
 import type { HomeText } from './home-messages'
+import styles from './sections.module.css'
 
 export type SectionProps = {
   readonly locale: 'en' | 'id'
@@ -20,45 +21,67 @@ export type SectionProps = {
 
 const FACTS = ['home.shop.tradeFact1', 'home.shop.tradeFact2', 'home.shop.tradeFact3'] as const
 
-/** Trade and gifting on the paper, a hairline under the process: the offer, its facts, and the way
- * in (the page's colour is spent on the hero and the bridge to the originals). */
+/** Trade and gifting: the offer, its facts and the way in, beside two framed prints. */
 export function Trade({ locale, href, t }: SectionProps) {
   return (
-    <section className={styles.ruled} aria-labelledby="home-trade">
-      <div className={styles.split}>
-        <div>
-          <SectionHead
-            id="home-trade"
-            title={t('home.shop.tradeTitle')}
-            lede={t('home.shop.tradeBody')}
-          />
-          <Button variant="secondary" href={href('partnership', {}, locale)}>
-            {t('home.shop.tradeCta')}
-          </Button>
-        </div>
-        <ProofPoints className={styles.facts} items={FACTS.map((key) => t(key))} />
+    <section className={styles.story} aria-labelledby="home-trade">
+      <div className={styles.storyText}>
+        <h2 id="home-trade" className={styles.storyTitle}>
+          {t('home.shop.tradeTitle')}
+        </h2>
+        <p className={styles.storyLead}>{t('home.shop.tradeLead')}</p>
+        <p className={styles.storyBody}>{t('home.shop.tradeBodyMore')}</p>
+        <ul className={styles.facts}>
+          {FACTS.map((key) => (
+            <li key={key}>{t(key)}</li>
+          ))}
+        </ul>
+        <CapsLink href={href('partnership', {}, locale)}>{t('home.shop.tradeCta')}</CapsLink>
+      </div>
+      <div className={styles.storyPhotos}>
+        <FeaturedPrint
+          locale={locale}
+          index={1}
+          sizes="(max-width: 56.25rem) 80vw, 33vw"
+          className={styles.photo}
+        />
+        <FeaturedPrint
+          locale={locale}
+          index={2}
+          sizes="(max-width: 56.25rem) 80vw, 33vw"
+          className={styles.photo}
+        />
       </div>
     </section>
   )
 }
 
-/** The bridge to the gallery's originals wears the gallery's own cool stone: the ground names the
- * site. */
-export function Originals({ sisterHref, t }: { sisterHref: string; t: HomeText }) {
+/** The bridge to the gallery's originals, on its own host (absolute, in the visitor's locale). */
+export function Originals({
+  locale,
+  sisterHref,
+  t,
+}: {
+  readonly locale: 'en' | 'id'
+  readonly sisterHref: string
+  readonly t: HomeText
+}) {
   return (
-    <Band pigment={3} strength="wash" aria-labelledby="home-originals">
-      <SectionHead
-        id="home-originals"
-        title={t('home.shop.originalsTitle')}
-        lede={t('home.shop.originalsBody')}
-        action={
-          // The bridge to the gallery, which lives on its own host — so absolute, and in the
-          // visitor's locale, never hardcoded.
-          <Button variant="secondary" href={sisterHref}>
-            {t('home.shop.originalsCta')}
-          </Button>
-        }
-      />
-    </Band>
+    <section className={styles.edit} aria-labelledby="home-originals">
+      <div className={styles.editPhoto}>
+        <FeaturedPrint locale={locale} index={3} sizes="50vw" className={styles.editWall} />
+      </div>
+      <div className={styles.editPanel}>
+        <Caps className={styles.label}>{t('home.shop.originalsLabel')}</Caps>
+        <h2 id="home-originals" className={styles.editTitle}>
+          {t('home.shop.originalsTitle')}
+        </h2>
+        <div className={styles.editArt}>
+          <FeaturedPrint locale={locale} index={0} sizes="20rem" className={styles.editTile} />
+        </div>
+        <p className={styles.editBody}>{t('home.shop.originalsBody')}</p>
+        <CapsLink href={sisterHref}>{t('home.shop.originalsCta')}</CapsLink>
+      </div>
+    </section>
   )
 }

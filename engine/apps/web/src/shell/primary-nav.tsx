@@ -19,7 +19,7 @@ export type NavItemSpec = {
 }
 
 /** The site's header links, from the drawing, each a real surface of that site. */
-function navItems(site: SiteKey): readonly NavItemSpec[] {
+export function navItems(site: SiteKey): readonly NavItemSpec[] {
   const href = siteHref(site)
   return site === 'gallery'
     ? [
@@ -38,7 +38,7 @@ function navItems(site: SiteKey): readonly NavItemSpec[] {
 }
 
 /** True when `path` is the link's page or one beneath it. */
-function isCurrent(path: string | null, target: string): boolean {
+export function isCurrent(path: string | null, target: string): boolean {
   if (path === null) return false
   const here = path.split(/[?#]/)[0]?.replace(/\/+$/, '') ?? ''
   const there = target.replace(/\/+$/, '')

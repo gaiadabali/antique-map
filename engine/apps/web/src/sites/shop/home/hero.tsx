@@ -1,25 +1,26 @@
 /**
- * The shop home's hero (12.1; 19.1; Heritage 20.1): the headline in cream on the walnut field, and the
- * lead print hung across the field's lower edge onto the paper (the shared `Crossing`), captioned
- * the way a gallery labels a wall — its name, its label and its price. The print is the first of
- * the home's featured products with a published image — the same cached read as the best-seller
- * rail, so no second query. Until that read lands, or while the shop holds no product, a window of
- * the field's tint keeps its place. Every word comes from the shop's lexicon.
+ * The shop home's hero (the redesign of 2026-10-20, the handoff's Poster Club hero): two full-bleed
+ * halves under the clear header — the words centred on the warm left half, the lead print framed
+ * on the grey right half with its name and price at the corner, the way a gallery labels a wall.
+ * The print is the first of the home's featured products with a published image — the same cached
+ * read as the "Begin with these" rail, so no second query. Until that read lands, or while the shop
+ * holds no product, the bare well keeps its place. Every word comes from the shop's lexicon.
  */
 import { Suspense, type ReactNode } from 'react'
 
+import { createHref, SITES } from '@engine/config/sites'
+
 import {
   Button,
-  Crossing,
-  MatNote,
   Price,
-  ProofPoints,
+  PrintTile,
+  PrintTileNote,
   ResponsiveImage,
-  Skeleton,
+  printAspectOf,
 } from '../../../shared/ui'
 import { productText } from '../product/copy'
-import { imageAlt, syntheticLabelText } from '../product/synthetic'
-
+import { imageAlt } from '../product/synthetic'
+import { Caps, CapsLink } from '../ui/caps-link'
 import {
   loadFeaturedProducts,
   type FeaturedProduct,
@@ -43,65 +44,60 @@ type Props = {
 
 export function Hero(props: Props) {
   return (
-    <Suspense
-      fallback={
-        <Frame
-          {...props}
-          pending
-          ratio={1}
-          picture={<div className={styles.empty} style={{ aspectRatio: 1 }} />}
-          caption={<Skeleton width="60%" height="1.5rem" />}
-        />
-      }
-    >
+    <Suspense fallback={<Frame {...props} pending print={<Empty />} />}>
       <LeadPrint {...props} />
     </Suspense>
   )
 }
 
 type FrameProps = Props & {
-  readonly ratio: number
-  readonly picture: ReactNode
+  readonly print: ReactNode
   readonly caption?: ReactNode
   /**
    * The placeholder while the read streams. Its title is the page's h1 too, so the page is never
-   * without one (axe's page-has-heading-one read a streaming page as headless, a flaky CI case), but
-   * without the id: the finished hero streams in hidden until it replaces this one, so one h1 is
-   * ever exposed and no id is ever doubled.
+   * without one, but without the id: the finished hero streams in hidden until it replaces this
+   * one, so one h1 is ever exposed and no id is ever doubled.
    */
   readonly pending?: boolean
 }
 
-/** The hero around whatever print it holds: the copy and signals never wait on the read. */
-function Frame({ shopHref, t, ratio, picture, caption, pending = false }: FrameProps) {
+function Frame({ shopHref, t, print, caption, pending = false }: FrameProps) {
   return (
-    <Crossing
-      lead
-      pigment={2}
-      strength="full"
-      fit="cover"
-      ratio={ratio}
-      aria-labelledby={pending ? undefined : 'home-title'}
-      copy={
-        <>
+    <section className={styles.hero} aria-labelledby={pending ? undefined : 'home-title'}>
+      <div className={styles.words}>
+        <div className={styles.block}>
           <h1 id={pending ? undefined : 'home-title'} className={styles.title}>
             {t('home.shop.title')}
           </h1>
-          <p className={`site-lede ${styles.lede}`}>{t('home.shop.lede')}</p>
+          <p className={styles.lede}>{t('home.shop.lede')}</p>
           <div className={styles.actions}>
-            <Button variant="primary" href={shopHref}>
+            <Button variant="secondary" size="small" href={shopHref}>
               {t('home.shop.ctaShop')}
             </Button>
-            <Button variant="quiet" href="#process">
-              {t('home.shop.ctaProcess')}
-            </Button>
+            <CapsLink href="#process">{t('home.shop.ctaProcess')}</CapsLink>
           </div>
-          <ProofPoints className={styles.signals} items={SIGNALS.map((key) => t(key))} />
-        </>
-      }
-      picture={picture}
-      caption={caption}
-    />
+          <ul className={styles.signals}>
+            {SIGNALS.map((key) => (
+              <li key={key}>
+                <Caps>{t(key)}</Caps>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+      <div className={styles.wall}>
+        {print}
+        {caption ? <p className={styles.caption}>{caption}</p> : null}
+      </div>
+    </section>
+  )
+}
+
+function Empty({ note }: { readonly note?: string }) {
+  return (
+    <PrintTile className={styles.tile}>
+      {note ? <PrintTileNote>{note}</PrintTileNote> : <span className={styles.blank} />}
+    </PrintTile>
   )
 }
 
@@ -114,53 +110,43 @@ async function LeadPrint(props: Props) {
     products = []
   }
   const lead = products.find((product) => product.image !== null) ?? products[0]
-  const placeholder = (
-    <div className={styles.empty} style={{ aspectRatio: 1 }}>
-      <MatNote>{t('home.shop.heroA')}</MatNote>
-    </div>
-  )
-  if (lead === undefined) return <Frame {...props} ratio={1} picture={placeholder} />
-  const words = productText(locale)
-  const label = lead.image === null ? null : syntheticLabelText(words, lead.image)
+  if (lead === undefined) return <Frame {...props} print={<Empty note={t('home.shop.heroA')} />} />
+  const href = createHref(SITES.shop)('product', { slug: lead.slug }, locale)
   const caption = (
     <>
-      <a className={styles.captionTitle} href={`/product/${lead.slug}`}>
+      <a className={styles.captionTitle} href={href}>
         {lead.name}
       </a>
-      {label !== null && <span className={styles.captionMeta}>{label}</span>}
       <span className={styles.captionPrice}>
         {t('home.shop.pricePrefix')} <Price amount={lead.price} />
       </span>
     </>
   )
   if (lead.image === null) {
-    return <Frame {...props} ratio={1} picture={placeholder} caption={caption} />
+    return <Frame {...props} print={<Empty note={lead.name} />} caption={caption} />
   }
   const ratio = windowRatio(lead.image)
+  const words = productText(locale)
   return (
     <Frame
       {...props}
-      ratio={ratio}
       caption={caption}
-      picture={
+      print={
         // The print opens its page too; the caption's name is the one link in the tab order.
-        <a
-          className={styles.printLink}
-          href={`/product/${lead.slug}`}
-          tabIndex={-1}
-          aria-hidden="true"
-        >
-          {/* The page's largest paint: preloaded at high priority, AVIF where the browser takes it. */}
-          <ResponsiveImage
-            variant="fill"
-            aspectRatio={`${ratio} / 1`}
-            src={lead.image.url}
-            srcSet={lead.image.srcSet}
-            sizes="(max-width: 63.99rem) 100vw, 55vw"
-            alt={imageAlt(words, lead.image)}
-            priority
-            unoptimized
-          />
+        <a className={styles.printLink} href={href} tabIndex={-1} aria-hidden="true">
+          <PrintTile ratio={ratio} className={styles.tile}>
+            {/* The page's largest paint: preloaded at high priority. */}
+            <ResponsiveImage
+              variant="fill"
+              aspectRatio={printAspectOf(ratio)}
+              src={lead.image.url}
+              srcSet={lead.image.srcSet}
+              sizes="(max-width: 56.25rem) 80vw, 40vw"
+              alt={imageAlt(words, lead.image)}
+              priority
+              unoptimized
+            />
+          </PrintTile>
         </a>
       }
     />

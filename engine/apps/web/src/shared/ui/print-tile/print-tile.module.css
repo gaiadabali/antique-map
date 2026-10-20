@@ -4,11 +4,19 @@
    whole. The shadow falls from the print's own edges, never from an empty letterbox.
    Every value is a token — no raw colour, no font-family. */
 
+/* A site may set the knobs (sites/shop/tokens/layout.css: the shop frames each print in code on
+   a grey well); the fallbacks are the gallery's. */
 .tile {
   position: relative;
   display: block;
-  aspect-ratio: 4 / 5;
-  background: var(--color-surface-deep);
+  aspect-ratio: var(--print-tile-ratio, 4 / 5);
+  background: var(--print-tile-bg, var(--color-surface-deep));
+  transition: background-color var(--dur-in) var(--ease);
+}
+
+:global(a):hover .tile,
+:global(a):focus-visible .tile {
+  background: var(--print-tile-bg-hover, var(--print-tile-bg, var(--color-surface-deep)));
 }
 
 .square {
@@ -17,7 +25,7 @@
 
 .stage {
   position: absolute;
-  inset: 10% 12% 13%;
+  inset: var(--print-stage-inset, 10% 12% 13%);
   display: grid;
   place-items: center;
   container-type: size;
@@ -35,7 +43,10 @@
   position: relative;
   inline-size: min(100cqi, 100cqb * var(--print-ratio));
   aspect-ratio: var(--print-ratio);
-  background: var(--color-surface-raised);
+  box-sizing: border-box;
+  border: var(--print-frame-width, 0) solid var(--print-frame-color, transparent);
+  padding: var(--print-mount-pad, 0);
+  background: var(--print-mount, var(--color-surface-raised));
   box-shadow: var(--shadow-print);
   transition:
     box-shadow var(--dur-in) var(--ease-out),
@@ -60,6 +71,8 @@
   inline-size: 100%;
   block-size: 100%;
   aspect-ratio: auto;
+  border: 0;
+  padding: 0;
   background: transparent;
   box-shadow: none;
 }

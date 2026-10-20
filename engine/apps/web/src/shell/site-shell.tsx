@@ -32,6 +32,8 @@ import { Announcement } from './announcement'
 import { chatContact } from './chat-contact'
 import { PrimaryNav } from './primary-nav'
 import { SiteFooter } from './site-footer'
+import { ShopFooter } from '../sites/shop/shell/shop-footer'
+import { ShopHeaderSlot } from '../sites/shop/shell/shop-header-slot'
 import type { ShellMessageKey } from './messages'
 import { siteHref, type ShellText } from './site'
 import { loadSiteSettings } from '../server/site-settings'
@@ -60,19 +62,36 @@ export async function SiteShell({ shell, t, children }: Props) {
       <a className="skip-link" href="#main">
         {t('shell.skipToContent')}
       </a>
-      <Announcement text={settings.announcement} t={t} />
-      <Header
-        logo={<BrandLink shell={shell} t={t} />}
-        nav={<PrimaryNav site={shell.site.key} locale={shell.locale} t={t} />}
-        openLabel={t('shell.menu.open')}
-        closeLabel={t('shell.menu.close')}
-        menuLabel={t('shell.menu')}
-        actions={<LocaleSwitcher shell={shell} t={t} />}
-      />
+      {shell.site.key === 'shop' ? (
+        // The shop's own header and footer (the redesign of 2026-10-20); no announcement bar.
+        <ShopHeaderSlot
+          locale={shell.locale}
+          homeHref={shell.homeHref}
+          logo={<BrandLink shell={shell} t={t} />}
+          locales={<LocaleSwitcher shell={shell} t={t} />}
+          t={t}
+        />
+      ) : (
+        <>
+          <Announcement text={settings.announcement} t={t} />
+          <Header
+            logo={<BrandLink shell={shell} t={t} />}
+            nav={<PrimaryNav site={shell.site.key} locale={shell.locale} t={t} />}
+            openLabel={t('shell.menu.open')}
+            closeLabel={t('shell.menu.close')}
+            menuLabel={t('shell.menu')}
+            actions={<LocaleSwitcher shell={shell} t={t} />}
+          />
+        </>
+      )}
       <main id="main" className="site-main">
         {children}
       </main>
-      <SiteFooter shell={shell} settings={settings} t={t} />
+      {shell.site.key === 'shop' ? (
+        <ShopFooter locale={shell.locale} logo={shell.logo} settings={settings} t={t} />
+      ) : (
+        <SiteFooter shell={shell} settings={settings} t={t} />
+      )}
       <ChatLauncher
         label={t('shell.chat')}
         site={shell.site.key}

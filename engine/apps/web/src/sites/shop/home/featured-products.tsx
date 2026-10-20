@@ -1,53 +1,44 @@
 /**
- * The shop home's best sellers (ticket 4.3.b; Ivory and ink 18.4): a streamed grid of published
- * products, each print hung on an even stone tile (the shared `PrintTile`) with a museum caption. The read is `loadFeaturedProducts()`
- * (`server/shop/home`), public-only, with prices formatted through `formatRupiah`; inside
- * `<Suspense>` with a skeleton, and an empty state when the database holds no published product
- * yet — never a crash.
+ * The shop home's "Begin with these" (the redesign of 2026-10-20): the featured products as a rail
+ * of framed cards — name and price, then "Reproduction" — with "Shop all prints" under it. The read
+ * is `loadFeaturedProducts()` (`server/shop/home`), public-only, prices formatted through
+ * `formatRupiah`; inside `<Suspense>`, and an empty state when the database holds no published
+ * product yet — never a crash.
  */
 import { Suspense } from 'react'
 
-import { Price, PrintTile, PrintTileNote, Skeleton, printRatioOf } from '../../../shared/ui'
+import { createHref, SITES } from '@engine/config/sites'
+
+import { Price, ResponsiveImage, printAspectOf, printRatioOf } from '../../../shared/ui'
 import { productText } from '../product/copy'
 import { imageAlt, syntheticLabelText } from '../product/synthetic'
-
 import {
   loadFeaturedProducts,
   type FeaturedProduct,
 } from '../../../server/shop/home/load-featured-products'
+import { CapsLink } from '../ui/caps-link'
+import { Rail } from '../ui/rail'
+import { RailSkeleton } from '../ui/rail-skeleton'
+import { ShopCard } from '../ui/shop-card'
 import styles from './home.module.css'
 import type { HomeText } from './home-messages'
 
 type Props = {
   readonly locale: 'en' | 'id'
   readonly t: HomeText
+  /** The browse page, reached from the link under the rail. */
+  readonly allHref: string
 }
 
 export function FeaturedProducts(props: Props) {
   return (
-    <Suspense fallback={<ProductsSkeleton />}>
-      <ProductsGrid {...props} />
+    <Suspense fallback={<RailSkeleton title={props.t('home.shop.featuredTitle')} flush />}>
+      <ProductsRail {...props} />
     </Suspense>
   )
 }
 
-function ProductsSkeleton() {
-  return (
-    <div className={styles.four} aria-hidden="true">
-      {[0, 1, 2, 3].map((at) => (
-        <div key={at}>
-          <PrintTile>
-            <Skeleton width="100%" height="100%" />
-          </PrintTile>
-          <Skeleton width="70%" height="1.25rem" />
-          <Skeleton width="45%" height="1rem" />
-        </div>
-      ))}
-    </div>
-  )
-}
-
-async function ProductsGrid({ locale, t }: Props) {
+async function ProductsRail({ locale, t, allHref }: Props) {
   let products: readonly FeaturedProduct[] = []
   try {
     products = await loadFeaturedProducts(locale)
@@ -56,44 +47,56 @@ async function ProductsGrid({ locale, t }: Props) {
   }
   if (products.length === 0) {
     return (
-      <div className={styles.sectionBody}>
-        <h3 className={styles.cardTitle}>{t('home.shop.emptyTitle')}</h3>
-        <p className={styles.cardBody}>{t('home.shop.emptyBody')}</p>
-      </div>
+      <section className={styles.empty} aria-labelledby="home-featured">
+        <h2 id="home-featured" className={styles.emptyTitle}>
+          {t('home.shop.emptyTitle')}
+        </h2>
+        <p className={styles.emptyBody}>{t('home.shop.emptyBody')}</p>
+      </section>
     )
   }
   const words = productText(locale)
+  const href = createHref(SITES.shop)
   return (
-    <div className={styles.four}>
+    <Rail
+      id="home-featured"
+      title={t('home.shop.featuredTitle')}
+      previousLabel={t('home.shop.railPrevious')}
+      nextLabel={t('home.shop.railNext')}
+      more={<CapsLink href={allHref}>{t('home.shop.shopAll')}</CapsLink>}
+      flush
+    >
       {products.map((product) => {
-        const label = product.image ? syntheticLabelText(words, product.image) : null
+        const ratio = printRatioOf(product.image)
         return (
-          <a className={styles.productCard} key={product.slug} href={`/product/${product.slug}`}>
-            <PrintTile ratio={printRatioOf(product.image)}>
-              {product.image ? (
-                // The public derivative (`server/media/public-image`), a plain `<img>` since it
-                // never goes through `next/image`'s optimizer or its remote-pattern allowlist; its
-                // srcSet is the derivative ladder, so a phone fetches a small width (10.6).
-                <img
+          <ShopCard
+            key={product.slug}
+            href={href('product', { slug: product.slug }, locale)}
+            ratio={ratio}
+            title={product.name}
+            badge={product.image ? syntheticLabelText(words, product.image) : null}
+            aside={
+              <>
+                {t('home.shop.pricePrefix')} <Price amount={product.price} />
+              </>
+            }
+            meta={words.shared('label.reproduction')}
+            picture={
+              product.image ? (
+                <ResponsiveImage
+                  variant="fill"
+                  aspectRatio={printAspectOf(ratio)}
                   src={product.image.url}
                   srcSet={product.image.srcSet}
-                  sizes="(max-width: 47.5rem) 40vw, (max-width: 75rem) 26vw, 20vw"
-                  loading="lazy"
-                  decoding="async"
                   alt={imageAlt(words, product.image)}
+                  sizes="(max-width: 56.25rem) 45vw, 24vw"
+                  unoptimized
                 />
-              ) : (
-                <PrintTileNote>{product.name}</PrintTileNote>
-              )}
-            </PrintTile>
-            <h3 className={styles.cardTitle}>{product.name}</h3>
-            {label !== null && <p className={styles.cardBody}>{label}</p>}
-            <p className={styles.cardPrice}>
-              {t('home.shop.pricePrefix')} <Price amount={product.price} />
-            </p>
-          </a>
+              ) : null
+            }
+          />
         )
       })}
-    </div>
+    </Rail>
   )
 }

@@ -72,3 +72,6 @@ desktop.ini
 
 # AI eval run outputs (8.4b) — the gate doc quotes the run, the files stay local
 tests/ai/out/
+
+# Local working plan for the Old East Indies redesign — kept out of the repo
+Implementations.md

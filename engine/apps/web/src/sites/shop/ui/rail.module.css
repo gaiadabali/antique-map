@@ -1,0 +1,96 @@
+/* A rail of cards (the handoff's oei.css §rail). Every value is a token. */
+
+.section {
+  padding: var(--shop-section) var(--shop-gutter);
+}
+
+.section[data-flush] {
+  padding-block-start: 0;
+}
+
+.head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-5);
+}
+
+.title {
+  margin: 0;
+  font: var(--shop-title-page);
+}
+
+.arrows {
+  display: flex;
+  flex: none;
+  gap: var(--space-1);
+}
+
+.arrows button {
+  display: grid;
+  place-items: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text);
+  cursor: pointer;
+  transition: opacity var(--dur-out) var(--ease);
+}
+
+.arrows button:hover {
+  opacity: 0.6;
+}
+
+.arrows svg {
+  inline-size: 0.5rem;
+  block-size: 0.875rem;
+}
+
+.rail {
+  display: flex;
+  gap: var(--shop-gap);
+  margin: 1.5625rem 0 0;
+  padding: 0 0 2px;
+  list-style: none;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.rail::-webkit-scrollbar {
+  display: none;
+}
+
+.rail > li {
+  flex: 0 0 calc((100% - 3 * var(--shop-gap)) / 4);
+  scroll-snap-align: start;
+}
+
+.more {
+  display: flex;
+  justify-content: center;
+  margin-block-start: var(--space-7);
+}
+
+@media (max-width: 56.25rem) {
+  .arrows {
+    display: none;
+  }
+
+  .rail {
+    margin-block-start: var(--space-5);
+    margin-inline: calc(-1 * var(--shop-gutter));
+    padding-inline: var(--shop-gutter);
+    scroll-padding-inline: var(--shop-gutter);
+  }
+
+  .rail > li {
+    flex-basis: 10.9375rem;
+  }
+
+  .more {
+    margin-block-start: var(--space-6);
+  }
+}

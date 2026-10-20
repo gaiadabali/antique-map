@@ -8,9 +8,11 @@
   gap: var(--space-2);
   border: var(--rule-hair) solid transparent;
   border-radius: var(--radius-control);
-  font: var(--text-label);
-  font-size: var(--primitive-size-body);
-  letter-spacing: 0.01em;
+  /* A site may set the knobs (sites/shop/tokens/layout.css); the fallbacks are the gallery's. */
+  font: var(--button-font, var(--text-label));
+  font-size: var(--button-font-size, var(--primitive-size-body));
+  letter-spacing: var(--button-tracking, 0.01em);
+  text-transform: var(--button-case, none);
   text-decoration: none;
   white-space: nowrap;
   min-height: 44px;
@@ -29,12 +31,13 @@
 }
 
 .default {
-  min-height: 3.25rem;
-  padding-inline: var(--space-6);
+  min-height: var(--button-height, 3.25rem);
+  padding-inline: var(--button-pad, var(--space-6));
 }
 
 .small {
-  padding-inline: var(--space-5);
+  min-height: var(--button-height-small, 44px);
+  padding-inline: var(--button-pad-small, var(--space-5));
 }
 
 .primary {
