@@ -1,17 +1,18 @@
-/* The shop's footer (the user's drawing of 2026-10-20): a warm band — the logo at the left, Explore
-   and Contact at the right, each a small-capitals title over one row of links — then a white bar.
-   Every value is a token. */
+/* The shop's footer (the handoff of 2026-10-20, oei.css §footer): a warm band — the logo in a
+   279 px column, then Explore and Contact set flush right (each a small-capitals title over one
+   row of 13 px links, 24 apart; 75 between the groups) — then a white bar. On a phone the groups
+   are full-bleed rows on hairlines. Every value is a token. */
 
 .footer {
   margin-block-start: auto;
 }
 
 .band {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  display: grid;
+  grid-template-columns: 17.4375rem minmax(0, 1fr);
   gap: var(--space-7);
-  padding: var(--space-6) var(--shop-gutter);
+  align-items: start;
+  padding: 2.6875rem var(--shop-gutter);
   background: var(--shop-warm);
 }
 
@@ -25,7 +26,7 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
-  gap: var(--space-5) var(--space-10);
+  gap: 1.25rem 4.6875rem;
 }
 
 .group {
@@ -33,8 +34,9 @@
 }
 
 .title {
-  margin: 0 0 var(--space-3);
+  margin: 0 0 var(--space-1);
   font: var(--shop-text-caps);
+  font-size: 0.6875rem;
   letter-spacing: var(--shop-tracking-caps);
   text-transform: uppercase;
   color: var(--color-text-muted);
@@ -43,23 +45,23 @@
 .links {
   display: flex;
   flex-wrap: wrap;
-  gap: 0 var(--space-6);
+  column-gap: var(--space-5);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
 .links a {
-  display: inline-flex;
-  align-items: center;
-  min-block-size: 2rem;
-  font: var(--shop-text-body);
-  font-size: 0.9375rem;
+  display: inline-block;
+  font: var(--shop-text-meta);
+  line-height: 1.6875rem;
+  white-space: nowrap;
   color: var(--color-text);
   text-decoration: none;
 }
 
-.links a:hover {
+.links a:hover,
+.links a[aria-current='page'] {
   text-decoration: underline;
   text-underline-offset: 0.3em;
 }
@@ -80,7 +82,8 @@
   padding-inline: var(--shop-gutter);
   background: var(--color-surface);
   box-shadow: inset 0 var(--rule-hair) 0 var(--color-border);
-  font: var(--shop-text-meta);
+  font: var(--shop-text-caps);
+  font-weight: 400;
 }
 
 .bar a {
@@ -101,22 +104,24 @@
 
 @media (max-width: 56.25rem) {
   .band {
-    flex-direction: column;
-    gap: var(--space-6);
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    padding-block: 1.75rem 0;
   }
 
   .groups {
     flex-direction: column;
-    justify-content: flex-start;
-    gap: var(--space-5);
+    gap: 0;
+    margin-inline: calc(-1 * var(--shop-gutter));
   }
 
-  .links {
-    gap: 0 var(--space-5);
+  .group {
+    padding: 0.875rem var(--shop-gutter);
+    box-shadow: inset 0 var(--rule-hair) 0 var(--shop-rule-mid);
   }
 
   .links a {
-    min-block-size: 2.75rem;
+    line-height: 2.75rem;
   }
 
   .bar {
