@@ -1,22 +1,18 @@
-/* The checkout page (6.3.a; Ivory and ink 18): the page's head sits on the paper, the form runs
-   on the paper in sections, the order summary lies on the stone. 390 px first, tokens only
-   (DESIGN-SYSTEM.md). The page breaks out of the reading column to the shop's full width. */
+/* The checkout page (6.3.a; the redesign of 2026-10-20, the bag's skeleton): the title, the form
+   in sections at the left, the order summary on the warm band in a 465 px column at the right.
+   Tokens only (DESIGN-SYSTEM.md). The page breaks out of the reading column to the full width. */
 .checkout {
   width: var(--page-wrap);
   margin-inline-start: 50%;
   translate: -50% 0;
-  padding-inline: var(--gutter);
-  padding-block-end: var(--section-space);
+  margin-block-start: calc(1.625rem - var(--space-7));
+  padding-inline: var(--shop-gutter);
+  padding-block-end: var(--shop-section);
 }
 
-/* The page's opening field starts right under the header (the shell's main pads its top). */
-.lead {
-  margin-block-start: calc(-1 * var(--space-7));
-  padding-block: var(--space-9) var(--space-8);
-}
-
-.lead .leadHead {
-  margin-block-end: 0;
+.title {
+  margin: 0;
+  font: var(--shop-title-page);
 }
 
 .refusal {
@@ -34,35 +30,35 @@
 
 /* The summary comes first in the source, as on a phone it reads: the order you see is the order a
    keyboard and a screen reader follow. On a desktop the grid sets it in the right-hand column. */
-@media (min-width: 768px) {
+@media (min-width: 56.3125rem) {
   .columns {
     display: grid;
-    grid-template-columns: repeat(12, minmax(0, 1fr));
-    column-gap: var(--grid-gap);
+    grid-template-columns: minmax(0, 1fr) 29.0625rem;
+    column-gap: var(--space-7);
     align-items: start;
-    padding-block-start: var(--space-8);
+    padding-block-start: var(--space-6);
   }
 
   .columns > .form {
-    grid-column: 1 / span 7;
+    grid-column: 1;
     grid-row: 1;
   }
 
   .review {
-    grid-column: 8 / span 5;
+    grid-column: 2;
     grid-row: 1;
     position: sticky;
-    top: var(--space-6);
+    top: calc(var(--shop-header) + var(--space-5));
   }
 }
 
-/* The order summary lies on the stone: no border, no raised panel. */
+/* The order summary lies on the warm band: no border, no raised panel. */
 .review {
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
   padding: var(--space-6);
-  background: var(--pigment-1-tint);
+  background: var(--shop-warm);
   font: var(--text-body);
   color: var(--color-text);
   min-width: 0;
@@ -85,10 +81,11 @@
   border-top: var(--rule-hair) solid var(--color-border);
 }
 
+/* the line's name in Karla, as the bag sets it */
 .lineName {
   margin: 0;
   min-width: 0;
-  font: var(--text-card-title);
+  font: var(--shop-text-body);
 }
 
 .lineTotal {
@@ -123,14 +120,14 @@
 }
 
 .grand dt {
-  font: var(--text-h3);
+  font: var(--shop-title-sub);
   color: var(--color-text);
 }
 
 /* The amount stays in Karla: the display serif never sets a price (DESIGN-SYSTEM.md §2). */
 .grand dd {
   font: var(--text-price);
-  font-size: var(--primitive-size-h3);
+  font-size: 1.125rem;
   font-variant-numeric: var(--numeric-tabular);
   color: var(--color-text);
 }
@@ -151,8 +148,7 @@
 
 /* A section's head: the serif on the paper, no rule. */
 .sectionTitle {
-  font: var(--text-h2);
-  letter-spacing: var(--tracking-h1);
+  font: var(--shop-title-page);
   color: var(--color-text);
   margin: 0;
 }

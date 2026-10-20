@@ -7,7 +7,8 @@
  */
 import { useActionState } from 'react'
 
-import { Band, Button, FormMessage, Input, SectionHead } from '../../../shared/ui'
+import { Button, FormMessage, Input } from '../../../shared/ui'
+import { PageHead } from '../ui/page-head'
 import {
   requestTrackingLinkAction,
   type FindOrderState,
@@ -28,20 +29,7 @@ export function FindOrder({ locale }: FindOrderProps): React.ReactElement {
 
   return (
     <div className={styles.tracking}>
-      <Band
-        pigment={1}
-        strength="wash"
-        pad={false}
-        className={styles.lead}
-        aria-labelledby="find-order-title"
-      >
-        <SectionHead
-          level={1}
-          id="find-order-title"
-          className={styles.leadHead}
-          title={text('tracking.find.title')}
-        />
-      </Band>
+      <PageHead id="find-order-title" title={text('tracking.find.title')} />
       <form
         action={submit}
         className={[styles.section, styles.find].join(' ')}

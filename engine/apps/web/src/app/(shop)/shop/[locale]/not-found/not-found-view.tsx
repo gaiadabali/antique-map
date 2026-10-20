@@ -7,7 +7,8 @@ import { headers } from 'next/headers'
 
 import { PROXY_REQUEST_HEADERS } from '@engine/http/manifest'
 
-import { Band, Button, SectionHead } from '../../../../../shared/ui'
+import { Button } from '../../../../../shared/ui'
+import { PageHead } from '../../../../../sites/shop/ui/page-head'
 import { siteLocale } from '../../../../../shell/messages'
 import { currentSite, shellText, siteHref } from '../../../../../shell/site'
 import styles from './not-found-view.module.css'
@@ -19,21 +20,7 @@ export async function ShopNotFoundView() {
   const t = shellText(site.key, locale)
   return (
     <div className={styles.page}>
-      <Band
-        pigment={1}
-        strength="wash"
-        pad={false}
-        className={styles.lead}
-        aria-labelledby="not-found-title"
-      >
-        <SectionHead
-          level={1}
-          id="not-found-title"
-          className={styles.leadHead}
-          title={t('notFound.title')}
-          lede={t('notFound.body')}
-        />
-      </Band>
+      <PageHead id="not-found-title" title={t('notFound.title')} lede={t('notFound.body')} />
       <div className={styles.links}>
         <Button variant="primary" href={siteHref(site.key)('home', {}, locale)}>
           {t('notFound.home')}

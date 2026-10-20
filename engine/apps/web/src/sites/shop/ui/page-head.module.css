@@ -1,0 +1,17 @@
+/* Pulls the head up to 26 px under the header (the shell's main pads its top by space-7). */
+.head {
+  margin-block-start: calc(1.625rem - var(--space-7));
+}
+
+.title {
+  margin: 0;
+  font: var(--shop-title-page);
+  text-wrap: balance;
+}
+
+.lede {
+  max-inline-size: 31.25rem;
+  margin: var(--space-3) 0 0;
+  font: var(--shop-text-body);
+  color: var(--color-text-muted);
+}

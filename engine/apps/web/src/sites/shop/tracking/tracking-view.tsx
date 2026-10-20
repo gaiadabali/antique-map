@@ -5,14 +5,8 @@
  */
 import type { SiteLocale } from '@engine/config/sites'
 
-import {
-  Band,
-  Price,
-  ResponsiveImage,
-  SectionHead,
-  StatusTimeline,
-  TextLink,
-} from '../../../shared/ui'
+import { Price, ResponsiveImage, StatusTimeline, TextLink } from '../../../shared/ui'
+import { PageHead } from '../ui/page-head'
 import type { TrackingView } from '../../../server/shop/tracking/load-tracking'
 import { baliDateTime } from './bali-datetime'
 import { trackingText } from './copy'
@@ -45,20 +39,10 @@ export function TrackingPage({
 
   return (
     <div className={styles.tracking}>
-      <Band
-        pigment={1}
-        strength="wash"
-        pad={false}
-        className={styles.lead}
-        aria-labelledby="tracking-title"
-      >
-        <SectionHead
-          level={1}
-          id="tracking-title"
-          className={styles.leadHead}
-          title={text('tracking.title', { number: String(view.orderNumber) })}
-        />
-      </Band>
+      <PageHead
+        id="tracking-title"
+        title={text('tracking.title', { number: String(view.orderNumber) })}
+      />
       <div className={styles.content}>
         {view.status === 'pending_payment' && <p role="status">{text('tracking.pendingNote')}</p>}
         {view.status === 'cancelled' && <p role="status">{text('tracking.cancelledNote')}</p>}

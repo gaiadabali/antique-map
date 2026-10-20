@@ -5,7 +5,7 @@
  */
 import type { ReactNode } from 'react'
 
-import { Band, SectionHead } from '../../../shared/ui'
+import { PageHead } from '../ui/page-head'
 import styles from './order-view.module.css'
 
 export type OrderPageProps = {
@@ -17,21 +17,7 @@ export type OrderPageProps = {
 export function OrderPage({ title, lede, children }: OrderPageProps): React.ReactElement {
   return (
     <div className={styles.page}>
-      <Band
-        pigment={1}
-        strength="wash"
-        pad={false}
-        className={styles.lead}
-        aria-labelledby="order-status"
-      >
-        <SectionHead
-          level={1}
-          id="order-status"
-          className={styles.leadHead}
-          title={title}
-          lede={lede}
-        />
-      </Band>
+      <PageHead id="order-status" title={title} lede={lede} />
       <div className={styles.content}>{children}</div>
     </div>
   )

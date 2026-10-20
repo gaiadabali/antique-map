@@ -8,7 +8,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { CheckoutRead } from '../../../server/shop/checkout'
-import { Band, Button, SectionHead } from '../../../shared/ui'
+import { Button } from '../../../shared/ui'
 import { createHref, SITES } from '@engine/config/sites'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
 import { checkoutText } from './copy'
@@ -51,20 +51,9 @@ export function CheckoutView({ read, locale, browserKey }: CheckoutViewProps): R
 
   return (
     <div className={styles.checkout}>
-      <Band
-        pigment={1}
-        strength="wash"
-        pad={false}
-        className={styles.lead}
-        aria-labelledby="checkout-title"
-      >
-        <SectionHead
-          level={1}
-          id="checkout-title"
-          className={styles.leadHead}
-          title={text('checkout.reviewTitle')}
-        />
-      </Band>
+      <h1 id="checkout-title" className={styles.title}>
+        {text('checkout.reviewTitle')}
+      </h1>
 
       {read.refusal !== null && (
         <p role="status" className={styles.refusal}>

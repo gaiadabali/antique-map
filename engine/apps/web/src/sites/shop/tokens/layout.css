@@ -54,6 +54,7 @@
   --button-pad: 1.5rem;
   --button-pad-small: 1.25rem;
   --button-font: var(--shop-text-caps);
+  --button-font-size: 0.75rem;
   --button-tracking: var(--shop-tracking-caps);
   --button-case: uppercase;
   --print-tile-ratio: 10 / 13;

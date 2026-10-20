@@ -4,13 +4,15 @@
  * the bag holds something to buy. Every figure arrived computed by the server
  * (`../server/shop/bag`); delivery is staff-quoted after the order is placed (COMMERCE.md's
  * 2026-10-06 decision), so the bag page names no fee and no free-delivery threshold. Links never
- * prefetch and the styles are tokens only (DESIGN-SYSTEM.md).
+ * prefetch and the styles are tokens only (DESIGN-SYSTEM.md). Since the redesign of 2026-10-20 it
+ * wears the handoff's skeleton: the title, the ruled lines at the left, the summary on the warm
+ * band in a 465 px column at the right.
  */
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { BagVM } from '../../../server/shop/bag'
 import { createHref, SITES } from '@engine/config/sites'
-import { Band, Button, Mat, MatNote, SectionHead } from '../../../shared/ui'
+import { Button, Mat, MatNote } from '../../../shared/ui'
 import { productText } from '../product/copy'
 import { imageAlt } from '../product/synthetic'
 import { bagText } from './copy'
@@ -50,20 +52,9 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
   )
   return (
     <div className={styles.bag}>
-      <Band
-        pigment={1}
-        strength="wash"
-        pad={false}
-        className={styles.lead}
-        aria-labelledby="bag-title"
-      >
-        <SectionHead
-          level={1}
-          id="bag-title"
-          className={styles.leadHead}
-          title={text.shared('cart.title')}
-        />
-      </Band>
+      <h1 id="bag-title" className={styles.title}>
+        {text.shared('cart.title')}
+      </h1>
 
       {bag.lines.length === 0 ? (
         <div className={styles.empty}>

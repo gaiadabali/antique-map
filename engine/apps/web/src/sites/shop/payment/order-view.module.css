@@ -1,22 +1,12 @@
-/* The order page (6.5; Ivory and ink 18): the page's head sits on the paper, the order's facts run
+/* The order page (6.5; the redesign of 2026-10-20): the page's head sits on the paper, the order's facts run
    ruled on the paper in a reading measure. 390 px first, tokens only (DESIGN-SYSTEM.md). The page
    breaks out of the reading column to the shop's full width. */
 .page {
   width: var(--page-wrap);
   margin-inline-start: 50%;
   translate: -50% 0;
-  padding-inline: var(--gutter);
+  padding-inline: var(--shop-gutter);
   padding-block-end: var(--section-space);
-}
-
-/* The page's opening field starts right under the header (the shell's main pads its top). */
-.lead {
-  margin-block-start: calc(-1 * var(--space-7));
-  padding-block: var(--space-9) var(--space-8);
-}
-
-.lead .leadHead {
-  margin-block-end: 0;
 }
 
 /* The order's own content keeps a reading measure, left-aligned inside the full-width wrap. */
@@ -25,7 +15,7 @@
   flex-direction: column;
   gap: var(--space-6);
   max-inline-size: 44rem;
-  padding-block-start: var(--space-8);
+  padding-block-start: var(--space-6);
 }
 
 .content p {
@@ -100,7 +90,7 @@
 }
 
 .grand dt {
-  font: var(--text-h3);
+  font: var(--shop-title-sub);
   color: var(--color-text);
 }
 
