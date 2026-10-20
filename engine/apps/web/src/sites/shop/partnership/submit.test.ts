@@ -70,6 +70,31 @@ describe('handlePartnershipForm', () => {
     expect(calls.notify).toBe(1)
   })
 
+  it("folds the choice and its fields into the lead message, in the visitor's language", async () => {
+    const { deps, created } = setup()
+    await handlePartnershipForm(
+      deps,
+      form({
+        ...GOOD,
+        locale: 'en',
+        segment: 'hotel',
+        org: 'Villa Sari',
+        scale: '12 rooms',
+        context: '',
+      }),
+      null,
+    )
+    expect(created[0]?.message).toBe(
+      [
+        'What are you buying for? A hotel or villa',
+        'Hotel or villa name: Villa Sari',
+        'How many rooms or walls?: 12 rooms',
+        '',
+        'Framed maps for three villas.',
+      ].join('\n'),
+    )
+  })
+
   it('takes nothing from the request that the form does not own', async () => {
     const { deps, created } = setup()
     await handlePartnershipForm(

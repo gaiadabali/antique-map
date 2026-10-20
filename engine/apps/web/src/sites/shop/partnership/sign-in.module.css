@@ -86,10 +86,15 @@
   margin-block-start: var(--space-5);
 }
 
-.help {
-  margin: var(--space-4) 0 0;
+.forgot {
   font: var(--shop-text-meta);
   color: var(--color-text-muted);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+}
+
+.forgot:hover {
+  color: var(--color-text);
 }
 
 .facts {

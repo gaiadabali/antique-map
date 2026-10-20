@@ -67,6 +67,11 @@
   --print-mount: var(--shop-mount);
   --pager-rule: var(--shop-rule-mid);
   --pager-font: 400 0.75rem / 1 var(--font-body);
+  --field-label-font: var(--shop-text-caps);
+  --field-label-weight: 500;
+  --field-label-tracking: var(--shop-tracking-caps);
+  --field-label-case: uppercase;
+  --field-label-color: var(--color-text-muted);
 }
 
 /* On touch every control keeps a 44 px target, whatever the drawing's height. */

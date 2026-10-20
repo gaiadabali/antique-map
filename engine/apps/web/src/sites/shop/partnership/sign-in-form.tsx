@@ -17,6 +17,8 @@ export type SignInText = {
   readonly submit: string
   readonly sending: string
   readonly forgot: string
+  /** Where a forgotten password is asked about: the owner's WhatsApp, else email, else the form. */
+  readonly forgotHref: string
   readonly reasons: Record<'invalid' | 'locked' | 'rate' | 'missing' | 'unavailable', string>
 }
 
@@ -60,8 +62,10 @@ export function SignInForm({ text }: { readonly text: SignInText }) {
         <Button type="submit" variant="primary" size="small" loading={pending}>
           {pending ? text.sending : text.submit}
         </Button>
+        <a className={styles.forgot} href={text.forgotHref}>
+          {text.forgot}
+        </a>
       </div>
-      <p className={styles.help}>{text.forgot}</p>
     </form>
   )
 }

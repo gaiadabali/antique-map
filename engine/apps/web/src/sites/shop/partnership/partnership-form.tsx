@@ -6,26 +6,33 @@
  * a success state, and the button is disabled while the post is in flight. The words arrive as
  * plain strings from the server page (`./form-text`).
  */
-import { useActionState } from 'react'
+import { useActionState, useState } from 'react'
 
 import { submitPartnership } from './action'
 import type { FormText } from './form-text'
 import { PartnershipFormView } from './form-view'
+import type { Segment, SegmentText } from './segment-kinds'
 import { INITIAL_PARTNERSHIP_STATE } from './state'
 
 export function PartnershipForm({
   text,
+  segments,
   locale,
   siteKey,
 }: {
   readonly text: FormText
+  readonly segments: SegmentText
   readonly locale: 'en' | 'id'
   readonly siteKey: string | null
 }) {
   const [state, action, pending] = useActionState(submitPartnership, INITIAL_PARTNERSHIP_STATE)
+  const [segment, setSegment] = useState<Segment>('reseller')
   return (
     <PartnershipFormView
       text={text}
+      segments={segments}
+      segment={segment}
+      onSegment={setSegment}
       state={state}
       pending={pending}
       action={action}

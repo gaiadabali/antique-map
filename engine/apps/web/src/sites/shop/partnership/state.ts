@@ -4,7 +4,18 @@
  * the errors (the island turns them into words) and the values to put back in the fields.
  */
 
-export const PARTNERSHIP_FIELDS = ['name', 'email', 'whatsapp', 'message'] as const
+/** `segment`, `org`, `scale` and `context` are the apply form's choice and its three renamed
+ * fields; the server folds them into the lead's `message` with the visitor's own note (`./segments`). */
+export const PARTNERSHIP_FIELDS = [
+  'segment',
+  'name',
+  'email',
+  'whatsapp',
+  'org',
+  'scale',
+  'context',
+  'message',
+] as const
 export type PartnershipField = (typeof PARTNERSHIP_FIELDS)[number]
 export type PartnershipValues = Record<PartnershipField, string>
 
@@ -16,7 +27,16 @@ export type PartnershipState = {
   readonly values: PartnershipValues
 }
 
-export const EMPTY_VALUES: PartnershipValues = { name: '', email: '', whatsapp: '', message: '' }
+export const EMPTY_VALUES: PartnershipValues = {
+  segment: 'reseller',
+  name: '',
+  email: '',
+  whatsapp: '',
+  org: '',
+  scale: '',
+  context: '',
+  message: '',
+}
 
 export const INITIAL_PARTNERSHIP_STATE: PartnershipState = {
   status: 'idle',

@@ -48,10 +48,10 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
   'partnership.hotelSample': 'One piece sent before you commit',
   'partnership.hotelCta': 'Request hotel samples',
   'partnership.posterHotel': 'Hotel interior — placeholder',
-  'partnership.enquireEyebrow': 'Get in touch',
-  'partnership.enquireTitle': 'Tell us what you are buying for.',
+  'partnership.enquireEyebrow': 'Apply',
+  'partnership.enquireTitle': 'One form, whichever you are.',
   'partnership.enquireBody':
-    'Write, or send the form, and our trade desk replies within two working days with wholesale terms for resellers, gifting quotes for companies, and samples for hotels and villas.',
+    'Tell us what you are buying for and we will only ask what matters for that. Most applications are answered within two working days.',
   'partnership.talkFirst': 'Prefer to talk first?',
   'partnership.ctaWhatsapp': 'WhatsApp us',
   'partnership.ctaEmail': 'Email us',
@@ -107,15 +107,15 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
   'partnership.labelSample': 'Sample',
   'partnership.signInLink': 'Partner sign in',
   'partnership.signInEyebrow': 'Already a partner',
-  'partnership.signInTitle': 'Sign in to your account.',
+  'partnership.signInTitle': 'Sign in to your prices.',
   'partnership.signInBody':
-    'Approved partners sign in here with the address and password we set up with you. Only approved partner accounts have one.',
+    'Your wholesale pricing, order history and one-click reorder will live behind this door. Only approved reseller accounts have one.',
   'partnership.signInEmail': 'Email address',
   'partnership.signInPassword': 'Password',
   'partnership.signInSubmit': 'Sign in',
   'partnership.signInSending': 'Signing in…',
-  'partnership.signInForgot':
-    'Forgotten your password? Ask us on WhatsApp or by email and we will set a new one.',
+  'partnership.signInForgot': 'Forgotten your password?',
+  'partnership.signInForgotMessage': 'Hello, I have forgotten my Old East Indies partner password.',
   'partnership.signInMissing': 'Type your email address and your password.',
   'partnership.signInInvalid': 'That email and password do not match an approved partner account.',
   'partnership.signInLocked':

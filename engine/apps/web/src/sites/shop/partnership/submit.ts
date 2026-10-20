@@ -10,6 +10,8 @@
  */
 import { createLead, parseLeadInput, type LeadContext, type LeadDeps } from '../../../server/leads'
 
+import { composeMessage } from './segments'
+
 import {
   CONSENT_VERSION,
   EMPTY_VALUES,
@@ -22,9 +24,21 @@ import {
 
 const text = (value: FormDataEntryValue | null): string => (typeof value === 'string' ? value : '')
 
+/** Each field's longest kept value: the folded message stays inside the service's 2,000. */
+const FIELD_LIMIT: Record<(typeof PARTNERSHIP_FIELDS)[number], number> = {
+  segment: 16,
+  name: 200,
+  email: 254,
+  whatsapp: 32,
+  org: 160,
+  scale: 160,
+  context: 400,
+  message: 1000,
+}
+
 export function formValues(form: FormData): PartnershipValues {
   return Object.fromEntries(
-    PARTNERSHIP_FIELDS.map((field) => [field, text(form.get(field)).slice(0, 2100)]),
+    PARTNERSHIP_FIELDS.map((field) => [field, text(form.get(field)).slice(0, FIELD_LIMIT[field])]),
   ) as PartnershipValues
 }
 
@@ -41,8 +55,18 @@ export async function handlePartnershipForm(
     source: 'form',
     consentVersion: CONSENT_VERSION,
   }
+  // The apply form's choice and fields become one message for the lead (`./segments`).
   const input = {
-    ...values,
+    name: values.name,
+    email: values.email,
+    whatsapp: values.whatsapp,
+    message: composeMessage(locale, {
+      segment: values.segment,
+      org: values.org,
+      scale: values.scale,
+      context: values.context,
+      more: values.message,
+    }),
     locale,
     consent: form.get('consent'),
   }

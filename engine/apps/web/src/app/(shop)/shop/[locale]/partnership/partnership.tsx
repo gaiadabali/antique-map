@@ -11,6 +11,7 @@ import { Button } from '../../../../../shared/ui'
 import { FeaturedPrint } from '../../../../../sites/shop/home/featured-print'
 import { formText } from '../../../../../sites/shop/partnership/form-text'
 import { PartnershipForm } from '../../../../../sites/shop/partnership/partnership-form'
+import { segmentText } from '../../../../../sites/shop/partnership/segments'
 import {
   PartnerPanel,
   type PartnerPanelText,
@@ -161,7 +162,7 @@ export function Partnership({ contact, t, locale, turnstileSiteKey }: Props) {
       ))}
 
       <Enquire contact={contact} t={t} locale={locale} turnstileSiteKey={turnstileSiteKey} />
-      <PartnerPanel text={panelText(t)} />
+      <PartnerPanel text={panelText(t, contact)} />
     </div>
   )
 }
@@ -203,14 +204,25 @@ function Enquire({ contact, t, locale, turnstileSiteKey }: Props) {
         </div>
       </div>
       <div className={styles.panel}>
-        <PartnershipForm text={formText(t)} locale={locale} siteKey={turnstileSiteKey} />
+        <PartnershipForm
+          text={formText(t)}
+          segments={segmentText(locale)}
+          locale={locale}
+          siteKey={turnstileSiteKey}
+        />
       </div>
     </section>
   )
 }
 
 /** The partner sign-in's words, resolved here: the form is a Client Component. */
-function panelText(t: PartnershipText): PartnerPanelText {
+function panelText(t: PartnershipText, contact: Props['contact']): PartnerPanelText {
+  const ask = encodeURIComponent(t('partnership.signInForgotMessage'))
+  const forgotHref = contact.whatsapp
+    ? `https://wa.me/${contact.whatsapp.replace(/D/g, '')}?text=${ask}`
+    : contact.email
+      ? `mailto:${contact.email}?subject=${ask}`
+      : '#enquire'
   return {
     eyebrow: t('partnership.signInEyebrow'),
     title: t('partnership.signInTitle'),
@@ -225,6 +237,7 @@ function panelText(t: PartnershipText): PartnerPanelText {
       submit: t('partnership.signInSubmit'),
       sending: t('partnership.signInSending'),
       forgot: t('partnership.signInForgot'),
+      forgotHref,
       reasons: {
         invalid: t('partnership.signInInvalid'),
         locked: t('partnership.signInLocked'),
