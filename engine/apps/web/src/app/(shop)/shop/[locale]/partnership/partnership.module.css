@@ -234,17 +234,9 @@
     font-size: 1.75rem;
   }
 
+  /* two prints side by side above the words: decorative, so no scroller to reach by keyboard */
   .storyPhotos {
     order: -1;
-    display: flex;
-    margin-inline: calc(-1 * var(--shop-gutter));
-    padding-inline: var(--shop-gutter);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .storyPhotos > * {
-    flex: 0 0 19.4375rem;
   }
 
   .apply {
