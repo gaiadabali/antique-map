@@ -1,11 +1,13 @@
 /**
  * The shop home's last sections (the redesign of 2026-10-20, the handoff's Poster Club story and
- * editorial skeletons): the trade offer — its words at the left, two framed prints beside them —
- * and the bridge to the originals, a framed print on the left half and the sister gallery's words
- * on a warm right half. Every word is the lexicon.
+ * editorial skeletons): the trade offer — its words at the left, two of the shop's framed prints
+ * beside them (no photographs of shops or hotels exist yet) — and the bridge to the originals: two
+ * of the gallery's own antiques, one on the left half, one framed in the sister gallery's warm panel
+ * with its title and date. Every word is the lexicon.
  */
 import { Caps, CapsLink } from '../ui/caps-link'
 import { FeaturedPrint } from './featured-print'
+import { OriginalPrint } from './original-print'
 import type { HomeText } from './home-messages'
 import styles from './sections.module.css'
 
@@ -69,7 +71,7 @@ export function Originals({
   return (
     <section className={styles.edit} aria-labelledby="home-originals">
       <div className={styles.editPhoto}>
-        <FeaturedPrint locale={locale} index={3} sizes="50vw" className={styles.editWall} />
+        <OriginalPrint locale={locale} index={0} sizes="50vw" className={styles.editWall} />
       </div>
       <div className={styles.editPanel}>
         <Caps className={styles.label}>{t('home.shop.originalsLabel')}</Caps>
@@ -77,7 +79,13 @@ export function Originals({
           {t('home.shop.originalsTitle')}
         </h2>
         <div className={styles.editArt}>
-          <FeaturedPrint locale={locale} index={0} sizes="20rem" className={styles.editTile} />
+          <OriginalPrint
+            locale={locale}
+            index={1}
+            sizes="20rem"
+            className={styles.editTile}
+            captioned
+          />
         </div>
         <p className={styles.editBody}>{t('home.shop.originalsBody')}</p>
         <CapsLink href={sisterHref}>{t('home.shop.originalsCta')}</CapsLink>

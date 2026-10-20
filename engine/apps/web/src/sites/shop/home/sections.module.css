@@ -97,6 +97,21 @@
   margin-block-start: var(--space-6);
 }
 
+/* an original from the gallery, with its title under the frame */
+.original {
+  margin: 0;
+}
+
+.editPhoto .original {
+  display: grid;
+}
+
+.originalCaption {
+  margin-block-start: var(--space-2);
+  font: var(--shop-text-meta);
+  color: var(--color-text-muted);
+}
+
 .editTile {
   --print-tile-ratio: 320 / 440;
 }
