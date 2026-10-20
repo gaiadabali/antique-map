@@ -9,12 +9,7 @@ import { describe, expect, it } from 'vitest'
 import { FORM_TEXT_KEYS, formText } from './form-text'
 import { PartnershipFormView } from './form-view'
 import { segmentText } from './segments'
-import {
-  CONSENT_VERSION,
-  EMPTY_VALUES,
-  INITIAL_PARTNERSHIP_STATE,
-  type PartnershipState,
-} from './state'
+import { EMPTY_VALUES, INITIAL_PARTNERSHIP_STATE, type PartnershipState } from './state'
 
 // Each word is its own key, so an assertion names exactly which message was shown.
 const text = formText((key, params) => (params ? `${key}:${params.version}` : key))
@@ -37,6 +32,7 @@ const render = (
       action={() => undefined}
       locale="en"
       siteKey={over.siteKey === undefined ? '1x00000000000000000000AA' : over.siteKey}
+      privacyHref="/page/privacy"
     />,
   )
 
@@ -50,7 +46,6 @@ describe('the partnership form', () => {
         contact: 'lead.error.contact',
         whatsapp: 'lead.error.whatsapp',
         email: 'lead.error.email',
-        consent: 'lead.error.consent',
         form: 'lead.error.challenge',
       },
     })
@@ -59,7 +54,6 @@ describe('the partnership form', () => {
       'lead.error.contact',
       'lead.error.whatsapp',
       'lead.error.email',
-      'lead.error.consent',
       'lead.error.challenge',
     ]) {
       expect(errors).toContain(`>${key}<`)
@@ -77,11 +71,13 @@ describe('the partnership form', () => {
     expect(done).not.toContain('<form')
   })
 
-  it('shows no error before anything is sent, and the consent line with its version', () => {
+  it('shows no error before anything is sent, and no consent box — the promise and privacy link', () => {
     const html = render(INITIAL_PARTNERSHIP_STATE)
     expect(html).not.toContain('role="alert"')
-    expect(html).toContain(`partnership.formConsentVersion:${CONSENT_VERSION}`)
-    expect(html).toContain('name="consent"')
+    expect(html).not.toContain('name="consent"')
+    expect(html).toContain('never anything more')
+    expect(html).toContain('href="/page/privacy"')
+    expect(html).toContain('>Privacy notice</a>')
     expect(html).toContain('name="locale" value="en"')
   })
 

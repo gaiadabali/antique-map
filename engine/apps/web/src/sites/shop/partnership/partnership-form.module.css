@@ -102,3 +102,9 @@
   font: var(--text-caption);
   color: var(--shop-umber, var(--color-accent));
 }
+
+.privacy {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}

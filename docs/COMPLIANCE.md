@@ -109,13 +109,16 @@ UU PDP (Law 27/2022), with its implementing regulation as researched (PP 33/2026
 notice to people and the regulator within a short deadline (researched as 3 × 24 hours); a record of
 processing; safeguards for cross-border transfers; and possibly a data protection officer. The platform
 supports each: §3's notice, §1's inventory as the start of the record of processing, consent recorded on
-leads, SECURITY.md §4's incident steps. **None of this is a legal conclusion** — counsel decides what applies,
+leads, SECURITY.md §4's incident steps. The shop's partnership form (the redesign of 2026-10-20) has no consent box: sending
+it under its promise line ("we will only write back about this application") and a link to the privacy notice is
+the consent, recorded on the lead as `partnership-2026-10-20` with its time — `Open:` counsel to confirm. **None of this is a legal conclusion** — counsel decides what applies,
 including Singapore's PDPA for the gallery if its entity is in Singapore.
 
 ## Open
 
 - Retention periods in §1 — counsel (and the accountant for orders).
 - No consent banner (§2) — counsel, for UU PDP and EU visitors.
+- The partnership form's consent by sending, with no box (§6) — counsel.
 - Wording of every legal page; the shop's damaged-item notice and the gallery's guarantee (D11, D56).
 - Data-subject request deadlines and where requests are recorded.
 - Cross-border transfer safeguards (Anthropic, Cloudflare, Google, mail provider); DPO; PSE registration.

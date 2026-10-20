@@ -52,7 +52,9 @@ export const FORM_ERROR_KEYS = {
 } as const
 
 /** The version of the consent line on the form; stored on the lead with the time it was given. */
-export const CONSENT_VERSION = 'partnership-2026-10'
+/** The version of the consent the lead records: since 2026-10-20 there is no box — sending the form
+ * under its promise line and privacy notice is the consent (the handoff's apply form). */
+export const CONSENT_VERSION = 'partnership-2026-10-20'
 
 /** Turnstile's hidden field, inserted into the form by the widget. */
 export const TURNSTILE_FIELD = 'cf-turnstile-response'

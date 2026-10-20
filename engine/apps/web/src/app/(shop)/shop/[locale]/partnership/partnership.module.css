@@ -152,7 +152,6 @@
   gap: var(--space-7);
   padding: var(--shop-section) var(--shop-gutter);
   background: var(--shop-warm);
-  scroll-margin-block-start: var(--shop-header);
 }
 
 .applyText {

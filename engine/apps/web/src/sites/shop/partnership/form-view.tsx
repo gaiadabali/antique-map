@@ -8,7 +8,7 @@
  * not a field's (the security check, the rate limit) shows above the button. Tokens and shared
  * components only.
  */
-import { Button, Checkbox, FormMessage, Input, Textarea } from '../../../shared/ui'
+import { Button, FormMessage, Input, Textarea } from '../../../shared/ui'
 
 import type { FormText } from './form-text'
 import styles from './partnership-form.module.css'
@@ -29,6 +29,8 @@ type Props = {
   readonly locale: 'en' | 'id'
   /** Turnstile's public site key, or `null` while the host has none — the form is then off. */
   readonly siteKey: string | null
+  /** The shop's privacy notice, linked from the promise under the button. */
+  readonly privacyHref: string
   /** Changes after each submit so the widget fetches a fresh token. */
   readonly resetToken?: unknown
 }
@@ -43,6 +45,7 @@ export function PartnershipFormView({
   action,
   locale,
   siteKey,
+  privacyHref,
   resetToken,
 }: Props) {
   if (state.status === 'success') {
@@ -133,13 +136,6 @@ export function PartnershipFormView({
         defaultValue={values.message}
         error={say(errors.message)}
       />
-      <Checkbox
-        id="p-consent"
-        name="consent"
-        label={text['partnership.formConsent']}
-        hint={text['partnership.formConsentVersion']}
-        error={say(errors.consent)}
-      />
       {/* Without a site key (a workstation) there is no widget: the server then refuses the post
           with the security-check error, shown above the button. */}
       {siteKey !== null && <TurnstileWidget siteKey={siteKey} resetToken={resetToken} />}
@@ -150,7 +146,14 @@ export function PartnershipFormView({
         </Button>
         <p className={styles.formNote}>{asked.reply}</p>
       </div>
-      <p className={styles.promise}>{segments.promise}</p>
+      {/* No consent box (the handoff's form): sending under this line and its privacy notice is the
+          consent, recorded with the lead as CONSENT_VERSION (COMPLIANCE.md §6). */}
+      <p className={styles.promise}>
+        {segments.promise}{' '}
+        <a href={privacyHref} className={styles.privacy}>
+          {segments.privacy}
+        </a>
+      </p>
     </form>
   )
 }

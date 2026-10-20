@@ -33,7 +33,7 @@
 
 /* On this page an anchor lands an area's title just under the sticky header and area nav, and
    the page glides there (the shell's own scroll padding is for the header alone). */
-:global(html):has(.page) {
+:global(html[data-site]):has(.page) {
   --stores-nav: 3.1875rem;
 
   scroll-padding-block-start: calc(var(--shop-header) + var(--stores-nav) + var(--space-4));
@@ -41,7 +41,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  :global(html):has(.page) {
+  :global(html[data-site]):has(.page) {
     scroll-behavior: auto;
   }
 }
@@ -139,7 +139,7 @@
 }
 
 @media (max-width: 56.25rem) {
-  :global(html):has(.page) {
+  :global(html[data-site]):has(.page) {
     --stores-nav: 2.6875rem;
   }
 

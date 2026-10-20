@@ -3,7 +3,6 @@
 .band {
   padding: var(--space-7) var(--shop-gutter) var(--shop-section);
   background: var(--shop-warm);
-  scroll-margin-block-start: var(--shop-header);
 }
 
 .title {

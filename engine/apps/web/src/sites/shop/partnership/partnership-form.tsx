@@ -19,11 +19,13 @@ export function PartnershipForm({
   segments,
   locale,
   siteKey,
+  privacyHref,
 }: {
   readonly text: FormText
   readonly segments: SegmentText
   readonly locale: 'en' | 'id'
   readonly siteKey: string | null
+  readonly privacyHref: string
 }) {
   const [state, action, pending] = useActionState(submitPartnership, INITIAL_PARTNERSHIP_STATE)
   const [segment, setSegment] = useState<Segment>('reseller')
@@ -38,6 +40,7 @@ export function PartnershipForm({
       action={action}
       locale={locale}
       siteKey={siteKey}
+      privacyHref={privacyHref}
       resetToken={state}
     />
   )

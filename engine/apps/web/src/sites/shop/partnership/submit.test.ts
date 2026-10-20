@@ -53,7 +53,7 @@ const GOOD = {
 }
 
 describe('handlePartnershipForm', () => {
-  it('makes a shop partnership lead from the form, with the consent version', async () => {
+  it('makes a shop partnership lead from the form, sending being the consent (its version)', async () => {
     const { deps, created, calls } = setup()
     const state = await handlePartnershipForm(deps, form(GOOD), '203.0.113.9')
     expect(state.status).toBe('success')
@@ -114,10 +114,8 @@ describe('handlePartnershipForm', () => {
     expect(created[0]).not.toHaveProperty('items')
   })
 
-  it('does not ask Turnstile about a form with a mistake or without consent', async () => {
+  it('does not ask Turnstile about a form with a mistake', async () => {
     const { deps, created, calls } = setup()
-    const noConsent = await handlePartnershipForm(deps, form({ ...GOOD, consent: '' }), null)
-    expect(noConsent).toMatchObject({ status: 'error', errors: { consent: 'lead.error.consent' } })
     const noContact = await handlePartnershipForm(
       deps,
       form({ ...GOOD, email: '', whatsapp: '' }),

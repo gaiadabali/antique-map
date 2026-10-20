@@ -33,6 +33,20 @@ html {
   overflow-x: clip;
 }
 
+/* The shop (the redesign of 2026-10-20): an anchor lands its section flush under the sticky header
+   — the header's own height, not the gallery's 6.5rem — and the page glides there. A page with a
+   second sticky bar (the stores' area nav) sets its own padding. */
+html[data-site='shop'] {
+  scroll-padding-block-start: var(--shop-header);
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-site='shop'] {
+    scroll-behavior: auto;
+  }
+}
+
 body {
   margin: 0;
   min-height: 100vh;

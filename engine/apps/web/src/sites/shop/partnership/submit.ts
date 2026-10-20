@@ -68,7 +68,8 @@ export async function handlePartnershipForm(
       more: values.message,
     }),
     locale,
-    consent: form.get('consent'),
+    // Sending the form is the consent (no box since 2026-10-20; `CONSENT_VERSION` names the text).
+    consent: true,
   }
 
   const early = parseLeadInput(input, context)

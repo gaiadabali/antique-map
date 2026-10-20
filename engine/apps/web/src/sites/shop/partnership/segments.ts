@@ -36,6 +36,7 @@ export const SEGMENT_MESSAGES = defineMessages({
   'partnership.formMore': 'Anything else? (optional)',
   'partnership.formPromise':
     'We will only write back about this application — never anything more.',
+  'partnership.formPrivacy': 'Privacy notice',
 })
 
 export type SegmentKey = keyof typeof SEGMENT_MESSAGES
@@ -59,6 +60,7 @@ export function segmentText(locale: SiteLocale): SegmentText {
     question: t('partnership.segmentLabel'),
     more: t('partnership.formMore'),
     promise: t('partnership.formPromise'),
+    privacy: t('partnership.formPrivacy'),
     segments: { reseller: words('reseller'), company: words('company'), hotel: words('hotel') },
   }
 }

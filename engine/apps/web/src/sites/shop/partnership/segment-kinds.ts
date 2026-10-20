@@ -23,5 +23,6 @@ export type SegmentText = {
   readonly question: string
   readonly more: string
   readonly promise: string
+  readonly privacy: string
   readonly segments: Readonly<Record<Segment, SegmentWords>>
 }

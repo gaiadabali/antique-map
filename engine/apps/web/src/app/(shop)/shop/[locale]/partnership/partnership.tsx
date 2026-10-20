@@ -8,6 +8,7 @@
  * an approved partner's sign-in, or their account once signed in (`PartnerPanel`).
  */
 import { Button } from '../../../../../shared/ui'
+import { siteHref } from '../../../../../shell/site'
 import { FeaturedPrint } from '../../../../../sites/shop/home/featured-print'
 import { formText } from '../../../../../sites/shop/partnership/form-text'
 import { PartnershipForm } from '../../../../../sites/shop/partnership/partnership-form'
@@ -209,6 +210,7 @@ function Enquire({ contact, t, locale, turnstileSiteKey }: Props) {
           segments={segmentText(locale)}
           locale={locale}
           siteKey={turnstileSiteKey}
+          privacyHref={siteHref('shop')('page', { slug: 'privacy' }, locale)}
         />
       </div>
     </section>
