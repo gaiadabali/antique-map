@@ -10,7 +10,8 @@ import { currentPartner } from '../../../server/shop/partners/current'
 import { partnerSignOutAction } from '../../../server/shop/partners/actions'
 import { Button } from '../../../shared/ui'
 import { Caps } from '../ui/caps-link'
-import { SignInForm, type SignInText } from './sign-in-form'
+import type { SignInText } from './sign-in-form'
+import { SignInForm } from '../ui/lazy-islands'
 import styles from './sign-in.module.css'
 
 export type PartnerPanelText = {

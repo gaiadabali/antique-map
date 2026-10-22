@@ -16,7 +16,7 @@ import { Caps } from '../ui/caps-link'
 import { formText } from './form-text'
 import { partnershipText, type PartnershipText } from './page-messages'
 import { PartnerPanel, type PartnerPanelText } from './partner-panel'
-import { PartnershipForm } from './partnership-form'
+import { PartnershipForm } from '../ui/lazy-islands'
 import styles from './partnership-page.module.css'
 import { segmentText } from './segments'
 
