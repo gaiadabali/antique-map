@@ -84,9 +84,11 @@ test('purchase path: axe, keyboard-only run and accessibility tree', async ({
   expect(product, 'a sellable product in the live listing').not.toBeNull()
   await audit(page, 'product', axe, keyboard)
 
-  // 2. Keyboard only: Tab to "Add to bag", Enter.
+  // 2. Keyboard only: Tab to "Add to bag", Enter. The actions' names are matched without case:
+  // Chrome's accessibility tree names a `text-transform: uppercase` link in capitals ("CHECKOUT"
+  // since the 2026-10-20 redesign), which a case-sensitive pattern never meets.
   await page.goto(`${origin}${product}`)
-  await tabTo(page, /^Add to bag$/)
+  await tabTo(page, /^Add to bag$/i)
   await page.keyboard.press('Enter')
   await expect(page.getByText('Added to your bag.')).toBeVisible()
 
@@ -95,7 +97,7 @@ test('purchase path: axe, keyboard-only run and accessibility tree', async ({
   await expect(page.getByRole('heading', { level: 1, name: /bag/i })).toBeVisible()
   await audit(page, 'bag', axe, keyboard)
   const cookies = await page.context().cookies()
-  await tabTo(page, /^Checkout$/)
+  await tabTo(page, /^Checkout$/i)
   await page.keyboard.press('Enter')
   await page.waitForURL(/\/checkout/)
 
@@ -118,7 +120,7 @@ test('purchase path: axe, keyboard-only run and accessibility tree', async ({
   await page.keyboard.type(DENPASAR.lat)
   await page.keyboard.press('Tab')
   await page.keyboard.type(DENPASAR.lng)
-  await tabTo(page, /^Continue to payment$/)
+  await tabTo(page, /^Continue to payment$/i)
   await page.keyboard.press('Enter')
   await page.waitForURL(/\/order\//, { timeout: 30000 })
 
