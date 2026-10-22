@@ -36,7 +36,7 @@ const LANGUAGES = ['en', 'id'] as const
 const SIDEBARS: Record<(typeof ROLES)[number], Record<string, string[]>> = {
   owner: {
     'Gallery — antiques': ['Antiques', 'Makers', 'Places'],
-    'Shop — products': ['Products', 'Discount codes'],
+    'Shop — products': ['Products', 'Categories', 'Discount codes'],
     'Stores and stock': ['Stores', 'Stock'],
     Orders: ['Orders'],
     'Leads and partners': ['Leads', 'Partners', 'Chat sessions'],
@@ -48,7 +48,7 @@ const SIDEBARS: Record<(typeof ROLES)[number], Record<string, string[]>> = {
   // Staff: the editor's own account, the only one they may read; no leads, settings or records.
   editor: {
     'Gallery — antiques': ['Antiques', 'Makers', 'Places'],
-    'Shop — products': ['Products'],
+    'Shop — products': ['Products', 'Categories'],
     'Stores and stock': ['Stores', 'Stock'],
     Orders: ['Orders'],
     'Photos and tags (both sites)': ['Tags and grades', 'Images', 'Original photo files (private)'],
@@ -153,6 +153,9 @@ const REFUSALS: Record<(typeof ROLES)[number], Refusal> = {
       await page.goto('/admin/collections/products/create')
       await page.locator('#field-sku').fill(`E2E-NEG-${Date.now()}`)
       await page.locator('#field-name').fill('E2E: a product with a negative price')
+      // The price sits on the edit screen's third tab since the 2026-10 reorganisation
+      // (`products/fields.ts`): open it as a person would; sku and name are on the first.
+      await page.getByRole('button', { name: /^(Price and variants|Harga dan varian)$/ }).click()
       await page.locator('#field-price').fill('-5000')
       await page.locator('#action-save-draft').click()
     },
