@@ -105,6 +105,8 @@ step('the owner adds a product', async (page) => {
   await page.goto('/admin/collections/products/create')
   await page.locator('#field-sku').fill(SKU)
   await page.locator('#field-name').fill(`Bali map print, run ${RUN}`)
+  // The price is on the edit screen's "Price and variants" tab (`products/fields.ts`, 2026-10).
+  await page.getByRole('button', { name: /^(Price and variants|Harga dan varian)$/ }).click()
   await page.locator('#field-price').fill('250000')
   await page.locator('#action-save-draft').click()
   await page.waitForURL(/\/admin\/collections\/products\/\d+$/)
