@@ -30,7 +30,8 @@
   text-wrap: balance;
 }
 
-.lede {
+/* `p.lede`: outranks the global `.site-lede` (the smoke test's hook) wherever the chunks land. */
+p.lede {
   margin: 0.9375rem 0 0;
   font: var(--shop-text-body);
   line-height: 1.5;
