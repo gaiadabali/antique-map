@@ -277,6 +277,7 @@ test.describe('the order page', () => {
     await expect(page.getByRole('button', { name: 'Put these back in my bag' })).toBeVisible()
     await page.getByRole('button', { name: 'Put these back in my bag' }).click()
     await expect(page).toHaveURL(/\/bag$/)
-    await expect(page.getByRole('spinbutton', { name: 'Quantity' })).toHaveValue('1')
+    // The stepper is a named group: − / + buttons around a read-only count (the bag's redesign).
+    await expect(page.getByRole('group', { name: 'Quantity' })).toContainText('1')
   })
 })

@@ -23,7 +23,11 @@ coverage/
 .vitest/
 
 # The local upload bucket's disk (registries/storage.ts falls back to it when no bucket is set): runtime data.
+# Run from the repo root (vitest, a seed), the fallback writes to ./media/ instead. Never commit it:
+# Payload renames an upload whose name is already on that disk (MP.901.jpg -> MP.901-4.jpg), so a
+# committed file breaks every db test that looks a seeded picture up by its name.
 engine/packages/cms/media/
+/media/
 
 # Environment files: secrets never go into the repo (CONVENTIONS.md §13).
 # The template is the one exception.

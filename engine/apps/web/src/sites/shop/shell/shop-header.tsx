@@ -10,6 +10,7 @@
  */
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react'
 
+import { useRailSteps } from '../ui/rail-steps'
 import styles from './shop-header.module.css'
 
 export type ShopNavLink = {
@@ -52,6 +53,7 @@ export function ShopHeader({
   const [mounted, setMounted] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const menuId = useId()
+  useRailSteps() // the home's rails (Server Components) step through this one listener
   const closeRef = useRef<HTMLButtonElement>(null)
   const openRef = useRef<HTMLButtonElement>(null)
 

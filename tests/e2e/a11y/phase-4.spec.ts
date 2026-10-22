@@ -271,7 +271,8 @@ test.describe('4.3.a the header on a phone', () => {
   test('opens a menu with the nav and the language switch from the keyboard', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 })
     await page.goto('/')
-    const burger = page.locator('header button[aria-expanded]')
+    // By name: the shop's header also has a search button with aria-expanded (`shell.menu.open`).
+    const burger = page.locator('header').getByRole('button', { name: 'Open menu', exact: true })
     const sheet = page.locator('header [role="dialog"]')
     // An Enter before the header hydrates does nothing (CI 38521749344), so press again until
     // the menu answers; once it is open the check passes and no second press closes it.
@@ -312,17 +313,36 @@ test.describe('4.3.e the homes and the partnership page', () => {
     })
   }
 
-  test('the partnership page ends in an enquiry, never a sign-in', async ({ page }, testInfo) => {
+  // The 2026-10-20 redesign (`46b01853`, `6dfd57c2`) put a partner sign-in box at the foot of the
+  // page: the page leads to the apply form (`#apply`, the enquiry block's anchor), then ends in the
+  // partner's sign-in (`#signin`). The enquiry itself stays free of any sign-in, and the only
+  // password field on the page is the partner box's.
+  test('the partnership page leads to an apply form, with the partner sign-in in its own box', async ({
+    page,
+  }, testInfo) => {
     test.skip(meta(testInfo).site !== 'shop', 'the shop alone has a partnership page')
     for (const url of ['/partnership', `/id/${partnershipSlug('id')}`]) {
       await page.goto(url)
       const main = page.locator('main')
-      await expect(main.locator('input[type="password"]')).toHaveCount(0)
       const ids = await main.locator('section').evaluateAll((all) => all.map((each) => each.id))
-      expect(ids.at(-1), url).toBe('enquire')
-      await expect(page.locator('#enquire form')).toBeVisible()
-      await expect(page.locator('#enquire form textarea')).toBeVisible()
-      await expect(main).not.toContainText(/sign in|log in|masuk akun/i)
+      // The apply form comes before the sign-in, which closes the page.
+      expect(ids.indexOf('apply'), `${url} sections: ${ids.join()}`).toBeGreaterThanOrEqual(0)
+      expect(ids.at(-1), url).toBe('signin')
+      expect(ids.indexOf('apply'), url).toBeLessThan(ids.indexOf('signin'))
+      // The apply form: visible, with the visitor's name, email and message, and no password.
+      const apply = main.locator('section#apply')
+      await expect(apply.locator('form')).toBeVisible()
+      await expect(apply.locator('form input[name="name"]')).toBeVisible()
+      await expect(apply.locator('form input[type="email"]')).toBeVisible()
+      await expect(apply.locator('form input[name="message"]')).toBeVisible()
+      await expect(apply.locator('input[type="password"]')).toHaveCount(0)
+      await expect(apply).not.toContainText(/sign in|log in|masuk akun/i)
+      // The sign-in is the partner box alone: every password field on the page is inside #signin.
+      expect(await main.locator('input[type="password"]').count()).toBe(
+        await main.locator('section#signin input[type="password"]').count(),
+      )
+      await expect(main.locator('section#signin input[type="password"]')).toBeVisible()
+      await expect(main.locator('section#signin input[type="email"]')).toBeVisible()
     }
   })
 })

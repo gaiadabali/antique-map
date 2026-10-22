@@ -45,11 +45,17 @@ process.env.PAYLOAD_SECRET ??= 'e2e-gallery-pages-dev-only-never-signs-anything'
 const { cms } = await import('./engine/packages/cms/src/instance')
 const { invalidationBatch } = await import('./engine/packages/cache/src/index')
 const payload = await cms()
+// Outside a request: every published write's cache hook (the works', the vocabulary's, the pages')
+// queues its tags on an operation of this batch, flushed once by the script. A write with no
+// \`context\` has no collector, so the hook's \`after()\` throws ("called outside a request scope").
+const batch = invalidationBatch()
 const one = async (collection, where) =>
   (await payload.find({ collection, where, limit: 1, depth: 0, draft: true })).docs[0]
 const page = async (site, slug, data) =>
   (await one('pages', { and: [{ site: { equals: site } }, { slug: { equals: slug } }] })) ??
-  (await payload.create({ collection: 'pages', locale: 'all', data: { site, kind: 'page', slug, ...data } }))
+  (await batch.operation((context) =>
+    payload.create({ collection: 'pages', locale: 'all', context, data: { site, kind: 'page', slug, ...data } }),
+  ))
 `
 
 /**
@@ -59,9 +65,6 @@ const page = async (site, slug, data) =>
  * so a second run finds what the first made.
  */
 const SEED = `${PREAMBLE}
-// Outside a request: every published write's cache hook (the works', and the vocabulary's —
-// catalogue:gallery) queues its tags on an operation of this batch, flushed once below.
-const batch = invalidationBatch()
 const grade =
   (await one('terms', { and: [{ kind: { equals: 'grade' } }, { slug: { equals: 'e2e-5-4-grade' } }] })) ??
   (await batch.operation((context) => payload.create({
@@ -126,7 +129,6 @@ for (const [stockNumber, over] of [
     payload.create({ collection: 'works', data: complete({ ...over, stockNumber, _status: 'published' }), context }),
   )
 }
-await batch.flush()
 await page('gallery', 'e2e-5-4-page', {
   title: { en: 'E2E fixture page' }, intro: { en: 'A fixture page for the gallery pages e2e spec.' },
   body: { en: 'First paragraph.\\n\\nSecond paragraph.' }, _status: 'published',
@@ -138,6 +140,7 @@ await page('gallery', 'e2e-5-4-draft', { title: { en: 'E2E draft page' }, body: 
 await page('shop', 'e2e-5-4-shop-page', {
   title: { en: 'E2E shop-only page' }, body: { en: 'The shop, not the gallery.' }, _status: 'published',
 })
+await batch.flush()
 writeFileSync(process.env.SCRIPT_OUT, JSON.stringify({ makerSlug: maker.slug, placePath: [java.slug, place.slug] }))
 await payload.destroy()
 `
@@ -152,14 +155,15 @@ await payload.destroy()
 const EDIT = `${PREAMBLE}
 const doc = await one('pages', { and: [{ site: { equals: 'gallery' } }, { slug: { equals: 'e2e-5-4-edited' } }] })
 if (!doc) throw new Error('the edit case runs after the seed: no e2e-5-4-edited page')
-await payload.update({
-  collection: 'pages', id: doc.id, locale: 'en', draft: true,
+await batch.operation((context) => payload.update({
+  collection: 'pages', id: doc.id, locale: 'en', draft: true, context,
   data: { body: process.env.SCRIPT_ARG, _status: 'draft' },
-})
-await payload.update({
-  collection: 'pages', id: doc.id, locale: 'all',
+}))
+await batch.operation((context) => payload.update({
+  collection: 'pages', id: doc.id, locale: 'all', context,
   data: { title: { en: 'E2E edited page' }, _status: 'published' },
-})
+}))
+await batch.flush()
 writeFileSync(process.env.SCRIPT_OUT, JSON.stringify({ id: doc.id }))
 await payload.destroy()
 `

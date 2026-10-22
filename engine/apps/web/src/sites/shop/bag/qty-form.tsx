@@ -54,33 +54,36 @@ export function QtyForm({
         : null
   return (
     <div className={styles.qty}>
-      <form action={update} className={styles.stepper} role="group" aria-label={label}>
-        <input type="hidden" name="productId" value={productId} />
-        <input type="hidden" name="variantSku" value={variantSku ?? ''} />
-        <button
-          type="submit"
-          name="qty"
-          value={qty - 1}
-          className={styles.step}
-          aria-label={fewerLabel}
-          disabled={pending}
-        >
-          −
-        </button>
-        <span className={styles.count} aria-live="polite">
-          {qty}
-        </span>
-        <button
-          type="submit"
-          name="qty"
-          value={qty + 1}
-          className={styles.step}
-          aria-label={moreLabel}
-          disabled={pending || qty >= max}
-        >
-          +
-        </button>
-      </form>
+      {/* The group is a div: a named <form> is a landmark whose role may not be overridden. */}
+      <div className={styles.stepper} role="group" aria-label={label}>
+        <form action={update} className={styles.stepForm}>
+          <input type="hidden" name="productId" value={productId} />
+          <input type="hidden" name="variantSku" value={variantSku ?? ''} />
+          <button
+            type="submit"
+            name="qty"
+            value={qty - 1}
+            className={styles.step}
+            aria-label={fewerLabel}
+            disabled={pending}
+          >
+            −
+          </button>
+          <span className={styles.count} aria-live="polite">
+            {qty}
+          </span>
+          <button
+            type="submit"
+            name="qty"
+            value={qty + 1}
+            className={styles.step}
+            aria-label={moreLabel}
+            disabled={pending || qty >= max}
+          >
+            +
+          </button>
+        </form>
+      </div>
       <form action={remove}>
         <input type="hidden" name="productId" value={productId} />
         <input type="hidden" name="variantSku" value={variantSku ?? ''} />
