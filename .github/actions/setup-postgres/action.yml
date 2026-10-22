@@ -43,7 +43,9 @@ runs:
           -o Dir::Etc::sourceparts=- -o APT::Get::List-Cleanup=0
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
           "postgresql-$PG_MAJOR" "postgresql-client-$PG_MAJOR"
-        # The package creates and starts `$PG_MAJOR/main`; make sure it is the one on 5432.
+        # The package creates `$PG_MAJOR/main` but does not start it: the runner image keeps the
+        # postgresql service disabled (CI run 39714453047). Start it, then make sure it is on 5432.
+        sudo pg_ctlcluster "$PG_MAJOR" main start
         if ! pg_lsclusters -h | awk -v v="$PG_MAJOR" '$1 == v && $2 == "main" && $3 == 5432 && $4 == "online" { found = 1 } END { exit !found }'; then
           pg_lsclusters
           echo "::error::Postgres $PG_MAJOR is not online on 5432"
