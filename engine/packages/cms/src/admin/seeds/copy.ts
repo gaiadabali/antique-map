@@ -21,6 +21,11 @@ export const SEEDS_COPY = t({
     en: 'Seeds never run on the live site. They run on staging and on a workstation.',
     id: 'Seed tidak pernah dijalankan di situs live. Seed berjalan di staging dan di komputer pengembang.',
   },
+  everythingTitle: { en: 'Seed everything', id: 'Seed semua' },
+  everythingBody: {
+    en: 'Everything below for the Old East Indies shop, in order: the mock stores, stock and discounts, then the categories and tags, the products with their pictures and web sizes, and the shop pages. The gallery is not touched.',
+    id: 'Semua di bawah untuk toko Old East Indies, berurutan: toko, stok dan diskon contoh, lalu kategori dan tag, produk dengan gambar dan ukuran webnya, dan halaman toko. Galeri tidak disentuh.',
+  },
   vocabularyTitle: { en: 'Categories and tags', id: 'Kategori dan tag' },
   vocabularyBody: {
     en: 'The shop’s categories, the tags, grades, places and makers, and the site settings’ defaults.',

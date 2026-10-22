@@ -97,8 +97,15 @@ function catalogueDir(): string | null {
   }
 }
 
-const shopFile = (kind: ImportKind) =>
-  fileURLToPath(new URL(`./shop/data/${kind}.csv`, import.meta.url))
+/** The mock shop's sheets, each by a `new URL()` a bundler follows (the admin's seed screen). */
+const SHOP_FILES = {
+  products: new URL('./shop/data/products.csv', import.meta.url),
+  stores: new URL('./shop/data/stores.csv', import.meta.url),
+  stock: new URL('./shop/data/stock.csv', import.meta.url),
+  discounts: new URL('./shop/data/discounts.csv', import.meta.url),
+} as const
+
+const shopFile = (kind: keyof typeof SHOP_FILES) => fileURLToPath(SHOP_FILES[kind])
 
 /**
  * The committed sample's rows, read back from the files the generator wrote (DATA.md §2): the

@@ -11,7 +11,8 @@
  *   outlives the request (`after()`); the screen asks for its state until it ends. A restart loses
  *   the state, never a write — every seed is idempotent and can simply be run again.
  * - **What it runs** is the CLIs' own code: `seedLayer` (`@engine/cms/seed`), the pending pictures'
- *   web sizes, and the shop's built-in pages (`server/shop/pages/seed/pages`). The cache tags the
+ *   web sizes, and the shop's built-in pages (`server/shop/pages/seed/pages`) — one at a time, or
+ *   the whole Old East Indies seed in order (`everything`; the gallery never). The cache tags the
  *   writes expire are posted to this process's revalidate route at the end, as a CLI posts them.
  */
 import 'server-only'
@@ -23,8 +24,25 @@ import { derivePending, renderDerivatives, renderSeedRun, seedLayer } from '@eng
 
 import { seedShopPages } from '../../../../server/shop/pages/seed/pages'
 
-export const SEED_ACTIONS = ['vocabulary', 'shop-catalogue', 'shop-pages', 'pictures'] as const
+export const SEED_ACTIONS = [
+  'everything',
+  'vocabulary',
+  'shop-catalogue',
+  'shop-pages',
+  'pictures',
+] as const
 export type SeedAction = (typeof SEED_ACTIONS)[number]
+
+/** One seed the runner can perform: an action, or the mock shop that `everything` starts with. */
+type SeedStep = Exclude<SeedAction, 'everything'> | 'shop'
+
+/**
+ * The whole Old East Indies seed, in order (never the gallery's): the mock shop's stores, stock and
+ * discounts with its products as drafts (the catalogue's stock goes to those stores), then the
+ * catalogue published with its pictures' web sizes, then the built-in pages. The vocabulary rides
+ * in with each layer (`seedLayer`).
+ */
+const EVERYTHING: readonly SeedStep[] = ['shop', 'shop-catalogue', 'shop-pages']
 
 export type SeedState = {
   readonly action: SeedAction
@@ -64,19 +82,38 @@ export function summaryOf(report: string): string[] {
     .filter((line) => !/^Row \d+ .*\) (new|updated|unchanged)\b/.test(line))
 }
 
+type Context = ReturnType<ReturnType<typeof cliInvalidation>['context']>
+
+async function performStep(step: SeedStep, payload: Payload, context: Context): Promise<string[]> {
+  const lines: string[] = []
+  if (step === 'shop') {
+    // Drafts, as a workstation holds them: the catalogue retires the mock products anyway.
+    const run = await seedLayer(step, { payload, publish: false, context })
+    lines.push(...summaryOf(renderSeedRun(run)))
+  }
+  if (step === 'vocabulary' || step === 'shop-catalogue') {
+    const run = await seedLayer(step, { payload, publish: true, context })
+    lines.push(...summaryOf(renderSeedRun(run)))
+  }
+  if (step === 'shop-pages') {
+    lines.push(...(await seedShopPages(payload, { publish: true, context })))
+  }
+  if (step === 'shop-catalogue' || step === 'pictures') {
+    lines.push(renderDerivatives(await derivePending(payload, context)))
+  }
+  return lines
+}
+
 async function perform(action: SeedAction, payload: Payload): Promise<string[]> {
   const batch = cliInvalidation()
   const context = batch.context()
   const lines: string[] = []
-  if (action === 'vocabulary' || action === 'shop-catalogue') {
-    const run = await seedLayer(action, { payload, publish: true, context })
-    lines.push(...summaryOf(renderSeedRun(run)))
-  }
-  if (action === 'shop-pages') {
-    lines.push(...(await seedShopPages(payload, { publish: true, context })))
-  }
-  if (action === 'shop-catalogue' || action === 'pictures') {
-    lines.push(renderDerivatives(await derivePending(payload, context)))
+  if (action === 'everything') {
+    for (const step of EVERYTHING) {
+      lines.push(`[${step}]`, ...(await performStep(step, payload, context)))
+    }
+  } else {
+    lines.push(...(await performStep(action, payload, context)))
   }
   lines.push(await postCliTags(batch))
   return lines

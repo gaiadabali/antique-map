@@ -10,6 +10,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { L } from './copy'
 
 const ACTIONS = [
+  { action: 'everything', title: 'everythingTitle', body: 'everythingBody' },
   { action: 'vocabulary', title: 'vocabularyTitle', body: 'vocabularyBody' },
   { action: 'shop-catalogue', title: 'catalogueTitle', body: 'catalogueBody' },
   { action: 'shop-pages', title: 'pagesTitle', body: 'pagesBody' },
