@@ -20,7 +20,10 @@ import {
 /** Plain text for the importer: LF line ends, blank lines between paragraphs, no outer space. */
 const plain = (text: string) => text.replace(/\r\n?/g, '\n').trim()
 
-function withVariants(sku: string, base: Omit<CatalogueProduct, 'sku' | 'variants' | 'priceIdr'>) {
+export function withVariants(
+  sku: string,
+  base: Omit<CatalogueProduct, 'sku' | 'variants' | 'priceIdr'>,
+): CatalogueProduct {
   if (!SKU_PATTERN.test(sku) || `${sku}-M`.length > SKU_MAX_LENGTH) {
     throw new Error(`The design SKU '${sku}' is not a valid SKU.`)
   }
@@ -76,15 +79,26 @@ export function instagramProduct(
   })
 }
 
-/** Every design, the catalogue ones in file order, then the Instagram ones. */
+/**
+ * Every design, the catalogue ones in file order, then the Instagram ones, then the committed
+ * additions (`./data`): designs the owner sells that his catalogue PDFs do not hold, kept in the
+ * repo with their pictures so every environment seeds them alike.
+ */
 export function buildCatalogue(
   designs: readonly DesignRecord[],
   instagram: readonly InstagramRecord[],
   dirs: CatalogueDirs,
+  additions: { readonly designs: readonly DesignRecord[]; readonly dir: string } = {
+    designs: [],
+    dir: '',
+  },
 ): CatalogueProduct[] {
   const products = [
     ...designs.map((design) => designProduct(design, dirs)),
     ...instagram.map((record, index) => instagramProduct(record, index, dirs)),
+    ...additions.designs.map((design) =>
+      designProduct(design, { designs: additions.dir, instagram: additions.dir }),
+    ),
   ]
   const seen = new Set<string>()
   for (const product of products) {

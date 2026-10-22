@@ -11,6 +11,7 @@
     { "label": "Bali", "labelId": "Bali" },
     { "label": "Animals", "labelId": "Satwa" },
     { "label": "Botanicals", "labelId": "Botani" },
-    { "label": "Landscapes", "labelId": "Lanskap" }
+    { "label": "Landscapes", "labelId": "Lanskap" },
+    { "label": "Antique prints", "labelId": "Cetakan antik" }
   ]
 }

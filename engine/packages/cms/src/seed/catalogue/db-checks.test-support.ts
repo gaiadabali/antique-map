@@ -95,22 +95,24 @@ export async function checkCatalogueLayer(payload: Payload): Promise<void> {
       expect(report.counts.rejected).toBe(0)
       expect(report.counts.held).toBe(0)
     }
-    // Nine rows: three products (new) and their six variant rows, which report as updates of
-    // the product they join (`import/apply-products.ts` applyVariantRow).
-    expect((first.imports[0] as unknown as Counted).counts).toMatchObject({ new: 3, updated: 6 })
+    // Twelve rows: four products (new) — the fixture's three and the committed addition
+    // (`./data`, River Jurong) — and their eight variant rows, which report as updates of the
+    // product they join (`import/apply-products.ts` applyVariantRow).
+    expect((first.imports[0] as unknown as Counted).counts).toMatchObject({ new: 4, updated: 8 })
     expect(first.catalogue!.attach).toEqual({
-      mediaCreated: 4,
-      imagesSet: 3,
-      published: 3,
+      mediaCreated: 5,
+      imagesSet: 4,
+      published: 4,
       held: [],
     })
+    expect(first.catalogue!.rehearsal).toEqual({ retired: 0, alreadyRetired: 0 })
     // The mocks seed as drafts: those with no variant are already off sale, so the 80 split between
     // "retired" now and "already retired" (`./retire.ts`); the states below prove all 80 are off.
     const retire = first.catalogue!.retire!
     expect(retire.retired + retire.alreadyRetired).toBe(80)
     expect(retire.retired).toBeGreaterThan(0)
 
-    // The shop lists the three designs and none of the 80 mock products.
+    // The shop lists the four designs and none of the 80 mock products.
     const listed = await payload.find({
       collection: 'products',
       overrideAccess: false,
@@ -119,6 +121,7 @@ export async function checkCatalogueLayer(payload: Payload): Promise<void> {
       where: { _status: { equals: 'published' } },
     })
     expect(listed.docs.map((doc) => (doc as { sku?: string }).sku).sort()).toEqual([
+      'SEED-AP.2033',
       'SEED-IG01',
       'SEED-MP.901',
       'SEED-MP.902',
@@ -126,14 +129,33 @@ export async function checkCatalogueLayer(payload: Payload): Promise<void> {
 
     // Role and provenance are set per picture; the mock-up carries the label's provenance. Each
     // picture is stored under its product's name and kind, never the extraction's code (MP.901).
+    // Payload's local-disk storage (tests have no S3) adds `-1` to a name an earlier run left in
+    // its folder, so the name the layer gave may carry that suffix.
     const media = await payload.find({
       collection: 'media',
       overrideAccess: true,
       depth: 0,
-      limit: 20,
-      where: { filename: { in: [DESIGN, POSTER, POSTER_FRAMED] } },
+      limit: 50,
+      sort: 'id',
+      where: { filename: { like: 'fixture-' } },
     })
-    const by = new Map(media.docs.map((doc) => [(doc as { filename?: string }).filename, doc]))
+    const sameName = (stored: unknown, file: string) => {
+      const dot = file.lastIndexOf('.')
+      const [base, ext] = [file.slice(0, dot), file.slice(dot)]
+      const name = String(stored)
+      return (
+        name === file ||
+        (name.startsWith(`${base}-`) &&
+          name.endsWith(ext) &&
+          /^\d+$/.test(name.slice(base.length + 1, -ext.length)))
+      )
+    }
+    const by = new Map(
+      [DESIGN, POSTER, POSTER_FRAMED].map((file) => [
+        file,
+        media.docs.find((doc) => sameName((doc as { filename?: string }).filename, file)),
+      ]),
+    )
     const facts = (file: string) => {
       const doc = by.get(file) as { role?: string; provenance?: string; subject?: string }
       return [doc.subject, doc.role, doc.provenance]

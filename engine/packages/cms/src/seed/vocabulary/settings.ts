@@ -8,7 +8,10 @@ const SHOP_SOCIAL = [
   { platform: 'Facebook', url: 'https://www.facebook.com/OldEastIndies' },
 ] as const
 
-/** The settings a fresh environment starts on: the schema's own defaults, written once (`./seed`). */
+/**
+ * The settings a fresh environment starts on: the schema's own defaults and the shop's WhatsApp
+ * number as the local shop held it, written once (`./seed`).
+ */
 export const SETTINGS_DEFAULTS = {
   gallery: {
     social: GALLERY_SOCIAL,
@@ -16,6 +19,7 @@ export const SETTINGS_DEFAULTS = {
   },
   shop: {
     social: SHOP_SOCIAL,
+    contact: { whatsapp: '+6281299253712' },
     ai: { chatEnabled: false, draftingEnabled: false, dailyBudgetUsd: 5, sessionTokenCap: 150000 },
     checkoutEnabled: true,
     delivery: { bands: [], freeOverIdr: 500000 },

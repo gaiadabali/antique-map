@@ -24,6 +24,9 @@
  * - **The owner and the editors make images**; store staff read them (`./access`).
  */
 import { MEDIA_UPLOAD_MIME_TYPES } from '@engine/media/storage'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+
 import type { CollectionConfig } from 'payload'
 
 import { ADMIN_GROUPS } from '../../admin/groups'
@@ -57,6 +60,12 @@ export const Media: CollectionConfig = {
   },
   access: MEDIA_ACCESS,
   upload: {
+    // Without S3 (the tests), Payload writes files to <cwd>/media — the repo root under vitest,
+    // where one run's files made the next run's names collide (`-1`) and were once committed.
+    // Under vitest each process writes to a folder of its own in the system temp dir instead.
+    ...(process.env.VITEST
+      ? { staticDir: join(tmpdir(), 'indies-test-media', String(process.pid)) }
+      : {}),
     mimeTypes: [...MEDIA_UPLOAD_MIME_TYPES],
     crop: false,
     focalPoint: true,

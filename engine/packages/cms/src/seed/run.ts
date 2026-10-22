@@ -70,7 +70,7 @@ export async function seedLayer(layer: SeedLayer, options: SeedOptions): Promise
   }
 
   if (layer === 'shop-catalogue') {
-    const catalogue = await seedCatalogue(payload, legacyDataDir(), {
+    const catalogue = await seedCatalogue(payload, catalogueDir(), {
       dryRun,
       publish,
       runOptions,
@@ -86,6 +86,15 @@ export async function seedLayer(layer: SeedLayer, options: SeedOptions): Promise
   })
   const marked = dryRun ? 0 : await carryMarks(payload, rows, context)
   return { layer, vocabulary, imports: [report], marked }
+}
+
+/** The legacy data folder when this machine has one; `null` on a server, which never does. */
+function catalogueDir(): string | null {
+  try {
+    return legacyDataDir()
+  } catch {
+    return null
+  }
 }
 
 const shopFile = (kind: ImportKind) =>

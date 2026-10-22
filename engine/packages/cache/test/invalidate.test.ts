@@ -187,6 +187,16 @@ describe('outside a request', () => {
       /is not an invalidation collector/,
     )
   })
+
+  it("takes a collector from another copy of this module (a built server's second bundle)", () => {
+    const seen: unknown[] = []
+    const elsewhere = {
+      [Symbol.for('@engine/cache:collector-brand')]: true,
+      add: (tags: unknown) => seen.push(tags),
+    }
+    invalidate([productTag(1)], { '@engine/cache:collector': elsewhere })
+    expect(seen).toEqual([[productTag(1)]])
+  })
 })
 
 describe('inside a request, with a collector', () => {

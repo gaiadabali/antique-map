@@ -118,6 +118,7 @@ export function engineConfig(env: Env = process.env): Config {
           '@engine/cms/admin/views#OrdersNavLink',
           '@engine/cms/admin/views#LeadsNavLink',
           '@engine/cms/admin/views#StockImportNavLink',
+          '@engine/cms/admin/views#SeedsNavLink',
           '@engine/cms/admin/views#DailyWorkEnd',
         ],
         // The language switch: a link to the account page, at the bottom of the sidebar.

@@ -21,14 +21,13 @@
  * re-reads on its next deploy or edit.
  */
 import { invalidationBatch } from '@engine/cache'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
 
 import type { Payload, PayloadRequest, RequestContext } from 'payload'
 
 import { reqOf } from '../req'
 import { fold } from '../../import/vocabulary'
 import { ensureCategory } from './category'
+import { data, read, VOCABULARY_FILES } from './files'
 import { fillKey, publishVocabulary, type PublishReport } from './publish'
 import { SETTINGS_DEFAULTS } from './settings'
 import { sortNameOf } from './sort-name'
@@ -66,11 +65,8 @@ type GradeSeed = {
 type SubjectSeed = { label: string; labelId?: string }
 type MakerSeed = { name: string; roles?: readonly string[] }
 
-const here = (file: string) => join(import.meta.dirname, file)
-const data = (file: string) => JSON.parse(readFileSync(here(join('data', file)), 'utf8'))
-
 function loadGazetteer(): readonly GazetteerPlace[] {
-  const json = JSON.parse(readFileSync(here('../gazetteer.json'), 'utf8')) as {
+  const json = read(VOCABULARY_FILES.gazetteer) as {
     places: GazetteerPlace[]
   }
   return json.places

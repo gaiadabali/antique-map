@@ -12,7 +12,7 @@ import type { ImportReport } from '../../import/types'
 import { PRODUCT_COLUMNS } from '../../import/kinds'
 import { attachImages, type AttachReport } from './attach'
 import { loadCatalogue, mockProductSkus, mockStoreCodes } from './read'
-import { retireMockProducts, type RetireReport } from './retire'
+import { retireMockProducts, retireRehearsalProducts, type RetireReport } from './retire'
 import { csvOf, productRows, stockFiles, stockRows } from './rows'
 import type { CatalogueProduct } from './types'
 
@@ -26,8 +26,12 @@ export type CataloguePlan = {
   readonly retireSkus: readonly string[]
 }
 
-/** Everything the layer will write, in memory: no database, no network. */
-export function cataloguePlan(dir: string): CataloguePlan {
+/**
+ * Everything the layer will write, in memory: no database, no network. Without `dir` it plans the
+ * committed designs and additions (`./read` `loadCatalogue`), which refill the shop as the legacy
+ * folder does, so the mock products retire either way.
+ */
+export function cataloguePlan(dir: string | null): CataloguePlan {
   const products = loadCatalogue(dir)
   const stock = stockRows(products, mockStoreCodes())
   return {
@@ -44,11 +48,15 @@ export type CatalogueRun = {
   /** Not run on a dry run (media and unpublishing cannot be rolled back): `undefined`. */
   readonly attach?: AttachReport
   readonly retire?: RetireReport
+  /** Staging's rehearsal products (`REH-…`) taken off the shop on the same run. */
+  readonly rehearsal?: RetireReport
+  /** False when no legacy data was on disk: the committed additions alone were seeded. */
+  readonly legacy?: boolean
 }
 
 export async function seedCatalogue(
   payload: Payload,
-  dir: string,
+  dir: string | null,
   options: {
     readonly dryRun: boolean
     readonly publish: boolean
@@ -75,7 +83,16 @@ export async function seedCatalogue(
   const retire = options.publish
     ? await retireMockProducts(payload, plan.retireSkus, options.context)
     : undefined
-  return { imports: await withStock(imports, plan, base), attach, ...(retire ? { retire } : {}) }
+  const rehearsal = options.publish
+    ? await retireRehearsalProducts(payload, options.context)
+    : undefined
+  return {
+    legacy: dir !== null,
+    imports: await withStock(imports, plan, base),
+    attach,
+    ...(retire ? { retire } : {}),
+    ...(rehearsal ? { rehearsal } : {}),
+  }
 }
 
 async function withStock(
@@ -93,6 +110,11 @@ async function withStock(
 
 export function renderCatalogue(run: CatalogueRun): string[] {
   const lines: string[] = []
+  if (run.legacy === false) {
+    lines.push(
+      'designs: no LEGACY_DATA_DIR here — the committed export and additions (seed/catalogue/data)',
+    )
+  }
   if (run.attach) {
     const a = run.attach
     lines.push(
@@ -105,6 +127,12 @@ export function renderCatalogue(run: CatalogueRun): string[] {
     lines.push(
       `mock products retired: ${run.retire.retired} unpublished, ` +
         `${run.retire.alreadyRetired} already retired or absent`,
+    )
+  }
+  if (run.rehearsal) {
+    lines.push(
+      `rehearsal products retired: ${run.rehearsal.retired} unpublished, ` +
+        `${run.rehearsal.alreadyRetired} already retired`,
     )
   }
   return lines

@@ -30,6 +30,7 @@ export const CATEGORIES = {
   animals: { en: 'Animals', id: 'Satwa' },
   botanicals: { en: 'Botanicals', id: 'Botani' },
   landscapes: { en: 'Landscapes', id: 'Lanskap' },
+  antiquePrints: { en: 'Antique prints', id: 'Cetakan antik' },
 } as const satisfies Record<string, CategoryLabel>
 
 /** A design in several catalogues takes the first that applies, in this order (owner brief). */
@@ -40,6 +41,8 @@ const PRIORITY: ReadonlyArray<readonly [string, CategoryLabel]> = [
   ['Botanicals', CATEGORIES.botanicals],
   ['Landscapes', CATEGORIES.landscapes],
   ['Bali Island', CATEGORIES.bali],
+  // Not one of the six PDFs: the committed additions' catalogue (`./data/designs.jsonl`).
+  ['Antique Prints', CATEGORIES.antiquePrints],
 ]
 
 export function categoryOf(catalogues: readonly string[]): CategoryLabel {

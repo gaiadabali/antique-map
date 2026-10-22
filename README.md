@@ -75,9 +75,11 @@ delete `engine/apps/web/.next/dev` and start it again.
 | ------- | ----- |
 | `pnpm data:seed --layer vocabulary --publish` | places, tags, grades, makers, the shop's categories, site settings |
 | `pnpm data:seed --layer shop --publish` | the mock shop: stores, products, stock |
-| `LEGACY_DATA_DIR=<dir> pnpm data:seed --layer shop-catalogue --publish` | the owner's 156 real designs (Animals 21, Bali 46, Botanicals 27, Landscapes 33, Maps 16, Travel posters 13) with pictures and stock; retires the mock products. `<dir>` holds `old-east-indies/designs` and `old-east-indies/instagram`, never committed ([docs/DATA.md](docs/DATA.md) §2) |
+| `LEGACY_DATA_DIR=<dir> pnpm data:seed --layer shop-catalogue --publish` | the owner's 156 real designs (Animals 21, Bali 46, Botanicals 27, Landscapes 33, Maps 16, Travel posters 13) plus the committed additions in `engine/packages/cms/src/seed/catalogue/data` (Antique prints: River Jurong, 1854), with pictures and stock; retires the mock products and staging's rehearsal (`REH-`) products. `<dir>` holds `old-east-indies/designs` and `old-east-indies/instagram`, never committed ([docs/DATA.md](docs/DATA.md) §2) |
 | `pnpm --filter @engine/cms media:derivatives` | the web sizes of newly uploaded pictures (a seed run outside the app leaves them pending) |
 | `pnpm data:seed-pages [--publish]` | the shop's home, partnership and stores pages as CMS blocks, in both languages, exactly as the site draws them; seeded once, never over an edited page |
+
+**Without a shell on the server** (staging): sign in to `/admin` as the owner and open **Run seeds** in the sidebar. Its buttons run the same seeds inside the app — categories and tags, shop products (the committed additions, plus the owner's designs where `LEGACY_DATA_DIR` exists), the shop pages, the pictures' web sizes — one at a time, with the report on the screen. They are refused on production.
 
 A seed run outside the app posts its cache invalidations to `REVALIDATE_ORIGIN` (default
 `http://127.0.0.1:<PORT>`); a dev server on another port keeps its cached listings until it restarts.

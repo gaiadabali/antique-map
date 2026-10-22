@@ -60,3 +60,29 @@ export async function retireMockProducts(
   }
   return report
 }
+
+/**
+ * Staging's rehearsal products (TASKS.md 10.4: `REH-…`, "Not for sale"), made by the timed admin
+ * runs: test records the public must never see. Retired the same way as the mocks, on the same
+ * publishing run; a database without any (local, a fresh one) reports none.
+ */
+export async function retireRehearsalProducts(
+  payload: Payload,
+  context: RequestContext | undefined,
+): Promise<RetireReport> {
+  const { docs } = await payload.find({
+    collection: 'products',
+    overrideAccess: true,
+    req: reqOf(payload, 'en', context),
+    depth: 0,
+    limit: 1000,
+    pagination: false,
+    where: { sku: { like: 'REH-' } },
+  })
+  const skus = (docs as unknown as { sku?: string }[])
+    .map((doc) => doc.sku ?? '')
+    .filter((sku) => sku.startsWith('REH-'))
+  return skus.length === 0
+    ? { retired: 0, alreadyRetired: 0 }
+    : retireMockProducts(payload, skus, context)
+}
