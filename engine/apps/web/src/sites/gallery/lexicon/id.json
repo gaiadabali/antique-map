@@ -810,5 +810,6 @@
   "sellToUs.step3Title": "Kami kembali kepada Anda",
   "sellToUs.step3Body": "Jika kita sama-sama setuju, kami atur detailnya bersama Anda.",
   "contactPage.replyPromise": "Kami membalas di hari kerja yang sama, waktu Singapura.",
-  "contact.viewingNote": "Kunjungan melihat koleksi dengan janji temu, di Singapura dan Jakarta."
+  "contact.viewingNote": "Kunjungan melihat koleksi dengan janji temu, di Singapura dan Jakarta.",
+  "shell.newTab": "{label} (terbuka di tab baru)"
 }

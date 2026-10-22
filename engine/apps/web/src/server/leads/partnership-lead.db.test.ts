@@ -20,6 +20,7 @@ import type { LeadDeps } from './ports'
 import { PostLimiter } from './rate'
 
 import { CONSENT_VERSION, TURNSTILE_FIELD } from '../../sites/shop/partnership/state'
+import { composeMessage } from '../../sites/shop/partnership/segments'
 import { handlePartnershipForm } from '../../sites/shop/partnership/submit'
 
 const ENV = {
@@ -71,6 +72,8 @@ describe.skipIf(!server)('the partnership form on a real database', () => {
     name: 'Made Wirawan',
     email: 'made@villa.example',
     whatsapp: '+62 812 3456 7890',
+    segment: 'hotel',
+    org: 'Villa Made',
     message: 'Framed maps for three villas in Ubud.',
     consent: 'on',
     locale: 'en',
@@ -96,7 +99,14 @@ describe.skipIf(!server)('the partnership form on a real database', () => {
       name: 'Made Wirawan',
       whatsapp: '+6281234567890',
       email: 'made@villa.example',
-      message: 'Framed maps for three villas in Ubud.',
+      // The apply form's choice and its fields are folded into the one message (`segments`).
+      message: composeMessage('en', {
+        segment: 'hotel',
+        org: 'Villa Made',
+        scale: '',
+        context: '',
+        more: 'Framed maps for three villas in Ubud.',
+      }),
       locale: 'en',
       consentVersion: CONSENT_VERSION,
     })

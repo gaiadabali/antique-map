@@ -19,6 +19,11 @@ import { mockProductSkus } from './read'
 const sample = (file: string) =>
   fileURLToPath(new URL(`../gallery/data/images/${file}`, import.meta.url))
 
+/** The fixture's pictures as the layer stores them: the product's name, then the kind. */
+const DESIGN = 'fixture-design-1849.jpg'
+const POSTER = 'fixture-poster.jpg'
+const POSTER_FRAMED = 'fixture-poster-framed.jpg'
+
 function makeFixture(): string {
   const dir = mkdtempSync(join(tmpdir(), 'catalogue-fixture-'))
   const designs = join(dir, 'old-east-indies', 'designs')
@@ -119,22 +124,23 @@ export async function checkCatalogueLayer(payload: Payload): Promise<void> {
       'SEED-MP.902',
     ])
 
-    // Role and provenance are set per picture; the mock-up carries the label's provenance.
+    // Role and provenance are set per picture; the mock-up carries the label's provenance. Each
+    // picture is stored under its product's name and kind, never the extraction's code (MP.901).
     const media = await payload.find({
       collection: 'media',
       overrideAccess: true,
       depth: 0,
       limit: 20,
-      where: { filename: { in: ['MP.901.jpg', 'fx-c0.jpg', 'fx-c1.jpg'] } },
+      where: { filename: { in: [DESIGN, POSTER, POSTER_FRAMED] } },
     })
     const by = new Map(media.docs.map((doc) => [(doc as { filename?: string }).filename, doc]))
     const facts = (file: string) => {
       const doc = by.get(file) as { role?: string; provenance?: string; subject?: string }
       return [doc.subject, doc.role, doc.provenance]
     }
-    expect(facts('MP.901.jpg')).toEqual(['product', 'flat', 'photograph'])
-    expect(facts('fx-c0.jpg')).toEqual(['product', 'flat', 'photograph'])
-    expect(facts('fx-c1.jpg')).toEqual(['product', 'in-room', 'rendered'])
+    expect(facts(DESIGN)).toEqual(['product', 'flat', 'photograph'])
+    expect(facts(POSTER)).toEqual(['product', 'flat', 'photograph'])
+    expect(facts(POSTER_FRAMED)).toEqual(['product', 'in-room', 'rendered'])
     const ig = (
       await payload.find({
         collection: 'products',
@@ -147,8 +153,8 @@ export async function checkCatalogueLayer(payload: Payload): Promise<void> {
       variants: Array<{ sku: string; price: number }>
     }
     expect(ig.images.map((row) => row.image)).toEqual([
-      (by.get('fx-c0.jpg') as { id: number }).id,
-      (by.get('fx-c1.jpg') as { id: number }).id,
+      (by.get(POSTER) as { id: number }).id,
+      (by.get(POSTER_FRAMED) as { id: number }).id,
     ])
     expect(ig.variants.map((variant) => [variant.sku, variant.price])).toEqual([
       ['SEED-IG01-M', 450_000],

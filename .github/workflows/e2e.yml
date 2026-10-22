@@ -24,15 +24,14 @@ jobs:
     name: End-to-end
     runs-on: ubuntu-latest
     timeout-minutes: 25
-    # A bare Postgres 18 service container (no docker-compose stack behind it) — the image's own
-    # docker-entrypoint-initdb.d never runs here (GitHub Actions `services:` supports no volume
-    # mounts), so the `unaccent`/`pg_trgm` extensions the one e2e database needs are created
-    # explicitly by `db:fresh`'s `createDatabase()` (engine/tooling/db/psql.mjs), not by
-    # docker-compose.dev.yml's init script; a restored snapshot carries them.
+    # Postgres 18 installed on the runner (.github/actions/setup-postgres, PGDG apt — no container,
+    # so no registry pull limit), with no docker-compose init script behind it: the
+    # `unaccent`/`pg_trgm` extensions the one e2e database needs are created explicitly by
+    # `db:fresh`'s `createDatabase()` (engine/tooling/db/psql.mjs); a restored snapshot carries them.
     #
     # PGHOST switches `psql.mjs` to the direct transport (engine/tooling/db/transport.mjs) instead
-    # of `docker compose exec` — there is no compose project here for `exec` to reach. Only SQL
-    # goes through the runner's own psql, so its major version need not match the server's.
+    # of `docker compose exec` — there is no compose project here for `exec` to reach. The
+    # server's own client tools (psql, pg_dump, pg_restore) come with it, at its major version.
     #
     # DB_SUFFIX names the one database (`indies_ci`): one app, one database, both sites picked by
     # each request's Host (TASKS.md 2.2).
@@ -60,19 +59,6 @@ jobs:
       REVALIDATE_ORIGIN: http://127.0.0.1:4200
       SNAPSHOT_DIR: ${{ github.workspace }}/.e2e-db
     services:
-      # Docker's official image through AWS's public mirror (the same digest): Docker Hub's
-      # anonymous pull limit, shared by every GitHub runner, failed CI run 37990518795 in setup.
-      postgres:
-        image: public.ecr.aws/docker/library/postgres:18.0
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 20
       # The mail the order and enquiry flows send, read back by the specs through its API
       # (MAILPIT_URL): SMTP on 1025 for the server, the HTTP API on 8025 for Playwright.
       mailpit:
@@ -80,6 +66,8 @@ jobs:
         ports: ['1025:1025', '8025:8025']
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      # Postgres 18 on the runner (PGDG apt), not a container: no registry pull limit.
+      - uses: ./.github/actions/setup-postgres
       - uses: ./.github/actions/setup-pnpm-node
 
       # The seeded database. The key covers everything the seed's writes depend on (e2e-db.sh key:
@@ -151,11 +139,10 @@ jobs:
       - name: Database, build and browsers (in parallel)
         env:
           SNAPSHOT_HIT: ${{ steps.snapshot.outputs.cache-hit }}
-          PG_CONTAINER: ${{ job.services.postgres.id }}
         run: |
           bash .github/scripts/run-parallel.sh \
             'Database (snapshot, or seed and snapshot)' \
-            'bash .github/scripts/e2e-db.sh prepare "$PG_CONTAINER" "indies_$DB_SUFFIX" "$SNAPSHOT_DIR" "$SNAPSHOT_HIT"' \
+            'bash .github/scripts/e2e-db.sh prepare "indies_$DB_SUFFIX" "$SNAPSHOT_DIR" "$SNAPSHOT_HIT"' \
             'Build (no database env)' \
             'env -u DATABASE_URL -u PAYLOAD_SECRET PGHOST=127.0.0.1 PGPORT=1 pnpm build' \
             'Playwright browsers' \

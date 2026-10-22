@@ -815,5 +815,6 @@
   "sellToUs.step3Title": "We come back to you",
   "sellToUs.step3Body": "If we both want to go ahead, we settle the details with you.",
   "contactPage.replyPromise": "We reply the same working day, Singapore time.",
-  "contact.viewingNote": "Viewings are by appointment, in Singapore and Jakarta."
+  "contact.viewingNote": "Viewings are by appointment, in Singapore and Jakarta.",
+  "shell.newTab": "{label} (opens in a new tab)"
 }

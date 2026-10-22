@@ -126,24 +126,12 @@ jobs:
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    services:
-      # Docker's official image through AWS's public mirror (the same digest): Docker Hub's
-      # anonymous pull limit, shared by every GitHub runner, failed CI run 37990518795 in setup.
-      postgres:
-        image: public.ecr.aws/docker/library/postgres:18.0
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 20
     env:
       CMS_TEST_POSTGRES_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      # Postgres 18 on the runner (PGDG apt), not a container: no registry pull limit.
+      - uses: ./.github/actions/setup-postgres
       - uses: ./.github/actions/setup-pnpm-node
       - name: CMS real-database tests
         run: pnpm test:db
@@ -172,20 +160,10 @@ jobs:
       POSTGRES_USER: postgres
       PGPASSWORD: postgres
       DB_SUFFIX: ci
-    services:
-      postgres:
-        image: public.ecr.aws/docker/library/postgres:18.0
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 20
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      # Postgres 18 on the runner (PGDG apt), not a container: no registry pull limit.
+      - uses: ./.github/actions/setup-postgres
       - uses: ./.github/actions/setup-pnpm-node
 
       # Turbopack's build cache, warm from the e2e job's last save on main (e2e.yml). Read only here.

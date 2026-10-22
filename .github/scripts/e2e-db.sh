@@ -5,30 +5,28 @@
 # snapshot is taken before any spec runs, so it holds the seed alone.
 #
 #   e2e-db.sh key                                      the cache key, on stdout
-#   e2e-db.sh prepare <container> <database> <dir> <hit>
-#                                                      restore if <hit> is "true", else seed + save
-#   e2e-db.sh seed    <container> <database> <dir>     db:fresh, the seed layers, publish the shop
-#   e2e-db.sh save    <container> <database> <dir>     pg_dump the database, tar the media dir
-#   e2e-db.sh restore <container> <database> <dir>     create the database and pg_restore it
+#   e2e-db.sh prepare <database> <dir> <hit>          restore if <hit> is "true", else seed + save
+#   e2e-db.sh seed    <database> <dir>                db:fresh, the seed layers, publish the shop
+#   e2e-db.sh save    <database> <dir>                pg_dump the database, tar the media dir
+#   e2e-db.sh restore <database> <dir>                create the database and pg_restore it
 #
 # The key hashes git's own blob ids of every tracked file that decides what the seed writes — the
 # CMS and the packages it imports (cache, config, media; tests excluded), the db tooling, the shop
-# publish script, the lockfile (Payload's version) and this script — plus the Postgres image. It
+# publish script, the lockfile (Payload's version) and this script — plus the Postgres major. It
 # reads git's index, never the working tree's node_modules.
 #
-# <container> is the job's Postgres service container (`job.services.postgres.id`): pg_dump and
-# pg_restore run inside it, so their version is the server's own and the runner needs no PGDG
-# client. Without S3 settings Payload writes uploads to the collection's local folder
+# Postgres runs on the runner itself (.github/actions/setup-postgres): pg_dump and pg_restore are
+# the server's own tools, at its major version, reached through PGHOST/PGPORT/PGPASSWORD. Without S3 settings Payload writes uploads to the collection's local folder
 # (`engine/packages/cms/media`, Payload's default staticDir), so the snapshot carries it too.
 # DB_SUFFIX, PGHOST, PGPORT, POSTGRES_USER and PGPASSWORD come from the job (seed).
 set -euo pipefail
 
-POSTGRES_IMAGE=postgres:18.0
+POSTGRES_MAJOR=postgres-18
 media_parent=engine/packages/cms
 media=media
 
 usage() {
-  echo "usage: e2e-db.sh key | prepare <container> <database> <dir> <hit> | seed|save|restore <container> <database> <dir>" >&2
+  echo "usage: e2e-db.sh key | prepare <database> <dir> <hit> | seed|save|restore <database> <dir>" >&2
   exit 2
 }
 
@@ -39,7 +37,7 @@ key() {
     engine/tooling/db tests/e2e/support/publish-shop-products.ts pnpm-lock.yaml \
     .github/scripts/e2e-db.sh \
     ':!:*.test.*' ':!:*.test-support.*' | sha256sum | cut -c1-40)"
-  echo "e2e-db-v1-${POSTGRES_IMAGE/:/-}-$sum"
+  echo "e2e-db-v2-$POSTGRES_MAJOR-$sum"
 }
 
 seed() {
@@ -54,7 +52,7 @@ seed() {
 
 save() {
   mkdir -p "$dir"
-  docker exec "$container" pg_dump -U postgres --format=custom "$database" >"$dir/db.dump"
+  pg_dump -U postgres --format=custom "$database" >"$dir/db.dump"
   if [ -d "$media_parent/$media" ]; then
     tar -cf "$dir/media.tar" -C "$media_parent" "$media"
   fi
@@ -66,9 +64,8 @@ restore() {
     echo "::error::no snapshot at $dir/db.dump"
     exit 1
   }
-  docker exec "$container" createdb -U postgres "$database"
-  docker exec -i "$container" pg_restore -U postgres --dbname="$database" --exit-on-error \
-    <"$dir/db.dump"
+  createdb -U postgres "$database"
+  pg_restore -U postgres --dbname="$database" --exit-on-error "$dir/db.dump"
   if [ -f "$dir/media.tar" ]; then
     mkdir -p "$media_parent"
     tar -xf "$dir/media.tar" -C "$media_parent"
@@ -84,8 +81,8 @@ case "$command" in
     key
     ;;
   prepare)
-    [ "$#" -eq 4 ] || usage
-    container="$1" database="$2" dir="$3" hit="$4"
+    [ "$#" -eq 3 ] || usage
+    database="$1" dir="$2" hit="$3"
     if [ "$hit" = "true" ]; then
       restore
     else
@@ -94,8 +91,8 @@ case "$command" in
     fi
     ;;
   seed | save | restore)
-    [ "$#" -eq 3 ] || usage
-    container="$1" database="$2" dir="$3"
+    [ "$#" -eq 2 ] || usage
+    database="$1" dir="$2"
     "$command"
     ;;
   *)

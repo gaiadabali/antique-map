@@ -1,0 +1,54 @@
+# Postgres 18 on the runner itself, from the PostgreSQL project's own apt repository (PGDG) —
+# no container image. The jobs used a `services:` container pulled from a public registry, and
+# every public source has hit a pull limit shared by all GitHub runners: Docker Hub's anonymous
+# limit (CI run 37990518795), then AWS's public mirror's "toomanyrequests: Data limit exceeded"
+# (CI run 39711207329, every rerun the same). An apt install has no such limit.
+#
+# The server listens on 127.0.0.1:5432 with the role `postgres`, password `postgres` — exactly
+# what the container gave the jobs, so their PGHOST/PGPORT/PGPASSWORD and URLs stay as they were.
+# The server's own client tools (psql, pg_dump, pg_restore, createdb) come with it, on PATH, at
+# the server's major version. `unaccent` and `pg_trgm` ship in the same package (db:fresh creates
+# them per database).
+name: Set up Postgres
+description: Installs PostgreSQL 18 from PGDG, starts it on 127.0.0.1:5432 and sets the postgres role's password.
+inputs:
+  version:
+    description: The Postgres major version (docker-compose.dev.yml runs 18.0; Helios runs 18).
+    required: false
+    default: '18'
+runs:
+  using: composite
+  steps:
+    - name: Install and start Postgres ${{ inputs.version }}
+      shell: bash
+      env:
+        PG_MAJOR: ${{ inputs.version }}
+      run: |
+        set -euo pipefail
+        # The runner image ships an older Postgres with a cluster on 5432: drop every cluster so
+        # the new one takes the port.
+        if command -v pg_lsclusters >/dev/null; then
+          pg_lsclusters -h | while read -r version cluster _; do
+            sudo pg_dropcluster --stop "$version" "$cluster"
+          done
+        fi
+        sudo install -d /usr/share/postgresql-common/pgdg
+        sudo curl -fsSL --retry 5 -o /usr/share/postgresql-common/pgdg/apt.postgresql.org.asc \
+          https://www.postgresql.org/media/keys/ACCC4CF8.asc
+        echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" \
+          | sudo tee /etc/apt/sources.list.d/pgdg.list >/dev/null
+        # Refresh the PGDG list alone: the runner's other lists are current enough and slow.
+        sudo apt-get update -qq \
+          -o Dir::Etc::sourcelist=sources.list.d/pgdg.list \
+          -o Dir::Etc::sourceparts=- -o APT::Get::List-Cleanup=0
+        sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
+          "postgresql-$PG_MAJOR" "postgresql-client-$PG_MAJOR"
+        # The package creates and starts `$PG_MAJOR/main`; make sure it is the one on 5432.
+        if ! pg_lsclusters -h | awk -v v="$PG_MAJOR" '$1 == v && $2 == "main" && $3 == 5432 && $4 == "online" { found = 1 } END { exit !found }'; then
+          pg_lsclusters
+          echo "::error::Postgres $PG_MAJOR is not online on 5432"
+          exit 1
+        fi
+        sudo -u postgres psql -q -c "ALTER ROLE postgres PASSWORD 'postgres'"
+        echo "/usr/lib/postgresql/$PG_MAJOR/bin" >> "$GITHUB_PATH"
+        PGPASSWORD=postgres psql -h 127.0.0.1 -U postgres -tAc 'select version()'
