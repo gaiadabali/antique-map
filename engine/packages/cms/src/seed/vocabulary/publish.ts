@@ -30,7 +30,9 @@ export type PublishReport = {
 /** The rows to publish, by collection, in order; `fill` maps a row to its blank-only fields. */
 export type PublishTargets = {
   readonly [K in Exclude<VocabularyCollection, 'categories'>]: readonly number[]
-} & { readonly categories?: readonly number[] } & { readonly fill?: ReadonlyMap<string, Readonly<Record<string, string>>> }
+} & { readonly categories?: readonly number[] } & {
+  readonly fill?: ReadonlyMap<string, Readonly<Record<string, string>>>
+}
 
 /** The `fill` key of a row: `terms:12`. */
 export const fillKey = (collection: VocabularyCollection, id: number) => `${collection}:${id}`
