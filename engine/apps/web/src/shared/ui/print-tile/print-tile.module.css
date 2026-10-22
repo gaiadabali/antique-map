@@ -100,11 +100,15 @@
   }
 }
 
+/* The words stay on their tile: a long unbroken name (a SKU) breaks anywhere and is clipped there,
+   never spilling over the controls beside a small tile (the bag's quantity stepper). */
 .note {
   display: flex;
   align-items: center;
   justify-content: center;
   block-size: 100%;
+  overflow: hidden;
+  overflow-wrap: anywhere;
   padding: var(--space-3);
   text-align: center;
   font: var(--text-small);

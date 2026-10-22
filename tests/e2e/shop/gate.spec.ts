@@ -165,15 +165,19 @@ async function typePin(page: Page, pin: { lat: number; lng: number }): Promise<v
   await inputs.nth(1).fill(String(pin.lng))
 }
 
-/** Fills the checkout's contact and address fields — every case below needs the same ones. */
+/**
+ * Fills the checkout's contact and address fields — every case below needs the same ones. By
+ * textbox, not by label alone: the footer's "Ask on WhatsApp" link is labelled too once the shop
+ * has a WhatsApp number in its settings.
+ */
 async function fillContact(
   page: Page,
   contact: { name: string; whatsapp: string; email: string },
 ): Promise<void> {
-  await page.getByLabel(/full name/i).fill(contact.name)
-  await page.getByLabel(/whatsapp/i).fill(contact.whatsapp)
-  await page.getByLabel(/email/i).fill(contact.email)
-  await page.getByLabel(/address/i).fill('Jl. Teuku Umar, Denpasar')
+  await page.getByRole('textbox', { name: /full name/i }).fill(contact.name)
+  await page.getByRole('textbox', { name: /whatsapp/i }).fill(contact.whatsapp)
+  await page.getByRole('textbox', { name: /email/i }).fill(contact.email)
+  await page.getByRole('textbox', { name: /address/i }).fill('Jl. Teuku Umar, Denpasar')
 }
 
 /**

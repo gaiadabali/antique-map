@@ -9,7 +9,18 @@
 import { expect, test, type Page } from '@playwright/test'
 
 import { ACCOUNTS, FIXTURE_EMAIL, type AccountKey } from './accounts'
-import { choose, fieldError, rest, setLanguage, sidebar, signIn, toast, widgetCount } from './admin'
+import {
+  choose,
+  fieldError,
+  fillSettled,
+  rest,
+  setLanguage,
+  settled,
+  sidebar,
+  signIn,
+  toast,
+  widgetCount,
+} from './admin'
 import { record, shot } from './evidence'
 import { fixtures, sql, type Fixtures } from './local.mjs'
 
@@ -140,7 +151,7 @@ const REFUSALS: Record<(typeof ROLES)[number], Refusal> = {
     field: '#field-objectType',
     async open(page) {
       await page.goto('/admin/collections/works/create')
-      await page.locator('#field-title').fill('E2E: an antique missing its guard fields')
+      await fillSettled(page, '#field-title', 'E2E: an antique missing its guard fields')
       await page.locator('#action-save').click()
     },
     en: /Say what kind of object it is/,
@@ -156,7 +167,7 @@ const REFUSALS: Record<(typeof ROLES)[number], Refusal> = {
       // The price sits on the edit screen's third tab since the 2026-10 reorganisation
       // (`products/fields.ts`): open it as a person would; sku and name are on the first.
       await page.getByRole('button', { name: /^(Price and variants|Harga dan varian)$/ }).click()
-      await page.locator('#field-price').fill('-5000')
+      await fillSettled(page, '#field-price', '-5000')
       await page.locator('#action-save-draft').click()
     },
     en: /price is a whole number of rupiah above zero/i,
@@ -170,7 +181,7 @@ const REFUSALS: Record<(typeof ROLES)[number], Refusal> = {
         `SELECT id FROM orders WHERE store_id = ${fx.stores.a.id} AND status = 'processing' LIMIT 1`,
       )
       await page.goto(`/admin/collections/orders/${order}`)
-      await choose(page, '#field-status', /^(Paid|Dibayar)$/)
+      await settled(page, () => choose(page, '#field-status', /^(Paid|Dibayar)$/))
       await page.locator('#action-save').click()
       await expect(page.locator('[data-sonner-toast][data-type="error"]')).toBeVisible()
       expect(sql(`SELECT status FROM orders WHERE id = ${order}`)).toBe('processing')

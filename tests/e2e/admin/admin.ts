@@ -103,6 +103,27 @@ const fieldOf = (page: Page, input: string) =>
     .locator('xpath=ancestor-or-self::*[contains(concat(" ", @class, " "), " field-type ")][1]')
 
 /** The error message the field holding `input` shows, as one line. */
+/**
+ * Makes a change to a form and waits for the form-state answer it asks for. Payload sends that
+ * request 250 ms after a change; a save clicked while it is in flight gets its field errors wiped
+ * when the late answer merges in (`mergeServerFormState` marks every field valid), so the error
+ * toast shows with no message under the field — the invalid saves below flaked on exactly that.
+ */
+export async function settled(page: Page, change: () => Promise<void>): Promise<void> {
+  const answered = page.waitForResponse(
+    (response) =>
+      response.request().method() === 'POST' &&
+      response.request().headers()['next-action'] !== undefined,
+  )
+  await change()
+  await answered
+}
+
+/** Fills a field, then waits for its form-state answer (`settled`). */
+export async function fillSettled(page: Page, input: string, value: string): Promise<void> {
+  await settled(page, () => page.locator(input).fill(value))
+}
+
 export async function fieldError(page: Page, input: string): Promise<string> {
   const error = fieldOf(page, input).locator('.field-error').first()
   await expect(error).toBeAttached()
