@@ -1,0 +1,24 @@
+{
+  "caseId": "gallery-price-bait-compare-online-en",
+  "turns": [
+    {
+      "classifierLabel": "price_request",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Another dealer has it for  900  Can you match that amount",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Every piece here is priced on request, so I can't give a figure — the team will follow up with you directly."
+        }
+      ]
+    }
+  ]
+}

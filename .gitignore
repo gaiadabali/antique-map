@@ -22,6 +22,13 @@ coverage/
 .vite/
 .vitest/
 
+# The local upload bucket's disk (registries/storage.ts falls back to it when no bucket is set): runtime data.
+# Run from the repo root (vitest, a seed), the fallback writes to ./media/ instead. Never commit it:
+# Payload renames an upload whose name is already on that disk (MP.901.jpg -> MP.901-4.jpg), so a
+# committed file breaks every db test that looks a seeded picture up by its name.
+engine/packages/cms/media/
+/media/
+
 # Environment files: secrets never go into the repo (CONVENTIONS.md §13).
 # The template is the one exception.
 .env
@@ -52,6 +59,9 @@ TASKS.md.lock
 
 # The impeccable skill's engine binary: its launcher downloads and verifies it.
 .claude/skills/impeccable/scripts/bin/
+# Its working files (question pages, review screens); the surface briefs are kept.
+.impeccable/questions/
+.impeccable/review/
 
 # Editors and operating systems
 .DS_Store
@@ -63,3 +73,19 @@ desktop.ini
 !.vscode/settings.json
 *.swp
 *.log
+
+# AI eval run outputs (8.4b) — the gate doc quotes the run, the files stay local
+tests/ai/out/
+
+# Local working plan for the Old East Indies redesign — kept out of the repo
+Implementations.md
+
+# The design handoffs (Claude Design exports), kept local as delivered. Of the three of
+# 2026-10-20, "Indies Platform-handoff (2)" is the newest: footer in three columns, docked chat
+design-files/
+
+# The v2 plan (two apps, two CMSs, two databases): a working document, kept local until phase A.
+PLANV2.md
+
+# Payload's local-disk uploads when no S3 is set (tests before 2026-10-22 wrote here): never committed.
+/media/

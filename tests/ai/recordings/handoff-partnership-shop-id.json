@@ -1,0 +1,13 @@
+{
+  "caseId": "handoff-partnership-shop-id",
+  "turns": [
+    {
+      "classifierLabel": "partnership",
+      "calls": [
+        {
+          "text": "Saya akan sampaikan ini ke tim agar mereka bisa membantu Anda langsung."
+        }
+      ]
+    }
+  ]
+}

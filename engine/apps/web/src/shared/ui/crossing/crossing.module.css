@@ -1,0 +1,157 @@
+/* The crossing: copy on a full-bleed field, the picture lying across its edge onto the paper.
+   Every value is a token — no raw colour, no font-family. */
+
+.crossing {
+  --top: clamp(2.5rem, 1rem + 5vw, 7rem);
+  --overhang: clamp(5rem, 3rem + 10vw, 9rem);
+  --picture-max-h: 86svh;
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-areas:
+    'copy'
+    'figure'
+    'aside';
+}
+
+.p1 {
+  --crossing-field: var(--pigment-1-wash);
+  --crossing-on-field-muted: var(--pigment-1-on-wash);
+  --crossing-full: var(--pigment-1-full);
+  --crossing-on-full: var(--pigment-1-on-full);
+  --crossing-on-full-muted: var(--pigment-1-on-full-muted);
+}
+
+.p2 {
+  --crossing-field: var(--pigment-2-wash);
+  --crossing-on-field-muted: var(--pigment-2-on-wash);
+  --crossing-full: var(--pigment-2-full);
+  --crossing-on-full: var(--pigment-2-on-full);
+  --crossing-on-full-muted: var(--pigment-2-on-full-muted);
+}
+
+.p3 {
+  --crossing-field: var(--pigment-3-wash);
+  --crossing-on-field-muted: var(--pigment-3-on-wash);
+  --crossing-full: var(--pigment-3-full);
+  --crossing-on-full: var(--pigment-3-on-full);
+  --crossing-on-full-muted: var(--pigment-3-on-full-muted);
+}
+
+/* A field at full strength speaks in its own type: every ink role on it is re-pointed, the action
+   included — a white button on the field, its words in the field's colour. */
+.full {
+  --crossing-field: var(--crossing-full);
+}
+
+/* The copy wears the field's colour itself (it lies wholly on the field, so nothing changes to the
+   eye): a contrast check reads an element's own ground, not a layer drawn behind it. */
+.full .copy {
+  background: var(--crossing-full);
+  --color-surface: var(--crossing-full);
+  --color-text: var(--crossing-on-full);
+  --color-text-strong: var(--crossing-on-full);
+  --color-text-muted: var(--crossing-on-full-muted);
+  --color-accent: var(--crossing-on-full);
+  --color-accent-contrast: var(--crossing-full);
+  --color-focus: var(--crossing-on-full);
+  --color-border: color-mix(in srgb, var(--crossing-on-full) 30%, transparent);
+  --color-border-strong: color-mix(in srgb, var(--crossing-on-full) 70%, transparent);
+  --color-action: var(--crossing-on-full);
+  --color-action-hover: var(--crossing-on-full-muted);
+  --color-action-contrast: var(--crossing-full);
+  color: var(--color-text);
+}
+
+/* A page's first block: the field starts right under the header (the shell's main pads its top). */
+.lead {
+  margin-block-start: calc(-1 * var(--space-7));
+}
+
+.field {
+  grid-area: copy;
+  z-index: -1;
+  margin-inline: calc(50% - 50vw);
+  background: var(--crossing-field);
+}
+
+/* Type on the field: muted words take the field's own muted ink (AA on every field). */
+.copy {
+  grid-area: copy;
+  min-width: 0;
+  padding-block: var(--top) calc(var(--overhang) + var(--space-7));
+  --color-text-muted: var(--crossing-on-field-muted);
+  --color-border: color-mix(in srgb, var(--crossing-on-field-muted) 32%, transparent);
+}
+
+.aside {
+  grid-area: aside;
+  align-self: start;
+  min-width: 0;
+  margin-block-start: var(--space-7);
+}
+
+/* A picture held to the screen's height is narrower than its column: it stands centred in it, its
+   caption under it. */
+.figure {
+  grid-area: figure;
+  justify-self: center;
+  inline-size: min(100%, calc(var(--picture-max-h) * var(--picture-ratio, 0.8)));
+  min-width: 0;
+  margin: calc(-1 * var(--overhang)) 0 0;
+}
+
+.picture > div,
+.picture img {
+  background: transparent;
+}
+
+.picture img {
+  display: block;
+  max-inline-size: 100%;
+  object-fit: contain;
+}
+
+.cover .picture img {
+  object-fit: cover;
+}
+
+/* As wide as the picture above it (the figure is sized to the picture), so whatever opens here —
+   the item page's deep-zoom viewer — opens at the sheet's own width. */
+.caption {
+  display: grid;
+  gap: var(--space-1);
+  margin-block-start: var(--space-5);
+}
+
+@media (min-width: 64rem) {
+  .crossing {
+    /* the picture's column: seven twelfths of the content, less its share of the gap */
+    --col-w: calc((100vw - 2 * var(--gutter) - var(--grid-gap)) * 7 / 12);
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      'copy figure'
+      'aside figure';
+    column-gap: var(--grid-gap);
+  }
+
+  /* `--picture-ratio` is set on this element, so the picture's height resolves here. */
+  .field {
+    --picture-h: min(calc(var(--col-w) / var(--picture-ratio, 0.8)), var(--picture-max-h));
+    grid-area: 1 / 1 / 2 / -1;
+    min-block-size: calc(var(--top) + var(--picture-h) * 0.62);
+  }
+
+  .copy {
+    padding-block: var(--top) var(--space-8);
+  }
+
+  .figure {
+    grid-area: 1 / 2 / 3 / 3;
+    align-self: start;
+    margin: 0;
+    padding-block-start: var(--top);
+  }
+}

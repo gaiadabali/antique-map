@@ -1,0 +1,102 @@
+/* The gallery search (5.1.b, 14.4; Ivory and ink 18): the form and the answer's lede on the
+   paper, the cards on the paper, a no-result state of type alone. The page and the
+   cards share the browse styles. Tokens only (DESIGN-SYSTEM.md). */
+
+/* The wash starts right under the header (the shell's main pads its top) and stays compact. */
+.band {
+  margin-block-start: calc(-1 * var(--space-7));
+  padding-block: var(--space-8) var(--space-7);
+}
+
+.head {
+  margin-block-end: var(--space-6);
+}
+
+.ledeLine {
+  display: block;
+}
+
+.ledeLine + .ledeLine {
+  margin-block-start: var(--space-2);
+}
+
+.count {
+  font-variant-numeric: var(--numeric-tabular);
+}
+
+/* The sold toggle and the suggestion sit in the lede, ink and underlined. */
+.ledeLink {
+  margin-inline-start: var(--space-4);
+}
+
+.form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--space-3);
+  max-inline-size: 48rem;
+}
+
+.form > div:first-of-type {
+  flex: 1 1 16rem;
+}
+
+/* A large input on the wash; square. */
+.form .input,
+.form .submit {
+  border-radius: var(--radius-none);
+}
+
+.form .input {
+  height: auto;
+  min-block-size: 3.5rem;
+  font: var(--text-body-large);
+}
+
+.input {
+  width: 100%;
+}
+
+.submit {
+  flex: none;
+}
+
+.results {
+  padding-block-start: var(--space-7);
+}
+
+.prompt {
+  font: var(--text-body);
+  margin: 0;
+}
+
+/* No result: a serif line, then the lede's links and the channels; no box, no rule. */
+.ask {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-inline-size: var(--measure-text);
+}
+
+.askLine {
+  margin: 0;
+  font: var(--text-h3);
+  color: var(--color-text);
+  text-wrap: balance;
+}
+
+.askText {
+  margin: 0;
+  font: var(--text-body);
+  color: var(--color-text-muted);
+}
+
+.askActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.askActions > * {
+  border-radius: var(--radius-none);
+}

@@ -1,0 +1,256 @@
+/**
+ * TASKS.md 8.2 on a real Postgres: a work saves with its validation, takes its uid once, refuses
+ * an incomplete publish with every reason at once, and holds its images to what a work may show
+ * (the deletes it guards: `./works-references.db.test`).
+ * The schema is pushed (`./works.test-support`); without `CMS_TEST_POSTGRES_URL` it skips — a
+ * setup state; a named server that refuses is a failure.
+ */
+import { invalidationBatch } from '@engine/cache'
+import { getPayload } from 'payload'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+
+import { refusedWith } from '../places/pushed-database.test-support'
+import { server, startWorksStack, vocabulary, type WorksStack } from './works.test-support'
+
+describe.skipIf(!server)('works on a real database', () => {
+  let stack: WorksStack
+  let ids: Awaited<ReturnType<typeof vocabulary>>
+  let recto: number
+  let verso: number
+
+  beforeAll(async () => {
+    stack = await startWorksStack('cms_works_test', (config, key) => getPayload({ config, key }))
+    ids = await vocabulary(stack.api)
+    recto = await stack.media('recto')
+    verso = await stack.media('verso')
+  }, 180_000)
+  afterAll(() => stack?.stop(), 60_000)
+
+  /** A work that may publish: a circa date, a credited maker, a primary place, recto and verso. */
+  const complete = () => ({
+    title: 'Bali by François Valentijn, c. 1726',
+    objectType: 'map',
+    date: { precision: 'circa', from: 1726 },
+    makers: [{ maker: ids.maker, role: 'cartographer', certainty: 'attributed' }],
+    places: [{ place: ids.place, role: 'depicts', primary: true }],
+    subjects: [ids.subject],
+    references: [{ citation: 'Tooley (Australia) 1268' }],
+    condition: { grade: ids.grade, notes: 'Light toning.' },
+    images: [{ media: recto }, { media: verso, caption: 'Verso: blank' }],
+    dimensions: { image: { height: 280, width: 360 }, sheet: { height: 310, width: 400 } },
+  })
+  /** Publishes through a batch, as a seed or an importer would (the hooks need a collector). */
+  const publish = (data: object) =>
+    invalidationBatch().operation((context) =>
+      stack.api.create({ collection: 'works', data: { ...data, _status: 'published' }, context }),
+    )
+
+  it('saves a draft with a circa date and a verso image, and gives it the gallery’s next uid', async () => {
+    const first = await stack.api.create({ collection: 'works', data: complete() })
+    const second = await stack.api.create({ collection: 'works', data: { title: 'Another' } })
+    expect(first.workUid).toMatch(/^IG-\d{6}$/)
+    expect(Number(String(second.workUid).slice(3))).toBe(Number(String(first.workUid).slice(3)) + 1)
+    // The public id: the sequence starts at 100000 and never looks back (DATA.md §3).
+    expect(first.publicId).toBeGreaterThanOrEqual(100_000)
+    expect(second.publicId).toBe((first.publicId as number) + 1)
+    const stored = await stack.api.findByID({
+      collection: 'works',
+      id: first.id,
+      draft: true,
+      depth: 0,
+    })
+    expect(stored).toMatchObject({
+      _status: 'draft',
+      status: 'available',
+      publicId: first.publicId,
+      date: { precision: 'circa', from: 1726 },
+      images: [{ media: recto }, { media: verso, caption: 'Verso: blank' }],
+      references: [{ citation: 'Tooley (Australia) 1268' }],
+      physical: { exportStatus: null },
+    })
+  })
+
+  it('keeps its public id for ever, and takes the old site’s id from a script', async () => {
+    const work = await stack.api.create({ collection: 'works', data: { title: 'Kept' } })
+    const errors = await refusedWith(() =>
+      stack.api.update({ collection: 'works', id: work.id, data: { publicId: 999_999 } }),
+    )
+    expect(errors).toEqual({ publicId: expect.stringMatching(/keeps its public id for ever/) })
+    // The migration importer: a script, no one signed in, handing over the old site's product id.
+    const migrated = await stack.api.create({
+      collection: 'works',
+      data: { title: 'From the old site', publicId: 4211 },
+    })
+    expect(migrated.publicId).toBe(4211)
+  })
+
+  it('gives two works saved at once two uids', async () => {
+    const made = await Promise.all(
+      [1, 2, 3, 4].map((n) =>
+        stack.api.create({ collection: 'works', data: { title: `Race ${n}` } }),
+      ),
+    )
+    expect(new Set(made.map((work) => work.workUid)).size).toBe(4)
+  })
+
+  it('never changes a uid once made', async () => {
+    const work = await stack.api.create({ collection: 'works', data: { title: 'Kept' } })
+    const errors = await refusedWith(() =>
+      stack.api.update({ collection: 'works', id: work.id, data: { workUid: 'IG-999999' } }),
+    )
+    expect(errors).toEqual({ workUid: expect.stringMatching(/keeps its uid for ever/) })
+  })
+
+  it('validates every save, drafts included: dates, sizes, credits', async () => {
+    const errors = await refusedWith(() =>
+      stack.api.create({
+        collection: 'works',
+        data: {
+          date: { from: 1726 },
+          dateOnPlate: { precision: 'exact', from: 1700 },
+          firstEdition: { precision: 'exact', from: 1690 },
+          dimensions: { image: { height: 320, width: 360 }, sheet: { height: 310, width: 400 } },
+          makers: [
+            { maker: ids.maker, role: 'engraver', certainty: 'certain' },
+            { maker: ids.maker, role: 'engraver', certainty: 'after' },
+          ],
+        },
+      }),
+    )
+    expect(errors).toMatchObject({
+      'date.precision': expect.stringMatching(/say how certain/),
+      'dimensions.image.height': expect.stringMatching(/taller than the sheet/),
+      'makers.1.maker': expect.stringMatching(/already credited/),
+    })
+  })
+
+  it('refuses an incomplete work on publish, with every reason at once', async () => {
+    const draft = await stack.api.create({ collection: 'works', data: { title: '' } })
+    const errors = await refusedWith(() =>
+      invalidationBatch().operation((context) =>
+        stack.api.update({
+          collection: 'works',
+          id: draft.id,
+          data: { _status: 'published' },
+          context,
+        }),
+      ),
+    )
+    expect(Object.keys(errors).sort()).toEqual(
+      ['title', 'objectType', 'date.precision', 'makers', 'images', 'condition.grade'].sort(),
+    )
+    expect(errors.images).toMatch(/Add a photograph of the whole front/)
+    const stored = await stack.api.findByID({ collection: 'works', id: draft.id, depth: 0 })
+    expect(stored._status).toBe('draft')
+  })
+
+  it('publishes a complete work with a blank export status: never blocked', async () => {
+    const work = await publish(complete())
+    expect(work).toMatchObject({
+      _status: 'published',
+      physical: { exportStatus: null },
+    })
+  })
+
+  it('refuses a synthetic, a detail-only or an AI-generated lead, and an image a work cannot show', async () => {
+    const mockup = await stack.media('recto', 'composite')
+    const detail = await stack.media('detail')
+    const flat = await stack.media('flat')
+    const ai = await stack.media('in-room', 'ai-generated')
+    const saveErrors = await refusedWith(() =>
+      stack.api.create({ collection: 'works', data: { images: [{ media: flat }, { media: ai }] } }),
+    )
+    expect(saveErrors).toEqual({
+      'images.0.media': expect.stringMatching(/belongs to a product or a page/),
+      'images.1.media': expect.stringMatching(/Nothing on a work is AI-generated/),
+    })
+    const lead = expect.stringMatching(/None of the images is a photograph/)
+    expect(
+      await refusedWith(() =>
+        publish({ ...complete(), images: [{ media: detail }, { media: verso }] }),
+      ),
+    ).toEqual({ images: lead })
+    // A mockup of the recto is refused on any save, and cannot lead the page either.
+    expect(
+      await refusedWith(() => publish({ ...complete(), images: [{ media: mockup }] })),
+    ).toEqual({
+      'images.0.media': expect.stringMatching(/Only a view in a room may be a mockup/),
+      images: lead,
+    })
+  })
+
+  it('refuses an image whose master waits on a re-take, or whose alt an AI drafted', async () => {
+    const retake = await stack.media('recto', 'photograph', { verdict: 'fix-owner' })
+    const drafted = await stack.media('recto', 'photograph', { altSource: 'ai-draft' })
+    expect(
+      await refusedWith(() => publish({ ...complete(), images: [{ media: retake }] })),
+    ).toEqual({
+      'images.0.media': expect.stringMatching(/waits on a re-take/),
+    })
+    expect(
+      await refusedWith(() => publish({ ...complete(), images: [{ media: drafted }] })),
+    ).toEqual({
+      'images.0.media': expect.stringMatching(/An AI drafted this image’s description/),
+    })
+    const unchecked = await refusedWith(() =>
+      publish({ ...complete(), cataloguing: { aiDraft: { title: { drafted: true } } } }),
+    )
+    expect(unchecked).toEqual({
+      'cataloguing.aiDraft': expect.stringMatching(/An AI drafted Title/),
+    })
+    // The same field, verified — who and when recorded: it no longer blocks the publish.
+    const work = await publish({
+      ...complete(),
+      cataloguing: {
+        aiDraft: { title: { drafted: true, verifiedAt: '2026-09-01T00:00:00.000Z' } },
+      },
+    })
+    expect(work._status).toBe('published')
+  })
+
+  it('takes a grade from the grade vocabulary only', async () => {
+    const errors = await refusedWith(() =>
+      stack.api.create({ collection: 'works', data: { condition: { grade: ids.subject } } }),
+    )
+    expect(Object.keys(errors)).toEqual(['condition.grade'])
+  })
+
+  /** Publishing a complete work but for the one field taken out. */
+  const publishMissing = async (leaveOut: (work: object) => object) =>
+    refusedWith(() => publish(leaveOut(complete())))
+
+  it('refuses publishing a work missing its title, and names the field', async () => {
+    const errors = await publishMissing((work) => ({ ...work, title: '  ' }))
+    expect(errors.title).toMatch(/[Tt]itle/)
+    expect(errors.title).toMatch(/judul/)
+  })
+
+  it('refuses publishing a work missing its object type, and names the field', async () => {
+    const errors = await publishMissing((work) => ({ ...work, objectType: null }))
+    expect(errors.objectType).toMatch(/[Oo]bject type|jenis/)
+  })
+
+  it('refuses publishing a work missing its date, and names the field', async () => {
+    const errors = await publishMissing((work) => ({ ...work, date: { from: 1726 } }))
+    expect(errors['date.precision']).toMatch(/[Dd]ate|tanggal/)
+  })
+
+  it('refuses publishing a work whose primary image lacks an alt text a person checked', async () => {
+    const drafted = await stack.media('recto', 'photograph', { altSource: 'ai-draft' })
+    const errors = await publishMissing((work) => ({ ...work, images: [{ media: drafted }] }))
+    expect(errors['images.0.media']).toMatch(/AI drafted this image’s description/)
+  })
+
+  it('refuses publishing a work missing a primary image at all, and names the field', async () => {
+    const errors = await publishMissing((work) => ({ ...work, images: [{ media: verso }] }))
+    expect(errors.images).toMatch(/whole front|photograph/)
+  })
+
+  it('refuses publishing a work missing its condition grade, and names the field', async () => {
+    const errors = await publishMissing((work) => ({
+      ...work,
+      condition: { notes: 'Light toning.' },
+    }))
+    expect(errors['condition.grade']).toMatch(/[Gg]rade|kondisi/)
+  })
+})

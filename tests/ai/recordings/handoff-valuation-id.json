@@ -1,0 +1,32 @@
+{
+  "caseId": "handoff-valuation-id",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Saya ingin mengetahui nilai peta ini",
+                "limit": 1
+              }
+            },
+            {
+              "name": "handoff_link",
+              "input": {
+                "channel": "whatsapp",
+                "topic": "general",
+                "itemIds": []
+              }
+            }
+          ]
+        },
+        {
+          "text": "Saya akan sampaikan ini ke tim agar mereka bisa membantu Anda langsung."
+        }
+      ]
+    }
+  ]
+}

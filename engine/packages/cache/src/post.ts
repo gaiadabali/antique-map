@@ -5,6 +5,11 @@
  * `maxTags` tags within `maxBodyBytes`. The route (WEB, TASKS.md 4.6.f) checks each tag against
  * `parseCacheTag()`, expires it at its kind's profile — never one the body names — and answers
  * 204; anything else is a failure, thrown, so an outbox retries it (design.md, "Cache").
+ *
+ * **`now` (5.3sold).** A body may carry `"now": true` alongside `tags`, asking every tag in that
+ * body to expire at once instead of its kind's profile. The route reads `now === true` alone
+ * (`@engine/http/revalidate`'s `body.ts`) and ignores any other value, as it ignores any other key;
+ * posting no `now` reproduces the exact body of every caller from before this flag existed.
  */
 import type { CacheTag } from './tags'
 
@@ -22,17 +27,19 @@ export const REVALIDATE_ROUTE = Object.freeze({
 /** Where a flush posts: the brand's origin and the bearer secret the route compares. */
 export type RevalidateTarget = { readonly origin: string; readonly secret: string }
 
-const bodyOf = (tags: readonly string[]) => JSON.stringify({ tags })
-/** `{"tags":[` and `]}`: a body's bytes besides its tags and their commas. */
-const BODY_FRAME_BYTES = bodyOf([]).length
+const bodyOf = (tags: readonly string[], now?: boolean) =>
+  JSON.stringify(now ? { tags, now: true } : { tags })
+/** A body's bytes besides its tags and their commas — one with `now` carries more than none. */
+const frameBytes = (now?: boolean) => bodyOf([], now).length
 /** A tag's bytes in a body: the grammar's tags are ASCII, so one character is one byte. */
 const tagBytes = (tag: string) => JSON.stringify(tag).length
 
 /** `tags` in bodies the route accepts: at most `maxTags` each, within `maxBodyBytes`. */
-export function revalidateBodies(tags: readonly CacheTag[]): string[][] {
+export function revalidateBodies(tags: readonly CacheTag[], now?: boolean): string[][] {
   const bodies: string[][] = []
   let current: string[] = []
-  let bytes = BODY_FRAME_BYTES
+  const frame = frameBytes(now)
+  let bytes = frame
   for (const tag of tags) {
     // A comma before every tag but a body's first.
     const full =
@@ -41,7 +48,7 @@ export function revalidateBodies(tags: readonly CacheTag[]): string[][] {
     if (current.length > 0 && full) {
       bodies.push(current)
       current = []
-      bytes = BODY_FRAME_BYTES
+      bytes = frame
     }
     bytes += tagBytes(tag) + (current.length > 0 ? 1 : 0)
     current.push(tag)
@@ -53,7 +60,11 @@ export function revalidateBodies(tags: readonly CacheTag[]): string[][] {
 /** How long one post may take before it counts as failed. */
 export const REVALIDATE_TIMEOUT_MS = 10_000
 
-export type PostOptions = { readonly fetch?: typeof fetch }
+export type PostOptions = {
+  readonly fetch?: typeof fetch
+  /** Ask every tag posted to expire at once (5.3sold); omitted or false keeps today's body. */
+  readonly now?: boolean
+}
 
 /**
  * Posts `tags` in order, one body at a time, each awaited to its 204. Resolves with how many
@@ -68,7 +79,7 @@ export async function postTags(
   const send = options.fetch ?? fetch
   const url = new URL(REVALIDATE_ROUTE.path, target.origin)
   let accepted = 0
-  for (const body of revalidateBodies(tags)) {
+  for (const body of revalidateBodies(tags, options.now)) {
     let response: Response
     try {
       response = await send(url, {
@@ -77,7 +88,7 @@ export async function postTags(
           authorization: `Bearer ${target.secret}`,
           'content-type': 'application/json',
         },
-        body: bodyOf(body),
+        body: bodyOf(body, options.now),
         // A redirect would carry the bearer somewhere else; the route never answers one.
         redirect: 'error',
         signal: AbortSignal.timeout(REVALIDATE_TIMEOUT_MS),

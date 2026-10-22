@@ -1,13 +1,7 @@
 /**
- * The config itself (TASKS.md 3.2.a): brand-independent in everything that reaches the schema,
- * with the settings the Check names. Brands are found on disk — a brand's slug never appears in
- * engine code, tests included (CONVENTIONS.md §1).
+ * The config itself (TASKS.md 3.2.a, 2.4): the same schema in every context, with the settings the
+ * Check names. One CMS serves both sites, so no brand or site shapes it.
  */
-import { execFileSync } from 'node:child_process'
-import fs from 'node:fs'
-import path from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 import type { PostgresAdapter } from '@payloadcms/db-postgres'
 import {
   buildConfig,
@@ -18,33 +12,22 @@ import {
 } from 'payload'
 import { describe, expect, it } from 'vitest'
 
+import { siteOrigin, trustedOrigins } from '../access/origins'
+import { testOrigin } from '../db/test-origin.test-support'
 import { COOKIE_PREFIX, engineConfig } from '../payload.config'
 
 type Env = Record<string, string | undefined>
 
-const repoRoot = (() => {
-  let dir = path.dirname(fileURLToPath(import.meta.url))
-  while (!fs.existsSync(path.join(dir, 'pnpm-workspace.yaml'))) dir = path.dirname(dir)
-  return dir
-})()
-
-/**
- * Every committed brand config, as the env a process for it would have. From git, not the
- * folder listing: another test scaffolds a throwaway brand at the repository root while this runs.
- */
-const BRAND_ENVS: Array<{ label: string; env: Env }> = execFileSync(
-  'git',
-  ['ls-files', '-z', '--', '*/site/brand.config.json', '*/site/brand.*.json'],
-  { cwd: repoRoot, encoding: 'utf8' },
-)
-  .split('\0')
-  .map((file) => /^([a-z0-9-]+)\/site\/brand\.(config|gallery|emporium)\.json$/.exec(file))
-  .filter((match): match is RegExpExecArray => match !== null)
-  .map(([, brand, kind]) =>
-    kind === 'config'
-      ? { label: brand!, env: { BRAND: brand } }
-      : { label: `${brand}/${kind}`, env: { BRAND: brand, TEST_STOREFRONT: kind } },
-  )
+/** A serving process's environment: its origin, a mail transport and a media bucket. */
+const SERVING: Env = {
+  ...testOrigin(4167).env,
+  SMTP_HOST: '127.0.0.1',
+  SMTP_FROM_ADDRESS: 'admin@test.example',
+  S3_BUCKET: 'scratch',
+  S3_ENDPOINT: 'http://127.0.0.1:9',
+  S3_ACCESS_KEY_ID: 'k',
+  S3_SECRET_ACCESS_KEY: 's',
+}
 
 const UPLOADS: CollectionConfig = { slug: 'scratch-uploads', upload: true, fields: [] }
 
@@ -76,20 +59,13 @@ function schemaShape(config: SanitizedConfig) {
 }
 
 describe('the Payload config', () => {
-  it('finds every committed brand to compare against', () => {
-    expect(BRAND_ENVS.length).toBeGreaterThanOrEqual(4)
-  })
-
-  it('has the same schema with BRAND unset as with every brand', async () => {
-    const unset = schemaShape(await build({}))
-    for (const { label, env } of BRAND_ENVS) {
-      expect({ label, shape: schemaShape(await build(env)) }).toEqual({ label, shape: unset })
-    }
+  it('has the same schema in the build (no environment) as in a serving process', async () => {
+    expect(schemaShape(await build(SERVING))).toEqual(schemaShape(await build({})))
   }, 60_000)
 
-  it('holds the superset locales, English first, in every database', async () => {
+  it('holds English and Indonesian, English first — no `nl` (TASKS.md 2.4.a)', async () => {
     const config = await build({})
-    expect(config.localization && config.localization.localeCodes).toEqual(['en', 'id', 'nl'])
+    expect(config.localization && config.localization.localeCodes).toEqual(['en', 'id'])
     expect(config.localization && config.localization.defaultLocale).toBe('en')
   })
 
@@ -121,18 +97,23 @@ describe('the Payload config', () => {
     expect(web.prodMigrations?.length).toBeGreaterThanOrEqual(1)
   })
 
-  it('lets BRAND set only the server URL, CSRF/CORS and the mail sender', async () => {
-    const [first] = BRAND_ENVS
-    const env = { ...first!.env, SITE_URL: 'http://localhost:4167/', SMTP_HOST: '127.0.0.1' }
-    const config = await build(env)
-    expect(config.serverURL).toBe('http://localhost:4167')
-    expect(config.csrf).toContain('http://localhost:4167')
-    expect(config.cors).toContain('http://localhost:4167')
+  it('takes its server URL and CSRF/CORS from `access/origins`, and mail from SMTP_*', async () => {
+    // Read through the helpers, not as literals: TASKS.md 2.2 changes where the origins come from
+    // (SITE_URL today, the site hosts after it), and this holds on either side of that merge.
+    // Payload appends the server URL to `csrf` once more as it sanitises: compare as sets.
+    const distinct = (origins: unknown) => [...new Set(origins as string[])].sort()
+    const config = await build(SERVING)
+    expect(config.serverURL).toBe(siteOrigin(SERVING))
+    expect(config.serverURL).toBeTruthy()
+    expect(distinct(config.csrf)).toEqual(distinct(trustedOrigins(SERVING, null)))
+    expect(distinct(config.cors)).toEqual(distinct(trustedOrigins(SERVING, null)))
+    expect(config.csrf).toContain(config.serverURL)
     expect(config.email).toBeDefined()
     const bare = await build({})
-    expect(bare.serverURL ?? '').toBe('')
-    expect(bare.csrf).toEqual([])
+    expect(bare.serverURL ?? '').toBe(siteOrigin({}) ?? '')
+    expect(distinct(bare.csrf)).toEqual(distinct(trustedOrigins({}, null)))
     expect(bare.email).toBeUndefined()
+    expect((await build({ SMTP_HOST: '127.0.0.1' })).email).toBeUndefined()
   })
 
   it('runs no GraphQL, no auto-run jobs and no dev-time type writes; the cookie prefix is Payload’s', async () => {

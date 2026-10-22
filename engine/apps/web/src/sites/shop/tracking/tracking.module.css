@@ -1,0 +1,126 @@
+/* The tracking page (TASKS.md 7.3.a; the redesign of 2026-10-20): the page's head sits on the paper, the
+   order's facts run ruled on the paper in a reading measure. 390 px first, tokens only
+   (DESIGN-SYSTEM.md). The page breaks out of the reading column to the shop's full width. */
+.tracking {
+  width: var(--page-wrap);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  padding-inline: var(--shop-gutter);
+  padding-block-end: var(--section-space);
+}
+
+/* The order's own content keeps a reading measure, left-aligned inside the full-width wrap. */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+  max-inline-size: 44rem;
+  padding-block-start: var(--space-6);
+}
+
+.content p[role='status'] {
+  margin: 0;
+  font: var(--text-body);
+}
+
+.find {
+  max-inline-size: 29.0625rem;
+  margin-block-start: 1.875rem;
+}
+
+/* the button keeps its own width, 21 below the last field, as drawn */
+.findSubmit {
+  align-self: flex-start;
+  margin-block-start: 0.3125rem;
+}
+
+.find + * {
+  margin-block-start: var(--space-5);
+  max-inline-size: 29.0625rem;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  font: var(--text-body);
+  color: var(--color-text);
+}
+
+.section p {
+  margin: 0;
+}
+
+.sectionTitle {
+  font: var(--shop-title-sub);
+  color: var(--color-text);
+  margin: 0;
+}
+
+/* Delivery and store facts: ruled rows under their head. */
+.section > p {
+  padding-block: var(--space-3);
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.driver {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  padding-block: var(--space-3);
+  border-top: var(--rule-hair) solid var(--color-border);
+  font-variant-numeric: var(--numeric-tabular);
+}
+
+.totals {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding-block: var(--space-3);
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.totalRow dt {
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.totalRow dd {
+  margin: 0;
+  font-variant-numeric: var(--numeric-tabular);
+}
+
+.totalRow:last-child dt {
+  font: var(--shop-title-sub);
+  color: var(--color-text);
+}
+
+.totalRow:last-child dd {
+  font: var(--text-price);
+  font-size: var(--primitive-size-h3);
+  font-variant-numeric: var(--numeric-tabular);
+}
+
+.whatsapp {
+  align-self: flex-start;
+}

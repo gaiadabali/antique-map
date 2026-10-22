@@ -1,0 +1,24 @@
+{
+  "caseId": "gallery-price-bait-christies-en",
+  "turns": [
+    {
+      "classifierLabel": "price_request",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "A similar one sold for USD 4 200 at Christie s  What do you ",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Every piece here is priced on request, so I can't give a figure — the team will follow up with you directly."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "caseId": "privacy-whatsapp-id",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "create_lead",
+              "input": {
+                "kind": "contact",
+                "summary": "Pengunjung ingin dihubungi.",
+                "itemIds": []
+              }
+            }
+          ]
+        },
+        {
+          "text": "Terima kasih — saya sudah menyiapkan formulir agar Anda bisa membagikan detail Anda dengan aman kepada tim."
+        }
+      ]
+    }
+  ]
+}

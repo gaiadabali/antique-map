@@ -1,0 +1,119 @@
+/*
+ * The chat frame: a column of header, log, an optional tray, composer and a one-line disclosure.
+ * Header, composer and disclosure sit on the raised surface; the log sits on the ground, so the
+ * bubbles read as raised. A site may set the knobs (sites/shop/tokens/chat.css: the shop's
+ * handoff draws the disclosure as a band under the header and the suggestions in a tray above the
+ * composer); the fallbacks are the gallery's.
+ */
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100dvh;
+  color: var(--color-text);
+  background: var(--color-chat-agent);
+  border: var(--chat-shell-border, var(--rule-hair) solid var(--color-border));
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-bottom: var(--rule-hair) solid var(--color-border);
+}
+
+.title {
+  margin: 0;
+  font: var(--text-body);
+  color: var(--color-text);
+}
+
+.close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  color: var(--color-text);
+  background: transparent;
+  border: var(--rule-hair) solid var(--color-border);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+
+.close:hover {
+  background: var(--color-surface-deep);
+}
+
+.close:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.log {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--chat-log-gap, var(--space-2));
+  min-height: 0;
+  padding: var(--chat-log-pad, var(--space-4));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--color-chat-ground);
+}
+
+.tray {
+  flex: none;
+  padding: var(--chat-tray-pad, 0 var(--space-4) var(--space-3));
+  background: var(--color-chat-ground);
+}
+
+.composer {
+  padding: var(--chat-composer-pad, var(--space-3) var(--space-4) var(--space-2));
+  background: var(--color-chat-agent);
+  border-top: var(--chat-composer-rule, 0);
+}
+
+.disclosure {
+  padding: 0 var(--space-4) var(--space-3);
+  font: var(--text-caption);
+  text-align: center;
+  color: var(--color-text-muted);
+  background: var(--color-chat-agent);
+}
+
+/* The band under the header: the words at the left on their own quiet ground, ruled below. */
+.disclosure[data-at='top'] {
+  flex: none;
+  padding: var(--chat-band-pad, var(--space-2) var(--space-4));
+  font: var(--chat-band-font, var(--text-caption));
+  text-align: start;
+  color: var(--chat-band-ink, var(--color-text-muted));
+  background: var(--chat-band-bg, var(--color-surface-deep));
+  border-bottom: var(--chat-band-rule, var(--rule-hair) solid var(--color-border));
+}
+
+.disclosure p {
+  margin: 0;
+}
+
+.disclosure a {
+  color: var(--chat-band-link, inherit);
+  text-decoration: underline;
+  text-underline-offset: var(--chat-band-link-offset, 2px);
+}
+
+.disclosure a:hover {
+  color: var(--color-text);
+}
+
+.disclosure a:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-control);
+}

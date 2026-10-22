@@ -1,0 +1,24 @@
+{
+  "caseId": "extra-shop-coaster-id",
+  "turns": [
+    {
+      "classifierLabel": "price_request",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Harga coaster satu set",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Harganya Rp 125.000."
+        }
+      ]
+    }
+  ]
+}

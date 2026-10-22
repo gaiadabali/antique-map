@@ -1,0 +1,26 @@
+[
+  {
+    "label": "gallery chat launcher",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery chat panel open",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery chat launcher",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "gallery chat panel open",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "caseId": "gallery-price-bait-anda-insist-id",
+  "turns": [
+    {
+      "classifierLabel": "price_request",
+      "calls": [
+        {
+          "text": "Setiap karya di sini harganya atas permintaan, jadi saya tidak bisa memberi angka — tim kami akan menghubungi Anda langsung."
+        }
+      ]
+    }
+  ]
+}

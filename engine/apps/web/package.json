@@ -1,0 +1,42 @@
+{
+  "name": "@engine/web",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The one Next.js app (ARCHITECTURE.md §4): both sites' UI and route trees, the engine routes and the Payload admin mount. What a site shows arrives at runtime, never at build.",
+  "type": "module",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "next typegen && tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.131.0",
+    "@engine/cache": "workspace:*",
+    "@engine/cms": "workspace:*",
+    "@engine/config": "workspace:*",
+    "@engine/http": "workspace:*",
+    "@engine/i18n": "workspace:*",
+    "@engine/media": "workspace:*",
+    "@engine/migrate": "workspace:*",
+    "@engine/view-models": "workspace:*",
+    "@payloadcms/next": "3.90.2",
+    "@payloadcms/storage-s3": "3.90.2",
+    "@payloadcms/ui": "3.90.2",
+    "graphql": "16.11.0",
+    "next": "16.3.8",
+    "openseadragon": "6.1.1",
+    "payload": "3.90.2",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "server-only": "0.0.1",
+    "sharp": "0.35.5"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "server-only": "0.0.1",
+    "typescript": "5.9.3"
+  }
+}

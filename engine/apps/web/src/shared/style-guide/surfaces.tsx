@@ -1,0 +1,196 @@
+import {
+  Badge,
+  Band,
+  Button,
+  Card,
+  Crossing,
+  Eyebrow,
+  FormMessage,
+  Hairline,
+  Mat,
+  MatNote,
+  PrintTile,
+  PrintTileNote,
+  ProofPoints,
+  SectionHead,
+  Skeleton,
+  StockTag,
+  Toast,
+} from '../ui'
+
+import { samplePlate } from './fixtures'
+import { Section } from './section'
+import styles from './style-guide.module.css'
+
+export function Surfaces(): React.ReactElement {
+  return (
+    <>
+      <Section id="sg-card" title="Card">
+        <div className={styles.row}>
+          <Card>Default card</Card>
+          <Card tone="deep">Deep card</Card>
+          <Card tone="dark">Dark card</Card>
+        </div>
+      </Section>
+
+      <Section id="sg-badge" title="Badge">
+        <div className={styles.row}>
+          <Badge>Default</Badge>
+          <Badge tone="success">Success</Badge>
+          <Badge tone="caution">Caution</Badge>
+          <Badge tone="critical">Critical</Badge>
+        </div>
+      </Section>
+
+      <Section id="sg-eyebrow" title="Eyebrow">
+        <div className={styles.row}>
+          <Eyebrow>Featured</Eyebrow>
+        </div>
+      </Section>
+
+      <Section id="sg-section-head" title="Section head">
+        <SectionHead
+          title="From an original in our hands to a print on your wall"
+          lede="300gsm cotton and archival pigment inks, printed in Bali."
+          action={<a href="#sg-section-head">Shop all prints</a>}
+        />
+      </Section>
+
+      <Section id="sg-band" title="Band">
+        <p className={styles.note}>
+          A full-bleed field of the site's pigments in its order; a deep field re-points every ink
+          role, the action included.
+        </p>
+        {([1, 2, 3] as const).map((pigment) =>
+          (['tint', 'wash', 'full'] as const).map((strength) => (
+            <Band key={`${pigment}-${strength}`} as="div" pigment={pigment} strength={strength}>
+              <p className={styles.bandLabel}>
+                Pigment {pigment}, {strength}
+              </p>
+              <div className={styles.row}>
+                <Button href="#sg-band">Ask about this work</Button>
+                <Button href="#sg-band" variant="secondary">
+                  Browse the collection
+                </Button>
+                <Button href="#sg-band" variant="quiet">
+                  Sell to us
+                </Button>
+              </div>
+            </Band>
+          )),
+        )}
+        <Band as="div" pigment="ink">
+          <p className={styles.bandLabel}>Ink</p>
+        </Band>
+      </Section>
+
+      <Section id="sg-crossing" title="Crossing">
+        <p className={styles.note}>
+          Copy on a field of the site&apos;s pigment; the picture lies across the field&apos;s lower
+          edge onto the paper.
+        </p>
+        <Crossing
+          as="div"
+          ratio={4 / 3}
+          copy={<p className={styles.bandLabel}>The islands, first drawn.</p>}
+          aside={<ProofPoints items={['Since 2001', 'A certificate with every original']} />}
+          picture={<img src={samplePlate(400, 300)} alt="A 4 : 3 sheet, whole" />}
+          caption={<span>Caption under the picture, on the paper</span>}
+        />
+      </Section>
+
+      <Section id="sg-mat" title="Mat">
+        <div className={styles.row}>
+          <div className={styles.matSample}>
+            <Mat ratio={4 / 5}>
+              <MatNote>Default mat, 4:5</MatNote>
+            </Mat>
+          </div>
+          <div className={styles.matSample}>
+            <Mat ratio={1} size="compact">
+              <MatNote>Compact mat</MatNote>
+            </Mat>
+          </div>
+          <div className={styles.matSample}>
+            <Mat ratio={1} size="compact" fit="contain">
+              <img src={samplePlate(350, 100)} alt="A 3.5 : 1 sheet, whole" />
+            </Mat>
+          </div>
+          <div className={styles.matSample}>
+            <Mat ratio={1} size="compact" fit="contain">
+              <img src={samplePlate(30, 100)} alt="A 0.3 : 1 sheet, whole" />
+            </Mat>
+          </div>
+        </div>
+      </Section>
+
+      <Section id="sg-print-tile" title="Print tile">
+        <p className={styles.note}>
+          A print hung on an even tile of the site&apos;s stone, at its own shape, with one soft
+          shadow.
+        </p>
+        <div className={styles.row}>
+          <div className={styles.matSample}>
+            <PrintTile>
+              <img src={samplePlate(400, 500)} alt="A 4 : 5 print" />
+            </PrintTile>
+          </div>
+          <div className={styles.matSample}>
+            <PrintTile ratio={3 / 2}>
+              <img src={samplePlate(300, 200)} alt="A 3 : 2 print" />
+            </PrintTile>
+          </div>
+          <div className={styles.matSample}>
+            <PrintTile ratio={1} size="small">
+              <img src={samplePlate(100, 100)} alt="A square print, small" />
+            </PrintTile>
+          </div>
+          <div className={styles.matSample}>
+            <PrintTile>
+              <PrintTileNote>No photograph yet</PrintTileNote>
+            </PrintTile>
+          </div>
+        </div>
+      </Section>
+
+      <Section id="sg-stock-tag" title="Stock tag">
+        <div className={styles.row}>
+          <StockTag label="Stock no. M.0500">M.0500</StockTag>
+          <StockTag label="Stock no. P.1180">P.1180</StockTag>
+        </div>
+      </Section>
+
+      <Section id="sg-proof-points" title="Proof points">
+        <ProofPoints items={['Restored by hand', 'Printed in Bali', 'Stocked in 100+ shops']} />
+      </Section>
+
+      <Section id="sg-hairline" title="Hairline">
+        <div className={styles.row}>
+          <Hairline direction="horizontal" strength="hair" />
+          <Hairline direction="horizontal" strength="strong" />
+        </div>
+      </Section>
+
+      <Section id="sg-form-message" title="Form message">
+        <div className={styles.column}>
+          <FormMessage tone="info">This is an info message.</FormMessage>
+          <FormMessage tone="success">Saved successfully.</FormMessage>
+          <FormMessage tone="error">Something went wrong.</FormMessage>
+        </div>
+      </Section>
+
+      <Section id="sg-toast" title="Toast">
+        <div className={styles.ground}>
+          <Toast>Item added to bag</Toast>
+        </div>
+      </Section>
+
+      <Section id="sg-skeleton" title="Skeleton">
+        <div className={styles.row}>
+          <Skeleton width="200px" height="20px" />
+          <Skeleton width="40px" height="40px" circle />
+        </div>
+      </Section>
+    </>
+  )
+}

@@ -1,0 +1,64 @@
+[
+  {
+    "site": "ig",
+    "url": "http://localhost:4258/",
+    "status": 200,
+    "lang": "en",
+    "title": "Indies Gallery",
+    "h1": "Indies Gallery",
+    "p": "The gallery is being built. What you see is its frame.",
+    "logo": "/brand-assets/logo.svg?v=99c92664",
+    "icon": "/brand-assets/favicon.ico?v=3048a1e1",
+    "axe": [],
+    "file": "dev-ig-en-390.png"
+  },
+  {
+    "site": "ig",
+    "url": "http://localhost:4258/id",
+    "status": 200,
+    "lang": "id",
+    "title": "Indies Gallery",
+    "h1": "Indies Gallery",
+    "p": "Galeri ini sedang dibangun. Yang Anda lihat baru kerangkanya.",
+    "logo": "/brand-assets/logo.svg?v=99c92664",
+    "icon": "/brand-assets/favicon.ico?v=3048a1e1",
+    "axe": [],
+    "file": "dev-ig-id-390.png"
+  },
+  {
+    "site": "ig",
+    "url": "http://localhost:4258/admin/login",
+    "status": 200
+  },
+  {
+    "site": "oei",
+    "url": "http://localhost:4259/",
+    "status": 200,
+    "lang": "en",
+    "title": "Old East Indies",
+    "h1": "Old East Indies",
+    "p": "The shop is being built. What you see is its frame.",
+    "logo": "/brand-assets/logo.svg?v=f7093a23",
+    "icon": "/brand-assets/favicon.ico?v=d420c011",
+    "axe": [],
+    "file": "dev-oei-en-390.png"
+  },
+  {
+    "site": "oei",
+    "url": "http://localhost:4259/id",
+    "status": 200,
+    "lang": "id",
+    "title": "Old East Indies",
+    "h1": "Old East Indies",
+    "p": "Toko ini sedang dibangun. Yang kamu lihat baru kerangkanya.",
+    "logo": "/brand-assets/logo.svg?v=f7093a23",
+    "icon": "/brand-assets/favicon.ico?v=d420c011",
+    "axe": [],
+    "file": "dev-oei-id-390.png"
+  },
+  {
+    "site": "oei",
+    "url": "http://localhost:4259/admin/login",
+    "status": 200
+  }
+]

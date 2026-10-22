@@ -5,8 +5,8 @@
  * from the two (CONTENT-MODEL.md §1, §2, §6, §9; docs/design/imagery/). Both are set once, at
  * intake, on the master and on the media made from it (`media.role`, `media.provenance`): the row
  * that places an image on a work, a product or a location orders and captions it, and never says
- * again what it is. A synthetic image is labelled wherever it is shown
- * (retouching-and-labelling.md §6).
+ * again what it is. A synthetic image is labelled wherever it is shown, by whatever renders it,
+ * from its provenance — never by words stored on the record (retouching-and-labelling.md §6).
  */
 
 // ── Roles ──────────────────────────────────────────────────────────────────────────────
@@ -88,8 +88,7 @@ export type LocationImageArea = (typeof LOCATION_IMAGE_AREAS)[number]
 
 /**
  * `media.role`: what an image is, set at intake — every role above but the `primary`
- * designation, a configurator room plate (`./room-plates`), or an editorial image that documents
- * no work, product or location (a story's illustration, a banner, a portrait of a maker).
+ * designation, or an editorial image that documents no work, product or location (a story's illustration, a banner, a portrait of a maker).
  */
 export const MEDIA_ROLES = [
   ...WORK_IMAGE_ROLES,
@@ -97,7 +96,6 @@ export const MEDIA_ROLES = [
   'lifestyle',
   'packaging',
   'showroom',
-  'room-plate',
   'editorial',
 ] as const
 export type MediaRole = (typeof MEDIA_ROLES)[number]
@@ -106,12 +104,12 @@ export type MediaRole = (typeof MEDIA_ROLES)[number]
 export const IMAGE_SUBJECTS = ['work', 'product', 'location', 'other'] as const
 export type ImageSubject = (typeof IMAGE_SUBJECTS)[number]
 
-/** The media roles each subject's images may carry; `other` is a room plate or an editorial image. */
+/** The media roles each subject's images may carry; `other` is an editorial image. */
 export const ROLES_BY_SUBJECT = {
   work: WORK_IMAGE_ROLES,
   product: PRODUCT_IMAGE_ROLES,
   location: LOCATION_IMAGE_ROLES,
-  other: ['room-plate', 'editorial'],
+  other: ['editorial'],
 } as const satisfies Readonly<Record<ImageSubject, readonly MediaRole[]>>
 
 export function roleAllowed(subject: ImageSubject, role: MediaRole): boolean {
@@ -135,8 +133,11 @@ export function isSynthetic(provenance: MediaProvenance): boolean {
 }
 
 /**
- * The label a synthetic image carries on the image, at the start of its alt text, in its caption
- * and in the filmstrip — in the lexicon's words (TASKS.md 6.3), never an icon alone.
+ * The label a synthetic image carries on the image, at the start of its rendered alt text, in its
+ * caption and in the filmstrip — in the lexicon's words (`image.synthetic.<label>`,
+ * `image.syntheticAlt.<label>`; TASKS.md 6.3), never an icon alone. It is added where the image is
+ * rendered, from its provenance (`renderedAlt()`), and never stored in `media.alt`, which describes
+ * the image and nothing else (v1.6): no edit of the alt can remove the label.
  */
 export const SYNTHETIC_LABEL = {
   photograph: null,
@@ -146,16 +147,48 @@ export const SYNTHETIC_LABEL = {
 } as const satisfies Readonly<Record<MediaProvenance, 'digital-mockup' | 'ai-generated' | null>>
 export type SyntheticLabel = NonNullable<(typeof SYNTHETIC_LABEL)[MediaProvenance]>
 
+/** The lexicon's words for a synthetic image's label, in the page's locale. */
+export type SyntheticLabelWords = {
+  /** `image.synthetic.<label>`: "Digital mockup". */
+  readonly label: (label: SyntheticLabel) => string
+  /** `image.syntheticAlt.<label>` filled with the stored alt: "Digital mockup: {alt}". */
+  readonly labelled: (label: SyntheticLabel, alt: string) => string
+}
+
+/**
+ * Whether `alt` already opens with a label's words, ignoring case and surrounding space — a legacy
+ * alt, or a baseline written before v1.6 — so a label is never shown twice. Blank words never
+ * match: a missing lexicon value must not drop a label.
+ */
+export function opensWithLabel(alt: string, words: string): boolean {
+  const opening = words.trim().toLowerCase()
+  return opening.length > 0 && alt.trim().toLowerCase().startsWith(opening)
+}
+
+/**
+ * The alt text an image is shown with: a photograph's stored alt as it is; a synthetic image's
+ * with its label first, in the lexicon's words — unless the stored alt already opens with them.
+ * `label` is `SYNTHETIC_LABEL[provenance]`, so the label follows the image's provenance, fixed at
+ * intake, and never the alt's wording.
+ */
+export function renderedAlt(
+  alt: string,
+  label: SyntheticLabel | null,
+  words: SyntheticLabelWords,
+): string {
+  if (label === null || opensWithLabel(alt, words.label(label))) return alt
+  return words.labelled(label, alt)
+}
+
 /**
  * Whether an image of this provenance may be placed under this role on this subject
- * (retouching-and-labelling.md §5, room-scenes.md §10). A photograph always may; otherwise:
+ * (retouching-and-labelling.md §5). A photograph always may; otherwise:
  * - on a work, only an `in-room` view — a composite or a render, labelled and never first — since
  *   every other image shows the object itself, and no AI-generated image ever shows an original;
  * - on a location, never: its photographs are the shop's proof that the place is real;
  * - on a product, any, labelled: whether an AI image shows a product the shop really makes is a
  *   person's judgement, not the schema's;
- * - a room plate is rendered or photographed, never AI-generated or a composite — a plate whose
- *   scale cannot be trusted misleads — and an editorial image may be anything, labelled.
+ * - an editorial image may be anything, labelled.
  * Whether the subject takes the role at all is `roleAllowed()`'s answer.
  */
 export function provenanceAllowed(
@@ -172,7 +205,7 @@ export function provenanceAllowed(
     case 'product':
       return true
     case 'other':
-      return role === 'room-plate' ? provenance === 'rendered' : true
+      return true
   }
 }
 

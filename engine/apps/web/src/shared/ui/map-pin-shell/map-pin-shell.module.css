@@ -1,0 +1,58 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-4);
+  background: var(--color-surface-raised);
+  border: var(--rule-hair) solid var(--color-border);
+}
+
+.map {
+  position: relative;
+  min-height: 12rem;
+  background: var(--color-surface-deep);
+  border: var(--rule-hair) solid var(--color-border);
+}
+
+.address {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font: var(--text-body);
+  color: var(--color-text);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.button {
+  padding: var(--space-2) var(--space-3);
+  font: var(--text-small);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: var(--rule-hair) solid var(--color-border);
+  border-radius: var(--radius-control);
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--color-surface-deep);
+}
+
+.fallback {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.input {
+  padding: var(--space-2) var(--space-3);
+  font: var(--text-body);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: var(--rule-hair) solid var(--color-border);
+  border-radius: var(--radius-control);
+}

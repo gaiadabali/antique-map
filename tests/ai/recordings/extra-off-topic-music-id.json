@@ -1,0 +1,13 @@
+{
+  "caseId": "extra-off-topic-music-id",
+  "turns": [
+    {
+      "classifierLabel": "off_topic",
+      "calls": [
+        {
+          "text": "Itu di luar yang bisa saya bantu di sini — dengan senang hati saya jawab pertanyaan seputar katalog kami."
+        }
+      ]
+    }
+  ]
+}

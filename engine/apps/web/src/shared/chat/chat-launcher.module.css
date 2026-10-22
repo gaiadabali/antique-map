@@ -1,0 +1,168 @@
+/*
+ * The floating chat (DESIGN-SYSTEM.md §5 "Chat launcher and panel": a sheet on a phone, a side panel
+ * at 1280). The launcher floats at the bottom right of every page; open, the panel is fixed to the
+ * viewport, never laid out inside the header. Layering: above the sticky header (100), below the
+ * mobile menu sheet (9999) and toasts (1000).
+ *
+ * On a phone the launcher is a 48 px square holding the drawn chat icon, so it covers as little of
+ * the page as a one-tap door can; its words stay in the button as visually hidden text, which is
+ * its accessible name. From 48rem up it is the labelled text button. The foot of the page keeps
+ * clear of it (the footer rule below), so the last line is never under the button.
+ */
+.launcher {
+  position: fixed;
+  right: calc(var(--space-4) + env(safe-area-inset-right, 0px));
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
+  z-index: 900;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  inline-size: 3rem;
+  block-size: 3rem;
+  padding: 0;
+  font: var(--text-label);
+  /* The gallery: a quiet paper button with a hairline, floating over any print or footer without
+     covering it in a slab of ink. A site may set the knobs (the shop: the handoff's ink button,
+     umber under the pointer, one soft shadow); the fallbacks are the gallery's. */
+  color: var(--chat-launcher-ink, var(--color-text));
+  background: var(--chat-launcher-bg, var(--color-surface-raised));
+  border: var(--chat-launcher-border, var(--rule-hair) solid var(--color-border-strong));
+  border-radius: var(--radius-pill);
+  box-shadow: var(--chat-launcher-shadow, none);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-out) var(--ease),
+    color var(--dur-out) var(--ease);
+}
+
+.launcher:hover {
+  color: var(--chat-launcher-ink-hover, var(--chat-launcher-ink, var(--color-text)));
+  background: var(--chat-launcher-bg-hover, var(--color-surface-deep));
+}
+
+.launcher:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.icon {
+  display: inline-flex;
+}
+
+/* The words as the accessible name: out of sight on a phone, never display:none. */
+.text {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* The foot of the page keeps clear of the 48 px button (16 px off the edge) on a phone: the
+   footer's own bottom padding grows to hold it, on the footer's ground, so the last line and the
+   last card stand fully above it at the end of the scroll. It targets the site footer, the one
+   that precedes the launcher, and lapses when the panel replaces the launcher or when the
+   launcher docks above the footer instead (the shop). */
+@media (max-width: 47.999rem) {
+  :global(footer):has(~ .launcher:not([data-dock])) {
+    padding-block-end: calc(var(--space-8) + var(--space-4) + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* From 48rem up the launcher is the labelled text button, unchanged: icon out, words in. */
+@media (min-width: 48rem) {
+  .launcher {
+    right: calc(var(--space-5) + env(safe-area-inset-right, 0px));
+    bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+    gap: var(--space-2);
+    inline-size: auto;
+    block-size: auto;
+    min-block-size: 3rem;
+    padding: var(--chat-launcher-pad, var(--space-3) var(--space-5));
+  }
+
+  .icon {
+    display: none;
+  }
+
+  .text {
+    position: static;
+    inline-size: auto;
+    block-size: auto;
+    margin: 0;
+    overflow: visible;
+    clip-path: none;
+    white-space: normal;
+  }
+}
+
+/*
+ * A phone sheet: the whole viewport, so nothing is clipped and the composer stays reachable. The
+ * safe-area insets pad the sheet (its surface continues under the notch and the home bar), so the
+ * header and the composer never sit beneath them.
+ */
+.panel {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+    env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  background: var(--color-chat-agent);
+  animation: rise var(--dur-in) var(--ease);
+}
+
+.panel > div {
+  flex: 1 1 auto;
+  min-height: 0;
+  border-radius: inherit;
+}
+
+/* From tablet up: a side panel at the bottom right, its own height, scrolling inside its log. A site
+   may set its width, rule and shadow (sites/shop/tokens/chat.css). */
+@media (min-width: 768px) {
+  .panel {
+    inset: auto calc(var(--space-5) + env(safe-area-inset-right, 0px))
+      calc(var(--space-5) + env(safe-area-inset-bottom, 0px)) auto;
+    width: min(var(--chat-panel-width, 420px), calc(100vw - 2 * var(--space-5)));
+    height: min(640px, calc(100dvh - 2 * var(--space-5)));
+    padding: 0;
+    border-radius: var(--radius-panel);
+    border: var(--chat-panel-border, var(--rule-hair) solid var(--color-text));
+    box-shadow: var(--chat-panel-shadow, none);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--space-3));
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Opening is the visitor's own action, but reduced motion still gets a plain cut. */
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation: none;
+  }
+
+  .launcher {
+    transition: none;
+  }
+}
+
+/*
+ * The shop's buy row (data-chat-clear) is no longer sticky on a phone — it scrolls with the page —
+ * so the launcher no longer lifts above it; a lift would only float it over the thumbnails.
+ */

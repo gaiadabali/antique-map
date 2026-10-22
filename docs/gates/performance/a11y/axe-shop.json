@@ -1,0 +1,74 @@
+[
+  {
+    "label": "shop home",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop home",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop listing",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop listing",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop item",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop item",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop search",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop search",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop home-id",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop home-id",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop item-id",
+    "width": 390,
+    "counts": {},
+    "violations": []
+  },
+  {
+    "label": "shop item-id",
+    "width": 1280,
+    "counts": {},
+    "violations": []
+  }
+]

@@ -1,0 +1,50 @@
+import { DraftFromPhotosButton as DraftFromPhotosButton_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { RupiahCell as RupiahCell_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { LeadReplyBlock as LeadReplyBlock_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { LeadSourceBlock as LeadSourceBlock_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { CreatePartnerButton as CreatePartnerButton_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { PartnerLeadsList as PartnerLeadsList_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { AdminIcon as AdminIcon_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { AdminLogo as AdminLogo_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { LanguageLink as LanguageLink_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { DailyWorkHeading as DailyWorkHeading_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { OrdersNavLink as OrdersNavLink_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { LeadsNavLink as LeadsNavLink_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { StockImportNavLink as StockImportNavLink_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { SeedsNavLink as SeedsNavLink_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { DailyWorkEnd as DailyWorkEnd_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { DashboardView as DashboardView_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { OrdersPanelView as OrdersPanelView_07c20cc8cfdd15dc6bf0685c62e5eb2d } from '@engine/cms/admin/orders'
+import { LeadsInboxView as LeadsInboxView_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { StockImportView as StockImportView_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { SeedsView as SeedsView_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { CatalogueWall as CatalogueWall_4013f4520eeb415b79ebee39fbe1d6a0 } from '@engine/cms/admin/views'
+import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
+import { S3ClientUploadHandler as S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24 } from '@payloadcms/storage-s3/client'
+
+/** @type import('payload').ImportMap */
+export const importMap = {
+  "@engine/cms/admin/views#DraftFromPhotosButton": DraftFromPhotosButton_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#RupiahCell": RupiahCell_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#LeadReplyBlock": LeadReplyBlock_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#LeadSourceBlock": LeadSourceBlock_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#CreatePartnerButton": CreatePartnerButton_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#PartnerLeadsList": PartnerLeadsList_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#AdminIcon": AdminIcon_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#AdminLogo": AdminLogo_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#LanguageLink": LanguageLink_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#DailyWorkHeading": DailyWorkHeading_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#OrdersNavLink": OrdersNavLink_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#LeadsNavLink": LeadsNavLink_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#StockImportNavLink": StockImportNavLink_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#SeedsNavLink": SeedsNavLink_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#DailyWorkEnd": DailyWorkEnd_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#DashboardView": DashboardView_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/orders#OrdersPanelView": OrdersPanelView_07c20cc8cfdd15dc6bf0685c62e5eb2d,
+  "@engine/cms/admin/views#LeadsInboxView": LeadsInboxView_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#StockImportView": StockImportView_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#SeedsView": SeedsView_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@engine/cms/admin/views#CatalogueWall": CatalogueWall_4013f4520eeb415b79ebee39fbe1d6a0,
+  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
+  "@payloadcms/storage-s3/client#S3ClientUploadHandler": S3ClientUploadHandler_f97aa6c64367fa259c5bc0567239ef24
+}

@@ -1,4 +1,13 @@
-# J-G6 — Make an offer → counter → accept → pay
+# J-G6 — Make an offer → counter → accept → pay (retired)
+
+> **Retired 2026-10-01 — D50.** The gallery takes no online offers (G8, D22) and shows no
+> price to offer against (G4): a price is negotiated by phone or WhatsApp and paid through
+> a staff-issued invoice. This journey is **not run** — not in 13.2, 35.1.a or 35.2, and it
+> does not count towards phase 35's journeys. The negotiated path it tested now lives in
+> [J-G1](j-g1-collector-google-request-price.md) (WhatsApp → invoice → pay) and
+> [J-G8](j-g8-call-negotiated-invoice.md) (a call → the invoice → due date, paid or
+> released). The file is kept as the record of what was designed before D50; nothing
+> below is current.
 
 **Who:** a collector on a desktop at home, interested in a map priced around
 USD 12,000 — in the middle tier, where offers are allowed. They would buy at a lower
@@ -69,5 +78,5 @@ offer" invites them; how they react to an automatic decline if a floor is set.
 
 ## Open until the owner answers
 
-G8 (offers on which pieces; the floor), G9 (how fast staff answer an offer), G5 (how long
-an accepted offer holds the piece).
+Closed by the retirement: G8 answered "no online offers" (2026-10-01, [owner-answers.md](../owner-answers.md)),
+and D22 records it.

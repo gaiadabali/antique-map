@@ -1,0 +1,25 @@
+{
+  "caseId": "handoff-viewing-id",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "handoff_link",
+              "input": {
+                "channel": "whatsapp",
+                "topic": "general",
+                "itemIds": []
+              }
+            }
+          ]
+        },
+        {
+          "text": "Saya akan sampaikan ini ke tim agar mereka bisa membantu Anda langsung."
+        }
+      ]
+    }
+  ]
+}

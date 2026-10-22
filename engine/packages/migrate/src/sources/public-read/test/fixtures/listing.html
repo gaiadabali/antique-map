@@ -1,0 +1,57 @@
+<!doctype html>
+<!-- Synthetic fixture: the shape of an old listing page (a category), trimmed; invented content, no personal data. Kept byte-for-byte as the old pages print it: do not run a formatter over it (the category tree must stay JSON). -->
+<html>
+  <head>
+    <title>Category : Mock Maps</title>
+    <link rel="stylesheet" href="https://old-store.example/style.css" />
+  </head>
+  <body>
+    <nav>
+      <a href="https://old-store.example">Home</a>
+      <a href="https://old-store.example/about-us">About Us</a>
+      <a href="https://old-store.example/account/basket">Basket</a>
+      <a href="https://old-store.example/s?u350=1">Gifts under 350</a>
+      <a href="https://elsewhere.example/page">Elsewhere</a>
+      <a href="mailto:someone@example.invalid">Mail</a>
+      <a href="#subscribe">Subscribe</a>
+    </nav>
+    <script>
+      var base_url = 'https://old-store.example/category/'
+      var db = [{"id":1,"parent_id":0,"active":"active","visible":"visible","slug":"all-mock-maps","name":"Mock Maps [all]","products_count":3,"child":[{"id":22,"parent_id":1,"active":"active","visible":"visible","slug":"mock-islands","name":"Mock \"Islands\" Maps","products_count":5,"child":[]}]},{"id":2,"parent_id":0,"active":"active","visible":"visible","slug":"mock-prints","name":"Mock Prints","products_count":1}];
+    </script>
+    <content>
+      <ul class="nav">
+        <li><a href="https://old-store.example/category/1-all-mock-maps?p=lowest">Lowest Price</a></li>
+        <li><a href="https://old-store.example/category/1-all-mock-maps?o=newest">Recently Added</a></li>
+        <li><a href="https://old-store.example/category/1-all-mock-maps?s=sold">Sold</a></li>
+        <li><a href="https://old-store.example/category/1-all-mock-maps?s=unsold">Unsold</a></li>
+      </ul>
+      <div class="row product-item shadow-lg">
+        <a href="https://old-store.example/product/101-mock-chart-year-1689" class="image"><img src="https://old-store.example/storage/products/101-501S.jpg" align="Mock chart" /></a>
+        <h2 class="title"><a href="https://old-store.example/product/101-mock-chart-year-1689">Mock chart - Year 1689</a></h2>
+        <div class="mapmaker"><a href="https://old-store.example/mapmaker/7-mock-maker">Mock Maker</a></div>
+        <div class="category">
+          <a href="https://old-store.example/category/1-all-mock-maps">Mock Maps</a> /
+          <a href="https://old-store.example/category/22-mock-islands">Mock Islands Maps</a>
+        </div>
+        <div class="dimension clearfix"><div class="lbl pull-left">Year:</div><div> null </div></div>
+        <div class="dimension clearfix"><div class="lbl pull-left">Size:</div><div>40 b7 22 cm.</div></div>
+        <div class="condition clearfix"><div class="lbl pull-left">Condition:</div><div>G+ / Study images carefully</div></div>
+        <div class="sku clearfix"><div class="lbl pull-left">SKU:</div><div>M.Dav5</div></div>
+        <div class="clearfix mb-3"><div class="lbl pull-left">Price:</div><div> Price on Request </div></div>
+        <div class="price mt-1"> Price on Request </div>
+      </div>
+      <div class="row product-item shadow-lg">
+        <h2 class="title"><a href="https://old-store.example/product/102-mock-plan">Mock plan</a></h2>
+        <div class="category"><a href="https://old-store.example/category/22-mock-islands">Mock Islands Maps</a></div>
+        <div class="dimension clearfix"><div class="lbl pull-left">Year:</div><div>Leiden</div></div>
+        <div class="price mt-1"></div>
+        <a href="#sold-out" class="btn btn-danger">Sold</a>
+      </div>
+      <ul class="pagination">
+        <li><a href="https://old-store.example/category/1-all-mock-maps?page=2">2</a></li>
+        <li><a href="https://old-store.example/category/1-all-mock-maps?s=sold&amp;page=2">2</a></li>
+      </ul>
+    </content>
+  </body>
+</html>

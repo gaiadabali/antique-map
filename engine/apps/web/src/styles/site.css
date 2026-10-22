@@ -1,0 +1,209 @@
+/* =====================================================================
+   Site-wide shell styles. No raw colours, no font-family declarations,
+   no ad-hoc lengths — every value is a token from shared/styles/tokens/
+   or the site brand files. Components use the semantic aliases only.
+   Ivory and ink (phase 18): near-black ink on a warm paper, and the
+   parts of the browser nobody draws (selection, caret, scrollbar,
+   underlines, numerals) carry the palette too.
+   ===================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: var(--text-body);
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-kerning: normal;
+  caret-color: var(--color-text);
+  accent-color: var(--color-accent);
+  scrollbar-color: var(--color-border-strong) var(--color-surface);
+  /* A focused control scrolls clear of the sticky header and the floating chat button (WCAG
+     2.4.11): the header is 5.5rem tall, the chat button sits 1.5rem above the foot and is 3rem tall. */
+  scroll-padding-block: 6.5rem 6rem;
+  /* A page's wrap spans 100vw, which counts the scrollbar: the few pixels it overhangs are
+     clipped here rather than scrolled to (clip, not hidden, keeps the sticky header working). */
+  overflow-x: clip;
+}
+
+/* The shop (the redesign of 2026-10-20): an anchor lands its section flush under the sticky header
+   — the header's own height, not the gallery's 6.5rem — and the page glides there. A page with a
+   second sticky bar (the stores' area nav) sets its own padding. */
+html[data-site='shop'] {
+  scroll-padding-block-start: var(--shop-header);
+  scroll-behavior: smooth;
+}
+
+/* Keyboard focus never glides: a smooth scroll is still under way when focus lands, so a focused
+   control is momentarily off screen, or under the sticky header (WCAG 2.4.11). Mouse and touch
+   anchors keep the glide; focus-visible is only set by the keyboard. */
+html[data-site='shop']:has(:focus-visible) {
+  scroll-behavior: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-site='shop'] {
+    scroll-behavior: auto;
+  }
+}
+
+/* The shop reads in the handoff's 14 px Karla at 1.5 (a component sets its own size). */
+html[data-site='shop'] body {
+  font: 400 0.875rem / 1.5 var(--font-body);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface);
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-action) 18%, var(--color-surface));
+  color: var(--color-text);
+}
+
+a {
+  color: inherit;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 0.24em;
+}
+
+:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.skip-link {
+  position: absolute;
+  left: var(--space-4);
+  top: calc(-1 * var(--space-9));
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  font: var(--text-small);
+  /* Above the sticky header (100) and the menu sheet (9999): a skip link focused behind the logo
+     is a focus nobody can see (WCAG 2.4.7; 10.2 keyboard pass). */
+  z-index: 10000;
+}
+
+.skip-link:focus {
+  top: var(--space-4);
+}
+
+.site-brand {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text);
+  text-decoration: none;
+  min-height: 44px;
+}
+
+/* The site's name beside its logo, said but not shown: the logo already carries it. */
+.site-name {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.site-logo {
+  display: block;
+  height: 2.5rem;
+  width: auto;
+  max-width: 10rem;
+}
+
+.site-locales ul {
+  display: flex;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: var(--text-small);
+}
+
+.site-locales a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--space-2);
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.site-locales a:hover {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+.site-locales a[aria-current='true'] {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+/* The reading measure is the default for long-form pages (an order, tracking, a not-found). Every
+   listing and landing page breaks out of it in its own wrap, to the full `--page-wrap` width. */
+.site-main {
+  flex: 1;
+  width: 100%;
+  max-width: calc(var(--measure, 66ch) + 2 * var(--gutter));
+  margin: 0 auto;
+  padding: var(--space-7) var(--gutter) var(--space-8);
+}
+
+:where(.site-main) h1 {
+  font: var(--text-h1);
+  letter-spacing: var(--tracking-h1);
+  line-height: var(--primitive-line-h1);
+  margin: 0 0 var(--space-5);
+  text-wrap: balance;
+}
+
+/* `:where()` carries no specificity, so a section's own heading class (a card title, a rail
+   number) still wins over this default — only a bare h2/h3 falls back to it (qa 4.qa, F2). */
+:where(.site-main) h2 {
+  font: var(--text-h2);
+  margin: 0 0 var(--space-4);
+  text-wrap: balance;
+}
+
+:where(.site-main) h3 {
+  font: var(--text-h3);
+  margin: 0 0 var(--space-3);
+}
+
+:where(.site-main) p {
+  text-wrap: pretty;
+}
+
+.site-lede {
+  font: var(--text-body-large);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Figures read in columns line up: prices, dimensions, counts, stock numbers. */
+:where(table, data, time) {
+  font-variant-numeric: var(--numeric-tabular);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

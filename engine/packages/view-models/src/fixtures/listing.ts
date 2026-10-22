@@ -1,8 +1,10 @@
 /**
  * @contract C2 — fixture `listing` · owner: ARC
- * A named facet page (`/antique-maps/contoh`) with an Indonesian ship-to: price facets and
- * presets in rupiah alone, the place tree, the status toggle, chips, sort and pagination —
- * plus the zero-results state, which never dead-ends.
+ * A named facet page (`/antique-maps/contoh`) with an Indonesian ship-to, for a brand whose
+ * prices are shown: price facets and presets in rupiah alone, the place tree, the status toggle,
+ * chips, sort and pagination — plus the zero-results state, which never dead-ends; and the same
+ * page where unique prices are on request (the gallery, D50, v1.5): no price facet, no price sort,
+ * every card "Price on request", the object type's options labelled by the app (`label: null`).
  */
 import type { ListingVM, SearchVM } from '../surfaces/listing'
 import { card, money, price, seo } from './_shared'
@@ -68,7 +70,7 @@ export const listing: ListingVM = {
       href: '/antique-maps/contoh?inShowroom=1',
     },
   ],
-  applied: [{ label: 'Pulau Contoh', href: '/antique-maps' }],
+  applied: [{ key: 'place', value: 'contoh', label: 'Pulau Contoh', href: '/antique-maps' }],
   clearAll: '/browse',
   sort: [
     { key: 'newest', href: '/antique-maps/contoh?sort=newest', selected: true },
@@ -85,6 +87,55 @@ export const listing: ListingVM = {
   intro: null,
   seo: seo('Antique maps of Pulau Contoh', '/antique-maps/contoh'),
   breadcrumbs: [{ label: 'Maps & Charts', href: '/antique-maps' }],
+}
+
+/** The gallery's page at launch (D50): no figure anywhere, no price facet and no price sort. */
+export const listingOnRequest: ListingVM = {
+  ...listing,
+  results: [
+    card(1001, 'The Isle of Contoh', { status: { kind: 'priceOnRequest' } }),
+    card(1003, 'The Isle of Contoh (another example)', {
+      status: { kind: 'onHold', until: '2026-10-09T17:00:00+08:00' },
+    }),
+    card(1006, 'Chart of the Contoh Straits', { status: { kind: 'priceOnRequest' } }),
+    card(1007, 'Plan of the Harbour', { status: { kind: 'sold' } }),
+  ],
+  facets: [
+    ...listing.facets.filter((facet) => facet.key !== 'price'),
+    {
+      kind: 'options',
+      key: 'objectType',
+      multiple: true,
+      // A contract's list: the app words each option at `objectType.<value>` (v1.5).
+      options: [
+        {
+          value: 'map',
+          label: null,
+          count: 3,
+          selected: true,
+          href: '/antique-maps/contoh',
+          children: [],
+        },
+        {
+          value: 'sea-chart',
+          label: null,
+          count: 1,
+          selected: false,
+          href: '/sea-charts/contoh',
+          children: [],
+        },
+      ],
+    },
+  ],
+  applied: [
+    { key: 'objectType', value: 'map', label: null, href: '/places/contoh' },
+    { key: 'place', value: 'contoh', label: 'Pulau Contoh', href: '/antique-maps' },
+  ],
+  sort: [
+    { key: 'newest', href: '/antique-maps/contoh?sort=newest', selected: true },
+    { key: 'dateAsc', href: '/antique-maps/contoh?sort=dateAsc', selected: false },
+    { key: 'maker', href: '/antique-maps/contoh?sort=maker', selected: false },
+  ],
 }
 
 export const listingEmpty: ListingVM = {

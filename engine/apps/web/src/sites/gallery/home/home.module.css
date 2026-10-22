@@ -1,0 +1,200 @@
+/* The gallery home below the hero (4.3.b, 14.3; Ivory and ink 18). The hero's own styles are in
+   hero.module.css. Every value is a token from shared/styles/tokens or the gallery brand file —
+   no raw colour, no font. */
+
+/* Breaks out of the shell's reading-measure column to the full page width (`--page-wrap`). */
+.wrap {
+  width: var(--page-wrap);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  padding-inline: var(--gutter);
+}
+
+/* A band on the paper: the rhythm alone parts it from its neighbours, no rule. */
+.section {
+  padding-block: var(--section-space);
+}
+
+.body {
+  margin: var(--space-5) 0 0;
+  max-inline-size: var(--measure-text);
+  color: var(--color-text);
+  text-wrap: pretty;
+}
+
+/* The newest six: four on a phone (two rows of two), six on a tablet (two rows of three), four at
+   laptop widths, all six in one row on a wide screen — never a row with an empty slot. */
+.grid > ul,
+.trio > ul {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid > ul > li:nth-child(n + 5),
+.trio > ul > li:nth-child(n + 3) {
+  display: none;
+}
+
+.skeletons {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-7) var(--grid-gap);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-5);
+  margin-block-start: var(--space-7);
+}
+
+/* The house and its curator: two columns of a letter on the stone. */
+.house {
+  display: grid;
+  gap: var(--space-8) var(--grid-gap);
+}
+
+.curatorName {
+  margin: 0;
+  font: var(--text-h1);
+  letter-spacing: var(--tracking-h1);
+}
+
+.curatorRole {
+  margin: var(--space-2) 0 0;
+  font: var(--text-label);
+  color: var(--color-text-muted);
+}
+
+/* The bridge to the shop: the head and its one link on one line on a desktop. */
+.bridge {
+  display: grid;
+  align-items: end;
+  gap: var(--space-6);
+}
+
+.bridge > :first-child {
+  margin-block-end: 0;
+}
+
+/* Makers and places: two entries on a strong rule, the words at page-title size. */
+.index {
+  display: grid;
+  gap: var(--space-6) var(--grid-gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entry {
+  display: grid;
+  gap: var(--space-3);
+  padding-block: var(--space-5) 0;
+  border-top: var(--rule-hair) solid var(--color-border-strong);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.entryTitle {
+  font: var(--text-h2);
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 0.14em;
+  transition: text-decoration-color var(--dur-out) var(--ease);
+}
+
+.entry:hover .entryTitle {
+  text-decoration-color: currentColor;
+}
+
+.entryLine {
+  font: var(--text-body);
+  color: var(--color-text-muted);
+}
+
+/* The close: the promise at display size, the lede and Enquire beside it on a desktop. */
+.close {
+  display: grid;
+  gap: var(--space-7) var(--grid-gap);
+  padding-block: var(--section-space);
+}
+
+/* After the index the close follows at one section's space, not two. */
+.section + .close {
+  padding-block-start: 0;
+}
+
+.close .closeTitle {
+  margin: 0;
+  max-inline-size: 14ch;
+  font: var(--text-display);
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+}
+
+.closeBody {
+  align-self: end;
+}
+
+.closeLede {
+  margin: 0;
+  max-inline-size: 30rem;
+  font: var(--text-body-large);
+  color: var(--color-text-muted);
+  text-wrap: pretty;
+}
+
+@media (min-width: 48rem) {
+  .grid > ul,
+  .trio > ul {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .grid > ul > li:nth-child(n + 5),
+  .trio > ul > li:nth-child(n + 3) {
+    display: block;
+  }
+
+  .skeletons {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .index {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .bridge {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+}
+
+@media (min-width: 75rem) {
+  .grid > ul {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .grid > ul > li:nth-child(n + 5) {
+    display: none;
+  }
+}
+
+@media (min-width: 110rem) {
+  .grid > ul {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .grid > ul > li:nth-child(n + 5) {
+    display: block;
+  }
+}
+
+@media (min-width: 64rem) {
+  .house {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+
+  .close {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+}

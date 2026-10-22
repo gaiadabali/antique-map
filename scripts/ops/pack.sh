@@ -11,12 +11,34 @@ set -euo pipefail
 OPS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ENTRY="$OPS_DIR/helios-provision.sh"
 
+# The storage step's documents (lib/storage.sh), as a function that writes them out on the host:
+# the policy documents @engine/media's storage:policies applies, so both tools apply one text.
+POLICIES="${INDIES_POLICIES_DIR:-$OPS_DIR/../../engine/packages/media/src/storage/policies}"
+bundle() {
+  local name f
+  printf '\n# --- storage bundle: engine/packages/media/src/storage/policies ---\n'
+  printf 'storage_bundle_packed() {\n'
+  for name in media-public-read media-writer masters-writer; do
+    f="$POLICIES/$name.json"
+    [ -f "$f" ] || {
+      echo "pack.sh: no policy document $f" >&2
+      return 1
+    }
+    if grep -qx 'INDIES_BUNDLE_EOF' "$f"; then
+      echo "pack.sh: $f holds the bundle's delimiter line" >&2
+      return 1
+    fi
+    printf "cat >\"\$1/%s.json\" <<'INDIES_BUNDLE_EOF'\n%s\nINDIES_BUNDLE_EOF\n" "$name" "$(cat "$f")"
+  done
+  printf '}\n'
+}
+
 pack() {
   local rev
   rev="$(git -C "$OPS_DIR" rev-parse --short HEAD 2>/dev/null || printf 'unknown')"
-  # A tree with uncommitted changes under scripts/ops is labelled, so a sha that was reviewed
-  # can never be confused with one packed from edits nobody saw.
-  if [ -n "$(git -C "$OPS_DIR" status --porcelain -- . 2>/dev/null)" ]; then
+  # A tree with uncommitted changes under scripts/ops or the policy documents is labelled, so a
+  # sha that was reviewed can never be confused with one packed from edits nobody saw.
+  if [ -n "$(git -C "$OPS_DIR" status --porcelain -- . "$POLICIES" 2>/dev/null)" ]; then
     rev="$rev-dirty"
     echo "pack.sh: WARNING: scripts/ops has uncommitted changes; packed as $rev" >&2
   fi
@@ -35,6 +57,7 @@ pack() {
     printf '\n# --- %s ---\n' "$module"
     grep -v '^# shellcheck shell=bash$' "$OPS_DIR/$module"
   done
+  bundle || return 1
   printf '\n# --- helios-provision.sh ---\n'
   sed -n '/^# <<< modules/,$p' "$ENTRY" | sed '1d'
 }

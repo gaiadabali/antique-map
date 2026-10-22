@@ -1,0 +1,75 @@
+/* The gallery home's hero in Ivory and ink (18): the shared `Crossing` lays the field and the
+   sheet; this file sets the type on the field and the caption on the paper. Every value is a token
+   from shared/styles/tokens or the gallery brand file — no raw colour, no font-family. */
+
+.title {
+  margin: 0;
+  max-inline-size: 11ch;
+  font: var(--text-display);
+  letter-spacing: var(--tracking-display);
+  text-wrap: balance;
+}
+
+/* `p.lede` outranks the shell's global `.site-lede`, which the element also wears. */
+p.lede {
+  margin: var(--space-6) 0 0;
+  max-inline-size: 30rem;
+  font: var(--text-body-large);
+  color: var(--color-text-muted);
+  text-wrap: pretty;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-5);
+  margin-block-start: var(--space-7);
+}
+
+/* The owner's three facts read down, one to a line. */
+.facts {
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sheetLink {
+  display: block;
+}
+
+.empty {
+  display: grid;
+  place-items: center;
+  background: var(--pigment-1-tint);
+}
+
+.captionTitle {
+  max-inline-size: 34ch;
+  font: var(--text-card-title);
+  color: var(--color-text);
+  text-wrap: balance;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color var(--dur-out) var(--ease);
+}
+
+.captionTitle:hover {
+  text-decoration-color: currentColor;
+}
+
+.captionMeta {
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.captionFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+  margin-block-start: var(--space-2);
+  font: var(--text-small);
+  color: var(--color-text);
+}

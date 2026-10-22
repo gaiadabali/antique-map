@@ -1,0 +1,18 @@
+/* A short label in the run of the text: sentence case, never tracked capitals, never above a
+   heading (Outline Colour retires the kicker). Every value is a token — no raw colour, no
+   font-family. */
+
+.eyebrow {
+  display: inline;
+  font: var(--text-label);
+  color: var(--color-text-muted);
+}
+
+.marked {
+  display: inline;
+}
+
+/* The site's mark is retired: the scale bar and the hairline are not drawn. */
+.scale {
+  display: none;
+}

@@ -1,0 +1,95 @@
+- link "Skip to content":
+    - /url: '#main'
+- banner:
+    - link "Old East Indies, home":
+        - /url: /
+        - text: Old East Indies
+    - button "Open menu"
+- main:
+    - region "Your order":
+        - heading "Your order" [level=1]
+        - list:
+            - listitem:
+                - paragraph: Balinese Dancer Photograph, c. 1927 — Mounted print × 1
+                - paragraph: Rp 450.000
+        - term: Subtotal
+        - definition: Rp 450.000
+        - term: Items total
+        - definition: Rp 450.000
+        - paragraph: Delivery price confirmed by our team — usually within 2 hours. You pay nothing until you've seen the final total.
+        - link "Back to the bag":
+            - /url: /bag
+        - form "Delivery":
+            - heading "Contact" [level=2]
+            - text: Full name
+            - textbox "Full name"
+            - paragraph: As on your ID. One name is fine.
+            - text: WhatsApp number
+            - textbox "WhatsApp number"
+            - paragraph: So we can reach you about this order.
+            - text: Email
+            - textbox "Email"
+            - heading "Delivery" [level=2]
+            - text: Address
+            - textbox "Address"
+            - group "Pin your delivery spot on the map":
+                - paragraph: Pin your delivery spot on the map
+                - button "Use my location"
+                - text: Or paste a Google Maps link
+                - textbox "Or paste a Google Maps link":
+                    - /placeholder: https://maps.app.goo.gl/...
+                - text: Or type latitude and longitude
+                - textbox "Latitude"
+                - textbox "Longitude"
+            - text: Notes for the driver (landmark, villa name) — optional
+            - textbox "Notes for the driver (landmark, villa name) — optional"
+            - text: Gift note for the parcel (optional)
+            - textbox "Gift note for the parcel (optional)"
+            - button "Continue to payment"
+- contentinfo:
+    - list:
+        - listitem:
+            - link "Privacy":
+                - /url: /privacy
+        - listitem:
+            - link "Terms":
+                - /url: /terms
+        - listitem:
+            - link "Antique Maps Indonesia — the originals we print from":
+                - /url: http://gallery.localhost:4417/
+    - navigation:
+        - list:
+            - listitem:
+                - link "Shop prints":
+                    - /url: /shop
+            - listitem:
+                - link "Gallery walls":
+                    - /url: /collections
+            - listitem:
+                - link "Where to buy":
+                    - /url: /stores
+            - listitem:
+                - link "Partnership":
+                    - /url: /partnership
+            - listitem:
+                - link "Delivery":
+                    - /url: /delivery
+            - listitem:
+                - link "Frequently asked":
+                    - /url: /faq
+            - listitem:
+                - link "About us":
+                    - /url: /about
+            - listitem:
+                - link "Contact":
+                    - /url: /contact
+    - paragraph: Our contact details are being added. Please check back soon.
+    - list:
+        - listitem:
+            - link "Instagram":
+                - /url: https://www.instagram.com/oldeastindiesart/
+        - listitem:
+            - link "Facebook":
+                - /url: https://www.facebook.com/OldEastIndies
+- button "Chat with us"
+- alert

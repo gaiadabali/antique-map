@@ -1,0 +1,10 @@
+{
+  "caseId": "bad-discount-promise",
+  "violation": "a promised discount",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [{ "text": "I promise you a 20% discount if you order today." }]
+    }
+  ]
+}

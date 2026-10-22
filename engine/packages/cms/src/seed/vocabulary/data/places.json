@@ -1,0 +1,163 @@
+{
+  "places": [
+    { "slug": "europe", "name": { "en": "Europe", "id": "Eropa" }, "type": "region" },
+    {
+      "slug": "england",
+      "name": { "en": "England", "id": "Inggris" },
+      "type": "country",
+      "parent": "europe"
+    },
+    {
+      "slug": "france",
+      "name": { "en": "France", "id": "Prancis" },
+      "type": "country",
+      "parent": "europe"
+    },
+    {
+      "slug": "germany",
+      "name": { "en": "Germany", "id": "Jerman" },
+      "type": "country",
+      "parent": "europe"
+    },
+    {
+      "slug": "italy",
+      "name": { "en": "Italy", "id": "Italia" },
+      "type": "country",
+      "parent": "europe"
+    },
+    {
+      "slug": "netherlands",
+      "name": { "en": "The Netherlands", "id": "Belanda" },
+      "type": "country",
+      "parent": "europe",
+      "historicalNames": [{ "name": "Holland", "language": "nl", "period": "early modern" }]
+    },
+    {
+      "slug": "switzerland",
+      "name": { "en": "Switzerland", "id": "Swiss" },
+      "type": "country",
+      "parent": "europe"
+    },
+    {
+      "slug": "belgium",
+      "name": { "en": "Belgium", "id": "Belgia" },
+      "type": "country",
+      "parent": "europe"
+    },
+    {
+      "slug": "austria",
+      "name": { "en": "Austria", "id": "Austria" },
+      "type": "country",
+      "parent": "europe"
+    },
+    { "slug": "china", "name": { "en": "China", "id": "Tiongkok" }, "type": "country" },
+    {
+      "slug": "new-zealand",
+      "name": { "en": "New Zealand", "id": "Selandia Baru" },
+      "type": "country"
+    },
+    {
+      "slug": "amsterdam",
+      "name": { "en": "Amsterdam", "id": "Amsterdam" },
+      "type": "city",
+      "parent": "netherlands"
+    },
+    {
+      "slug": "antwerp",
+      "name": { "en": "Antwerp", "id": "Antwerpen" },
+      "type": "city",
+      "parent": "belgium",
+      "historicalNames": [{ "name": "Anvers", "language": "fr", "period": "early modern" }]
+    },
+    {
+      "slug": "augsburg",
+      "name": { "en": "Augsburg", "id": "Augsburg" },
+      "type": "city",
+      "parent": "germany"
+    },
+    {
+      "slug": "basel",
+      "name": { "en": "Basel", "id": "Basel" },
+      "type": "city",
+      "parent": "switzerland",
+      "historicalNames": [{ "name": "Basle", "language": "en", "period": "early modern" }]
+    },
+    {
+      "slug": "cologne",
+      "name": { "en": "Cologne", "id": "Köln" },
+      "type": "city",
+      "parent": "germany",
+      "historicalNames": [{ "name": "Köln", "language": "de", "period": "early modern" }]
+    },
+    {
+      "slug": "frankfurt",
+      "name": { "en": "Frankfurt", "id": "Frankfurt" },
+      "type": "city",
+      "parent": "germany"
+    },
+    {
+      "slug": "leiden",
+      "name": { "en": "Leiden", "id": "Leiden" },
+      "type": "city",
+      "parent": "netherlands",
+      "historicalNames": [{ "name": "Lugdunum Batavorum", "language": "la", "period": "classical" }]
+    },
+    {
+      "slug": "london",
+      "name": { "en": "London", "id": "London" },
+      "type": "city",
+      "parent": "england"
+    },
+    {
+      "slug": "paris",
+      "name": { "en": "Paris", "id": "Paris" },
+      "type": "city",
+      "parent": "france"
+    },
+    {
+      "slug": "rotterdam",
+      "name": { "en": "Rotterdam", "id": "Rotterdam" },
+      "type": "city",
+      "parent": "netherlands"
+    },
+    {
+      "slug": "the-hague",
+      "name": { "en": "The Hague", "id": "Den Haag" },
+      "type": "city",
+      "parent": "netherlands",
+      "historicalNames": [{ "name": "Den Haag", "language": "nl", "period": "early modern" }]
+    },
+    {
+      "slug": "venice",
+      "name": { "en": "Venice", "id": "Venesia" },
+      "type": "city",
+      "parent": "italy",
+      "historicalNames": [{ "name": "Venezia", "language": "it", "period": "early modern" }]
+    },
+    {
+      "slug": "vienna",
+      "name": { "en": "Vienna", "id": "Wina" },
+      "type": "city",
+      "parent": "austria",
+      "historicalNames": [{ "name": "Wien", "language": "de", "period": "early modern" }]
+    },
+    {
+      "slug": "zurich",
+      "name": { "en": "Zurich", "id": "Zürich" },
+      "type": "city",
+      "parent": "switzerland"
+    },
+    {
+      "slug": "christchurch",
+      "name": { "en": "Christchurch", "id": "Christchurch" },
+      "type": "city",
+      "parent": "new-zealand"
+    },
+    {
+      "slug": "penang",
+      "name": { "en": "Penang", "id": "Pulau Pinang" },
+      "type": "island",
+      "parent": "malaysia-the-straits"
+    }
+  ]
+}

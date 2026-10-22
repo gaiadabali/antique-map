@@ -28,8 +28,8 @@ function useEnv(values: Record<string, string | undefined>) {
   }
 }
 
-/** Every variable that could make the config migrate, push or pick a brand, cleared. */
-const QUIET = { RUN_MIGRATIONS: undefined, PAYLOAD_DEV_PUSH: undefined, BRAND: undefined }
+/** Every variable that could make the config migrate or push, cleared. */
+const QUIET = { RUN_MIGRATIONS: undefined, PAYLOAD_DEV_PUSH: undefined }
 
 /** A fresh evaluation of the module and its config, under the environment set now. */
 async function importInstance(): Promise<Instance> {
@@ -156,7 +156,7 @@ describe('the one server-route getPayload()', () => {
       (file) =>
         file !== 'cms/src/instance.ts' &&
         file !== 'cms/src/db/cli.ts' &&
-        !/\.test\.[^/]+$/.test(file),
+        !/\.test(-support)?\.[^/]+$/.test(file),
     )
     expect(others).toEqual([])
   }, 120_000)

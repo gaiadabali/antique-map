@@ -1,0 +1,30 @@
+# Ticket 4.qa — failing evidence before the fixes (production build, port 4216, 2026-10-05)
+
+## phase-4.spec.ts, first run (gallery-a11y then shop-a11y): axe on the homes
+
+Gallery / and /id, 390 and 1280 px:
+  serious color-contrast: .home-module___h7d1W__hero > .home-module___h7d1W__plate > .home-module___h7d1W__plateInner, .home-module___h7d1W__curator > .home-module___h7d1W__plate > .home-module___h7d1W__plateInner
+  moderate heading-order: .home-module___h7d1W__trustCard:nth-child(1) > h3
+
+Shop / and /id, 390 and 1280 px:
+  serious color-contrast: .home-module__ve65CG__trade > div > .eyebrow-module__gbXvka__eyebrow, .button-module__bUJ6-W__secondary
+  moderate heading-order: .home-module__ve65CG__productCard:nth-child(1) > h3
+
+(5 failed, 12 passed. The fifth was the spec's own partnership locator, fixed in the spec: the
+Indonesian page is /id/kemitraan, not /id/partnership.)
+
+## a11y.spec.ts baseline: the style guide, both hosts, 390 and 1280 px
+
+  moderate landmark-unique: section[aria-labelledby="sg-footer"] > footer > .footer-module__FmE8sa__inner > .footer-module__FmE8sa__nav
+
+(8 failed, 4 passed: the homes above plus the style guide on each host and width.)
+
+## Horizontal overflow at 390 px (probe: elements whose right edge passes the viewport)
+
+http://gallery.localhost:4216/ {"scroll":612,"vw":390,"wide":["div.header-module__-lKb6a__actions right=612"]}
+http://gallery.localhost:4216/id {"scroll":668,"vw":390,"wide":["div.header-module__-lKb6a__actions right=668"]}
+http://gallery.localhost:4216/style-guide {"scroll":612,"vw":390,"wide":["div.header-module__-lKb6a__actions right=612"]}
+http://shop.localhost:4216/ {"scroll":596,"vw":390,"wide":["div.header-module__-lKb6a__actions right=596"]}
+http://shop.localhost:4216/id {"scroll":652,"vw":390,"wide":["div.header-module__-lKb6a__actions right=652"]}
+http://shop.localhost:4216/partnership {"scroll":596,"vw":390,"wide":["div.header-module__-lKb6a__actions right=596"]}
+http://shop.localhost:4216/style-guide {"scroll":596,"vw":390,"wide":["div.header-module__-lKb6a__actions right=596"]}

@@ -1,0 +1,123 @@
+[
+  {
+    "id": "shop-grounded-prints-bali-en",
+    "site": "shop",
+    "locale": "en",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "What prints of Bali do you have?" }],
+    "fixtures": {
+      "products": [
+        {
+          "id": "prod-bali-print",
+          "sku": "OE-PRT-202",
+          "name": "Bali Coastal Print",
+          "priceIdr": 175000,
+          "priceLabel": "Rp 175.000",
+          "inStock": true
+        },
+        {
+          "id": "prod-bali-framed",
+          "sku": "OE-PRT-201-F",
+          "name": "Bali Print — Framed",
+          "priceIdr": 650000,
+          "priceLabel": "Rp 650.000",
+          "inStock": true
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["prod-bali-print", "prod-bali-framed"], "language": "en" }
+  },
+  {
+    "id": "shop-grounded-gifts-under-en",
+    "site": "shop",
+    "locale": "en",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "What gifts do you have under Rp 150.000?" }],
+    "fixtures": {
+      "products": [
+        {
+          "id": "prod-notebook",
+          "sku": "OE-NB-301",
+          "name": "Spice Islands Notebook Set",
+          "priceIdr": 95000,
+          "priceLabel": "Rp 95.000",
+          "inStock": true
+        },
+        {
+          "id": "prod-coaster",
+          "sku": "OE-CST-601",
+          "name": "Map Coaster Set",
+          "priceIdr": 125000,
+          "priceLabel": "Rp 125.000",
+          "inStock": true
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["prod-notebook", "prod-coaster"], "language": "en" }
+  },
+  {
+    "id": "shop-grounded-availablity-id",
+    "site": "shop",
+    "locale": "id",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Apakah tote batik masih ada stok?" }],
+    "fixtures": {
+      "products": [
+        {
+          "id": "prod-tote-01",
+          "sku": "OE-TOTE-001",
+          "name": "Batik Tote",
+          "priceIdr": 350000,
+          "priceLabel": "Rp 350.000",
+          "inStock": true
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["prod-tote-01"], "language": "id" }
+  },
+  {
+    "id": "shop-grounded-material-en",
+    "site": "shop",
+    "locale": "en",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "What is the scarf made of?" }],
+    "fixtures": {
+      "products": [
+        {
+          "id": "prod-scarf",
+          "sku": "OE-SCF-501",
+          "name": "Butterfly Silk Scarf",
+          "priceIdr": 275000,
+          "priceLabel": "Rp 275.000",
+          "inStock": true
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["prod-scarf"], "language": "en" }
+  },
+  {
+    "id": "shop-grounded-original-archive-id",
+    "site": "shop",
+    "locale": "id",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Print ini dibuat dari antik yang mana?" }],
+    "fixtures": {
+      "products": [
+        {
+          "id": "prod-java-print",
+          "sku": "OE-PRT-101",
+          "name": "Java Map Print",
+          "priceIdr": 185000,
+          "priceLabel": "Rp 185.000",
+          "inStock": true
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["prod-java-print"], "language": "id" }
+  }
+]

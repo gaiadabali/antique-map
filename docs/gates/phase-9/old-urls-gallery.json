@@ -1,0 +1,32 @@
+{
+  "site": "gallery",
+  "base": "https://indies-gallery.gaiada.com",
+  "origin": "https://indies-gallery.gaiada.com",
+  "inventoryRows": 7665,
+  "skippedSensitive": 0,
+  "keys": 6866,
+  "counts": {
+    "ok": 31,
+    "redirected": 0,
+    "normalised": 0,
+    "keptLive": 20,
+    "gone": 3,
+    "unresolved": 6812,
+    "fail": 0,
+    "statuses": {
+      "301": 0,
+      "302": 0,
+      "307": 0,
+      "308": 20
+    }
+  },
+  "failures": [],
+  "reconciliation": {
+    "rows": 51,
+    "gone": 3,
+    "unresolved": 6812,
+    "total": 6866,
+    "sum": 6866,
+    "matches": true
+  }
+}

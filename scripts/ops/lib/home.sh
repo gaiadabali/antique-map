@@ -26,7 +26,6 @@ managed_home_paths() {
     "$S_HOME/.pm2/pm2.pid" "$S_HOME/.pm2/rpc.sock" "$S_HOME/.pm2/dump.pm2" "$S_HOME/prune-releases.sh"
   if [ ! -e "$S_CURRENT" ] && [ ! -L "$S_CURRENT" ]; then
     printf '%s\n' "$S_HOME/releases" "$S_HOME/releases/bootstrap-holding" \
-      "$S_HOME/releases/bootstrap-holding/brand" \
       "$S_HOME/releases/bootstrap-holding/engine/apps/$S_APP/server.js"
   fi
 }

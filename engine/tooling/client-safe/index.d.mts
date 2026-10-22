@@ -10,7 +10,6 @@ export type Reach = {
   error?: string
   expression?: string
 }
-export type Violation = Reach & { entry: string }
 
 export declare const BROWSER_CONDITIONS: ReadonlySet<string>
 export declare const RULES: ReadonlyArray<{ test: (specifier: string) => boolean; reason: string }>
@@ -32,10 +31,3 @@ export declare function findReaches(
   forbidden: (specifier: string) => string | null,
 ): Reach[]
 export declare function forbiddenReason(specifier: string): string | null
-export declare function isClientModule(source: string): boolean
-export declare function findClientModules(root: string): string[]
-export declare function checkClientSafe(repoRoot: string): {
-  modules: string[]
-  violations: Violation[]
-}
-export declare function formatViolation(repoRoot: string, violation: Violation): string

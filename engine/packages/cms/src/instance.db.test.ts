@@ -12,6 +12,7 @@
  *   update, a rollback, `disableTransaction` and a hook's nested write each keep exactly the right
  *   tags, and a `req` goes in through `operation(write, { req })` alone.
  */
+import { createTestDatabase } from './db/test-database.test-support'
 import { realpathSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import path from 'node:path'
@@ -30,7 +31,7 @@ import {
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
 // cms depends on @engine/cache from 8.2's hooks on; until then its source is reached directly.
-import { invalidate, invalidationBatch, itemTag } from '../../cache/src/index'
+import { invalidate, invalidationBatch, productTag } from '../../cache/src/index'
 import { POOL_CONNECT_TIMEOUT_MS } from './db/adapter'
 import { databaseProbe } from './db/probe'
 import { migrations } from './migrations'
@@ -78,6 +79,9 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
   let payload: Payload
   let proof: Payload
   let slug: CollectionSlug
+  let made = 0
+  /** A store's required fields, its code unique per call. */
+  const fresh = () => ({ code: `PROOF-${++made}`, name: 'Proof' })
 
   /** What a second connection sees of a document: its `updated_at`, or null while it is not there. */
   const seen = async (id: unknown) =>
@@ -87,10 +91,10 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
 
   beforeAll(async () => {
     admin = new PgPool({ connectionString: server })
-    await admin.query(`CREATE DATABASE "${database}"`)
+    await createTestDatabase(admin, database, 'migrated')
     const saved = { ...process.env }
     Object.assign(process.env, env)
-    for (const key of ['RUN_MIGRATIONS', 'PAYLOAD_DEV_PUSH', 'BRAND', 'PGHOST', 'PGPORT'])
+    for (const key of ['RUN_MIGRATIONS', 'PAYLOAD_DEV_PUSH', 'PGHOST', 'PGPORT'])
       delete process.env[key]
     vi.resetModules()
     const { cms } = await import('@engine/cms/instance')
@@ -99,26 +103,22 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
     await payload.db.migrate({ migrations: [...migrations] } as never)
     observer = new PgPool({ connectionString: env.DATABASE_URL })
 
-    // A second instance of the one config, with a hook on a stub collection (id and timestamps).
+    // A second instance of the one config, with a hook on `stores` — the smallest collection, with
+    // no hooks of its own — since TASKS.md 2.4 removed the field-less stubs this hung on before.
     const input = engineConfig(env)
-    // A stub's own fields are none; the first config's sanitising has added Payload's to the shared
-    // objects (id, timestamps), so count those out.
-    const payloadFields = new Set(['id', 'createdAt', 'updatedAt'])
-    const stub = input.collections?.find((each) =>
-      each.fields.every((field) => 'name' in field && payloadFields.has(field.name)),
-    )
-    if (!stub) throw new Error('no stub collection left to hang the proof hook on: pick another')
+    const stub = input.collections?.find((each) => each.slug === 'stores')
+    if (!stub) throw new Error('no stores collection to hang the proof hook on: pick another')
     slug = stub.slug as CollectionSlug
     const hook: NonNullable<
       NonNullable<CollectionConfig['hooks']>['afterChange']
     >[number] = async ({ doc, context, req }) => {
       atHook.push({ id: doc.id, visible: await seen(doc.id) })
-      invalidate([itemTag(doc.id)], context)
+      invalidate([productTag(doc.id)], context)
       if (context.nested) {
         // Its own transaction (no req): commits before the parent's later hook throws.
         await req.payload.create({
           collection: slug,
-          data: {},
+          data: fresh(),
           context: { ...context, nested: false, fail: false },
         })
       }
@@ -197,7 +197,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
 
   describe('the collector against Payload transactions', () => {
     const create = (context: Record<string, unknown>, extra: object = {}) =>
-      proof.create({ collection: slug, data: {}, context, ...extra })
+      proof.create({ collection: slug, data: fresh(), context, ...extra })
 
     it('a create: the hook runs before the commit; its tag is kept once the call returned', async () => {
       const batch = invalidationBatch()
@@ -208,7 +208,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
       })
       expect(atHook.at(-1)).toEqual({ id: doc.id, visible: null })
       expect(await seen(doc.id)).not.toBeNull()
-      expect(batch.pending).toEqual([`item:${doc.id}`])
+      expect(batch.pending).toEqual([`product:${doc.id}`])
     })
 
     it('an update: the hook sees the old row; its tag is kept once the call returned', async () => {
@@ -221,7 +221,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
       )
       expect(atHook.at(-1)).toEqual({ id: doc.id, visible: before })
       expect((await seen(doc.id))?.getTime()).toBe(new Date(updated.updatedAt).getTime())
-      expect(batch.pending).toEqual([`item:${doc.id}`])
+      expect(batch.pending).toEqual([`product:${doc.id}`])
     })
 
     it('a rollback: the save is gone, and its tag is kept all the same', async () => {
@@ -231,7 +231,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
       )
       const { id } = atHook.at(-1)!
       expect(await seen(id)).toBeNull()
-      expect(batch.pending).toEqual([`item:${id}`])
+      expect(batch.pending).toEqual([`product:${id}`])
     })
 
     it('disableTransaction: the write committed before the throw, and its tag is kept', async () => {
@@ -243,7 +243,7 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
       const { id, visible } = atHook.at(-1)!
       expect(visible).not.toBeNull() // no transaction: visible at the hook already
       expect(await seen(id)).not.toBeNull()
-      expect(batch.pending).toEqual([`item:${id}`])
+      expect(batch.pending).toEqual([`product:${id}`])
     })
 
     it("a hook's nested write commits in its own transaction; both tags are kept", async () => {
@@ -257,7 +257,9 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
       const [parent, child] = atHook.slice(from)
       expect(await seen(parent!.id)).toBeNull()
       expect(await seen(child!.id)).not.toBeNull()
-      expect([...batch.pending].sort()).toEqual([`item:${child!.id}`, `item:${parent!.id}`].sort())
+      expect([...batch.pending].sort()).toEqual(
+        [`product:${child!.id}`, `product:${parent!.id}`].sort(),
+      )
     })
 
     it('a req goes in through { req }: refused with its transaction open, clean after', async () => {
@@ -270,20 +272,23 @@ describe.skipIf(!server)('on a migrated database of its own', () => {
       await killTransaction(open)
 
       const req = await createLocalReq({}, proof)
-      const doc = await batch.operation(() => proof.create({ collection: slug, data: {}, req }), {
-        req,
-      })
+      const doc = await batch.operation(
+        () => proof.create({ collection: slug, data: fresh(), req }),
+        {
+          req,
+        },
+      )
       expect(atHook.at(-1)).toEqual({ id: doc.id, visible: null })
-      expect(batch.pending).toEqual([`item:${doc.id}`])
+      expect(batch.pending).toEqual([`product:${doc.id}`])
       expect(Object.keys(req.context ?? {})).toEqual([])
     })
 
     it("a jobs run's batch.context() on its req keeps each tag; without a collector a save fails", async () => {
       const batch = invalidationBatch()
       const req = await createLocalReq({ context: batch.context() }, proof)
-      const a = await proof.create({ collection: slug, data: {}, req })
-      const b = await proof.create({ collection: slug, data: {}, req })
-      expect(batch.pending).toEqual([`item:${a.id}`, `item:${b.id}`])
+      const a = await proof.create({ collection: slug, data: fresh(), req })
+      const b = await proof.create({ collection: slug, data: fresh(), req })
+      expect(batch.pending).toEqual([`product:${a.id}`, `product:${b.id}`])
 
       expect(await settle(create({}))).toMatch(/outside a request scope/)
       expect(await seen(atHook.at(-1)!.id)).toBeNull()

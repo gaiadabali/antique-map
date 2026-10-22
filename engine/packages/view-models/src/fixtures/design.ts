@@ -4,7 +4,7 @@
  * at the sister gallery in the visitor's market currency (here rupiah, for Indonesia).
  */
 import type { DesignVM } from '../surfaces/discovery'
-import { card, image, line, money, NOW, price, seo, streamed } from './_shared'
+import { card, image, money, NOW, price, seo, streamed } from './_shared'
 
 const idr = (amount: number) => price(money(amount, 'IDR'))
 
@@ -38,7 +38,6 @@ export const design: DesignVM = {
       status: { kind: 'price', price: idr(185000) },
       isReproduction: true,
       archiveNumber: 'A-0042',
-      quickAdd: line(7002),
     }),
   ]),
   printFromArchive: { href: '/designs/harbour-of-contoh?format=giclee' },

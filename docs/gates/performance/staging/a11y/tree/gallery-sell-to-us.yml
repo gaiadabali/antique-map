@@ -1,0 +1,85 @@
+- link "Skip to content":
+    - /url: '#main'
+- banner:
+    - link "Indies Gallery, home":
+        - /url: /
+        - text: Indies Gallery
+    - button "Open menu"
+- main:
+    - text: Sell to us
+    - heading "Do you have an antique of the East Indies?" [level=1]
+    - paragraph: We buy antique maps, prints, books and photographs of the region, singly or as a collection. Message us, write, or use the form below.
+    - link "WhatsApp us":
+        - /url: https://wa.me/6281100000000?text=Hello%2C%20I%20have%20an%20antique%20I%20would%20like%20to%20sell%3A%20a%20map%2C%20print%20or%20photograph.%20I%20can%20send%20photos%20here.
+    - link "Email us":
+        - /url: mailto:gallery@example.com?subject=Selling%20an%20antique&body=Hello%2C%20I%20have%20an%20antique%20I%20would%20like%20to%20sell%3A%20a%20map%2C%20print%20or%20photograph.%20I%20can%20send%20photos%20here.
+    - paragraph:
+        - text: Or email
+        - link "gallery@example.com":
+            - /url: mailto:gallery@example.com?subject=Selling%20an%20antique&body=Hello%2C%20I%20have%20an%20antique%20I%20would%20like%20to%20sell%3A%20a%20map%2C%20print%20or%20photograph.%20I%20can%20send%20photos%20here.
+    - paragraph: The form takes no photographs. Please send photos on WhatsApp or by email once we reply.
+    - text: Or write here Your name
+    - textbox "Your name"
+    - text: WhatsApp number
+    - textbox "WhatsApp number"
+    - paragraph: With the country code, for example +62 812 3456 7890.
+    - text: Email address
+    - textbox "Email address"
+    - paragraph: Give a WhatsApp number or an email address — one is enough.
+    - text: What do you have?
+    - textbox "What do you have?"
+    - checkbox "I agree that Indies Gallery may use these details to answer this enquiry, and keep them for up to 24 months after it is closed."
+    - text: I agree that Indies Gallery may use these details to answer this enquiry, and keep them for up to 24 months after it is closed.
+    - paragraph: Consent text gallery-contact-2026-10
+    - button "Send message"
+    - paragraph: A short security check keeps this form free of spam.
+- contentinfo:
+    - list:
+        - listitem:
+            - link "Privacy":
+                - /url: /privacy
+        - listitem:
+            - link "Terms":
+                - /url: /terms
+        - listitem:
+            - link "Old East Indies — printed editions from our collection":
+                - /url: https://old-east-indies.gaiada.com/
+    - navigation:
+        - list:
+            - listitem:
+                - link "The collection":
+                    - /url: /browse
+            - listitem:
+                - link "Makers":
+                    - /url: /makers
+            - listitem:
+                - link "Places":
+                    - /url: /places
+            - listitem:
+                - link "Stories":
+                    - /url: /stories
+            - listitem:
+                - link "Sell to us":
+                    - /url: /sell-to-us
+            - listitem:
+                - link "About us":
+                    - /url: /about
+            - listitem:
+                - link "Contact":
+                    - /url: /contact
+    - list:
+        - listitem:
+            - link "Ask on WhatsApp":
+                - /url: https://wa.me/6281100000000
+        - listitem:
+            - link "Email":
+                - /url: mailto:gallery@example.com
+    - list:
+        - listitem:
+            - link "Instagram":
+                - /url: https://www.instagram.com/indiesgalleryantiques/
+        - listitem:
+            - link "Facebook":
+                - /url: https://www.facebook.com/IndiesGallery/
+- button "Chat with us"
+- alert

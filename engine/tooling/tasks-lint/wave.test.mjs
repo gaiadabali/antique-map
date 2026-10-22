@@ -53,3 +53,28 @@ describe('checkWaveReadiness', () => {
     expect(result.blockers.some((b) => b.includes('phase 2 needs phase 1, not ✅ yet'))).toBe(true)
   })
 })
+
+describe('checkWaveReadiness — an Owns overlap inside the wave (gate F4)', () => {
+  const overlapping = DOC.replace('**Owns** `fixture/c/**`', '**Owns** `fixture/{b,c}/**`')
+
+  it('is not ready, naming both tasks and paths, as the full lint does', () => {
+    const model = parseTasksMd(overlapping)
+    const result = checkWaveReadiness(model, allTasks(model), 1, 'W2')
+    expect(result.ready).toBe(false)
+    expect(result.blockers).toContain(
+      'Owns overlap: 1.2 and 1.3 share wave W2: "fixture/b/**" overlaps "fixture/{b,c}/**"',
+    )
+  })
+
+  it('leaves a wave without one alone, and a ✂️ task owns nothing', () => {
+    const cut = overlapping.replace(
+      '- [ ] **1.3 Third** · needs: 1.2',
+      '- [ ] **1.3 Third** · needs: 1.2 — ✂️ cut: fixture',
+    )
+    for (const doc of [DOC, cut]) {
+      const model = parseTasksMd(doc)
+      const { blockers } = checkWaveReadiness(model, allTasks(model), 1, 'W2')
+      expect(blockers.filter((b) => b.startsWith('Owns overlap'))).toEqual([])
+    }
+  })
+})

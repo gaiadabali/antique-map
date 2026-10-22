@@ -1,0 +1,13 @@
+{
+  "caseId": "handoff-sell-antique-en",
+  "turns": [
+    {
+      "classifierLabel": "sell_to_us",
+      "calls": [
+        {
+          "text": "I'll pass this to the team so they can help you directly."
+        }
+      ]
+    }
+  ]
+}

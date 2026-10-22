@@ -1,0 +1,238 @@
+/* The checkout page (6.3.a; the redesign of 2026-10-20, the bag's skeleton): the title, the form
+   in sections at the left, the order summary on the warm band in a 465 px column at the right.
+   Tokens only (DESIGN-SYSTEM.md). The page breaks out of the reading column to the full width. */
+.checkout {
+  width: var(--page-wrap);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  margin-block-start: calc(1.625rem - var(--space-7));
+  padding-inline: var(--shop-gutter);
+  padding-block-end: var(--shop-section);
+}
+
+.title {
+  margin: 0;
+  font: var(--shop-title-page);
+}
+
+.refusal {
+  margin: var(--space-6) 0 0;
+  font: var(--text-body);
+  color: var(--color-text);
+}
+
+.columns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+  padding-block-start: var(--space-7);
+}
+
+/* The summary comes first in the source, as on a phone it reads: the order you see is the order a
+   keyboard and a screen reader follow. On a desktop the grid sets it in the right-hand column. */
+@media (min-width: 56.3125rem) {
+  .columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 29.0625rem;
+    column-gap: var(--space-7);
+    align-items: start;
+    padding-block-start: var(--space-6);
+  }
+
+  .columns > .form {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .review {
+    grid-column: 2;
+    grid-row: 1;
+    position: sticky;
+    top: calc(var(--shop-header) + var(--space-5));
+  }
+}
+
+/* The order summary lies on the warm band: no border, no raised panel. */
+.review {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding: var(--space-6);
+  background: var(--shop-warm);
+  font: var(--text-body);
+  color: var(--color-text);
+  min-width: 0;
+}
+
+.review ul {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.line {
+  display: flex;
+  gap: var(--space-4);
+  align-items: baseline;
+  justify-content: space-between;
+  padding-block: var(--space-3);
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+/* the line's name in Karla, as the bag sets it */
+.lineName {
+  margin: 0;
+  min-width: 0;
+  font: var(--shop-text-body);
+}
+
+.lineTotal {
+  margin: 0;
+  white-space: nowrap;
+  font-variant-numeric: var(--numeric-tabular);
+}
+
+.totals {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.totalRow dt {
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.totalRow dd {
+  margin: 0;
+  font-variant-numeric: var(--numeric-tabular);
+}
+
+.grand dt {
+  font: var(--shop-title-sub);
+  color: var(--color-text);
+}
+
+/* The amount stays in Karla: the display serif never sets a price (DESIGN-SYSTEM.md §2). */
+.grand dd {
+  font: var(--text-price);
+  font-size: 1.125rem;
+  font-variant-numeric: var(--numeric-tabular);
+  color: var(--color-text);
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+  min-width: 0;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-inline-size: 40rem;
+}
+
+/* A section's head: the serif on the paper, no rule. */
+.sectionTitle {
+  font: var(--shop-title-page);
+  color: var(--color-text);
+  margin: 0;
+}
+
+.pinGroup .sectionTitle {
+  font: var(--text-body);
+  font-weight: 500;
+  padding: 0;
+  border: none;
+}
+
+.pinGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.pinError {
+  margin: 0;
+  font: var(--text-caption);
+  color: var(--color-danger);
+}
+
+.pinPicker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.mapArea {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.search {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: var(--rule-hair) solid var(--color-border-strong);
+  border-radius: 0;
+  font: var(--text-body);
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+}
+
+.mapCanvas {
+  height: 16rem;
+  border: var(--rule-hair) solid var(--color-border);
+}
+
+.latLng {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  align-items: center;
+  font: var(--text-caption);
+  color: var(--color-text-muted);
+}
+
+.latLng input {
+  width: 10rem;
+  padding: var(--space-2) var(--space-3);
+  border: var(--rule-hair) solid var(--color-border-strong);
+  border-radius: 0;
+  font: var(--text-body);
+  color: var(--color-text);
+  background: var(--color-surface-raised);
+}
+
+.deliveryNote {
+  font: var(--text-caption);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.submit {
+  align-self: flex-start;
+}
+
+.token {
+  color: var(--color-accent);
+  font: var(--text-body);
+}
+
+.back {
+  align-self: flex-start;
+}

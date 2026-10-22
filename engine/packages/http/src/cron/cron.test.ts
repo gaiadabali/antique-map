@@ -14,9 +14,6 @@ import {
   type QueueRun,
 } from './jobs/queue'
 import { jobsRoute, type QueuePortLoader } from './jobs/route'
-import { POST as outbox } from './outbox/route'
-import { POST as reconcile } from './reconcile/route'
-import { POST as sweeps } from './sweeps/route'
 
 // Were `./jobs/route` to import the Payload-backed port statically, this file could not load.
 vi.mock('./jobs/payload-queue', () => {
@@ -140,6 +137,29 @@ describe('POST /api/x/cron/jobs', () => {
     expect((await third).status).toBe(200)
   })
 
+  it('answers 503 stuck, and logs once, for a run in flight past 15 minutes', async () => {
+    const error = vi.spyOn(console, 'error').mockImplementation(() => undefined)
+    let clock = 1_000_000
+    let release!: () => void
+    const route = jobsRoute(
+      loaderOf(() => new Promise<QueueRun>((resolve) => (release = () => resolve(RAN)))),
+      SECRET,
+      () => clock,
+    )
+    const first = route(call('Bearer s3cret-value'))
+    await vi.waitFor(() => expect(release).toBeTypeOf('function'))
+    clock += 14 * 60_000
+    expect((await route(call('Bearer s3cret-value'))).status).toBe(409)
+    clock += 2 * 60_000
+    const stuck = await route(call('Bearer s3cret-value'))
+    expect(stuck.status).toBe(503)
+    expect(await stuck.json()).toEqual({ stuck: true })
+    expect((await route(call('Bearer s3cret-value'))).status).toBe(503)
+    expect(error).toHaveBeenCalledTimes(1)
+    release()
+    expect((await first).status).toBe(200)
+  })
+
   it('logs a throw with its cause redacted and answers a plain 500, then runs again', async () => {
     const logged = vi.spyOn(console, 'error').mockImplementation(() => {})
     let fail = true
@@ -165,21 +185,4 @@ describe('POST /api/x/cron/jobs', () => {
     const route = jobsRoute(() => Promise.reject(new Error('config')), SECRET)
     expect((await route(call('Bearer s3cret-value'))).status).toBe(500)
   })
-})
-
-describe('the other cron routes', () => {
-  it.each([
-    ['sweeps', sweeps],
-    ['reconcile', reconcile],
-    ['outbox', outbox],
-  ])(
-    '/api/x/cron/%s authenticates, then answers 404 until its lane builds it',
-    async (_, route) => {
-      vi.stubEnv('CRON_SECRET', '')
-      expect((await route(call('Bearer x'))).status).toBe(503)
-      vi.stubEnv('CRON_SECRET', 's3cret-value')
-      expect((await route(call('Bearer x'))).status).toBe(401)
-      expect((await route(call('Bearer s3cret-value'))).status).toBe(404)
-    },
-  )
 })

@@ -1,0 +1,215 @@
+- link "Skip to content":
+    - /url: '#main'
+- banner:
+    - link "Indies Gallery, home":
+        - /url: /
+        - text: Indies Gallery
+    - button "Open menu"
+- main:
+    - heading "Browse the collection" [level=1]
+    - button "Filters"
+    - navigation "Sort by":
+        - list:
+            - listitem:
+                - link "Newly added":
+                    - /url: /browse
+            - listitem:
+                - 'link "Date of the work: earliest first"':
+                    - /url: /browse?sort=dateAsc
+            - listitem:
+                - 'link "Date of the work: latest first"':
+                    - /url: /browse?sort=dateDesc
+            - listitem:
+                - link "Maker, A–Z":
+                    - /url: /browse?sort=maker
+    - paragraph: 1,513 works
+    - list:
+        - listitem:
+            - link "Nova tabula Infularum Iava, Sumatra, Borneonis et .. by Theodore De Bry — the whole sheet Nova tabula Infularum Iava, Sumatra, Borneonis et .. by Theodore De Bry Theodore De Bry, 1598 38 × 45 cm (15 × 17.7 in) Price on request":
+                - /url: /product/2049
+                - img "Nova tabula Infularum Iava, Sumatra, Borneonis et .. by Theodore De Bry — the whole sheet"
+                - text: Nova tabula Infularum Iava, Sumatra, Borneonis et .. by Theodore De Bry Theodore De Bry, 1598 38 × 45 cm (15 × 17.7 in) Price on request
+        - listitem:
+            - link "Balinese woman with offerings by Willem Gerard Hofker, Banten Tegeh — the whole sheet Balinese woman with offerings by Willem Gerard Hofker, Banten Tegeh Willem G. Hofker, 1938 25 × 17 cm (9.8 × 6.7 in) Price on request":
+                - /url: /product/2048
+                - img "Balinese woman with offerings by Willem Gerard Hofker, Banten Tegeh — the whole sheet"
+                - text: Balinese woman with offerings by Willem Gerard Hofker, Banten Tegeh Willem G. Hofker, 1938 25 × 17 cm (9.8 × 6.7 in) Price on request
+        - listitem:
+            - link "Balinese Legong dancer by Willem Gerard Hofker — the whole sheet Balinese Legong dancer by Willem Gerard Hofker Willem G. Hofker, 1938 25 × 17 cm (9.8 × 6.7 in) Price on request":
+                - /url: /product/2047
+                - img "Balinese Legong dancer by Willem Gerard Hofker — the whole sheet"
+                - text: Balinese Legong dancer by Willem Gerard Hofker Willem G. Hofker, 1938 25 × 17 cm (9.8 × 6.7 in) Price on request
+        - listitem:
+            - link "Pictorial view of Bali Island by François ten Have — the whole sheet Pictorial view of Bali Island by François ten Have 1951 31 × 50 cm (12.2 × 19.7 in) Price on request":
+                - /url: /product/2046
+                - img "Pictorial view of Bali Island by François ten Have — the whole sheet"
+                - text: Pictorial view of Bali Island by François ten Have 1951 31 × 50 cm (12.2 × 19.7 in) Price on request
+        - listitem:
+            - link "Balinese Temple Inner Court, Meru Temple Bali, by Willem Gerard Hofker — the whole sheet Balinese Temple Inner Court, Meru Temple Bali, by Willem Gerard Hofker Willem G. Hofker, 1938 25 × 17 cm (9.8 × 6.7 in) Price on request":
+                - /url: /product/2045
+                - img "Balinese Temple Inner Court, Meru Temple Bali, by Willem Gerard Hofker — the whole sheet"
+                - text: Balinese Temple Inner Court, Meru Temple Bali, by Willem Gerard Hofker Willem G. Hofker, 1938 25 × 17 cm (9.8 × 6.7 in) Price on request
+        - listitem:
+            - link "Balinese man with his roosters by Willem Gerard Hofker — the whole sheet Balinese man with his roosters by Willem Gerard Hofker Willem G. Hofker, 1938 25 × 17 cm (9.8 × 6.7 in) Price on request":
+                - /url: /product/2044
+                - img "Balinese man with his roosters by Willem Gerard Hofker — the whole sheet"
+                - text: Balinese man with his roosters by Willem Gerard Hofker Willem G. Hofker, 1938 25 × 17 cm (9.8 × 6.7 in) Price on request
+        - listitem:
+            - link "Balinese man with his rooster by Willem Gerard Hofker — the whole sheet Balinese man with his rooster by Willem Gerard Hofker Willem G. Hofker, 1938 25 × 17 cm (9.8 × 6.7 in) Price on request":
+                - /url: /product/2043
+                - img "Balinese man with his rooster by Willem Gerard Hofker — the whole sheet"
+                - text: Balinese man with his rooster by Willem Gerard Hofker Willem G. Hofker, 1938 25 × 17 cm (9.8 × 6.7 in) Price on request
+        - listitem:
+            - link "Balinese Temple by Willem Gerard Hofker — the whole sheet Balinese Temple by Willem Gerard Hofker Willem G. Hofker, 1938 25 × 17 cm (9.8 × 6.7 in) Price on request":
+                - /url: /product/2042
+                - img "Balinese Temple by Willem Gerard Hofker — the whole sheet"
+                - text: Balinese Temple by Willem Gerard Hofker Willem G. Hofker, 1938 25 × 17 cm (9.8 × 6.7 in) Price on request
+        - listitem:
+            - link "Kaart der grote Geelvinkbaai by H. von Rosenberg - Cenderawasih Bay — the whole sheet Kaart der grote Geelvinkbaai by H. von Rosenberg - Cenderawasih Bay 1869 40 × 50 cm (15.7 × 19.7 in) Price on request":
+                - /url: /product/2041
+                - img "Kaart der grote Geelvinkbaai by H. von Rosenberg - Cenderawasih Bay — the whole sheet"
+                - text: Kaart der grote Geelvinkbaai by H. von Rosenberg - Cenderawasih Bay 1869 40 × 50 cm (15.7 × 19.7 in) Price on request
+        - listitem:
+            - link "Australian Kangaroo, De Kanguroo by Captain James Cook — the whole sheet Australian Kangaroo, De Kanguroo by Captain James Cook James Cook (Captain), c. 1790 23 × 14 cm (9.1 × 5.5 in) Price on request":
+                - /url: /product/2040
+                - img "Australian Kangaroo, De Kanguroo by Captain James Cook — the whole sheet"
+                - text: Australian Kangaroo, De Kanguroo by Captain James Cook James Cook (Captain), c. 1790 23 × 14 cm (9.1 × 5.5 in) Price on request
+        - listitem:
+            - link "An Opossum of Van Diemen’s Land, Opposum Van Van Diemens Land by Captain James Cook — the whole sheet An Opossum of Van Diemen’s Land, Opposum Van Van Diemens Land by Captain James Cook James Cook (Captain), c. 1790 23 × 28 cm (9.1 × 11 in) Price on request":
+                - /url: /product/2039
+                - img "An Opossum of Van Diemen’s Land, Opposum Van Van Diemens Land by Captain James Cook — the whole sheet"
+                - text: An Opossum of Van Diemen’s Land, Opposum Van Van Diemens Land by Captain James Cook James Cook (Captain), c. 1790 23 × 28 cm (9.1 × 11 in) Price on request
+        - listitem:
+            - link "Gratie & Charme Bali - Bali Hotel Denpasar by Willem G. Hofker — the whole sheet Gratie & Charme Bali - Bali Hotel Denpasar by Willem G. Hofker Willem G. Hofker, 1948 75 × 48 cm (29.5 × 18.9 in) Price on request":
+                - /url: /product/2038
+                - img "Gratie & Charme Bali - Bali Hotel Denpasar by Willem G. Hofker — the whole sheet"
+                - text: Gratie & Charme Bali - Bali Hotel Denpasar by Willem G. Hofker Willem G. Hofker, 1948 75 × 48 cm (29.5 × 18.9 in) Price on request
+        - listitem:
+            - link "Sfeer en Bekoring, Bali Hotel Denpasar by Willem G. Hofker — the whole sheet Sfeer en Bekoring, Bali Hotel Denpasar by Willem G. Hofker Willem G. Hofker, 1948 75 × 48 cm (29.5 × 18.9 in) Price on request":
+                - /url: /product/2037
+                - img "Sfeer en Bekoring, Bali Hotel Denpasar by Willem G. Hofker — the whole sheet"
+                - text: Sfeer en Bekoring, Bali Hotel Denpasar by Willem G. Hofker Willem G. Hofker, 1948 75 × 48 cm (29.5 × 18.9 in) Price on request
+        - listitem:
+            - link "Asia by Ortelius — the whole sheet Asia by Ortelius Abraham Ortelius, c. 1600 9 × 13 cm (3.5 × 5.1 in) Price on request":
+                - /url: /product/2036
+                - img "Asia by Ortelius — the whole sheet"
+                - text: Asia by Ortelius Abraham Ortelius, c. 1600 9 × 13 cm (3.5 × 5.1 in) Price on request
+        - listitem:
+            - link "l'Ile de Sumatra, Sumatra Island — the whole sheet l'Ile de Sumatra, Sumatra Island Pieter van der Aa, 1725 Price on request":
+                - /url: /product/2034
+                - img "l'Ile de Sumatra, Sumatra Island — the whole sheet"
+                - text: l'Ile de Sumatra, Sumatra Island Pieter van der Aa, 1725 Price on request
+        - listitem:
+            - link "River Jurong Singapore — the whole sheet River Jurong Singapore 1854 22 × 30 cm (8.7 × 11.8 in) Price on request":
+                - /url: /product/2033
+                - img "River Jurong Singapore — the whole sheet"
+                - text: River Jurong Singapore 1854 22 × 30 cm (8.7 × 11.8 in) Price on request
+        - listitem:
+            - link "Carte du Royaume de Siam et des Pays Circonvoisins, Kingdom of Siam, Singapore, Sumatra — the whole sheet Carte du Royaume de Siam et des Pays Circonvoisins, Kingdom of Siam, Singapore, Sumatra 1686 48 × 33 cm (18.9 × 13 in) Price on request":
+                - /url: /product/2031
+                - img "Carte du Royaume de Siam et des Pays Circonvoisins, Kingdom of Siam, Singapore, Sumatra — the whole sheet"
+                - text: Carte du Royaume de Siam et des Pays Circonvoisins, Kingdom of Siam, Singapore, Sumatra 1686 48 × 33 cm (18.9 × 13 in) Price on request
+        - listitem:
+            - link "Timor Koepang, De Stad Koepang, La Ville de Koepang by C.W.M. van de Velde — the whole sheet Timor Koepang, De Stad Koepang, La Ville de Koepang by C.W.M. van de Velde Van De Velde, 1844 31 × 47 cm (12.2 × 18.5 in) Price on request":
+                - /url: /product/2030
+                - img "Timor Koepang, De Stad Koepang, La Ville de Koepang by C.W.M. van de Velde — the whole sheet"
+                - text: Timor Koepang, De Stad Koepang, La Ville de Koepang by C.W.M. van de Velde Van De Velde, 1844 31 × 47 cm (12.2 × 18.5 in) Price on request
+        - listitem:
+            - link "Banda Neira Harbour, De reede Van Banda, La Rade de Banda by by C.W.M. van de Velde — the whole sheet Banda Neira Harbour, De reede Van Banda, La Rade de Banda by by C.W.M. van de Velde Van De Velde, 1844 31 × 47 cm (12.2 × 18.5 in) Price on request":
+                - /url: /product/2029
+                - img "Banda Neira Harbour, De reede Van Banda, La Rade de Banda by by C.W.M. van de Velde — the whole sheet"
+                - text: Banda Neira Harbour, De reede Van Banda, La Rade de Banda by by C.W.M. van de Velde Van De Velde, 1844 31 × 47 cm (12.2 × 18.5 in) Price on request
+        - listitem:
+            - link "Ternate Indonesia, Molukschen Archipel. Ternate Vue de Ternate by C.W.M. van de Velde — the whole sheet Ternate Indonesia, Molukschen Archipel. Ternate Vue de Ternate by C.W.M. van de Velde Van De Velde, 1844 31 × 47 cm (12.2 × 18.5 in) Price on request":
+                - /url: /product/2028
+                - img "Ternate Indonesia, Molukschen Archipel. Ternate Vue de Ternate by C.W.M. van de Velde — the whole sheet"
+                - text: Ternate Indonesia, Molukschen Archipel. Ternate Vue de Ternate by C.W.M. van de Velde Van De Velde, 1844 31 × 47 cm (12.2 × 18.5 in) Price on request
+        - listitem:
+            - link "Lombok Indonesia, Gezigt van Ampanan, Eiland Lombok / Vue d'Ampanan by C.W.M. van de Velde — the whole sheet Lombok Indonesia, Gezigt van Ampanan, Eiland Lombok / Vue d'Ampanan by C.W.M. van de Velde Van De Velde, 1844 31 × 47 cm (12.2 × 18.5 in) Price on request":
+                - /url: /product/2027
+                - img "Lombok Indonesia, Gezigt van Ampanan, Eiland Lombok / Vue d'Ampanan by C.W.M. van de Velde — the whole sheet"
+                - text: Lombok Indonesia, Gezigt van Ampanan, Eiland Lombok / Vue d'Ampanan by C.W.M. van de Velde Van De Velde, 1844 31 × 47 cm (12.2 × 18.5 in) Price on request
+        - listitem:
+            - link "Sumatra Padang, Een Gezigt te Padang / Vue Prise a Padang by C.W.M. van de Velde — the whole sheet Sumatra Padang, Een Gezigt te Padang / Vue Prise a Padang by C.W.M. van de Velde Van De Velde, 1844 31 × 47 cm (12.2 × 18.5 in) Price on request":
+                - /url: /product/2026
+                - img "Sumatra Padang, Een Gezigt te Padang / Vue Prise a Padang by C.W.M. van de Velde — the whole sheet"
+                - text: Sumatra Padang, Een Gezigt te Padang / Vue Prise a Padang by C.W.M. van de Velde Van De Velde, 1844 31 × 47 cm (12.2 × 18.5 in) Price on request
+        - listitem:
+            - link "Batavia Jakarta Loading Docks, JAVA. De Aanleg Plaats der Sloepen Te Batavia by C.W.M. van de Velde — the whole sheet Batavia Jakarta Loading Docks, JAVA. De Aanleg Plaats der Sloepen Te Batavia by C.W.M. van de Velde Van De Velde, 1844 31 × 47 cm (12.2 × 18.5 in) Price on request":
+                - /url: /product/2025
+                - img "Batavia Jakarta Loading Docks, JAVA. De Aanleg Plaats der Sloepen Te Batavia by C.W.M. van de Velde — the whole sheet"
+                - text: Batavia Jakarta Loading Docks, JAVA. De Aanleg Plaats der Sloepen Te Batavia by C.W.M. van de Velde Van De Velde, 1844 31 × 47 cm (12.2 × 18.5 in) Price on request
+        - listitem:
+            - link "Batavia Jakarta, Het Societeits - Gebouw de Harmonie / L’ Hotel de la Societre L’Harmonie by C.W.M. van de Velde — the whole sheet Batavia Jakarta, Het Societeits - Gebouw de Harmonie / L’ Hotel de la Societre L’Harmonie by C.W.M. van de Velde Van De Velde, 1844 31 × 47 cm (12.2 × 18.5 in) Price on request":
+                - /url: /product/2024
+                - img "Batavia Jakarta, Het Societeits - Gebouw de Harmonie / L’ Hotel de la Societre L’Harmonie by C.W.M. van de Velde — the whole sheet"
+                - text: Batavia Jakarta, Het Societeits - Gebouw de Harmonie / L’ Hotel de la Societre L’Harmonie by C.W.M. van de Velde Van De Velde, 1844 31 × 47 cm (12.2 × 18.5 in) Price on request
+    - navigation "Page 1 of 64":
+        - link "Previous" [disabled]:
+            - /url: /browse
+        - list:
+            - listitem:
+                - link "1":
+                    - /url: /browse
+            - listitem:
+                - link "2":
+                    - /url: /browse?page=2
+            - listitem:
+                - link "3":
+                    - /url: /browse?page=3
+            - listitem
+            - listitem:
+                - link "64":
+                    - /url: /browse?page=64
+        - link "Next":
+            - /url: /browse?page=2
+- contentinfo:
+    - list:
+        - listitem:
+            - link "Privacy":
+                - /url: /privacy
+        - listitem:
+            - link "Terms":
+                - /url: /terms
+        - listitem:
+            - link "Old East Indies — printed editions from our collection":
+                - /url: https://old-east-indies.gaiada.com/
+    - navigation:
+        - list:
+            - listitem:
+                - link "The collection":
+                    - /url: /browse
+            - listitem:
+                - link "Makers":
+                    - /url: /makers
+            - listitem:
+                - link "Places":
+                    - /url: /places
+            - listitem:
+                - link "Stories":
+                    - /url: /stories
+            - listitem:
+                - link "Sell to us":
+                    - /url: /sell-to-us
+            - listitem:
+                - link "About us":
+                    - /url: /about
+            - listitem:
+                - link "Contact":
+                    - /url: /contact
+    - list:
+        - listitem:
+            - link "Ask on WhatsApp":
+                - /url: https://wa.me/6281100000000
+        - listitem:
+            - link "Email":
+                - /url: mailto:gallery@example.com
+    - list:
+        - listitem:
+            - link "Instagram":
+                - /url: https://www.instagram.com/indiesgalleryantiques/
+        - listitem:
+            - link "Facebook":
+                - /url: https://www.facebook.com/IndiesGallery/
+- button "Chat with us"
+- alert

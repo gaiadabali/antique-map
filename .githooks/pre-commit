@@ -1,0 +1,13 @@
+#!/bin/sh
+# Keeps TASKS.md in step with its checkboxes on every commit that includes it:
+# closes tasks whose subtasks are all ticked, drops their Now rows and rebuilds
+# the progress table (scripts/progress.mjs), then stages the result.
+# Installed by `pnpm install` (scripts/board/install-hooks.mjs); see also post-commit.
+git diff --cached --name-only | grep -qx 'TASKS.md' || exit 0
+# An agent's worktree carries a copy of the board; only the main checkout syncs it.
+[ -d .git ] || exit 0
+node scripts/progress.mjs --quiet || {
+  echo "pre-commit: TASKS.md could not be synced (see above); commit refused." >&2
+  exit 1
+}
+git add TASKS.md

@@ -1,7 +1,7 @@
 /**
- * The boot check (PLT, TASKS.md 3.1.a): `runBootCheck()` / `bootCheck()` at process start,
- * `assertBootable()` to refuse it, and the parsed `LINK_TOKEN_KEYS` ring the links module
- * derives with (C6 `links`, TASKS.md 18.2.g).
+ * The boot check: `runBootCheck()` / `bootCheck()` at process start, `assertBootable()` to refuse
+ * it, the environment it judged, the parsed `LINK_TOKEN_KEYS` ring, and `describeError()` — an
+ * error's message with its credentials redacted, for a log.
  */
 export {
   assertBootable,
@@ -30,10 +30,4 @@ export {
   type LinkTokenKey,
 } from './link-keys'
 export { LOADERS_SOURCES, type LoadersSource } from './platform'
-export {
-  FULFILMENT_SECRETS,
-  PAYMENT_SECRETS,
-  secretPrefix,
-  SHIPPING_SECRETS,
-} from './provider-secrets'
-export { checkSister, SISTER_BASE_URL, sisterBaseUrl } from './sister'
+export { describeError, redactCredentials } from './redact'

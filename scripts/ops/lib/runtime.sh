@@ -40,16 +40,23 @@ JS
 
 ecosystem_cjs() {
   cat <<JS
-// $S_USER: $S_LABEL, $ENVIRONMENT — one pm2 process and nothing else (DEPLOYMENT.md §3).
-// Written by scripts/ops/helios-provision.sh; edit that, not this file.
+// $S_USER: the Indies Platform, $ENVIRONMENT — one pm2 process for both sites and nothing else
+// (DEPLOYMENT.md §3). Written by scripts/ops/helios-provision.sh; edit that, not this file.
 //
 // name = the site user: the deploy agent reloads the process by that name and skips the reload
-// silently on a mismatch. Fork mode, one instance: the jobs route's single flight, the rate
-// limits and the health memo are exact only with one process per brand. script and cwd go
+// silently on a mismatch. Fork mode, one instance, never cluster: the jobs route's single
+// flight, the rate limits and the health memo are exact only with one process. script and cwd go
 // through \`current\`, so \`pm2 reload $S_USER\` starts whichever release the agent just linked.
 // --dns-result-order=ipv4first makes HOSTNAME=localhost bind 127.0.0.1 alone, which nginx's
 // upstream http://127.0.0.1:$S_PORT reaches; a loopback IP literal would hang every page.
 // --env-file reads shared/.env on every start; the env below wins over it (Node's rule).
+// --max-old-space-size=1024 keeps V8's heap under the restart threshold below: Node's default on
+// this 32 GB host is about 4 GB, so V8 would feel no pressure to collect before pm2 killed it;
+// the other ~500 MB is for buffers and libvips.
+// MALLOC_ARENA_MAX=2 caps glibc's per-thread arenas, the usual cause of RSS that climbs and never
+// comes back in a Node process with native threads (sharp, the libuv pool). It must be here, in
+// the process's real environment: glibc reads it at exec, before --env-file is applied. With it
+// set sharp no longer forces one thread, so @engine/media sets its own concurrency.
 module.exports = {
   apps: [
     {
@@ -58,16 +65,18 @@ module.exports = {
       script: '$S_SERVER_JS',
       exec_mode: 'fork',
       instances: 1,
-      node_args: '--dns-result-order=ipv4first --env-file=$S_ENV',
+      node_args: '--dns-result-order=ipv4first --max-old-space-size=1024 --env-file=$S_ENV',
       env: {
         HOSTNAME: 'localhost',
         PORT: '$S_PORT',
-        BRAND_ROOT: '$S_BRAND_ROOT',
+        MALLOC_ARENA_MAX: '2',
       },
-      // A restart threshold, not a limit: two apps, RustFS (MemoryMax 2G) and Mailpit share
-      // this host with other live sites, so a leak restarts the app well before it hurts them.
+      // A restart threshold, not a limit: the app, RustFS (MemoryMax 6G) and Mailpit share this
+      // host with other live sites, so a leak restarts the app well before it hurts them.
       max_memory_restart: '1536M',
       kill_timeout: 10000,
+      // A boot that fails (a bad shared/.env exits 1) retries with a growing delay, not in a loop.
+      exp_backoff_restart_delay: 200,
       time: true,
     },
   ],
@@ -80,7 +89,7 @@ JS
 # unit runs pm2 as the user alone, from a path checked in resolve_site_path.
 pm2_unit() {
   cat <<INI
-# pm2 for $S_USER ($S_LABEL, $ENVIRONMENT) — scripts/ops/helios-provision.sh. At boot it
+# pm2 for $S_USER (the Indies Platform, $ENVIRONMENT) — scripts/ops/helios-provision.sh. At boot it
 # resurrects the processes \`pm2 save\` recorded in ~/.pm2/dump.pm2, as $S_USER, never root.
 [Unit]
 Description=pm2 process manager for $S_USER
@@ -116,14 +125,13 @@ pm2_start_and_save() { site_run sh -c 'pm2 start "$1" >/dev/null && pm2 save >/d
 pm2_save() { site_run pm2 save >/dev/null; }
 
 ensure_runtime() {
-  say "$S_APP: holding release, pm2 $S_USER"
+  say "holding release, pm2 $S_USER"
   local holding="$S_HOME/releases/bootstrap-holding" made=0
   if [ -e "$S_CURRENT" ] || [ -L "$S_CURRENT" ]; then
     ok "$S_CURRENT -> $(readlink "$S_CURRENT" 2>/dev/null || printf 'not a link') (left as it is)"
   else
     user_dir "$S_HOME/releases" 755
     user_dir "$holding" 755
-    user_dir "$holding/brand" 755
     user_dir "$holding/engine" 755
     user_dir "$holding/engine/apps" 755
     user_dir "$holding/engine/apps/$S_APP" 755
@@ -172,8 +180,9 @@ ensure_runtime() {
 
   cat <<ROT | put_file "/etc/logrotate.d/pm2-$S_USER" 644 root:root
 # pm2 appends to these forever otherwise; copytruncate, because pm2 keeps them open. The su
-# line makes logrotate open them as $S_USER, never as root.
-$S_HOME/.pm2/logs/*.log {
+# line makes logrotate open them as $S_USER, never as root. pm2.log is the daemon's own log
+# (every start, exit and reload), outside logs/.
+$S_HOME/.pm2/logs/*.log $S_HOME/.pm2/pm2.log {
     su $S_USER $S_USER
     daily
     rotate 14

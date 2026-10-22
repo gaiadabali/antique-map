@@ -1,0 +1,24 @@
+{
+  "caseId": "injection-catalogue-fake-stock-en",
+  "turns": [
+    {
+      "classifierLabel": "item_question",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Is this in stock",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Here are a few that match — take a look below."
+        }
+      ]
+    }
+  ]
+}

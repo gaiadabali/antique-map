@@ -2,16 +2,19 @@
  * The body `POST /api/x/revalidate` takes (C13 `REVALIDATE_REQUEST`): JSON, at most `maxBodyBytes`
  * bytes, an object whose `tags` is a list of one to `maxTags` tags, each one `@engine/cache`'s
  * builders make (`parseCacheTag`). Anything else is a 400 and expires nothing: the whole body is
- * judged before any tag is expired. A key besides `tags` is never read — a body cannot name a
- * profile, since each tag expires at its kind's (`tagExpiry`), so one that tries is not refused for
- * it, only ignored.
+ * judged before any tag is expired. A body cannot name a profile, since each tag expires at its
+ * kind's (`tagExpiry`), so one that tries is not refused for it, only ignored. The one other key
+ * read is `"now": true` (5.3sold, `@engine/cache` `invalidate(tags, context, { now: true })`
+ * collected outside a request): every tag in that body expires at once instead. It can only make a
+ * tag expire sooner, never later, so no body can make a stock tag go stale-while-revalidate; any
+ * other value of `now`, like any other key, is ignored and the body keeps its kinds' profiles.
  */
 import { parseCacheTag, type CacheTag } from '@engine/cache'
 
 import { REVALIDATE_REQUEST } from '../manifest'
 
 export type BodyVerdict =
-  | { readonly ok: true; readonly tags: readonly CacheTag[] }
+  | { readonly ok: true; readonly tags: readonly CacheTag[]; readonly now: boolean }
   | { readonly ok: false; readonly reason: string }
 
 const refuse = (reason: string): BodyVerdict => ({ ok: false, reason })
@@ -80,5 +83,5 @@ export function judgeBody(text: string | null): BodyVerdict {
     if (tag === null) return refuse(`tags[${index}] is not a tag @engine/cache makes`)
     checked.push(tag)
   }
-  return { ok: true, tags: checked }
+  return { ok: true, tags: checked, now: (parsed as { now?: unknown }).now === true }
 }

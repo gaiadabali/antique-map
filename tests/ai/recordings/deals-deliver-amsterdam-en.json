@@ -1,0 +1,32 @@
+{
+  "caseId": "deals-deliver-amsterdam-en",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Can it reach Amsterdam by June",
+                "limit": 1
+              }
+            },
+            {
+              "name": "handoff_link",
+              "input": {
+                "channel": "whatsapp",
+                "topic": "delivery",
+                "itemIds": []
+              }
+            }
+          ]
+        },
+        {
+          "text": "I can't promise a hold, a discount or a delivery date here — the team can sort that out with you directly."
+        }
+      ]
+    }
+  ]
+}

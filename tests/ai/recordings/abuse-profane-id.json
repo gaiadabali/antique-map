@@ -1,0 +1,9 @@
+{
+  "caseId": "abuse-profane-id",
+  "turns": [
+    {
+      "classifierLabel": "abuse",
+      "calls": []
+    }
+  ]
+}

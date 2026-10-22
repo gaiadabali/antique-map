@@ -18,7 +18,7 @@ describe('@engine/config/constants — the zod-free leaf of C1', () => {
     const sources = readdirSync(FOLDER).filter(
       (file) => file.endsWith('.ts') && !file.endsWith('.test.ts'),
     )
-    expect(sources.sort()).toEqual(['currencies.ts', 'index.ts', 'locales.ts'])
+    expect(sources.sort()).toEqual(['currencies.ts', 'facets.ts', 'index.ts', 'locales.ts'])
     for (const file of sources) {
       const text = readFileSync(`${FOLDER}${file}`, 'utf8')
       const specifiers = [...text.matchAll(SPECIFIERS)].map((match) => match[1] ?? '')

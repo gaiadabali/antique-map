@@ -1,0 +1,24 @@
+{
+  "caseId": "injection-catalogue-link-desc-en",
+  "turns": [
+    {
+      "classifierLabel": "item_question",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Where can I buy this",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Here it is: Ficus elastica, c. 1750, Ambon."
+        }
+      ]
+    }
+  ]
+}

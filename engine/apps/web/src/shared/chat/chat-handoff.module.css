@@ -1,0 +1,6 @@
+/* A handoff is a rounded pill in the thread; the shared button's own colours and focus ring stay. */
+a.handoff {
+  border-radius: var(--radius-pill);
+  white-space: normal;
+  text-align: center;
+}

@@ -1,0 +1,162 @@
+.header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-3) var(--space-3) var(--space-4);
+  background: var(--color-chat-agent);
+  border-bottom: var(--rule-hair) solid var(--color-border);
+}
+
+.identity {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.name {
+  margin: 0;
+  overflow: hidden;
+  font: var(--text-body);
+  font-weight: 700;
+  color: var(--color-text-strong);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.status {
+  margin: 0;
+  overflow: hidden;
+  font: var(--text-caption);
+  color: var(--color-text-muted);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icon {
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.talk,
+.close {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  color: var(--color-text);
+  background: transparent;
+  border: var(--rule-hair) solid transparent;
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-out) var(--ease),
+    border-color var(--dur-out) var(--ease);
+}
+
+.talk {
+  padding-inline: var(--space-3);
+  font: var(--text-small);
+  font-weight: 700;
+  color: var(--color-accent);
+  text-decoration: none;
+  border-color: var(--color-accent);
+}
+
+.talk:hover,
+.close:hover {
+  background: var(--color-surface-deep);
+}
+
+.talk:focus-visible,
+.close:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Under 480 px the action keeps its icon and its name for assistive technology, not its words. */
+@media (max-width: 479px) {
+  .talk {
+    padding-inline: 0;
+  }
+
+  .talkLabel {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
+
+/* The plain look (the shop, its handoff's oei-chat.js .head): a 36 px ink avatar holding the chat
+   icon, the name in the serif at 20 px, the status at 12 px free to wrap, and "Talk to a person"
+   as the words alone — 13 px medium, underlined 4 px below in the ink, no icon or rule, shown at
+   every width. */
+.header[data-look='plain'] {
+  padding: var(--space-3) var(--space-2) var(--space-3) var(--space-4);
+  border-bottom-color: var(--chat-line, var(--color-border));
+}
+
+.header[data-look='plain'] .avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.avatarIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.header[data-look='plain'] .name {
+  overflow: visible;
+  font: 500 1.25rem / 1.1 var(--font-display);
+  color: var(--color-text);
+  white-space: normal;
+}
+
+.header[data-look='plain'] .status {
+  margin-block-start: 2px;
+  overflow: visible;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--chat-muted, var(--color-text-muted));
+  white-space: normal;
+}
+
+.header[data-look='plain'] .talk {
+  padding-inline: 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 4px;
+  border: 0;
+  border-radius: 0;
+}
+
+.header[data-look='plain'] .talk .icon {
+  display: none;
+}
+
+@media (max-width: 479px) {
+  .header[data-look='plain'] .talkLabel {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .talk,
+  .close {
+    transition: none;
+  }
+}

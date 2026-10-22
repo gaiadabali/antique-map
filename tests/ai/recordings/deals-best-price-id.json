@@ -1,0 +1,32 @@
+{
+  "caseId": "deals-best-price-id",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Bisa kasih harga terbaik untuk M 1401",
+                "limit": 1
+              }
+            },
+            {
+              "name": "handoff_link",
+              "input": {
+                "channel": "whatsapp",
+                "topic": "general",
+                "itemIds": []
+              }
+            }
+          ]
+        },
+        {
+          "text": "Saya tidak bisa menjanjikan penahanan, diskon, atau tanggal pengiriman di sini — tim kami bisa membicarakannya langsung dengan Anda."
+        }
+      ]
+    }
+  ]
+}

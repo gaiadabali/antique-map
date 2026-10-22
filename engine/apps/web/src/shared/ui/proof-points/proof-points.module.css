@@ -1,0 +1,28 @@
+/* The owner's facts as plain lines of type: no rules, no capitals, no boxes. Every value is a
+   token — no raw colour, no font-family. */
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3) clamp(var(--space-5), 1rem + 2vw, var(--space-8));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  max-inline-size: 16rem;
+  font: var(--text-body);
+  color: var(--color-text);
+}
+
+.item > * {
+  font: inherit;
+  color: inherit;
+}
+
+@media (max-width: 47.5rem) {
+  .list {
+    flex-direction: column;
+  }
+}

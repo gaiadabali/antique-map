@@ -2,7 +2,7 @@
 # A stand-in for systemctl inside the test container, which has no systemd: it keeps each
 # unit's enabled/active state in /run/shim, runs a service's ExecStart (with its User= and
 # Environment= lines) in the background, and mounts a .mount unit's What at its Where — so
-# RustFS, Mailpit and RustFS's loop image are real during the test. A pm2-<user> unit is
+# RustFS and Mailpit are real during the test. A pm2-<user> unit is
 # Type=forking: its ExecStart (pm2 resurrect) runs to completion as its User, its ExecStop on
 # stop, and it is active while its PIDFile's process lives. Test-only; never on a host.
 set -euo pipefail

@@ -1,0 +1,24 @@
+{
+  "caseId": "gallery-grounded-botanical-prints-id",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Print botani Flora Indonesia ada",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Berikut beberapa yang sesuai — silakan lihat di bawah."
+        }
+      ]
+    }
+  ]
+}

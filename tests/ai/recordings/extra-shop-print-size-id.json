@@ -1,0 +1,24 @@
+{
+  "caseId": "extra-shop-print-size-id",
+  "turns": [
+    {
+      "classifierLabel": "price_request",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Berapa harga print ukuran A3",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Harganya Rp 165.000."
+        }
+      ]
+    }
+  ]
+}

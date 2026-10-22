@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { allTasks, parseTasksMd } from './parse.mjs'
-import { ALL_RULES, checkPhaseLimits } from './rules.mjs'
+import { ALL_RULES } from './rules.mjs'
 import { splitStatusSuffix } from './status.mjs'
 import { checkWaveReadiness } from './wave.mjs'
 
@@ -111,6 +111,13 @@ describe('the status rules', () => {
     ])
   })
 
+  it('refuses a ticked task with a subtask still open', () => {
+    const doc = board(DONE).replace('  - [x] 1.1.a **Check:** ok', '  - [ ] 1.1.a **Check:** ok')
+    expect(lint(doc).map((f) => `[${f.rule}] ${f.message}`)).toEqual([
+      '[task-status] 1.1 is ticked [x] but its subtask(s) 1.1.a are not',
+    ])
+  })
+
   it('checks 🔄 names its own phase and wave', () => {
     expect(messages({ ...DONE, 1.2: ' — 🔄 2·W2' })).toEqual([
       '[task-status] 1.2 is 🔄 2·W2, but it is a phase 1 task',
@@ -130,17 +137,6 @@ describe('the status rules', () => {
     expect(messages({ ...DONE, 1.2: ' — ✂️ cut: dropped' })).toEqual([
       '[needs-cut] 2.1 needs 1.2, but 1.2 is ✂️ cut: it will never be ✅',
     ])
-  })
-
-  it('stops counting a ✂️ task towards the eight-task limit', () => {
-    const many = Array.from(
-      { length: 9 },
-      (_, i) =>
-        `- [ ] **1.${i + 1} T** · needs: —${i === 8 ? ' — ✂️ cut: too many' : ''}\n  - **Wave** W1\n  - **Owns** \`f/${i}/**\`\n  - [ ] 1.${i + 1}.a **Check:** ok\n`,
-    ).join('\n')
-    expect(
-      checkPhaseLimits(parseTasksMd(`## Phase 1 — M · Foundation · needs — · ~1d\n\n${many}`)),
-    ).toEqual([])
   })
 })
 

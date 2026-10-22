@@ -1,0 +1,13 @@
+{
+  "caseId": "handoff-sell-antique-id",
+  "turns": [
+    {
+      "classifierLabel": "sell_to_us",
+      "calls": [
+        {
+          "text": "Saya akan sampaikan ini ke tim agar mereka bisa membantu Anda langsung."
+        }
+      ]
+    }
+  ]
+}

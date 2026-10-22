@@ -1,0 +1,175 @@
+/* The bag summary (6.2; the redesign of 2026-10-20): the code form, the ruled totals and the one
+   primary action, on the warm band. Tokens only. */
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--shop-gutter);
+  background: var(--shop-warm);
+  min-width: 0;
+}
+
+@media (min-width: 56.3125rem) {
+  .summary {
+    position: sticky;
+    top: calc(var(--shop-header) + var(--space-5));
+  }
+}
+
+.code {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.codeForm {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.codeLabel {
+  flex: 1 1 100%;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.codeInput {
+  flex: 1 1 8rem;
+  min-width: 0;
+  min-height: 44px;
+  padding: var(--space-1) var(--space-2);
+  font: var(--text-body);
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: var(--rule-hair) solid var(--color-text);
+  border-radius: 0;
+}
+
+.codeApply {
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  font: var(--text-small);
+  border: none;
+  background: none;
+  color: var(--color-text);
+  text-decoration: underline;
+  text-underline-offset: 0.18em;
+  cursor: pointer;
+  transition: opacity var(--dur-out) var(--ease);
+}
+
+/* under the pointer it fades, as Remove and the footer's icons do */
+.codeApply:hover:not(:disabled) {
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .codeApply {
+    transition: none;
+  }
+}
+
+.codeApply:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.codeOk {
+  margin: 0;
+  font: var(--text-small);
+  color: var(--color-accent);
+}
+
+.problem,
+.refusal {
+  margin: 0;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+/* free delivery, or what is still to add for it: the handoff's muted 13 px line */
+.deliveryNote {
+  margin: 0;
+  font: var(--shop-text-meta);
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+/* Continue shopping, centred under Checkout */
+.more {
+  display: flex;
+  justify-content: center;
+}
+
+/* the welcome code, ruled off under the actions */
+.codeBlock {
+  padding-block-start: var(--space-4);
+  border-top: var(--rule-hair) solid var(--shop-rule-mid);
+}
+
+/* Subtotal, discount and total: ruled rows, the figures tabular at the right. */
+.totals {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-top: var(--rule-hair) solid var(--shop-rule-mid);
+}
+
+/* Subtotal opens the summary: no rule above it, the band's own edge is enough. */
+.totalRow:first-child {
+  padding-block-start: 0;
+  border-top: 0;
+}
+
+.totalRow:last-child {
+  padding-block-end: 0;
+}
+
+.totalRow dt {
+  font: var(--shop-text-body);
+  color: var(--color-text);
+}
+
+.totalRow dd {
+  margin: 0;
+  font: var(--text-body);
+  font-variant-numeric: var(--numeric-tabular);
+  color: var(--color-text);
+}
+
+.grand dt {
+  font: var(--shop-title-sub);
+  color: var(--color-text);
+}
+
+/* The amount stays in Karla: the display serif never sets a price (DESIGN-SYSTEM.md §2). */
+.grand dd {
+  font: var(--text-price);
+  font-size: 1.125rem;
+  font-variant-numeric: var(--numeric-tabular);
+}
+
+/* Checkout is the page's one primary action, full width in the summary. */
+.checkout {
+  display: flex;
+  flex-direction: column;
+}
+
+.checkout > * {
+  inline-size: 100%;
+}
+
+.codeInput:focus-visible,
+.codeApply:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--space-1);
+}

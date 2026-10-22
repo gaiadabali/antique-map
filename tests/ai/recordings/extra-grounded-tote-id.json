@@ -1,0 +1,24 @@
+{
+  "caseId": "extra-grounded-tote-id",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Tas tote apa saja yang tersedia",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Berikut beberapa yang sesuai — silakan lihat di bawah."
+        }
+      ]
+    }
+  ]
+}

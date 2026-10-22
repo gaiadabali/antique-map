@@ -1,0 +1,76 @@
+/* The footer closes the page on the site's dark ground (the gallery's ink, the shop's espresso),
+   full width; every ink role inside is re-pointed to the type that stands on
+   that field, as a full Band does. Every value is a token — no raw colour, no font-family. */
+
+.footer {
+  --band-bg: var(--pigment-1-full);
+  --color-text: var(--pigment-1-on-full);
+  --color-text-strong: var(--pigment-1-on-full);
+  --color-text-muted: var(--pigment-1-on-full-muted);
+  --color-accent: var(--pigment-1-on-full);
+  --color-accent-contrast: var(--pigment-1-full);
+  --color-focus: var(--pigment-1-on-full);
+  --color-border: color-mix(in srgb, var(--pigment-1-on-full) 30%, transparent);
+  --color-border-strong: color-mix(in srgb, var(--pigment-1-on-full) 70%, transparent);
+  --color-action: var(--pigment-1-on-full);
+  --color-action-hover: var(--pigment-1-on-full-muted);
+  --color-action-contrast: var(--pigment-1-full);
+
+  width: 100%;
+  padding: clamp(var(--space-8), 2rem + 5vw, var(--space-10)) var(--gutter) var(--space-6);
+  background: var(--band-bg);
+  color: var(--color-text);
+}
+
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(14rem, auto);
+  align-items: start;
+  gap: var(--space-8) clamp(var(--space-7), 1rem + 5vw, var(--space-10));
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+}
+
+.logo > * {
+  max-height: 44px;
+  width: auto;
+}
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-7) clamp(var(--space-7), 1rem + 4vw, var(--space-10));
+  font: var(--text-small);
+}
+
+.social {
+  display: flex;
+  min-width: min(100%, 14rem);
+}
+
+.legal {
+  margin-block-start: clamp(var(--space-8), 2rem + 4vw, var(--space-10));
+  padding-block-start: var(--space-5);
+  border-top: var(--rule-hair) solid var(--color-border);
+  font: var(--text-caption);
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 1024px) {
+  .top {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-7);
+  }
+}
+
+@media (max-width: 768px) {
+  .nav {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: var(--space-6) var(--space-5);
+  }
+}

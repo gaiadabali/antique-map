@@ -3,7 +3,8 @@
 *Bahasa Indonesia:* [owner-interview.id.md](owner-interview.id.md) (G1–G15) · [owner-interview-toko.id.md](owner-interview-toko.id.md) (S1–S15)
 
 **For:** the owner of Indies Gallery and Old East Indies · **From:** the design team ·
-**Prepared:** 1 October 2026 · **Status:** not yet sent (TASKS.md OA2, 6.1.b)
+**Prepared:** 1 October 2026 · **Status:** answered in session, 1 October 2026 — the answers
+are in [owner-answers.md](owner-answers.md) (TASKS.md OA2, 6.1.b)
 
 We are designing both new sites. Most of what we need we already have from your
 current site, your notes of 11 September and our research. What is left below are

@@ -1,0 +1,357 @@
+[
+  {
+    "id": "gallery-grounded-java-pre-1750-en",
+    "site": "gallery",
+    "locale": "en",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "What maps of Java do you have from before 1750?" }],
+    "fixtures": {
+      "works": [
+        {
+          "id": "work-java-01",
+          "title": "Insulae Iavae",
+          "maker": "Joan Blaeu",
+          "date": "c. 1660",
+          "places": "Java",
+          "description": "A hand-coloured engraved map of Java with the south coast exaggerated.",
+          "stockNumber": "M.1001",
+          "status": "available"
+        },
+        {
+          "id": "work-java-02",
+          "title": "Nieuwe Kaart van het Eiland Java",
+          "maker": "François Valentijn",
+          "date": "1726",
+          "places": "Java, Batavia",
+          "description": "Large wall map in four sheets, the eastern districts shown in unusual detail.",
+          "stockNumber": "M.1002",
+          "status": "available"
+        }
+      ]
+    },
+    "expect": {
+      "cardsFor": ["work-java-01", "work-java-02"],
+      "language": "en"
+    }
+  },
+  {
+    "id": "gallery-grounded-spice-islands-id",
+    "site": "gallery",
+    "locale": "id",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Ada peta Kepulauan Rempah dari abad ke-17?" }],
+    "fixtures": {
+      "works": [
+        {
+          "id": "work-spice-01",
+          "title": "Moluccae Insulae",
+          "maker": "Willem Blaeu",
+          "date": "c. 1640",
+          "places": "Maluku",
+          "description": "The classic 17th-century map of the Spice Islands in original outline colour.",
+          "stockNumber": "M.1101",
+          "status": "available"
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["work-spice-01"], "language": "id" }
+  },
+  {
+    "id": "gallery-grounded-batavia-name-en",
+    "site": "gallery",
+    "locale": "en",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "I am looking for views of Batavia." }],
+    "fixtures": {
+      "works": [
+        {
+          "id": "work-batavia-01",
+          "title": "Gezicht op Batavia",
+          "maker": "Johannes van Keulen",
+          "date": "c. 1680",
+          "places": "Batavia (Jakarta)",
+          "description": "A coastal profile of the roadstead of Batavia.",
+          "stockNumber": "M.1201",
+          "status": "available"
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["work-batavia-01"], "language": "en" }
+  },
+  {
+    "id": "gallery-grounded-bali-prints-id",
+    "site": "gallery",
+    "locale": "id",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Tunjukkan print Bali yang masih tersedia." }],
+    "fixtures": {
+      "works": [
+        {
+          "id": "work-bali-01",
+          "title": "Balinese Dance",
+          "maker": "Willem van der Does",
+          "date": "c. 1930",
+          "places": "Bali",
+          "description": "A photogravure of a legong dancer, signed in the plate.",
+          "stockNumber": "M.1301",
+          "status": "available"
+        },
+        {
+          "id": "work-bali-02",
+          "title": "Temple Festival, Bali",
+          "maker": "Anonymous",
+          "date": "c. 1920",
+          "places": "Bali",
+          "description": "Silver gelatin print of a temple procession.",
+          "stockNumber": "M.1302",
+          "status": "sold"
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["work-bali-01"], "language": "id" }
+  },
+  {
+    "id": "gallery-grounded-maker-valentijn-en",
+    "site": "gallery",
+    "locale": "en",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Do you have anything by Valentijn?" }],
+    "fixtures": {
+      "works": [
+        {
+          "id": "work-val-01",
+          "title": "Oud en Nieuw Oost-Indien, volume III",
+          "maker": "François Valentijn",
+          "date": "1726",
+          "places": "Indonesia",
+          "description": "The rare third volume, complete with the large folding maps.",
+          "stockNumber": "M.1401",
+          "status": "available"
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["work-val-01"], "language": "en" }
+  },
+  {
+    "id": "gallery-grounded-photographs-sumatra-id",
+    "site": "gallery",
+    "locale": "id",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Cari foto tua Sumatra." }],
+    "fixtures": {
+      "works": [
+        {
+          "id": "work-sum-01",
+          "title": "Medan, Deli Planters",
+          "maker": "Tassilo Adam",
+          "date": "c. 1910",
+          "places": "Sumatra, Medan",
+          "description": "A group portrait on a tobacco estate.",
+          "stockNumber": "M.1501",
+          "status": "available"
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["work-sum-01"], "language": "id" }
+  },
+  {
+    "id": "gallery-grounded-sea-chart-en",
+    "site": "gallery",
+    "locale": "en",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "I need a sea chart of the Sunda Strait." }],
+    "fixtures": {
+      "works": [
+        {
+          "id": "work-sea-01",
+          "title": "De Straat Sunda",
+          "maker": "Johannes van Keulen",
+          "date": "c. 1690",
+          "places": "Sunda Strait",
+          "description": "Sea chart of the Sunda Strait with soundings and anchorages.",
+          "stockNumber": "M.1601",
+          "status": "available"
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["work-sea-01"], "language": "en" }
+  },
+  {
+    "id": "gallery-grounded-botanical-prints-id",
+    "site": "gallery",
+    "locale": "id",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Print botani Flora Indonesia ada?" }],
+    "fixtures": {
+      "works": [
+        {
+          "id": "work-bot-01",
+          "title": "Ficus elastica",
+          "maker": "Rumphius",
+          "date": "c. 1750",
+          "places": "Ambon",
+          "description": "A hand-coloured botanical engraving from Herbarium Amboinense.",
+          "stockNumber": "M.1701",
+          "status": "available"
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["work-bot-01"], "language": "id" }
+  },
+  {
+    "id": "gallery-grounded-sold-archive-en",
+    "site": "gallery",
+    "locale": "en",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Can I see sold examples of Celebes maps?" }],
+    "fixtures": {
+      "works": [
+        {
+          "id": "work-sul-01",
+          "title": "Celebes et les Isles de Sangi",
+          "maker": "Jacques Nicolas Bellin",
+          "date": "c. 1750",
+          "places": "Sulawesi (Celebes)",
+          "description": "A small chart of Celebes and the Sangihe Islands.",
+          "stockNumber": "M.1801",
+          "status": "sold"
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["work-sul-01"], "language": "en" }
+  },
+  {
+    "id": "gallery-grounded-city-plan-batavia-id",
+    "site": "gallery",
+    "locale": "id",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Ada city plan Batavia kuno?" }],
+    "fixtures": {
+      "works": [
+        {
+          "id": "work-plan-01",
+          "title": "Plan de la Ville de Batavia",
+          "maker": "Jacques Nicolas Bellin",
+          "date": "c. 1760",
+          "places": "Batavia (Jakarta)",
+          "description": "A detailed city plan showing the canals and fortifications.",
+          "stockNumber": "M.1901",
+          "status": "available"
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["work-plan-01"], "language": "id" }
+  },
+  {
+    "id": "gallery-grounded-no-match-en",
+    "site": "gallery",
+    "locale": "en",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Do you have a map of the moon?" }],
+    "fixtures": { "works": [] },
+    "expect": { "language": "en", "handoff": "any" }
+  },
+  {
+    "id": "gallery-grounded-condition-grade-id",
+    "site": "gallery",
+    "locale": "id",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Kondisi peta ini seperti apa?" }],
+    "fixtures": {
+      "works": [
+        {
+          "id": "work-cond-01",
+          "title": "Kaart van het Eiland Sumatra",
+          "maker": "J. H. Collet",
+          "date": "c. 1780",
+          "places": "Sumatra",
+          "description": "Large wall map backed on linen, minor foxing in margins.",
+          "stockNumber": "M.2001",
+          "status": "available"
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["work-cond-01"], "language": "id" }
+  },
+  {
+    "id": "gallery-grounded-historical-name-en",
+    "site": "gallery",
+    "locale": "en",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Anything showing Buitenzorg?" }],
+    "fixtures": {
+      "works": [
+        {
+          "id": "work-bogor-01",
+          "title": "Buitenzorg (Bogor)",
+          "maker": "Anonymous",
+          "date": "c. 1880",
+          "places": "Buitenzorg (Bogor)",
+          "description": "A lithographed view of the botanical gardens and residence.",
+          "stockNumber": "M.2101",
+          "status": "available"
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["work-bogor-01"], "language": "en" }
+  },
+  {
+    "id": "gallery-grounded-dimensions-id",
+    "site": "gallery",
+    "locale": "id",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Berapa ukuran peta ini?" }],
+    "fixtures": {
+      "works": [
+        {
+          "id": "work-dim-01",
+          "title": "Tabula Asiae III",
+          "maker": "Sebastian Münster",
+          "date": "c. 1550",
+          "places": "Asia",
+          "description": "Woodcut map showing Southeast Asia and the Indian Ocean.",
+          "stockNumber": "M.2201",
+          "status": "available"
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["work-dim-01"], "language": "id" }
+  },
+  {
+    "id": "gallery-grounded-provenance-en",
+    "site": "gallery",
+    "locale": "en",
+    "group": "grounded",
+    "safety": false,
+    "turns": [{ "role": "user", "text": "Where did this map come from?" }],
+    "fixtures": {
+      "works": [
+        {
+          "id": "work-prov-01",
+          "title": "India Orientalis",
+          "maker": "Abraham Ortelius",
+          "date": "c. 1580",
+          "places": "India Orientalis",
+          "description": "The first printed map of Southeast Asia in an Ortelius atlas.",
+          "stockNumber": "M.2301",
+          "status": "available"
+        }
+      ]
+    },
+    "expect": { "cardsFor": ["work-prov-01"], "language": "en" }
+  }
+]

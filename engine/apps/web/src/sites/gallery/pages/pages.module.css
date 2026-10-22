@@ -1,0 +1,96 @@
+/* The editorial and information pages (5.4.b, 14.6; Ivory and ink 18): the page opens on its
+   paper (or the shared Crossing, with a hero sheet), the body at the reading measure in large type,
+   a works rail.
+   Every value is a token from shared/styles/tokens or the gallery brand file — no raw colour, no
+   font-family. */
+
+.wrap {
+  width: var(--page-wrap);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  padding-inline: var(--gutter);
+}
+
+/* The field starts right under the header: the shell's top padding is cancelled. */
+.band {
+  margin-block-start: calc(-1 * var(--space-7));
+  padding-block: var(--space-9) var(--space-8);
+}
+
+.band > :last-child {
+  margin-block-end: 0;
+}
+
+.page {
+  padding-block: var(--space-9) var(--space-9);
+}
+
+/* The reading column: large text, generous space; the serif h2s and any image sit on the paper. */
+.body {
+  max-inline-size: var(--measure-text);
+  font: var(--text-body-large);
+  text-wrap: pretty;
+}
+
+.body p {
+  margin: var(--space-6) 0 0;
+}
+
+.body p:first-child {
+  margin-block-start: 0;
+}
+
+.body h2,
+.body h3 {
+  margin: var(--space-8) 0 0;
+  font: var(--text-h2);
+  letter-spacing: var(--tracking-h1);
+  text-wrap: balance;
+}
+
+.body img {
+  display: block;
+  max-inline-size: 100%;
+  block-size: auto;
+  margin-block: var(--space-7);
+}
+
+.works {
+  margin-block-start: var(--space-10);
+}
+
+.body + .works {
+  margin-block-start: var(--space-10);
+}
+
+.page > .works:first-child {
+  margin-block-start: 0;
+}
+
+@media (max-width: 47.5rem) {
+  .band {
+    padding-block: var(--space-7) var(--space-6);
+  }
+
+  .page {
+    padding-block: var(--space-7);
+  }
+
+  .works,
+  .body + .works {
+    margin-block-start: var(--space-8);
+  }
+}
+
+.notFoundActions {
+  display: grid;
+  gap: var(--space-6);
+  max-inline-size: var(--measure-text);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}

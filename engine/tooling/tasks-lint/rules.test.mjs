@@ -2,11 +2,11 @@ import { describe, expect, it } from 'vitest'
 
 import { allTasks, parseTasksMd } from './parse.mjs'
 import {
+  ALL_RULES,
   checkEndsInCheck,
   checkNeedsResolvable,
   checkNoSameWaveDependency,
   checkOwnsOverlap,
-  checkPhaseLimits,
   checkPhaseNeedsMatchTasks,
   checkUniqueIds,
 } from './rules.mjs'
@@ -93,23 +93,43 @@ describe('checkNoSameWaveDependency', () => {
   })
 })
 
-describe('checkPhaseLimits', () => {
-  it('flags more than 8 tasks in a phase', () => {
+describe('size and lanes are not linted (1.3.d)', () => {
+  it('passes nine tasks in four waves of one phase, with no lane', () => {
     const many = Array.from(
       { length: 9 },
       (_, i) =>
-        `- [ ] **1.${i + 1} Task** · needs: —\n  - **Wave** W1\n  - **Owns** \`fixture/t${i}/**\`\n  - [ ] 1.${i + 1}.a **Check:** ok\n`,
+        `- [ ] **1.${i + 1} Task** · needs: —\n  - **Wave** W${(i % 4) + 1}\n  - **Owns** \`fixture/t${i}/**\`\n  - [ ] 1.${i + 1}.a **Check:** ok\n`,
     ).join('\n')
     const model = parseTasksMd(`## Phase 1 — Many · Foundation · needs — · ~1d\n\n${many}`)
-    expect(checkPhaseLimits(model).some((f) => f.message.includes('more than 8'))).toBe(true)
+    expect(ALL_RULES.flatMap((rule) => rule(model, allTasks(model)))).toEqual([])
   })
 })
 
 describe('checkEndsInCheck', () => {
+  it('passes the fixture: one Check, last, in every task', () => {
+    const model = parseTasksMd(fixtureDoc())
+    expect(checkEndsInCheck(model, allTasks(model))).toEqual([])
+  })
+
   it('flags a task whose last subtask is not a Check', () => {
     const doc = fixtureDoc().replace('1.1.b **Check:** it works', '1.1.b something else entirely')
     const model = parseTasksMd(doc)
     const findings = checkEndsInCheck(model, allTasks(model))
     expect(findings.some((f) => f.message.includes('1.1 does not end in a **Check:**'))).toBe(true)
+  })
+
+  it('flags a second Check, wherever it is planted', () => {
+    const appended = fixtureDoc().replace(
+      '  - [ ] 1.1.b **Check:** it works\n',
+      '  - [ ] 1.1.b **Check:** it works\n  - [ ] 1.1.c **Check:** and again\n',
+    )
+    const before = fixtureDoc().replace('1.1.a do a thing', '1.1.a **Check:** too early')
+    for (const doc of [appended, before]) {
+      const model = parseTasksMd(doc)
+      const messages = checkEndsInCheck(model, allTasks(model)).map((f) => f.message)
+      expect(messages).toEqual([
+        expect.stringMatching(/^1\.1\.[ab] is a \*\*Check:\*\* but not 1\.1's last/),
+      ])
+    }
   })
 })

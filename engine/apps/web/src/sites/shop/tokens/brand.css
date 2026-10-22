@@ -1,0 +1,96 @@
+/* =====================================================================
+   Tier 2 brand variables — Old East Indies in Gallery white (the redesign
+   of 2026-10-20, replacing Heritage): the design handoff's white page and
+   soft-black ink, every print framed on a grey well, one warm band colour
+   for the hero's text half, the process band and the footer, and the
+   logo's umber only where the pointer rests on the action. The gallery
+   keeps Ivory and ink. The shop's layout knobs are in ./layout.css.
+   ===================================================================== */
+
+[data-site='shop'] {
+  --brand-surface: var(--primitive-oei-white);
+  --brand-surface-raised: var(--primitive-oei-white);
+  --brand-surface-deep: var(--primitive-oei-warm);
+  --brand-surface-dark: var(--primitive-oei-ink);
+  --brand-surface-dark-ink: var(--primitive-oei-white);
+
+  --brand-text: var(--primitive-oei-ink);
+  --brand-text-strong: var(--primitive-oei-ink);
+  --brand-text-muted: var(--primitive-oei-muted);
+  --brand-text-on-dark: var(--primitive-oei-white);
+
+  --brand-accent: var(--primitive-oei-ink);
+  --brand-accent-contrast: var(--primitive-oei-white);
+  --brand-accent-secondary: var(--primitive-oei-umber);
+  --brand-action: var(--primitive-oei-ink);
+  --brand-action-hover: var(--primitive-oei-umber);
+  --brand-action-contrast: var(--primitive-oei-white);
+
+  --brand-border: var(--primitive-oei-rule);
+  --brand-border-strong: var(--primitive-oei-rule-strong);
+  --brand-focus: var(--primitive-oei-ink);
+  --brand-scrim: #2b2b2b80;
+
+  --brand-danger: var(--primitive-critical);
+  --brand-success: var(--primitive-positive);
+  --brand-caution: var(--primitive-caution);
+
+  /* The roles a band or a crossing asks for: 1 and 2 the shop's warm band (its full is the ink),
+     3 the sister gallery's cool stone for the bridge to the originals. */
+  --brand-pigment-1-tint: var(--primitive-oei-well);
+  --brand-pigment-1-wash: var(--primitive-oei-warm);
+  --brand-pigment-1-full: var(--primitive-oei-ink);
+  --brand-pigment-1-on-wash: var(--primitive-oei-muted);
+  --brand-pigment-1-on-full: var(--primitive-oei-white);
+  --brand-pigment-1-on-full-muted: var(--primitive-oei-rule-mid);
+  --brand-pigment-2-tint: var(--primitive-oei-well);
+  --brand-pigment-2-wash: var(--primitive-oei-warm);
+  --brand-pigment-2-full: var(--primitive-oei-ink);
+  --brand-pigment-2-on-wash: var(--primitive-oei-muted);
+  --brand-pigment-2-on-full: var(--primitive-oei-white);
+  --brand-pigment-2-on-full-muted: var(--primitive-oei-rule-mid);
+  --brand-pigment-3-tint: var(--primitive-ivory-stone);
+  --brand-pigment-3-wash: var(--primitive-ivory-stone);
+  --brand-pigment-3-full: var(--primitive-ivory-ink);
+  --brand-pigment-3-on-wash: var(--primitive-ivory-muted);
+  --brand-pigment-3-on-full: var(--primitive-ivory-foot-ink);
+  --brand-pigment-3-on-full-muted: var(--primitive-ivory-foot-muted);
+
+  /* A print's window: the grey well at rest, a deeper grey on hover. */
+  --brand-field: var(--primitive-oei-well);
+  --brand-field-active: var(--primitive-oei-well-hover);
+
+  --brand-space-1: var(--primitive-space-1);
+  --brand-space-2: var(--primitive-space-2);
+  --brand-space-3: var(--primitive-space-3);
+  --brand-space-4: var(--primitive-space-4);
+  --brand-space-5: var(--primitive-space-5);
+  --brand-space-6: var(--primitive-space-6);
+  --brand-space-7: var(--primitive-space-7);
+  --brand-space-8: var(--primitive-space-8);
+  --brand-space-9: var(--primitive-space-9);
+  --brand-space-10: var(--primitive-space-10);
+  /* the handoff's page margin: 25 px on a desktop, 12 px on a phone (./layout.css) */
+  --brand-gutter: var(--shop-gutter);
+
+  /* square; a framed print carries the one soft shadow */
+  --brand-radius-card: var(--primitive-radius-none);
+  --brand-radius-control: var(--primitive-radius-none);
+  --brand-radius-pill: var(--primitive-radius-none);
+  --brand-radius-panel: var(--primitive-radius-none);
+  --brand-radius-bubble: var(--primitive-radius-none);
+  --brand-rule-hair: var(--primitive-rule-hair);
+  --brand-rule-strong: var(--primitive-rule-strong);
+  --brand-focus-width: var(--primitive-focus-width);
+  --brand-shadow-header: none;
+  --brand-shadow-panel: var(--primitive-shadow-panel);
+  --brand-shadow-print: var(--primitive-oei-shadow-print);
+  --brand-shadow-print-lift: var(--primitive-oei-shadow-lift);
+  --brand-dur-in: 300ms;
+  --brand-dur-out: 200ms;
+  --brand-ease: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --brand-dur-loop: var(--primitive-dur-loop);
+
+  /* An empty window's words on the grey well: muted ink is 5.4:1 there. */
+  --brand-mat-note: var(--primitive-oei-muted);
+}

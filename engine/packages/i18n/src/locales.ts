@@ -1,6 +1,6 @@
 /**
  * The engine's locales (ARCHITECTURE.md §11). Every database holds `en`, `id` and `nl`; a
- * brand serves the subset its config names, its default at the root and every other under
+ * site serves the subset `SITES` names, its default at the root and every other under
  * its prefix (`/id/…`). The root is never negotiated from `Accept-Language` — crawlers must
  * see one answer — so `suggestLocale()` only feeds the dismissible banner that offers the
  * visitor's language; nothing here redirects.
@@ -20,7 +20,7 @@ export const LOCALES = {
   nl: { tag: 'nl-NL', htmlLang: 'nl', endonym: 'Nederlands' },
 } as const satisfies Record<LocaleCode, { tag: string; htmlLang: string; endonym: string }>
 
-/** What the locale helpers read from a brand config. */
+/** What the locale helpers read from a site (`SITES.gallery` is one). */
 export type LocaleConfig = {
   readonly locales: { readonly default: LocaleCode; readonly supported: readonly LocaleCode[] }
 }
@@ -33,7 +33,7 @@ export function isSupportedLocale(config: LocaleConfig, value: unknown): value i
   return isLocaleCode(value) && config.locales.supported.includes(value)
 }
 
-/** A supported locale as given, or the brand's default. */
+/** A supported locale as given, or the site's default. */
 export function resolveLocale(config: LocaleConfig, candidate: unknown): LocaleCode {
   return isSupportedLocale(config, candidate) ? candidate : config.locales.default
 }
@@ -58,7 +58,7 @@ export function formattingTag(locale: LocaleCode): string {
 
 /**
  * The supported locale an `Accept-Language` header prefers most, or `null` when it names none
- * the brand serves. For the language banner only — the root is always the default locale.
+ * the site serves. For the language banner only — the root is always the default locale.
  */
 export function suggestLocale(
   config: LocaleConfig,

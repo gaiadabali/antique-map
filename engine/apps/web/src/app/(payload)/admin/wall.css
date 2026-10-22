@@ -1,0 +1,234 @@
+/* The Catalogue Wall, the admin's home (TASKS.md 16.2): the strip of today's work, the filter
+   row and the wall of matted cards. Tokens only (shared/styles/tokens/admin.css). Bronze marks
+   the current selection and focus alone. On a phone the strip and the filter row scroll sideways
+   inside themselves, never the page; the wall goes to two columns; targets are 44 px. */
+
+@import './wall-cards.css';
+
+.wall {
+  display: block;
+  padding-block: var(--primitive-space-5) var(--primitive-space-7);
+  padding-inline: var(--gutter-h, var(--primitive-space-5));
+  max-inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.wall__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--primitive-space-3) var(--primitive-space-5);
+  margin: 0 0 var(--primitive-space-4);
+}
+
+.wall__title {
+  margin: 0;
+  font: var(--admin-text-title);
+  color: var(--admin-ink-strong);
+  text-wrap: balance;
+}
+
+.wall a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.wall a:focus-visible,
+.wall input:focus-visible,
+.wall button:focus-visible {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 2px;
+}
+
+.wall__note {
+  margin: var(--primitive-space-3) 0 0;
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+}
+
+.wall__note a {
+  color: var(--admin-accent-strong);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* ---- the strip: one paper bar of today's counts ---------------------------------------------- */
+
+.wall-strip {
+  display: flex;
+  align-items: stretch;
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+}
+
+.wall-strip__item,
+.wall-strip__quiet {
+  display: flex;
+  align-items: baseline;
+  gap: var(--primitive-space-2);
+  min-block-size: var(--admin-target);
+  padding: var(--primitive-space-3) var(--primitive-space-4);
+  white-space: nowrap;
+  transition: background-color var(--admin-dur) var(--admin-ease);
+}
+
+.wall-strip__item + .wall-strip__item {
+  border-inline-start: 1px solid var(--admin-hairline);
+}
+
+.wall-strip__item:hover,
+.wall-strip__quiet:hover {
+  background: var(--admin-wash);
+}
+
+.wall-strip__count {
+  font: var(--admin-text-heading);
+  font-variant-numeric: tabular-nums;
+  color: var(--admin-ink-strong);
+}
+
+.wall-strip__label {
+  font: var(--admin-text-small);
+  color: var(--admin-ink);
+}
+
+.wall-strip__quiet {
+  align-items: center;
+  margin-inline-start: auto;
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* ---- the filter row ------------------------------------------------------------------------- */
+
+/* A positioning context: the search's visually hidden label is absolute, and without one it
+   escapes the row's own scroll on a phone and widens the page (898 px at 390, 2026-10-11). */
+.wall-filters {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--primitive-space-3) var(--primitive-space-5);
+  margin-block: var(--primitive-space-4) var(--primitive-space-5);
+}
+
+.wall-chips {
+  display: flex;
+  gap: var(--primitive-space-1);
+}
+
+.wall-chip {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--admin-target);
+  padding-inline: var(--primitive-space-3);
+  font: var(--admin-text-small);
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--admin-ink);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+  transition:
+    background-color var(--admin-dur) var(--admin-ease),
+    border-color var(--admin-dur) var(--admin-ease);
+}
+
+.wall-chip:hover {
+  border-color: var(--admin-rule);
+  background: var(--admin-wash);
+}
+
+.wall-chip[aria-current='true'] {
+  color: var(--admin-accent-strong);
+  background: var(--admin-accent-tint);
+  border-color: var(--admin-accent);
+}
+
+.wall-search {
+  position: relative;
+  display: flex;
+  gap: var(--primitive-space-1);
+  margin-inline-start: auto;
+}
+
+.wall-search__label {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.wall-search__input {
+  inline-size: 17rem;
+  min-block-size: var(--admin-target);
+  padding-inline: var(--primitive-space-3);
+  font: var(--admin-text-body);
+  color: var(--admin-ink);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-input-border);
+  border-radius: var(--admin-radius-control);
+}
+
+.wall-search__input::placeholder {
+  color: var(--admin-muted);
+}
+
+.wall-search__button {
+  min-block-size: var(--admin-target);
+  padding-inline: var(--primitive-space-4);
+  font: var(--admin-text-strong);
+  color: var(--admin-accent-on);
+  background: var(--admin-accent);
+  border: 0;
+  border-radius: var(--admin-radius-control);
+  cursor: pointer;
+}
+
+.wall-search__button:hover {
+  background: var(--admin-accent-strong);
+}
+
+/* ---- narrower screens: the shell ------------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .wall {
+    padding-inline: var(--primitive-space-4);
+  }
+
+  .wall__title {
+    font-size: var(--admin-size-record);
+  }
+
+  .wall-filters {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    margin-inline: calc(var(--primitive-space-4) * -1);
+    padding-inline: var(--primitive-space-4);
+  }
+
+  .wall-chips {
+    flex: none;
+  }
+
+  /* Under the title, the search takes the full width. */
+  .wall-search {
+    flex: 1 1 100%;
+    margin-inline-start: 0;
+  }
+
+  .wall-search__input {
+    flex: 1;
+    inline-size: auto;
+    min-inline-size: 0;
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "caseId": "shop-grounded-prints-bali-en",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "What prints of Bali do you have",
+                "limit": 2
+              }
+            }
+          ]
+        },
+        {
+          "text": "Here are a few that match — take a look below."
+        }
+      ]
+    }
+  ]
+}

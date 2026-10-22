@@ -1,0 +1,25 @@
+{
+  "caseId": "deals-free-delivery-promise-id",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "handoff_link",
+              "input": {
+                "channel": "whatsapp",
+                "topic": "delivery",
+                "itemIds": []
+              }
+            }
+          ]
+        },
+        {
+          "text": "Saya tidak bisa menjanjikan penahanan, diskon, atau tanggal pengiriman di sini — tim kami bisa membicarakannya langsung dengan Anda."
+        }
+      ]
+    }
+  ]
+}

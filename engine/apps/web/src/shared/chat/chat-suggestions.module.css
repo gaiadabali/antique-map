@@ -1,0 +1,59 @@
+/* A site may set the knobs (sites/shop/tokens/chat.css: the shop's handoff draws square chips on a
+   warm hairline, ink words, in the tray above the composer); the fallbacks are the gallery's. */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding-inline-start: 2.25rem; /* under the greeting bubble, past the avatar's column */
+}
+
+.labelled .chips {
+  padding-inline-start: 0;
+}
+
+.label {
+  margin: 0 0 var(--space-2);
+  font: var(--chat-label-font, var(--text-caption));
+  letter-spacing: var(--chat-label-tracking, 0.12em);
+  text-transform: uppercase;
+  color: var(--chat-label-ink, var(--color-text-muted));
+}
+
+.chip {
+  max-width: 100%;
+  min-height: var(--chat-chip-height, auto);
+  padding: var(--chat-chip-pad, var(--space-2) var(--space-4));
+  font: var(--chat-chip-font, var(--text-small));
+  color: var(--chat-chip-ink, var(--color-accent));
+  text-align: start;
+  background: var(--color-chat-agent);
+  border: var(--rule-hair) solid var(--chat-chip-rule, var(--color-accent));
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  transition:
+    background-color var(--dur-out) var(--ease),
+    border-color var(--dur-out) var(--ease),
+    color var(--dur-out) var(--ease);
+}
+
+.chip:hover:not(:disabled) {
+  color: var(--chat-chip-hover-ink, var(--color-accent-contrast));
+  background: var(--chat-chip-hover-bg, var(--color-accent));
+  border-color: var(--chat-chip-hover-rule, var(--chat-chip-rule, var(--color-accent)));
+}
+
+.chip:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.chip:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chip {
+    transition: none;
+  }
+}

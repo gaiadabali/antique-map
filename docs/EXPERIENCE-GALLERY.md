@@ -1,368 +1,290 @@
 # Experience — Indies Gallery
 
-How the gallery site behaves. Written so a designer and a developer read the
-same thing (KOI). The research behind every decision is in RESEARCH.md §1–2;
-the visual world is chosen in the Design stage and recorded in
-`engine/apps/gallery/DESIGN.md`.
+How the gallery site behaves, surface by surface, so a designer and a developer read the same thing. It is an
+**enquiry-only catalogue** (DR-3, DR-4): it shows the client's antique maps, prints and photographs, held in
+Singapore and Jakarta, and gets a serious buyer into a conversation with the client fast. It sells nothing online.
+The shared look is [DESIGN-SYSTEM.md](DESIGN-SYSTEM.md); the content team's side is
+[CONTENT-OPERATIONS.md](CONTENT-OPERATIONS.md); the AI rules are [AI.md](AI.md).
 
-**Feeling to aim for:** a Dutch Golden Age print room re-hung as a modern museum
-— warm paper, iron-gall ink, generous margins, the object on a mat with a soft
-contact shadow and never cropped. The interface recedes; the sheet leads. Nothing
-on the page may make a USD 38,800 map look like a USD 38 poster.
+**Feeling:** a print room re-hung as a modern museum. Warm paper, generous margins, the sheet on its mat, never
+cropped. The interface recedes; the object leads. Nothing on the page may make a one-of-one map look like a poster.
 
-**Research evidence — not a pinned direction.** The benchmark proposed "Print
-Room" (Newsreader or DTL Elzevir, Inter Tight, IBM Plex Mono; paper `#F4EFE6`,
-laid `#E9E1D3`, ink `#1E1B16`, iron-gall `#4A3F35`, verdigris `#3F6B63`, madder
-`#8E3B2E`, gilt `#B08D57`), "Spice Route" (Fraunces + Manrope) and "Chart Table"
-(Spectral + IBM Plex). Those are also what a premium dealer site already looks
-like — the category default. The Design stage therefore runs impeccable's full direction
-round (seven candidates from the collectors' own world, a concept-seed roll,
-challengers, a pick and a canon card — TASKS.md 12.1), in which **each research
-direction may enter as at most one candidate**. Nothing above binds the outcome.
+## 1. Who it serves
 
-**Decided 2026-09-28 (D9's shape, TASKS.md):** both sites share **one base system** — layout, components, buttons and type, **Cormorant Garamond + Karla** (the client asked to keep them) — and differ only in **accents**: palette and signature details, inside the token contract's overridable subset. The references are Etalage and Everart, mixed, not copied; the owner's draft (`docs/design/input/claude-design-2026-09/`) is the lead candidate. The research directions below are background, not candidates.
+| Visitor | Arrives wanting | What they need from the site |
+| --- | --- | --- |
+| **Collectors** | a specific maker, place or state; usually from search onto one item page, on a phone | the full record (collation, state, condition, references), deep zoom of recto and verso, then a fast way to ask |
+| **Institutions** | a piece for a collection; acquisitions offices write by email | provenance, condition, dimensions, a clear contact; no institution is named in public (G10) |
+| **Designers, villas, hotels** | something by place, size and look, to show a client | browse by place and type, dimensions in cm and inches, a printable page (G14) |
+| **Heritage buyers** | the town their family knew, often under its old name | search that knows Buitenzorg is Bogor and Celebes is Sulawesi |
+| **People selling an antique** | to know whether the client buys, and how | a "Sell to us" page with WhatsApp, email and a short form (DR-4) |
 
----
+Every buyer reaches the deal the same way: a conversation on **WhatsApp or email** (or a call) with the client,
+who negotiates the price (G3). The reply promise beside every contact button is **"the same working day,
+Singapore time"** (G9).
 
-## 1. Who it serves, in order
+## 2. Sitemap
 
-1. **Collectors** — know Valentijn from Van Keulen, read Latin titles, want
-   collation, state, condition and references before they will talk price.
-2. **Institutions** — museums, national libraries, universities (the gallery
-   already sells to the National Museum of Singapore, the National Library of
-   Australia, the Louvre Abu Dhabi and Leiden University — the client's own list,
-   `docs/design/input/claude-design-2026-09/project-notes.md`; whether any other
-   institution is a client, and which may be named in public, waits on the owner's
-   answer to G10, `docs/design/journeys/owner-interview.md`): need proformas, PO
-   numbers, provenance, export papers.
-3. **Interior designers, villas and hotels** — buy by place, size and colour,
-   present to clients, need framing and installation.
-4. **The diaspora and heritage buyers** — Dutch-Indonesian families, returning
-   visitors: search by their town, read in Dutch or Indonesian, buy one piece
-   with meaning.
+Paths follow the route map in [ARCHITECTURE.md](ARCHITECTURE.md) §5. Indonesian lives under `/id/…` with translated
+route segments; record slugs stay as they are (DR-12). An old item URL is still its address; other old addresses
+answer through `redirects` ([DATA.md](DATA.md) §6).
 
-## 2. Information architecture
+| Surface | Example path | Purpose |
+| --- | --- | --- |
+| Home | `/` | one featured work, new arrivals, browse by place, makers, trust facts |
+| Browse | `/antique-maps`, `/antique-prints`, `/photographs`, `/antique-maps/java`; all types `/browse` | the catalogue by object type (`works.objectType`), with facets |
+| Search | `/search?q=batavia` | full-text over titles, makers, places (historical names included), stock numbers |
+| Item | `/product/{publicId}-{slug}` (the old site's shape) | the work: deep zoom, record, status, Ask about this |
+| Makers index · Maker | `/makers`, `/makers/valentijn` | biography, life dates, available and sold works |
+| Places index · Place | `/places`, `/places/java/batavia` | modern and historical names, the works depicting it |
+| Sell to us | `/sell-to-us` | WhatsApp, email and an optional form → a `sell` lead (DR-4) |
+| Visit | `/visit` | viewings by appointment in Singapore and Jakarta (G2) — contact only, no booking system |
+| About | `/about` | the gallery, since 2001, over 9,500 antiques, the curator (G13) |
+| The guarantee | `/guarantee` | the lifetime authenticity guarantee, in counsel's words (G6) |
+| The certificate | `/certificate` | every original comes with one; no sample shown (G7) |
+| Condition grades | `/condition` | the published scale the item record links to |
+| Shipping | `/shipping` | the buyer pays shipping and duties, quoted after agreement, paid in full before sending (G11) |
+| Editorial pages | `/stories/{slug}` | essays and guides from `pages`, built from blocks |
+| Contact | `/contact` | WhatsApp, email, the reply promise, an optional form → a `contact` lead |
+| Privacy · Terms | `/privacy`, `/terms` | counsel's pages (an owner item) |
+| Not found · Error | — | designed pages with search and the WhatsApp button |
 
-**Header:** logo · Maps & Charts · Prints · Photographs · Books · Places ·
-Makers · Stories · Catalogues — with a utility row: search · ship-to/currency ·
-wishlist · account · basket · WhatsApp.
-
-**Footer:** Visit (locations, by appointment) · Sell to us · Guarantee &
-returns · Authentication · Condition grades · Shipping & insurance · Framing &
-conservation · The certificate (Parry) · Institutions · Newsletter · the sister
-strip ("Prints from our archive at Old East Indies") · seller identity (legal
-name, address, registration) · language.
-
-**On a phone** the eight navigation items and the utility row collapse into one
-menu with a prioritised order (browse by type, places, makers, search first;
-stories, catalogues and visit after), and the three-level place tree opens as a
-drill-down, never a 100-link list.
-
-**Axes:** type × place × maker × period × theme. One primary place per work plus
-capped secondary tags; counts roll up to parents; themes (VOC, Spice trade, the
-de Houtman voyage, Wayang, Batik, Temples, Costume, Flora & fauna) are
-**curations**, not branches of the tree.
-
-**Place hierarchy — two levels deeper than anyone:** Sumatra (Aceh, Padang,
-Palembang) · Java (Batavia/Jakarta, Banten, Buitenzorg/Bogor, Semarang,
-Yogyakarta, Surakarta, Surabaya) · Bali & Lombok · Nusa Tenggara (Flores, Komodo,
-Timor–Kupang) · Borneo/Kalimantan · Sulawesi/Celebes (Makassar) · Maluku (Banda,
-Ambon, Ternate & Tidore) · Papua · beyond Indonesia (Singapore, Malaysia &
-the Straits, the Philippines, mainland Southeast Asia, East Asia, the Indian
-Ocean, Australia–Pacific).
+**Header** — the design team's (their lockup: the globe mark, the name, "Antique Maps & Prints of Indonesia";
+transparent over the hero film, frosted linen once scrolled; a drawer at ≤ 1024 px): logo · Maps · Prints ·
+Photographs · Places · Makers · search · language, and in its button slot (their "Enquire") **Ask on WhatsApp**.
+No basket, no account, no price, no currency. **Footer** (theirs — contact on the left, link columns, social):
+Visit · Sell to us · Guarantee · Certificate · Condition grades · Shipping · About · Contact · the sister link
+("Prints from our archive at Old East Indies") · privacy, terms · language; their "Gifts under $350" goes (no price
+on the gallery) and their "Journal" waits for a stories index. **On a phone** the header is logo, search, WhatsApp
+and a menu; the menu lists types, places and makers first, the rest after; the place tree opens as a drill-down,
+never a 100-link list.
 
 ## 3. Home
 
-Bands, ordered by the CMS homepage global (DESIGN-SYSTEM.md §2), never a
-carousel:
+The design team's page is the composition (TASKS.md 4.3.b); its bands are ordered in the CMS (an edit, not a
+deploy), never a carousel, and its copy yields to the owner's answers:
 
-1. **One object**, full attention — a single featured work, its hook title, one
-   line of why it matters, one way in. Not a slider.
-2. **New arrivals** — the last 30 days, with the date they arrived.
-3. **Browse by place** — the archipelago as the index (a flat, fast map of island
-   groups with counts; the Archipelago Explorer in v2).
-4. **Curations** — two or three current collections or a catalogue.
-5. **Makers** — the names collectors search for, with available counts.
-6. **Stories** — the essays, which are the gallery's voice.
-7. **Trust** — the Parry certificate; the lifetime authenticity guarantee, a
-   default published only in counsel's words (RESEARCH.md §2, D11, owner question
-   G6); the institutions who buy here, named only with their permission (G10); how
-   shipping and insurance work.
-8. **Newsletter** — the fortnightly new-arrivals letter (now real: generated from
-   inventory, §10).
+1. **The hero** — the eyebrow, the H1, one line, the two actions and the owner's facts as proof points (since 2001,
+   over 9,500 antiques, a certificate with every original — G7, G13; no institution, G10), beside **the lead sheet**:
+   the newest available map with a published image, whole on its mat, captioned with its title, maker and date,
+   *Price on request* and its stock number (phase 14, the user's request 2026-10-09). The drawn hero film
+   (`assets/hero-film.mp4`, DESIGN-SYSTEM.md §6) is not used while no film is supplied; it would return through
+   the CMS's hero media, not as a placeholder.
+2. **About** — a short paragraph and three signals, **since 2001** and **over 9,500 authentic antiques** among them
+   (G13), over an old map the cursor reveals on hover screens.
+3. **The collection** — three numbered entries (their *Pre-1750 maps*, *Spice Islands*, *Botanical prints*), each
+   a plate, a hairline and **Explore** into a browse page — by type, place or a curated `page`, chosen in the CMS.
+4. **The curator** — his portrait, two short paragraphs, a link to his note (G13).
+5. **Recently placed** — three sold works, each "Sold" and nothing more: no buyer, no "private collection" (G10).
+6. **Printed editions** — "Live with the collection" and the bridge to Old East Indies.
+7. **Enquire** — "Nothing here is sold online": WhatsApp first, email, and the short form (§8) creating a `contact`
+   lead, with the reply promise of G9 (not the drawn "two working days").
 
-## 4. Browse
+The CMS can also place the bands the drawing lacks: new arrivals with their dates, browse by place with counts,
+makers with available counts, how buying works (G3, G11) and Sell to us (DR-4). A band whose data is empty is
+omitted, never shown empty.
 
-- **Default: available items**, with a visible *Available · On hold · Sold*
-  toggle — the sold archive is a feature, not a filter nobody finds.
-- **Facets:** availability (incl. new in 30/60/90 days) · price (slider with
-  "include price on request", and presets **per market currency**, set in brand
-  config — e.g. < US$350 · 350–1k · 1–5k · 5k+ for export destinations, and
-  < Rp 5 juta · 5–15 juta · 15–75 juta · 75 juta+ for Indonesia, where the
-  rupiah rule allows no dollar figure at all) · date
-  (range slider, century chips, "VOC era 1602–1799") · maker (with counts) ·
-  photographer/studio · source work · technique · colour · condition grade · size
-  (cm and inches: presets and min/max H/W) · place · theme · text language.
-  Counts follow the all-but-this-facet rule.
-- **Sort that works:** newest · price ↑ ↓ · date of the work · maker.
-- **Named facet URLs** for the combinations people search: `/antique-maps`,
-  `/antique-maps/java`, `/antique-maps/java/batavia`, `/photographs/bali`,
-  `/makers/valentijn`. Parameter combinations beyond those are canonicalised.
-- **Cards:** the image on its mat (never cropped — the image treatment in
-  DESIGN.md says how a 3.5 : 1 coastal profile and a 0.3 : 1 costume print share a
-  grid), hook title, maker and date, dimensions, and one status line — price ·
-  "Price on request" · "On hold until Fri" · "Sold". One card is one link (KOI
-  accessibility rule); the wishlist button sits **outside** the link, overlaid,
-  with its own focus stop.
-- Mobile: facets in a bottom sheet with applied-filter chips, a live count on the
-  apply button, sticky apply/clear, and number inputs beside every range slider;
-  a two-column grid.
-- **Zero results** never dead-end: "We hold about 9,500 works and not all are
-  online — ask us", with an enquiry prefilled with the query; historical-name and
-  spelling suggestions (Celebes → Sulawesi); Indonesian-language queries handled;
-  and a want-list alert.
+## 4. Browse and search
+
+**Facets** — counts follow the all-but-this-facet rule; each facet is a real link or checkbox, so a filtered page
+has a URL:
+
+| Facet | Source | Notes |
+| --- | --- | --- |
+| Availability | `works.status` | **default: available + on hold**; a visible "Include sold" toggle — the sold archive is a feature |
+| Type | `works.objectType` | the fixed list: map, sea chart, city plan, view, print, photograph… (CONTENT-MODEL.md §3) |
+| Maker | `makers` | with counts; alias spellings resolve (Valentyn → Valentijn) |
+| Place | `places` | a tree: island group → region → town; one primary place per work; counts roll up to parents |
+| Period | `works` date | century chips plus a from–to year pair (number inputs, never a slider alone) |
+| Subject | `terms` kind `subject` | curated themes (ships, costume, flora and fauna…) — tags, not branches of the place tree |
+
+**No price facet and no price sort**: with no price shown, either would leak the price the page hides. **Sort:**
+newest · date of the work (old → new, new → old) · maker A–Z.
+
+**Places and their names.** Each place carries its modern name and its historical names (`places`). Search treats
+them as one: "Batavia", "Jakarta" and "Djakarta" find the same works; a result line shows the record's name with
+today's beside it — "Buitenzorg (Bogor)" — and never corrects the record. The tree's roots are the Indonesian island
+groups (Sumatra, Java, Bali and Lombok, Nusa Tenggara, Kalimantan, Sulawesi, Maluku, Papua) plus **Beyond
+Indonesia** for everything else the catalogue holds.
+
+**Search** reads titles (hook and original), makers and their aliases, places and their historical names, subjects
+and stock numbers (`M.0500` jumps straight to the item). Indonesian queries work ("peta Bali kuno"). A misspelling
+or historical name gets one suggestion — "Did you mean Sulawesi (Celebes)?".
+
+**Cards:** the image on its mat (contained, never cropped — a 3.5 : 1 coastal profile and a 0.3 : 1 costume print
+share one grid), title, maker and date with their precision, dimensions, and one status line: *Price on request* ·
+*On hold* · *Sold*. One card is one link.
+
+**Phone:** a two-column grid; facets in a bottom sheet with applied-filter chips above the grid, a live count on
+the apply button ("Show 34 works"), sticky Apply and Clear. **Desktop (1280):** facets in a left column, the grid
+in four columns.
 
 ## 5. The item page
 
-The heart of the site. Top to bottom on a phone; a two-column working surface on
-a desktop (media left, the record and the purchase panel right, sticky).
+The heart of the site. Top to bottom on a phone; on a desktop the media sit left and the record and the Ask panel
+sit right, the panel sticky.
 
-**Title block**
-- H1 = the hook title ("Bali by François Valentijn, 1726 — the first large-scale
-  map of the island"). Under it the **original title** in italic transcription.
-  Most migrated items will not have a hook title on day one, so the **fallback is
-  designed**, not accidental: the original title becomes the H1 and the maker line
-  is promoted. A content sprint writes hook titles for the top 500 (TASKS.md 43.7).
-- Maker line: `VALENTIJN, François (1666–1727)` with the engraver and publisher
-  roles; certainty shown ("attributed to", "after").
-- Stock number in the mono face (`M.0500`) — also the WhatsApp reference.
+**Title block.** H1 is the hook title where one exists ("Bali by François Valentijn, 1726"); the **original
+title** follows in italic, transcribed as printed. Most migrated works have no hook title, so the fallback is
+designed: the original title becomes the H1 and the maker line moves up. Then the maker line with role and
+certainty (`VALENTIJN, François (1666–1727)`, "attributed to", "after"), and the **stock number** (`M.0500`) —
+also the WhatsApp reference.
 
-**Media**
-- Deep zoom of **recto, verso, cartouche details, raking-light and
-  transmitted-light** shots where they exist; a framed or in-room view — an in-room
-  composite is labelled "Digital mockup" and never first; a **scale view at
-  launch** — a static SVG of the sheet beside a person and an A4 page, cheap to
-  build, and misjudged size is a leading cause of returns.
-- The primary image is a real, crawlable `<img>` with alt text and is the LCP;
-  the IIIF viewer attaches on intent (§6). It is **the recto itself** — the
-  photograph of the whole sheet, cropped outside the sheet, never into it — never a
-  photograph of its own, a detail or a synthetic image (C9 `primaryImageIndex()`,
-  CONTENT-MODEL.md §1, §9). Every image of condition — recto, verso, detail,
-  raking, transmitted — is a photograph, never retouched (the imagery rules,
-  `docs/design/imagery/retouching-and-labelling.md` §1, §5).
-- **Books and atlases** show binding, pagination and plates, completeness, several
-  openings, the spine and the cover — the collation of a volume, not of a sheet.
+**Media.**
+- The primary image is the **recto**: an ordinary responsive `<img>` with real alt text, the page's LCP, cropped
+  outside the sheet and never into it.
+- The deep-zoom viewer (§6) holds every image the work has: recto, **verso** (a flip, not a separate page), details,
+  raking and transmitted light. A filmstrip shows what exists; "Verso" is always named, even when blank.
+- An in-room composite is labelled "Digital mockup" and is never first.
+- A **scale view** — a simple drawing of the sheet beside a person and an A4 page, from the dimensions — because
+  misjudged size is the commonest disappointment.
 
-**The record** — a definition list, the collation block collectors expect:
-place, publisher and date of this issue · first edition · date on plate · source
-work · verso and text edition · state and edition notes · technique · colour ·
-dimensions (image and sheet, mm **and** inches; framed if framed) · condition
-(the grade, linked to the published scale, plus the cataloguer's specific notes —
-never "study images carefully") · references (each linking to its source page;
-Parry numbers first) · provenance · stock number.
+**Status and the Ask panel** — a conversation, never a checkout:
 
-**The purchase panel** — modes by price tier, status and **the viewer's relation
-to the item** (DESIGN-SYSTEM.md §3): a state matrix of tier × status (available ·
-held by someone else · held for me · in my checkout · my offer pending · sold ·
-sold with price realised) × export status × ship-to × signed in, designed before
-it is built (TASKS.md 34.1.a). It reserves its height and reads "Checking
-availability…" until availability resolves — no purchase control before then.
-Request price answers **in place**: after an email or WhatsApp field, the price
-appears on the page and the lead is logged; items marked sensitive say "A
-specialist will reply within {hours}" instead. The rest of the panel
-(COMMERCE.md §7):
-- the price in the buyer's market currency, with a converted estimate only for
-  export destinations; or "Price on request";
-- **status:** Available · "On hold until {date}" · Sold;
-- primary and secondary actions: Buy · Reserve · Make an offer · Request price ·
-  Enquire · Book a viewing · Proforma for institutions;
-- the reassurance row: the Parry certificate; the lifetime authenticity guarantee
-  and 14-day returns — the research's defaults, not yet promises: each is shown
-  only in counsel's words and only once they arrive (RESEARCH.md §2, D11, owner
-  question G6), and until then the row holds neither; insured shipping estimate to
-  the ship-to country, **ships from** (Singapore / Jakarta), and the export note
-  when the item is `domestic-only` (COMPLIANCE.md §1);
-- a conservation framing quote link (UV glazing, rag mat, reversible hinges).
+| `works.status` | The panel reads | Leads with |
+| --- | --- | --- |
+| `available` | **Price on request** · Held in {Singapore / Jakarta} | **Ask about this** (WhatsApp) · Email us · Ask our guide · the reply promise |
+| `on-hold` | **On hold** — "Another buyer is in conversation about this work." | "Ask to be told if it becomes available" (WhatsApp / email, prefilled) · similar works |
+| `sold` | **Sold** — nothing else: no price, no buyer, no "private collection" (G10) | "Prints of this from Old East Indies" when a product links this work · similar works · "Ask for another example" |
 
-**Context**
-- The essay (the existing long-form descriptions, restructured with subheads).
-- The maker, collapsed ("Read full biography · 18 available works by Valentijn").
-- A small locator map of the place depicted.
-- **Related:** same maker · same place · same source work · other states · sold
-  examples.
+*On hold* is set by staff by hand while a deal is under way; it carries no date (staff-issued invoices are v2,
+DR-3). No Buy, Reserve, Offer or price appears in any state. The panel also carries the reassurance row — **a
+certificate with every original** (G7), **the lifetime authenticity guarantee** (G6), each linked to its page —
+and **shipping**: "Shipping and duties are quoted after we agree the price, and paid before the work is sent"
+(G11). It states no returns rule until counsel words one.
 
-**Utilities** — wishlist and "tell me when another example arrives" · share
-(WhatsApp first) · print description · factsheet PDF (designers present these) ·
-**"Prints of this map from Old East Indies"** (the exact products, not a home
-page) · a "Similar to sell?" micro-block linking to consignment.
+**The record** — a definition list in the order collectors expect: place, publisher and date of this issue · date
+on plate · source work · state and edition · technique · colouring · dimensions (image and sheet, **cm and
+inches**; framed if framed) · condition (the grade, linked to the scale, plus the cataloguer's notes) · references ·
+provenance · stock number. A field with no value is left out, never shown as "—".
+
+**Context.** The description, restructured with subheads; the maker, collapsed ("Read the biography · 18 works
+by Valentijn"); the place depicted; **related**: same maker · same place · same source work.
+
+**Utilities.** Share (WhatsApp first; the native share sheet on phones) · **Print this page** — a print stylesheet
+that is the designers' factsheet: the work, "Price on request", the gallery's contact and the date printed, no
+price (G14) · "Have something similar to sell?" → Sell to us.
 
 ## 6. The deep-zoom viewer
 
-- Loads **on intent**: first tap or hover on the image, or idle after LCP. Before
-  that, the primary image is an ordinary responsive image.
-- One viewer, many images: recto, verso (a flip, not a separate page), details,
-  lighting views; a filmstrip of what exists.
-- Controls are real buttons in the tab order: zoom in, zoom out, reset, full
-  screen, next/previous image. Keyboard: `+`/`−`, arrows pan, `0` resets, `Esc`
-  exits full screen.
-- On a phone: pinch and double-tap zoom; one-finger pan only once zoomed (the
-  page keeps its scroll at rest — KOI's map rule); a clear exit. `touch-action`
-  stops the viewer's pinch fighting the page's zoom.
-- **Full screen is a fixed overlay**, not the Fullscreen API (iOS Safari offers it
-  only for video), on the dark lightbox rung (DESIGN-SYSTEM.md §4). Tiles are
-  512 px WebP/AVIF; the viewer stays within the memory ceilings of in-app webviews
-  and is verified on a browser matrix (Safari iOS, Chrome Android, the Instagram
-  and WhatsApp webviews).
-- A **loupe** on desktop hover for the fine detail collectors look for (plate
-  marks, colour, repairs), which the viewer then opens at that point.
-- `prefers-reduced-motion` → no animated zoom transitions, only cuts.
-- Everything the viewer shows is also in the page as text (DESIGN-SYSTEM.md §9).
+- **Loads on intent** — the first tap or hover on the image, or when the browser is idle after LCP. Until then the
+  primary image is an ordinary image and costs nothing.
+- **Controls are real buttons** in the tab order: zoom in, zoom out, reset, full screen, previous/next image, and
+  the verso flip. Keyboard: `+`/`−` zoom, arrows pan, `0` resets, `Esc` closes full screen.
+- **On a phone:** pinch and double-tap to zoom; one-finger pan only once zoomed, so the page still scrolls at rest;
+  `touch-action` stops the viewer's pinch fighting the page's. A clear, always-visible close.
+- **Full screen is a fixed overlay**, not the Fullscreen API (iOS Safari gives that only to video), on the one dark
+  surface the system allows, so paper reads true against it.
+- Tiles are small WebP/AVIF; the viewer stays inside the memory limits of the WhatsApp and Instagram in-app
+  browsers, and is tested in them.
+- `prefers-reduced-motion`: zoom steps cut instead of animating.
+- Everything the viewer shows is also on the page as text — the record and the alt text — so a screen-reader user
+  loses no fact.
 
-## 7. Places, makers, sources, curations, stories
+## 7. Makers, places and editorial pages
 
-- **Place pages** (`/places/java/batavia`): the modern and historical names, a
-  short history of how it was mapped, the available works, the sold ones, and
-  stories set there. These are the landing pages that beat programmatic
-  marketplace pages for "antique maps of Java".
-- **Maker pages** (`/makers/valentijn`): bio, life dates, portrait if one exists,
-  what they made, what is available, what has sold.
-- **Source pages** (`/sources/tooley`): the bibliography entries references link
-  to — the seed of the Parry cartobibliography (§12).
-- **Curations**: collections, **web-native catalogues** with live availability
-  (replacing Issuu; the printable PDF follows in v2), exhibitions and fair
-  presentations.
-- **Stories**: essays with "originals in this story" and "prints from this
-  story" rails, written with the scholarly blocks — `zoomFigure` ("see the
-  cartouche" opens the viewer at that region), `compare` (two states of one
-  plate), and sidenotes citing their sources (DESIGN-SYSTEM.md §5).
+- **Maker page:** name with life dates and roles (cartographer, engraver, publisher, photographer), biography,
+  available works first, then sold ones (the "Include sold" toggle again).
+- **Place page:** modern name as H1 with the historical names under it ("Batavia · Djakarta"), a short note on how
+  it was mapped where the CMS has one, child places, available works, sold works.
+- **Editorial pages** (`pages`): essays, guides and the trust pages, from Payload blocks — prose, figure, a
+  "zoom figure" that opens the viewer at a region ("see the cartouche"), a work rail, FAQ, call to action. An essay
+  ends with "Works in this story".
 
-## 8. Sold, holds and want-lists
+## 8. Handoffs: WhatsApp, email and the guide
 
-- A sold page stays indexed. It says "Sold", shows no price (optionally "price
-  realised" to signed-in buyers), offers **the available example** when a
-  `sameEdition` work is in stock ("The item below has been sold, but the example
-  shown above is currently available"), and — **in the primary position, where
-  "Buy" was** — "Own a print of this map" from Old East Indies when a design
-  exists; then similar works and "Tell me when another example arrives". Sold
-  pages are the sister shop's best placement.
-- A held item says "On hold until Friday 14:00" and offers the same alert.
-- Want-lists are saved searches by maker, place, date and budget, from any browse
-  page ("Alert me about new maps of Bali under US$2,000" — the budget in the
-  viewer's market currency, stored with it), delivered **within 15 minutes or
-  in a daily digest**, the subscriber's choice. A signed-in collector's saves at
-  once; a guest leaves an email with no account, which starts watching only
-  once confirmed — a **double opt-in**: the confirmation email's link opens the
-  want-list page, whose button confirms it (a mail scanner following the link
-  confirms nothing), and the same courteous, admits-nothing answer goes out
-  whoever asks and however often (D39).
+Every contact button opens a **prepared message in the page's language**, written in the visitor's voice, which they
+can edit before sending. The values live in the lexicon (DESIGN-SYSTEM.md §11); the shapes are:
 
-## 9. Trust pages — the gap competitors fill and this site does not
+| Where | WhatsApp text (EN · ID) | Email |
+| --- | --- | --- |
+| Item, available or on hold | "Hello, I am interested in {stockNumber} — {title}. {url}" · "Halo, saya tertarik dengan {stockNumber} — {title}. {url}" | subject "{stockNumber} — {title}", body the same plus an empty "My question:" line |
+| Item, sold | "Hello, I see that {stockNumber} — {title} has sold. Do you have another example? {url}" | same pattern |
+| Viewing | "Hello, I would like to arrange a viewing in {city} of {stockNumber} — {title}." | subject "Viewing in {city}" |
+| No results | "Hello, I am looking for {query}. Do you have anything?" | subject "Looking for {query}" |
+| Sell to us | "Hello, I have an antique I would like to sell: {what}. I can send photos here." | subject "Selling an antique" |
+| From the guide | "Hello, I was asking your guide about {stockNumber} — {title}: {summary} {url}" | the same, with the summary |
 
-All in the CMS as pages, all linked from the purchase panel:
+**Rules.** The stock number always comes first — it is the client's reference. The title is cut at 90 characters
+with "…". `{url}` is the item's clean canonical URL in the page's locale, with no tracking parameters, so
+WhatsApp shows its **link preview** — that preview (the recto as `og:image`, kept small enough for WhatsApp to
+fetch, plus the title) is how the item travels "attached" to the message. The click is recorded as a first-party
+`handoff` event before the app opens ([ANALYTICS.md](ANALYTICS.md)); a click is not a lead. WhatsApp uses
+`https://wa.me/{number}?text=…` (the number from `site-settings`); email uses `mailto:` with an encoded subject and
+body, and the address is also shown as text for visitors without a mail app.
 
-- **Guarantee & returns** — a lifetime authenticity guarantee and returns (the
-  research's default: 14 days, less shipping and insurance) — both defaults,
-  subject to counsel, published only in counsel's words per seller (RESEARCH.md §2,
-  COMMERCE.md §11, D11, owner question G6); until they arrive the page is designed
-  and promises nothing.
-- **Authentication** — "How do you know it's real?": chain lines, watermarks,
-  plate marks, verso text; "if doubt remains, we do not offer the item for sale".
-- **Condition grades** — the published scale with definitions and A–D
-  equivalents.
-- **The certificate** — Dr David E. Parry, author of *The Cartography of the
-  East Indian Islands*; a sample certificate; how to keep it with insurance papers.
-- **Shipping & insurance** — how originals travel (flat, boxed, insured,
-  signature), what it costs, from where, and duties by destination.
-- **Framing & conservation** — including tropical humidity guidance for Bali.
-- **Institutions** — who has bought here, each named only with its permission
-  (owner question G10); until the owner confirms it, the page explains how
-  institutions buy — proforma, PO number, bank transfer, export papers — and names
-  none.
-- **Visit** — each location, by appointment, a map, and booking. Viewing slots
-  show their time zone explicitly (Singapore UTC+8, Jakarta WIB UTC+7, Bali WITA
-  UTC+8), confirm by email with an `.ics`, remind on WhatsApp, and can be
-  rescheduled.
-- **FAQ** — replacing today's "work in progress" page.
+**Optional forms** (Ask, Sell to us, Contact) post to `/api/x/leads` and create a **lead** (`ask`, `sell`,
+`contact`) with the item attached when there is one. Fields: name · WhatsApp or email (one required, the visitor's
+choice) · message. The Sell to us form takes no photos: they travel on WhatsApp or email
+([CONTENT-MODEL.md](CONTENT-MODEL.md) §6). The thank-you state says what happens next: "We reply the same working
+day, Singapore time, on the WhatsApp number or email you gave."
 
-**Forms that behave like the gallery, not like a CMS:** consignment uses the phone
-camera directly, accepts HEIC, shows per-file progress and retries on weak
-networks, and ends with a "what happens next" timeline; the framing quote has its
-own short flow; institutions can turn a **cart of several items into a proforma**
-at the checkout's payment step ("Proforma instead"), or ask for one on a single
-item — even one on request — through the quote form (PO field, PDF, and a "pay
-this proforma" page — the `Quote` surface). Staff answer the form's request with
-the proforma within the stated reply time, so "Proforma for institutions"
-promises that, never a PDF at once. "Reserve" has its own short form, a request
-for a staff hold.
+**The guide (AI chat, DR-9).** Entry points: "Ask our guide" in the item's Ask panel (opens with the item as
+context), the no-results state (opens with the query), and a small launcher on browse and home. It opens as a
+full-height sheet on a phone and a side panel on a desktop. The panel says plainly that it is an AI guide that
+answers from the catalogue and can be wrong, that it **never quotes a price or agrees a deal**, and keeps **"Talk to
+a person"** (WhatsApp · email) visible at all times. Before it records a `chat` lead it asks the visitor's
+permission and shows what it will send. The transcript notice links to the privacy page. Behaviour and safety rules
+are [AI.md](AI.md); the chat is switched off in `site-settings` without a deploy.
 
-## 10. Accounts and retention
+## 9. States
 
-- Wishlist → **viewing pull list**: booking a viewing sends the wishlist to the
-  gallery so the pieces are out of the drawer.
-- Want-lists and item alerts, each with its stop button. There is no separate
-  unsubscribe landing page: every alert email and its own confirmation open
-  the **same want-list page**, which moves the list's token into a cookie on
-  the way, so the page reads and stops that list by a plain POST — never a GET
-  link a mail scanner could trigger by prefetching it. The one exception is
-  RFC 8058's one-click unsubscribe, the single POST a mail client sends
-  straight from its own "unsubscribe" action, carrying the token in the URL
-  itself rather than the page.
-- Orders with **certificate and invoice downloads**.
-- The gallery's conversations, in one place: **my offers** (with the counter's
-  countdown), holds, price requests, viewings (reschedule, cancel, `.ics`), and
-  consignments with their status timeline.
-- A legacy `/product/{id}-{slug}` that no longer resolves turns its slug into a
-  prefilled search with similar works; an item removed from inventory shows
-  the designed Gone page — a 404, noindex and out of the sitemap, since a page
-  cannot answer 410 (a real `410` comes only from the legacy handler, for an old URL
-  the redirects collection marks gone); a sold item is never gone.
-- The newsletter is **generated from inventory** (new arrivals since the last
-  issue, curated order, one story), sent fortnightly and archived as HTML; a
-  WhatsApp broadcast opt-in sits beside it.
-- v2: "My Collection" — register pieces you own (bought here or not), as
-  raremaps does; shareable sets.
+| State | What the visitor sees |
+| --- | --- |
+| **Loading** | the page arrives server-rendered; images reserve their space (no layout shift); the viewer shows the static image until tiles load; a streamed rail shows its reserved height, never a spinner in place of content |
+| **Empty band** | omitted (home, related, maker with no available works says "No works by {maker} are available now" and shows sold ones) |
+| **No results** | never a dead end: "We hold over 9,500 works and not all are online — ask us", WhatsApp and email prefilled with the query, "Ask our guide", the historical-name suggestion, and the active filters as chips to remove one at a time |
+| **Sold** | the page stays live and indexed: "Sold", related works, the print from Old East Indies when one exists |
+| **On hold** | "On hold", the ask-to-be-told button, similar works |
+| **Removed work** | a designed "No longer listed" page (404, noindex) with search and similar works; a sold work is never removed |
+| **Old link** | an old item address still opens its work, with one 308 if its slug changed; other old addresses answer 301 or 410, and one with no match gets the designed 404, its search prefilled (DATA.md §6) |
+| **Error** | a designed page: one sentence of what happened, a retry, the WhatsApp button with "Reference: {id}" prefilled |
+| **Form sent back** | the form keeps every value, the field in error says what to fix ("Add a WhatsApp number or an email so we can reply") |
+| **Offline / weak network** | a failed send keeps the text and offers WhatsApp instead |
 
-## 11. SEO
+## 10. Phone-first rules
 
-- Title template `{hook title} – {maker}, {year} | {brand.name}` (the brand name
-  comes from config — no brand literal in the app); H1 = title.
-- JSON-LD `["Product", "VisualArtwork"]` with `artMedium`, `artworkSurface`,
-  dimensions, `creator` (Person with life dates, `sameAs`), `dateCreated`,
-  `locationCreated`, `spatialCoverage` (Place with coordinates), `sku`,
-  `itemCondition: UsedCondition`, and `offers.availability` `InStock` ·
-  `Reserved` · `SoldOut`; price only when priced (POR omits it). Plus
-  `BreadcrumbList`, `ArtGallery` per location, `ImageObject`.
-- Crawlable images with real alt text, slugged filenames, `og:image`, an image
-  sitemap; sitemaps **include sold items**; `hreflang` pairs; canonicals on
-  sort and parameter pages.
-- Legacy product URLs unchanged (MIGRATION.md §6).
+- Designed at **390 px first**, checked at 1280 px. Nothing scrolls sideways; nothing needs a pinch outside the
+  viewer.
+- **The bottom of the screen is one slot**: on the item page the Ask bar (WhatsApp · Email · guide) is sticky and
+  the chat launcher merges into it; elsewhere the launcher alone. No pop-up, newsletter prompt or exit-intent on
+  phones.
+- Tap targets ≥ 44 px; inputs at 16 px so iOS does not zoom.
+- The WhatsApp and Instagram in-app browsers are first-class: the viewer, share and handoffs are tested in them.
+- Images serve no larger than rendered size × device pixel ratio; `Save-Data` picks a smaller ladder.
 
-## 12. Scope
+## 11. Accessibility
 
-**MVP (launch):** URL parity + redirect map; the new item page (collation,
-condition scale, references, multi-image deep zoom with a crawlable image, hook
-+ original titles, maker bio, related); Buy, Enquire and instant Request price;
-WhatsApp prefilled with the stock number; checkout lock and "On hold"; **make an
-offer — non-binding** (accept / counter / decline in the admin, an accepted offer
-becomes a private pay link and a hold; D22); cards, PayPal, bank transfer and
-proforma; currency by destination; working sort and the full facet set; sold
-archive with notify-me; wishlist and want-lists; all trust pages; the Parry
-certificate page; locations and viewing booking; the generated newsletter;
-consignment with photo upload; place and maker pages; stories; **web-native
-catalogue pages** with live availability; Old East Indies deep links; the data
-clean-up (MIGRATION.md §4); WCAG 2.2 AA and the budgets.
+WCAG 2.2 AA (DESIGN-SYSTEM.md §10). Specific to the gallery: status is text, never colour alone; the viewer is
+keyboard-complete with its text alternative on the page; dates carry their precision ("c. 1750") and attributions
+their certainty, read out as written; an original title in Latin or Dutch carries its own `lang`; dimensions in cm
+and inches; the facet sheet traps focus and returns it to its opener; the chat panel is a labelled dialog whose new
+messages are announced politely.
 
-**v2:** binding offers (an accepted offer is a contract to buy); the catalogue
-as a printable PDF; reserve with deposit; instalments; in-room and AR views (the
-static scale view ships at launch);
-map-based browse; Dutch (and Chinese) locales; My Collection; a trade/designer
-programme with project boards; testimonials.
+## 12. Deliberately absent
 
-**Later — the gaps no dealer owns** (RESEARCH.md §1.10): georeferenced then/now
-overlays of Indonesian maps on modern Indonesia (Allmaps, IIIF); the Archipelago
-Explorer with a 1590–1950 time slider; voyage story maps (de Houtman, the VOC
-routes, Wallace); **the Parry cartobibliography online** — every East Indies map
-with its Parry number and states, marked in stock, sold or wanted; photo
-scholarship cross-linked to institutional copies; diaspora search by family
-town; hospitality curation for Bali villas and hotels; a verifiable QR
-certificate; image licensing.
+| Not on the gallery | Why |
+| --- | --- |
+| Cart, checkout, Buy, Reserve, online offers | DR-3: the deal is made in conversation (G3) |
+| Any price, price facet, price sort, `Offer` in structured data | G4, G14: every original is "Price on request" |
+| Accounts, sign-in, an account area | DR-3, DR-10: nothing but staff signs in |
+| Wishlists, saved searches, want-list alerts | out in PLAN.md; "ask to be told" is a WhatsApp message or a lead, answered by a person |
+| A viewing booking system | viewings are by appointment: a WhatsApp or email message (G2) |
+| A staff-issued invoice with an online pay page | deferred to v2 (DR-3) |
+| Named institutions or buyers | G10 |
+| VOC emblems or colonial nostalgia in the chrome or voice | the owner's stance: no VOC imagery beyond the items themselves |
+
+**SEO, briefly:** title `{title} – {maker}, {year} | Indies Gallery`; JSON-LD `VisualArtwork` with creator,
+dates, dimensions, `spatialCoverage` and the stock number as `identifier`, plus `BreadcrumbList` — no `Product` or
+`Offer`; sold works stay in the sitemap; `hreflang` pairs; canonicals on filtered pages beyond the named ones.
+
+## Open
+
+- **The gallery's WhatsApp number, email address and phone** — owner. Until then the buttons render from
+  `site-settings` on staging only.
+- **Viewing addresses and hours in Singapore and Jakarta** — owner. Default: the Visit page names the two cities,
+  "by appointment", and the contact buttons; no address.
+- **The guarantee, terms and any returns wording** — counsel (owner item). Default: the guarantee page states the
+  lifetime authenticity guarantee in counsel's words once given; nothing about returns until then.
+- **The condition-grade scale's wording** — the curator. Default: the grade shows; the scale page waits.
+- **Whether "On hold" should say more** (for example a date) — owner. Default: no date, set by hand.

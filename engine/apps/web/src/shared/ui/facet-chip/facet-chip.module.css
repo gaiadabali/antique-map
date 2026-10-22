@@ -1,0 +1,36 @@
+/* A filter chip: square, on the work field's colour; pressed, it turns to ink. Every value is a
+   token — no raw colour, no font-family. */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-4);
+  font: var(--text-small);
+  color: var(--color-text);
+  background: var(--color-field);
+  border: var(--rule-hair) solid transparent;
+  border-radius: var(--radius-control);
+  cursor: pointer;
+  transition: background-color var(--dur-out) var(--ease);
+}
+
+.chip:hover {
+  background: var(--color-field-active);
+}
+
+.chip[aria-pressed='true'] {
+  background: var(--color-accent);
+  color: var(--color-accent-contrast);
+  border-color: var(--color-accent);
+}
+
+.count {
+  color: var(--color-text-muted);
+  font-variant-numeric: var(--numeric-tabular);
+}
+
+.chip[aria-pressed='true'] .count {
+  color: inherit;
+}

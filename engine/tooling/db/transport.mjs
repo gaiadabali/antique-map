@@ -1,4 +1,4 @@
-// How `psql.mjs` and `schema-hash/dump.mjs` reach Postgres (TASKS.md 2.1.b,
+// How `psql.mjs` reaches Postgres (TASKS.md 2.1.b,
 // 2.2.c, 2.3.a's follow-up). Two transports, chosen by environment, never by
 // an argument a caller has to know to pass:
 //

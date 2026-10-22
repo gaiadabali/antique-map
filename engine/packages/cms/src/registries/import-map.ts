@@ -5,8 +5,8 @@
  *
  * The map lists every admin component the config references — registered views (`./views`),
  * the storage plugin's client handler, Payload's own — by package specifier, never by a path
- * relative to one app, so both apps' maps come out identical. Run with `BRAND` unset, as the SCH
- * lead does after a wave; CI regenerates with `BRAND` unset and once per brand and fails on a diff.
+ * relative to one app. The wave's schema lead runs it after a wave; `pnpm check:generated`
+ * regenerates it and fails on a diff.
  * The output is Payload's own, unformatted: Payload's dev server rewrites the same file whenever
  * the config gains a component (so a new view never renders as nothing), and must find it equal.
  */

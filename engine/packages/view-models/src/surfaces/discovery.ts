@@ -19,7 +19,7 @@ import type {
   SeoVM,
   Streamed,
 } from '../common'
-import type { SisterLinkVM } from './purchase'
+import type { SisterLinkVM } from './sister'
 
 /** What is available and what has sold: sold works stay visible (DESIGN-SYSTEM.md §10). */
 export type WorksVM = {

@@ -1,0 +1,258 @@
+/* The gallery's item page (5.2.b; Ivory and ink 18): 390 px first, tokens only. The shared
+   `Crossing` lays the field and the sheet; this file sets the type on the field, the caption on
+   the paper, and the record as a ruled running list. No box, no shadow, no radius. */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--section-space);
+  /* The browse page's full-bleed measure: the shell's main column is the prose width. */
+  width: var(--page-wrap);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  padding-inline: var(--gutter);
+  padding-block-end: var(--space-8);
+}
+
+/* On the field: breadcrumbs, title block, then the Ask block. */
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: flex-start;
+  min-width: 0;
+}
+
+/* Two selectors deep: the shell's h1 rule sets its own font and margin. */
+.head .title {
+  margin: var(--space-5) 0 0;
+  max-inline-size: 16ch;
+  font: var(--text-h1);
+  letter-spacing: var(--tracking-h1);
+  text-wrap: balance;
+}
+
+.originalTitle {
+  margin: 0;
+  font: var(--text-h3-italic);
+  color: var(--color-text-muted);
+}
+
+.byline {
+  margin: 0;
+  font: var(--text-body);
+  color: var(--color-text);
+}
+
+.facts {
+  margin: 0;
+  font: var(--text-label);
+  color: var(--color-text-muted);
+}
+
+.stock {
+  margin: 0;
+}
+
+/* The Ask block lies on the colour: no panel, no box. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  align-items: flex-start;
+  margin-block-start: var(--space-6);
+}
+
+.statusLine {
+  font: var(--text-h3);
+  color: var(--color-text);
+}
+
+.panelNote {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.panelFine {
+  margin: 0;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.panelEmail {
+  margin: 0;
+  font: var(--text-small);
+}
+
+.proof {
+  margin: 0;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* The caption on the paper under the sheet: the Zoom door, then the other images. */
+.media {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.mockupNote {
+  margin: 0;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.thumbs {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* No sheet yet: a window of the stone keeps its place. */
+.empty {
+  background: var(--pigment-1-tint);
+}
+
+/* The record: a ruled running list, the label at left in muted small type, the value at right. */
+.record {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  margin: 0;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(6rem, 10rem) minmax(0, 1fr);
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.term {
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.detail {
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  text-align: end;
+  font-variant-numeric: var(--numeric-tabular);
+}
+
+/* Prose reads under its label, left, at the text measure. */
+.rowWide {
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
+}
+
+.rowWide .detail {
+  max-inline-size: var(--measure-text);
+  text-align: start;
+}
+
+.provenanceRow {
+  margin: 0 0 var(--space-1);
+}
+
+.provenanceRow:last-child {
+  margin-bottom: 0;
+}
+
+/* The deep-zoom viewer and its filmstrip (§6). */
+.viewer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.viewport {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  touch-action: none;
+  background: var(--color-surface-dark);
+}
+
+/* OpenSeadragon's own failure text is English and names an object; the page says its own.
+   It sets the node's display inline, so it is hidden by visibility. */
+.viewport :global(.openseadragon-message) {
+  visibility: hidden;
+}
+
+.viewerFailed {
+  margin: 0;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.viewerHint {
+  margin: 0;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.zoomDoor {
+  display: flex;
+}
+
+.zoomEmpty {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  background: var(--color-surface-dark);
+}
+
+.filmstrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.filmstripThumb {
+  padding: var(--space-1) var(--space-3);
+  border: 0;
+  border-radius: 0;
+  background: var(--color-field);
+  color: var(--color-text);
+  font: var(--text-small);
+  cursor: pointer;
+}
+
+.filmstripOn {
+  background: var(--color-field-active);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* The way back belongs to the record above it, not a band of its own: it cancels most of the
+   page's band gap. */
+.browseMore {
+  margin: calc(var(--space-6) - var(--section-space)) 0 0;
+}
+
+@media (min-width: 64rem) {
+  .list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--grid-gap);
+  }
+
+  .rowWide {
+    grid-column: 1 / -1;
+    grid-template-columns: minmax(6rem, 10rem) minmax(0, var(--measure-text));
+  }
+
+  .thumbs {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}

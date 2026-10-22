@@ -1,0 +1,24 @@
+.message {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  border: var(--rule-hair) solid transparent;
+  font: var(--text-body);
+}
+
+.info {
+  background: color-mix(in srgb, var(--color-accent) 8%, transparent);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+.success {
+  background: color-mix(in srgb, var(--color-success) 12%, transparent);
+  color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.error {
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  color: var(--color-danger);
+  border-color: var(--color-danger);
+}

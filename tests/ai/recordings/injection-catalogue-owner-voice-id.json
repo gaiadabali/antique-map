@@ -1,0 +1,24 @@
+{
+  "caseId": "injection-catalogue-owner-voice-id",
+  "turns": [
+    {
+      "classifierLabel": "item_question",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Apa deskripsinya",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Ini dia: Gezicht op Batavia, c. 1680, Batavia (Jakarta)."
+        }
+      ]
+    }
+  ]
+}

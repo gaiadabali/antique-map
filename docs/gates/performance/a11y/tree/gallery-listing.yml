@@ -1,0 +1,202 @@
+- link "Skip to content":
+    - /url: '#main'
+- banner:
+    - link "Indies Gallery, home":
+        - /url: /
+        - text: Indies Gallery
+    - button "Open menu"
+- main:
+    - heading "Browse the collection" [level=1]
+    - button "Filters"
+    - navigation "Sort by":
+        - list:
+            - listitem:
+                - link "Newly added":
+                    - /url: /browse
+            - listitem:
+                - 'link "Date of the work: earliest first"':
+                    - /url: /browse?sort=dateAsc
+            - listitem:
+                - 'link "Date of the work: latest first"':
+                    - /url: /browse?sort=dateDesc
+            - listitem:
+                - link "Maker, A–Z":
+                    - /url: /browse?sort=maker
+    - paragraph: 44 works
+    - list:
+        - listitem:
+            - link "Bird of Paradise by Conrad Gesner, Antique print — the whole sheet Bird of Paradise by Conrad Gesner, Antique print c. 1558 35 × 25 cm (13.8 × 9.8 in) Price on request":
+                - /url: /product/2050
+                - img "Bird of Paradise by Conrad Gesner, Antique print — the whole sheet"
+                - text: Bird of Paradise by Conrad Gesner, Antique print c. 1558 35 × 25 cm (13.8 × 9.8 in) Price on request
+        - listitem:
+            - link "Batavia City View, Prospect von der Bastion Gelderland ausserhalb der Stadt Batavia by Francois Xavier Habermann — the whole sheet Batavia City View, Prospect von der Bastion Gelderland ausserhalb der Stadt Batavia by Francois Xavier Habermann Francois Xavier Habermann, 1770 31 × 46 cm (12.2 × 18.1 in) Price on request":
+                - /url: /product/2013
+                - img "Batavia City View, Prospect von der Bastion Gelderland ausserhalb der Stadt Batavia by Francois Xavier Habermann — the whole sheet"
+                - text: Batavia City View, Prospect von der Bastion Gelderland ausserhalb der Stadt Batavia by Francois Xavier Habermann Francois Xavier Habermann, 1770 31 × 46 cm (12.2 × 18.1 in) Price on request
+        - listitem:
+            - link "Aquatic snails, Bulime de Mender by Charles d'Orbigny — the whole sheet Aquatic snails, Bulime de Mender by Charles d'Orbigny Charles d'Orbigny, 1849 24.5 × 15.5 cm (9.6 × 6.1 in) Price on request":
+                - /url: /product/1973
+                - img "Aquatic snails, Bulime de Mender by Charles d'Orbigny — the whole sheet"
+                - text: Aquatic snails, Bulime de Mender by Charles d'Orbigny Charles d'Orbigny, 1849 24.5 × 15.5 cm (9.6 × 6.1 in) Price on request
+        - listitem:
+            - link "Green Crab, Lupee pélagien by Charles d'Orbigny — the whole sheet Green Crab, Lupee pélagien by Charles d'Orbigny Charles d'Orbigny, 1849 15.5 × 24.5 cm (6.1 × 9.6 in) Price on request":
+                - /url: /product/1934
+                - img "Green Crab, Lupee pélagien by Charles d'Orbigny — the whole sheet"
+                - text: Green Crab, Lupee pélagien by Charles d'Orbigny Charles d'Orbigny, 1849 15.5 × 24.5 cm (6.1 × 9.6 in) Price on request
+        - listitem:
+            - link "Inhabitants from India and North America, Soorjo Coomar Chucherbutty by Charles d'Orbigny — the whole sheet Inhabitants from India and North America, Soorjo Coomar Chucherbutty by Charles d'Orbigny Charles d'Orbigny, 1849 24 × 15 cm (9.4 × 5.9 in) Price on request":
+                - /url: /product/1897
+                - img "Inhabitants from India and North America, Soorjo Coomar Chucherbutty by Charles d'Orbigny — the whole sheet"
+                - text: Inhabitants from India and North America, Soorjo Coomar Chucherbutty by Charles d'Orbigny Charles d'Orbigny, 1849 24 × 15 cm (9.4 × 5.9 in) Price on request
+        - listitem:
+            - link "The Kinkajou and Otter, Kinkajou & Loutre by Charles d'Orbigny — the whole sheet The Kinkajou and Otter, Kinkajou & Loutre by Charles d'Orbigny Charles d'Orbigny, 1849 24 × 15 cm (9.4 × 5.9 in) Price on request":
+                - /url: /product/1858
+                - img "The Kinkajou and Otter, Kinkajou & Loutre by Charles d'Orbigny — the whole sheet"
+                - text: The Kinkajou and Otter, Kinkajou & Loutre by Charles d'Orbigny Charles d'Orbigny, 1849 24 × 15 cm (9.4 × 5.9 in) Price on request
+        - listitem:
+            - link "The Hippo, Hippopotame Amphibie by Charles d'Orbigny — the whole sheet The Hippo, Hippopotame Amphibie by Charles d'Orbigny Charles d'Orbigny, 1849 15 × 24 cm (5.9 × 9.4 in) Price on request":
+                - /url: /product/1819
+                - img "The Hippo, Hippopotame Amphibie by Charles d'Orbigny — the whole sheet"
+                - text: The Hippo, Hippopotame Amphibie by Charles d'Orbigny Charles d'Orbigny, 1849 15 × 24 cm (5.9 × 9.4 in) Price on request
+        - listitem:
+            - link "View from Govt House, Antique Photograph of Singapore, owned and described by Sir Frederick Weld — the whole sheet View from Govt House, Antique Photograph of Singapore, owned and described by Sir Frederick Weld Sir Frederick Aloysius Weld, 1880 Price on request":
+                - /url: /product/1741
+                - img "View from Govt House, Antique Photograph of Singapore, owned and described by Sir Frederick Weld — the whole sheet"
+                - text: View from Govt House, Antique Photograph of Singapore, owned and described by Sir Frederick Weld Sir Frederick Aloysius Weld, 1880 Price on request
+        - listitem:
+            - link "Map of Florida, the Gulf Coast and the Caribbean, Scheeps-Togt door Rodrigue de Bastides — the whole sheet Map of Florida, the Gulf Coast and the Caribbean, Scheeps-Togt door Rodrigue de Bastides Pieter van der Aa, c. 1700 15 × 25 cm (5.9 × 9.8 in) Price on request":
+                - /url: /product/1701
+                - img "Map of Florida, the Gulf Coast and the Caribbean, Scheeps-Togt door Rodrigue de Bastides — the whole sheet"
+                - text: Map of Florida, the Gulf Coast and the Caribbean, Scheeps-Togt door Rodrigue de Bastides Pieter van der Aa, c. 1700 15 × 25 cm (5.9 × 9.8 in) Price on request
+        - listitem:
+            - link "The Malay Archipelago - Alfred Russel Wallace — the whole sheet The Malay Archipelago - Alfred Russel Wallace Alfred Russel Wallace, 1872 19.5 × 14 cm (7.7 × 5.5 in) Price on request":
+                - /url: /product/1664
+                - img "The Malay Archipelago - Alfred Russel Wallace — the whole sheet"
+                - text: The Malay Archipelago - Alfred Russel Wallace Alfred Russel Wallace, 1872 19.5 × 14 cm (7.7 × 5.5 in) Price on request
+        - listitem:
+            - link "Javanese Dance, 66. Sarimpi Dans — the whole sheet Javanese Dance, 66. Sarimpi Dans c. 1925 19 × 25 cm (7.5 × 9.8 in) Price on request":
+                - /url: /product/1627
+                - img "Javanese Dance, 66. Sarimpi Dans — the whole sheet"
+                - text: Javanese Dance, 66. Sarimpi Dans c. 1925 19 × 25 cm (7.5 × 9.8 in) Price on request
+        - listitem:
+            - link "Woman from Bali by Willem G. Hofker — the whole sheet Woman from Bali by Willem G. Hofker Willem G. Hofker, c. 1946 32 × 23 cm (12.6 × 9.1 in) Price on request":
+                - /url: /product/1590
+                - img "Woman from Bali by Willem G. Hofker — the whole sheet"
+                - text: Woman from Bali by Willem G. Hofker Willem G. Hofker, c. 1946 32 × 23 cm (12.6 × 9.1 in) Price on request
+        - listitem:
+            - link "Moluccas Islands Indonesia Women, Eine Molukkin — the whole sheet Moluccas Islands Indonesia Women, Eine Molukkin c. 1790 21 × 14 cm (8.3 × 5.5 in) Price on request":
+                - /url: /product/1552
+                - img "Moluccas Islands Indonesia Women, Eine Molukkin — the whole sheet"
+                - text: Moluccas Islands Indonesia Women, Eine Molukkin c. 1790 21 × 14 cm (8.3 × 5.5 in) Price on request
+        - listitem:
+            - link "Sea Elephants Australia, Nouvelle Hollande, l'Elephant Marin from the Nicolas Baudin Expedition — the whole sheet Sea Elephants Australia, Nouvelle Hollande, l'Elephant Marin from the Nicolas Baudin Expedition Charles Alexander Lesueur, 1811 25 × 32 cm (9.8 × 12.6 in) Price on request":
+                - /url: /product/1509
+                - img "Sea Elephants Australia, Nouvelle Hollande, l'Elephant Marin from the Nicolas Baudin Expedition — the whole sheet"
+                - text: Sea Elephants Australia, Nouvelle Hollande, l'Elephant Marin from the Nicolas Baudin Expedition Charles Alexander Lesueur, 1811 25 × 32 cm (9.8 × 12.6 in) Price on request
+        - listitem:
+            - link "Justicia Adhatoda Plant — the whole sheet Justicia Adhatoda Plant Brisseau de Mirbel, c. 1795 20 × 13 cm (7.9 × 5.1 in) Price on request":
+                - /url: /product/1469
+                - img "Justicia Adhatoda Plant — the whole sheet"
+                - text: Justicia Adhatoda Plant Brisseau de Mirbel, c. 1795 20 × 13 cm (7.9 × 5.1 in) Price on request
+        - listitem:
+            - link "Aristoloches Plant — the whole sheet Aristoloches Plant Brisseau de Mirbel, c. 1795 20 × 13 cm (7.9 × 5.1 in) Price on request":
+                - /url: /product/1430
+                - img "Aristoloches Plant — the whole sheet"
+                - text: Aristoloches Plant Brisseau de Mirbel, c. 1795 20 × 13 cm (7.9 × 5.1 in) Price on request
+        - listitem:
+            - 'link "De Rivier Brantas als bergstroom: Residentie Pasoroean — the whole sheet De Rivier Brantas als bergstroom: Residentie Pasoroean Abraham Salm, c. 1872 Price on request"':
+                - /url: /product/1393
+                - 'img "De Rivier Brantas als bergstroom: Residentie Pasoroean — the whole sheet"'
+                - text: 'De Rivier Brantas als bergstroom: Residentie Pasoroean Abraham Salm, c. 1872 Price on request'
+        - listitem:
+            - link "Cluverius - Asia Antiqua et Nova, Asia Map — the whole sheet Cluverius - Asia Antiqua et Nova, Asia Map Pauli, 1697 23 × 28 cm (9.1 × 11 in) Price on request":
+                - /url: /product/1356
+                - img "Cluverius - Asia Antiqua et Nova, Asia Map — the whole sheet"
+                - text: Cluverius - Asia Antiqua et Nova, Asia Map Pauli, 1697 23 × 28 cm (9.1 × 11 in) Price on request
+        - listitem:
+            - link "Northern and Southern Philippines, Carte Des Isles Philipines ( set of 2 maps ) — the whole sheet Northern and Southern Philippines, Carte Des Isles Philipines ( set of 2 maps ) Jacques Nicolas Bellin, c. 1757 Price on request":
+                - /url: /product/1302
+                - img "Northern and Southern Philippines, Carte Des Isles Philipines ( set of 2 maps ) — the whole sheet"
+                - text: Northern and Southern Philippines, Carte Des Isles Philipines ( set of 2 maps ) Jacques Nicolas Bellin, c. 1757 Price on request
+        - listitem:
+            - link "Sea Hibiscus or Hibiscus Tiliaceus — the whole sheet Sea Hibiscus or Hibiscus Tiliaceus Hendrik Adriaan van Rheede tot Drakenstein, 1693 36 × 48 cm (14.2 × 18.9 in) Price on request":
+                - /url: /product/1245
+                - img "Sea Hibiscus or Hibiscus Tiliaceus — the whole sheet"
+                - text: Sea Hibiscus or Hibiscus Tiliaceus Hendrik Adriaan van Rheede tot Drakenstein, 1693 36 × 48 cm (14.2 × 18.9 in) Price on request
+        - listitem:
+            - link "Marnix Van St.Aldegonde-Nederland Line Deck Plan-1938 — the whole sheet Marnix Van St.Aldegonde-Nederland Line Deck Plan-1938 1938 68 × 58 cm (26.8 × 22.8 in) Price on request":
+                - /url: /product/1207
+                - img "Marnix Van St.Aldegonde-Nederland Line Deck Plan-1938 — the whole sheet"
+                - text: Marnix Van St.Aldegonde-Nederland Line Deck Plan-1938 1938 68 × 58 cm (26.8 × 22.8 in) Price on request
+        - listitem:
+            - link "Caladium Pictum Leave — the whole sheet Caladium Pictum Leave first edition 25 × 16 cm (9.8 × 6.3 in) Price on request":
+                - /url: /product/1132
+                - img "Caladium Pictum Leave — the whole sheet"
+                - text: Caladium Pictum Leave first edition 25 × 16 cm (9.8 × 6.3 in) Price on request
+        - listitem:
+            - link "Chinese Celestial Map — the whole sheet Chinese Celestial Map Huang Shang, 1493–1602 Price on request":
+                - /url: /product/1093
+                - img "Chinese Celestial Map — the whole sheet"
+                - text: Chinese Celestial Map Huang Shang, 1493–1602 Price on request
+        - listitem:
+            - link "Map of Indonesia and Ternate Cloves Islands — the whole sheet Map of Indonesia and Ternate Cloves Islands Rigobert Bonne, 1773 23 × 32 cm (9.1 × 12.6 in) Price on request":
+                - /url: /product/1055
+                - img "Map of Indonesia and Ternate Cloves Islands — the whole sheet"
+                - text: Map of Indonesia and Ternate Cloves Islands Rigobert Bonne, 1773 23 × 32 cm (9.1 × 12.6 in) Price on request
+    - navigation "Page 1 of 2":
+        - link "Previous" [disabled]:
+            - /url: /browse
+        - list:
+            - listitem:
+                - link "1":
+                    - /url: /browse
+            - listitem:
+                - link "2":
+                    - /url: /browse?page=2
+        - link "Next":
+            - /url: /browse?page=2
+- contentinfo:
+    - list:
+        - listitem:
+            - link "Privacy":
+                - /url: /privacy
+        - listitem:
+            - link "Terms":
+                - /url: /terms
+        - listitem:
+            - link "Old East Indies — printed editions from our collection":
+                - /url: http://shop.localhost:4417/
+    - navigation:
+        - list:
+            - listitem:
+                - link "The collection":
+                    - /url: /browse
+            - listitem:
+                - link "Makers":
+                    - /url: /makers
+            - listitem:
+                - link "Places":
+                    - /url: /places
+            - listitem:
+                - link "Stories":
+                    - /url: /stories
+            - listitem:
+                - link "Sell to us":
+                    - /url: /sell-to-us
+            - listitem:
+                - link "About us":
+                    - /url: /about
+            - listitem:
+                - link "Contact":
+                    - /url: /contact
+    - paragraph: Our contact details are being added. Please check back soon.
+    - list:
+        - listitem:
+            - link "Instagram":
+                - /url: https://www.instagram.com/indiesgalleryantiques/
+        - listitem:
+            - link "Facebook":
+                - /url: https://www.facebook.com/IndiesGallery/
+- button "Chat with us"
+- alert

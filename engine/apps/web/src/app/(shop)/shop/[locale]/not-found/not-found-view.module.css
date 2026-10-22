@@ -1,0 +1,26 @@
+/* The shop's 404: centred on the page — the status in large numerals, the title, one way back.
+   Tokens only. */
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  min-block-size: 60vh;
+  padding: var(--section-space) var(--shop-gutter);
+  text-align: center;
+}
+
+.code {
+  margin: 0;
+  font: var(--shop-title-hero);
+  font-size: 6rem;
+  line-height: 1;
+  color: var(--shop-umber);
+}
+
+.title {
+  margin: 0;
+  font: var(--shop-title-hero);
+  text-wrap: balance;
+}

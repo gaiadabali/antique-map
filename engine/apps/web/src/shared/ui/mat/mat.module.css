@@ -1,0 +1,100 @@
+/* A work's window (phase 17; Ivory and ink, phase 18): no frame, no mat, no line, no shadow. At
+   rest the window is clear and the work's own paper meets the page's paper, every sheet standing
+   on one baseline; inside a link the window takes the site's stone on hover or focus
+   (`--color-field-active`), and as the work enters the view its colour washes in over the
+   engraved line. A window with no picture keeps a field, so its words have somewhere to stand.
+   Every value is a token — no raw colour, no font-family. */
+
+.mat {
+  display: block;
+  background: transparent;
+  transition: background-color var(--dur-in) var(--ease-out);
+}
+
+.mat:has(.note) {
+  background: var(--color-field);
+}
+
+.window {
+  position: relative;
+  overflow: hidden;
+}
+
+.window > img,
+.window > picture,
+.window > picture > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* An original lies whole in its window, never cropped (DESIGN-SYSTEM.md §7), on the page's own
+   paper: the picture's box is clear, and the sheet stands on the window's foot like a print on a
+   rail, so a row of sheets of any shape shares one baseline. */
+.contain .window > div {
+  background: transparent;
+}
+
+.contain .window img {
+  object-fit: contain;
+  object-position: center bottom;
+}
+
+.window img {
+  transition: transform var(--dur-loop) var(--ease-out);
+}
+
+:global(a):hover .mat,
+:global(a):focus-visible .mat {
+  background: var(--color-field-active);
+}
+
+:global(a):hover .window img {
+  transform: scale(1.02);
+}
+
+/* The signature: the colourist's pass. Scroll-linked where the browser has view timelines: the
+   colour is complete once the work has wholly entered the view, so a work already in view on load
+   is already in colour; without support it is simply in colour. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .window img {
+      animation: wash-in var(--ease-out) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+  }
+}
+
+@keyframes wash-in {
+  from {
+    filter: grayscale(1) contrast(1.04);
+  }
+
+  to {
+    filter: grayscale(0) contrast(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mat,
+  .window img {
+    transition: none;
+  }
+
+  :global(a):hover .window img {
+    transform: none;
+  }
+}
+
+.note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: var(--space-5);
+  text-align: center;
+  font: var(--text-small);
+  color: var(--color-mat-note);
+}

@@ -1,7 +1,9 @@
 /**
- * `POST /api/x/cron/sweeps` — mounted by every app (C13), built by DOM (C8 DomainSweeps). Until then it
- * authenticates like every cron route and answers 404.
+ * `POST /api/x/cron/sweeps` — `@engine/http/cron/sweeps` (TASKS.md 6.4.c): expires unpaid orders past
+ * their window and returns their stock once, after one last status check. Behind `CRON_SECRET`.
  */
-import { unbuiltCron } from '../auth'
+import { paymentSweepsRoute } from '@engine/cms/shop/payments/http'
 
-export const POST = unbuiltCron('DOM (C8 DomainSweeps)')
+import { refuseCron } from '../auth'
+
+export const POST = paymentSweepsRoute({ refuse: refuseCron })

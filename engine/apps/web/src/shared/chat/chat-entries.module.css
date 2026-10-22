@@ -1,0 +1,94 @@
+/* The visitor's side of the thread, and the cards and status lines the agent adds. A site may set
+   the knobs (sites/shop/tokens/chat.css); the fallbacks are the gallery's. */
+.visitor {
+  align-self: flex-end;
+  max-width: var(--chat-bubble-width, 85%);
+  margin: var(--chat-visitor-margin, var(--space-2) 0 0);
+  padding: var(--chat-bubble-pad, var(--space-3) var(--space-4));
+  font: var(--chat-bubble-font, var(--text-body));
+  color: var(--color-chat-visitor-ink);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  background: var(--color-chat-visitor);
+  border-radius: var(--radius-bubble);
+  border-end-end-radius: var(--radius-control);
+}
+
+.status {
+  margin: 0;
+  font: var(--text-caption);
+  font-style: italic;
+  color: var(--color-text-muted);
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--chat-card-pad, var(--space-2));
+  color: var(--color-text);
+  text-decoration: none;
+  background: var(--color-chat-agent);
+  border: var(--rule-hair) solid var(--chat-line, var(--color-border));
+  border-radius: calc(var(--radius-bubble) * 0.66);
+  transition: border-color var(--dur-out) var(--ease);
+}
+
+.card:hover {
+  border-color: var(--chat-card-hover, var(--color-accent));
+}
+
+.card:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.image {
+  flex: none;
+  width: var(--chat-card-thumb, 4rem);
+  height: var(--chat-card-thumb, 4rem);
+  object-fit: var(--chat-card-fit, cover);
+  background: var(--chat-card-well, var(--color-surface-deep));
+  border-radius: calc(var(--radius-bubble) * 0.4);
+}
+
+.cardText {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  padding-inline-start: var(--chat-card-text-inset, var(--space-1));
+}
+
+.cardTitle {
+  font: var(--chat-card-title-font, var(--text-body));
+  font-weight: var(--chat-card-title-weight, 700);
+  color: var(--color-text-strong);
+  overflow-wrap: anywhere;
+}
+
+.cardMeta {
+  font: var(--text-caption);
+  color: var(--color-text-muted);
+}
+
+.cardPrice {
+  font: var(--chat-card-price-font, var(--text-price));
+  font-variant-numeric: var(--numeric-tabular);
+  color: var(--color-text);
+}
+
+.chevron {
+  flex: none;
+  width: 1.125rem;
+  height: 1.125rem;
+  margin-inline-end: var(--space-1);
+  color: var(--color-text-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    transition: none;
+  }
+}

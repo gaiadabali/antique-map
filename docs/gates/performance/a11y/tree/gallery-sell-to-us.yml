@@ -1,0 +1,75 @@
+- link "Skip to content":
+    - /url: '#main'
+- banner:
+    - link "Indies Gallery, home":
+        - /url: /
+        - text: Indies Gallery
+    - button "Open menu"
+- main:
+    - text: Sell to us
+    - heading "Do you have an antique of the East Indies?" [level=1]
+    - paragraph: We buy antique maps, prints, books and photographs of the region, singly or as a collection. Message us, write, or use the form below.
+    - paragraph: Our WhatsApp number and email address are being connected — please write to us from the Contact page soon.
+    - link "Contact":
+        - /url: /contact
+    - paragraph: The form takes no photographs. Please send photos on WhatsApp or by email once we reply.
+    - text: Or write here Your name
+    - textbox "Your name"
+    - text: WhatsApp number
+    - textbox "WhatsApp number"
+    - paragraph: With the country code, for example +62 812 3456 7890.
+    - text: Email address
+    - textbox "Email address"
+    - paragraph: Give a WhatsApp number or an email address — one is enough.
+    - text: What do you have?
+    - textbox "What do you have?"
+    - checkbox "I agree that Indies Gallery may use these details to answer this enquiry, and keep them for up to 24 months after it is closed."
+    - text: I agree that Indies Gallery may use these details to answer this enquiry, and keep them for up to 24 months after it is closed.
+    - paragraph: Consent text gallery-contact-2026-10
+    - status: The form is not available right now. Please write to us on WhatsApp or by email instead.
+    - button "Send message" [disabled]
+    - paragraph: A short security check keeps this form free of spam.
+- contentinfo:
+    - list:
+        - listitem:
+            - link "Privacy":
+                - /url: /privacy
+        - listitem:
+            - link "Terms":
+                - /url: /terms
+        - listitem:
+            - link "Old East Indies — printed editions from our collection":
+                - /url: http://shop.localhost:4417/
+    - navigation:
+        - list:
+            - listitem:
+                - link "The collection":
+                    - /url: /browse
+            - listitem:
+                - link "Makers":
+                    - /url: /makers
+            - listitem:
+                - link "Places":
+                    - /url: /places
+            - listitem:
+                - link "Stories":
+                    - /url: /stories
+            - listitem:
+                - link "Sell to us":
+                    - /url: /sell-to-us
+            - listitem:
+                - link "About us":
+                    - /url: /about
+            - listitem:
+                - link "Contact":
+                    - /url: /contact
+    - paragraph: Our contact details are being added. Please check back soon.
+    - list:
+        - listitem:
+            - link "Instagram":
+                - /url: https://www.instagram.com/indiesgalleryantiques/
+        - listitem:
+            - link "Facebook":
+                - /url: https://www.facebook.com/IndiesGallery/
+- button "Chat with us"
+- alert

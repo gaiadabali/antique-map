@@ -1,0 +1,24 @@
+{
+  "caseId": "gallery-grounded-condition-grade-id",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Kondisi peta ini seperti apa",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Berikut beberapa yang sesuai — silakan lihat di bawah."
+        }
+      ]
+    }
+  ]
+}

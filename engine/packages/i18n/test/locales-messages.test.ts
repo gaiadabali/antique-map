@@ -15,7 +15,8 @@ import {
 } from '../src/index'
 
 const brand = { locales: { default: 'en', supported: ['en', 'id'] } } as const
-const REPO_ROOT = fileURLToPath(new URL('../../../../', import.meta.url))
+/** Each site's committed copy (2.3 moved it into the app). */
+const SITES_DIR = fileURLToPath(new URL('../../../apps/web/src/sites/', import.meta.url))
 
 describe('locales — the default unprefixed, never negotiated', () => {
   it('resolves, prefixes and reads locales from paths', () => {
@@ -98,12 +99,10 @@ describe('messages — keys from the app, values from the brand’s copy', () =>
     expect(en.t('item.price.estimate', {})).toBe('≈ {estimate}, charged in {charge}') // unfilled stays visible
   })
 
-  it('serves the app’s default for a key the brand’s committed copy lacks', () => {
+  it('serves the app’s default for a key a site’s committed copy lacks', () => {
     let checked = 0
-    for (const slug of readdirSync(REPO_ROOT)) {
-      // brand:create's test scaffolds (and removes) a throwaway brand here while the suite runs.
-      if (slug.startsWith('fixture-')) continue
-      const dir = join(REPO_ROOT, slug, 'site', 'copy')
+    for (const site of readdirSync(SITES_DIR)) {
+      const dir = join(SITES_DIR, site, 'lexicon')
       if (!existsSync(dir)) continue
       checked += 1
       const messages = loadMessages({
@@ -114,7 +113,7 @@ describe('messages — keys from the app, values from the brand’s copy', () =>
       })
       expect(messages.t('nav.browse')).toBe('Browse')
     }
-    expect(checked).toBeGreaterThanOrEqual(3) // both real brands and the synthetic one
+    expect(checked).toBe(2) // the gallery's and the shop's
   })
 
   it('refuses a copy file that is not JSON, not an object, or holds a non-text value', () => {

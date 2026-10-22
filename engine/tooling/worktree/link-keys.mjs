@@ -70,3 +70,18 @@ export function ensureLinkTokenKeys(path, random = randomBytes) {
   writeEnvFile(path, { [LINK_KEY_VARIABLE]: generateDevRing(random) }, { force: true })
   return 'added'
 }
+
+/** The order-link key (TASKS.md 6.6): AES-256-GCM, 32 random bytes, base64 — required by the boot check. */
+export const ORDER_LINK_KEY_VARIABLE = 'ORDER_LINK_KEY'
+
+/**
+ * Adds a fresh dev `ORDER_LINK_KEY` to the env file at `path` when it has none (absent or blank).
+ * Returns `'added'` or `'kept'`; the key is never returned or logged, and a set one is never replaced
+ * (it seals every order link the worktree's database holds).
+ */
+export function ensureOrderLinkKey(path, random = randomBytes) {
+  const existing = readEnvFile(path).get(ORDER_LINK_KEY_VARIABLE)
+  if (existing !== undefined && existing.trim() !== '') return 'kept'
+  writeEnvFile(path, { [ORDER_LINK_KEY_VARIABLE]: random(32).toString('base64') }, { force: true })
+  return 'added'
+}

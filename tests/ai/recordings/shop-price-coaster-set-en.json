@@ -1,0 +1,24 @@
+{
+  "caseId": "shop-price-coaster-set-en",
+  "turns": [
+    {
+      "classifierLabel": "price_request",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Price for the coaster set",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "It's Rp 125.000."
+        }
+      ]
+    }
+  ]
+}

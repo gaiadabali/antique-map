@@ -4,16 +4,15 @@
 # unit file must carry this script's name before it is touched — never anything else, and never
 # in a dry run or a --report. Each check prints PASS or FAIL; a FAIL fails the run.
 #
-#   RustFS   stop the service, restart its data mount, start the service: the image is mounted
-#            and /health answers 200 again
+#   RustFS   restart the service: /health answers 200 again
 #   pm2      stop pm2-<user>.service and any pm2 daemon of the user's running outside it, then
 #            restart the unit: its `pm2 resurrect` must bring back the process dump.pm2 lists,
 #            online under a new daemon and answering on 127.0.0.1:<port>. The site is down for
 #            those seconds (staging), and afterwards its pm2 runs inside the unit.
 #   Mailpit  restart it (staging): SMTP greets 220 and the UI answers again
-#   cron     each site user's crontab still holds the managed block
-#   boot     every indies unit is enabled; the data mount is WantedBy=multi-user.target and the
-#            RustFS unit has RequiresMountsFor= its data dir, so the image is mounted before it
+#   cron     the site user's crontab still holds the managed block
+#   boot     every indies unit is enabled, and RustFS's data is a plain directory, not a mount
+#            (a loop image there hung Helios under Hostinger's snapshot freeze; see rustfs.sh)
 
 VERIFY_RESTART=0
 VERIFY_PASS=0
@@ -55,19 +54,16 @@ pm2_daemon_gone() { ! pm2_daemon_live; }
 pm2_pid() { user_read "$S_HOME/.pm2/pm2.pid" | tr -dc 0-9; }
 
 verify_rustfs() {
-  local mount
-  mount="$(rustfs_mount_unit)"
-  if ! ours_unit "$mount" || ! ours_unit "$RUSTFS_UNIT"; then
-    vfail "RustFS: $mount or $RUSTFS_UNIT is not this script's unit: not restarted"
+  if ! ours_unit "$RUSTFS_UNIT"; then
+    vfail "RustFS: $RUSTFS_UNIT is not this script's unit: not restarted"
     return 0
   fi
   systemctl stop "$RUSTFS_UNIT" || true
-  systemctl restart "$mount" || true
   systemctl start "$RUSTFS_UNIT" || true
-  if mountpoint -q "$RUSTFS_DATA" && wait_for 30 rustfs_healthy; then
-    vpass "RustFS: $RUSTFS_UNIT stopped, $mount restarted, $RUSTFS_UNIT started: $RUSTFS_DATA mounted, /health 200"
+  if wait_for 30 rustfs_healthy; then
+    vpass "RustFS: $RUSTFS_UNIT stopped and started: /health 200"
   else
-    vfail "RustFS: after restarting $mount and $RUSTFS_UNIT: mounted=$(mountpoint -q "$RUSTFS_DATA" && echo yes || echo no), /health $(http_code "http://127.0.0.1:$RUSTFS_PORT/health") (journalctl -u $RUSTFS_UNIT)"
+    vfail "RustFS: after restarting $RUSTFS_UNIT: /health $(http_code "http://127.0.0.1:$RUSTFS_PORT/health") (journalctl -u $RUSTFS_UNIT)"
   fi
 }
 
@@ -120,12 +116,8 @@ verify_mailpit() {
 }
 
 verify_boot() {
-  local u app units=("$(rustfs_mount_unit)" "$RUSTFS_UNIT" indies-db-backup.timer)
+  local u units=("$RUSTFS_UNIT" indies-db-backup.timer "pm2-$S_USER.service")
   mailpit_wanted && units+=("$MAILPIT_UNIT")
-  for app in $(selected_apps); do
-    load_site "$app"
-    units+=("pm2-$S_USER.service")
-  done
   for u in "${units[@]}"; do
     if systemctl is-enabled --quiet "$u" 2>/dev/null; then
       vpass "boot: $u is enabled"
@@ -133,32 +125,23 @@ verify_boot() {
       vfail "boot: $u is not enabled ($(systemctl is-enabled "$u" 2>/dev/null || echo missing)): it would not start at boot"
     fi
   done
-  if grep -qx 'WantedBy=multi-user.target' "/etc/systemd/system/${units[0]}" 2>/dev/null; then
-    vpass "boot: ${units[0]} is WantedBy=multi-user.target"
+  if [ -d "$RUSTFS_DATA" ] && ! mountpoint -q "$RUSTFS_DATA"; then
+    vpass "boot: $RUSTFS_DATA is a plain directory, not a mount"
   else
-    vfail "boot: ${units[0]} is not WantedBy=multi-user.target"
-  fi
-  if grep -qx "RequiresMountsFor=$RUSTFS_DATA" "/etc/systemd/system/$RUSTFS_UNIT" 2>/dev/null; then
-    vpass "boot: $RUSTFS_UNIT has RequiresMountsFor=$RUSTFS_DATA (the image is mounted first)"
-  else
-    vfail "boot: $RUSTFS_UNIT lacks RequiresMountsFor=$RUSTFS_DATA"
+    vfail "boot: $RUSTFS_DATA is a mount or missing: a loop image there can hang the host's snapshot backup"
   fi
 }
 
 verify_restart() {
   say "verify restart: RustFS"
   verify_rustfs
-  local app
-  for app in $(selected_apps); do
-    load_site "$app"
-    say "verify restart: pm2 $S_USER, crontab"
-    verify_pm2
-    if cron_block_present; then
-      vpass "cron: $S_USER's crontab holds the managed block"
-    else
-      vfail "cron: $S_USER's crontab lacks the managed block (re-run the script)"
-    fi
-  done
+  say "verify restart: pm2 $S_USER, crontab"
+  verify_pm2
+  if cron_block_present; then
+    vpass "cron: $S_USER's crontab holds the managed block"
+  else
+    vfail "cron: $S_USER's crontab lacks the managed block (re-run the script)"
+  fi
   if mailpit_wanted; then
     say "verify restart: Mailpit"
     verify_mailpit

@@ -1,0 +1,88 @@
+/* Buttons in Ivory and ink: square, flat, the site's accent (the gallery's green, the shop's
+   bronze) for the one action a view asks for; everything else in ink. Every value is a token — no raw colour, no font-family. */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border: var(--rule-hair) solid transparent;
+  border-radius: var(--radius-control);
+  /* A site may set the knobs (sites/shop/tokens/layout.css); the fallbacks are the gallery's. */
+  font: var(--button-font, var(--text-label));
+  font-size: var(--button-font-size, var(--primitive-size-body));
+  letter-spacing: var(--button-tracking, 0.01em);
+  text-transform: var(--button-case, none);
+  text-decoration: none;
+  white-space: nowrap;
+  min-height: 44px;
+  min-width: 44px;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-out) var(--ease),
+    border-color var(--dur-out) var(--ease),
+    color var(--dur-out) var(--ease),
+    text-decoration-color var(--dur-out) var(--ease);
+}
+
+.button:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.default {
+  min-height: var(--button-height, 3.25rem);
+  padding-inline: var(--button-pad, var(--space-6));
+}
+
+.small {
+  min-height: var(--button-height-small, 44px);
+  padding-inline: var(--button-pad-small, var(--space-5));
+}
+
+.primary {
+  background: var(--color-action);
+  border-color: var(--color-action);
+  color: var(--color-action-contrast);
+}
+
+.primary:hover:not([aria-disabled='true']):not(:disabled) {
+  background: var(--color-action-hover);
+  border-color: var(--color-action-hover);
+}
+
+.secondary {
+  background: transparent;
+  color: var(--color-text);
+  border-color: var(--color-text);
+}
+
+.secondary:hover:not([aria-disabled='true']):not(:disabled) {
+  background: var(--color-text);
+  /* inverted onto whatever it stands on: a band's own ground, else the page's */
+  color: var(--band-bg, var(--color-surface));
+}
+
+/* A quiet button reads as a link in the run of the page: ink, underlined, no box. */
+.quiet {
+  background: transparent;
+  color: var(--color-text);
+  border-color: transparent;
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 0.32em;
+}
+
+.quiet.default,
+.quiet.small {
+  padding-inline: var(--space-2);
+}
+
+.quiet:hover:not([aria-disabled='true']):not(:disabled) {
+  text-decoration-thickness: var(--rule-strong);
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

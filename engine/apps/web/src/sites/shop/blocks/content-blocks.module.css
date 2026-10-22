@@ -1,0 +1,116 @@
+/* The shop's general blocks: text, a picture beside text, questions and answers, a call to
+   action. Every value is a token; each block holds its own measure inside the full-bleed page. */
+
+.section {
+  padding: var(--shop-section) var(--shop-gutter);
+}
+
+.measure {
+  max-inline-size: 42rem;
+  margin-inline: auto;
+}
+
+.eyebrow {
+  display: block;
+  margin-block-end: var(--space-2);
+  color: var(--shop-umber);
+}
+
+.title {
+  margin: 0 0 var(--space-4);
+  font: var(--shop-title-page);
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+.pageTitle {
+  margin: 0;
+  font: var(--shop-title-hero);
+  text-wrap: balance;
+}
+
+.prose p {
+  margin: 0 0 var(--space-4);
+  font: var(--shop-text-read);
+}
+
+.prose p:last-child {
+  margin-block-end: 0;
+}
+
+/* picture and text: two halves, the picture on the side the editor chose */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-7);
+  align-items: center;
+}
+
+.split[data-side='right'] .picture {
+  order: 2;
+}
+
+.picture {
+  margin: 0;
+}
+
+.splitText > :last-child {
+  margin-block-end: 0;
+}
+
+.link {
+  display: inline-block;
+  margin-block-start: var(--space-4);
+}
+
+/* questions and answers: native disclosures on hairlines */
+.faq {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.faq details {
+  box-shadow: inset 0 calc(-1 * var(--rule-hair)) 0 var(--color-border);
+}
+
+.faq summary {
+  padding-block: var(--space-4);
+  font: var(--shop-title-sub);
+  cursor: pointer;
+}
+
+.faq .prose {
+  padding-block-end: var(--space-4);
+  color: var(--color-text-muted);
+}
+
+/* a call to action: a warm band, centred */
+.cta {
+  padding: var(--shop-section) var(--shop-gutter);
+  background: var(--shop-warm);
+  text-align: center;
+}
+
+.ctaBody {
+  margin: 0 auto var(--space-5);
+  max-inline-size: 36rem;
+  font: var(--shop-text-body);
+  color: var(--color-text-muted);
+}
+
+/* a page without a hero of its own: its title as the h1 */
+.head {
+  padding: var(--shop-section) var(--shop-gutter) 0;
+}
+
+@media (max-width: 56.25rem) {
+  .split {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+
+  .split[data-side='right'] .picture {
+    order: 0;
+  }
+}

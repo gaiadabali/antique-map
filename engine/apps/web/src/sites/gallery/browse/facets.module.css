@@ -1,0 +1,174 @@
+/* The gallery's facets, year pair and applied chips (5.1.b, 14.4): quiet groups parted by space, no
+   rules or boxes, square corners (Ivory and ink 18). Tokens only (DESIGN-SYSTEM.md). */
+
+.facets {
+  display: flex;
+  flex-direction: column;
+}
+
+.facet {
+  padding-block: 0 var(--space-7);
+}
+
+.facetName {
+  font: var(--text-label);
+  color: var(--color-text);
+  margin: 0 0 var(--space-2);
+}
+
+.facetList {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The place tree, in tree order: each depth indents one step. */
+.placeRow[data-depth='1'] {
+  padding-inline-start: var(--space-4);
+}
+
+.placeRow[data-depth='2'] {
+  padding-inline-start: calc(2 * var(--space-4));
+}
+
+.placeRow[data-depth='3'] {
+  padding-inline-start: calc(3 * var(--space-4));
+}
+
+/* One option: a 44 px link, its name, its count — a zero shown like any count. */
+.option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  min-height: 44px;
+  font: var(--text-small);
+  color: var(--color-text);
+  text-decoration: none;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 6px;
+}
+
+.option:hover .optionLabel {
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 6px;
+}
+
+.option[aria-current='true'] .optionLabel {
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-strong);
+  text-underline-offset: 6px;
+}
+
+.optionCount {
+  font: var(--text-caption);
+  color: var(--color-text-muted);
+  font-variant-numeric: var(--numeric-tabular);
+}
+
+/* "All 128 makers": a native disclosure, quiet and square, the rest opening in place. */
+.more {
+  margin-block-start: var(--space-1);
+}
+
+.moreSummary {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font: var(--text-small);
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 6px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.moreSummary::-webkit-details-marker {
+  display: none;
+}
+
+.moreSummary::after {
+  content: '+';
+  margin-inline-start: var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.more[open] > .moreSummary::after {
+  content: '–';
+}
+
+.more[open] > .moreSummary {
+  margin-block-end: var(--space-1);
+}
+
+.yearPair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  gap: var(--space-2);
+  margin-top: var(--space-3);
+}
+
+.yearPair > :last-child {
+  grid-column: 1 / -1;
+}
+
+.yearInput {
+  width: 100%;
+}
+
+/* The applied chips, above the grid: each clears its filter. */
+.applied {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.appliedList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.appliedChip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  padding: var(--space-2) var(--space-4);
+  font: var(--text-small);
+  color: var(--color-text);
+  background: var(--color-field);
+  border: none;
+  border-radius: var(--radius-none);
+  text-decoration: none;
+  transition: background-color var(--dur-out) var(--ease);
+}
+
+.appliedChip:hover {
+  background: var(--color-field-active);
+}
+
+.clearAll {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 6px;
+}
+
+.clearAll:hover {
+  color: var(--color-text);
+}

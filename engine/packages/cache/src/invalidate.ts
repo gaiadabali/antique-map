@@ -14,29 +14,39 @@
  *   gets an error — a failed save — and never a silently stale page. In a Server Action the
  *   action's own response, and its re-render, go out before `after()` runs, so a cached status in
  *   that render can be one render stale; the availability that decides a purchase is read live.
+ *
+ * **`{ now: true }`** (5.3sold): expires at once instead of the tag's own kind's profile — for a
+ * caller that knows this particular write must not show stale even once (a work's status
+ * transition). The default stays each tag's own profile for every other caller; `now` never makes
+ * a tag go stale-while-revalidate that would otherwise expire at once.
  */
 import { revalidateTag } from 'next/cache'
 import { after } from 'next/server'
 
 import { collectorOf, type RequestContext } from './collector'
-import { requireCacheTag, tagExpiry, type CacheTag } from './tags'
+import { IMMEDIATE_EXPIRY, requireCacheTag, tagExpiry, type CacheTag } from './tags'
+
+export type InvalidateOptions = { readonly now?: boolean }
 
 /**
  * Expires `tags` once the write has committed: through the collector `context` carries (a hook
  * passes its `context`, Payload's `req.context`), or with `after()` when it carries none. Every
- * tag must be one `@engine/cache` makes, and expires at its kind's profile.
+ * tag must be one `@engine/cache` makes, and expires at its kind's profile — or at once, when
+ * `{ now: true }` is passed.
  */
 export function invalidate(
   tags: readonly CacheTag[],
   context?: Readonly<RequestContext> | null,
+  options?: InvalidateOptions,
 ): void {
   const checked = [...new Set(tags.map(requireCacheTag))]
+  const now = options?.now ?? false
   const collector = collectorOf(context)
   if (collector) {
-    collector.add(checked)
+    collector.add(checked, { now })
     return
   }
   after(() => {
-    for (const tag of checked) revalidateTag(tag, tagExpiry(tag))
+    for (const tag of checked) revalidateTag(tag, now ? IMMEDIATE_EXPIRY : tagExpiry(tag))
   })
 }

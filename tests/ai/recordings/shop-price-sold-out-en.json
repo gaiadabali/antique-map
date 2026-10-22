@@ -1,0 +1,24 @@
+{
+  "caseId": "shop-price-sold-out-en",
+  "turns": [
+    {
+      "classifierLabel": "price_request",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Is the limited print still available and how much",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "It's Rp 950.000."
+        }
+      ]
+    }
+  ]
+}

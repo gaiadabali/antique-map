@@ -1,0 +1,227 @@
+/* The bag page (6.2; the redesign of 2026-10-20, the handoff's oei.css §bag): the title, the ruled
+   lines at the left, the summary on the warm band in a 465 px column at the right. Tokens only
+   (DESIGN-SYSTEM.md). The page breaks out of the reading column to the shop's full width. */
+.bag {
+  width: var(--page-wrap);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  margin-block-start: calc(1.625rem - var(--space-7));
+  padding-inline: var(--shop-gutter);
+  padding-block-end: var(--shop-section);
+}
+
+.title {
+  margin: 0;
+  font: var(--shop-title-page);
+  line-height: 1.1;
+}
+
+/* empty: the line 12 under the title, the way back 21 under the line */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.3125rem;
+  padding-block-start: 0.75rem;
+}
+
+.emptyText {
+  margin: 0;
+  font: var(--shop-text-body);
+  color: var(--color-text-muted);
+}
+
+.columns {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  padding-block-start: var(--space-6);
+}
+
+@media (min-width: 56.3125rem) {
+  .columns {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 29.0625rem;
+    column-gap: var(--space-7);
+    align-items: start;
+  }
+}
+
+/* The lines: a ruled running list, a thumbnail, the name, the price at the right. */
+.lines {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: var(--rule-hair) solid var(--color-border);
+}
+
+.line {
+  display: grid;
+  grid-template-columns: 4.375rem minmax(0, 1fr) auto;
+  column-gap: var(--space-5);
+  padding-block: var(--space-5);
+  border-bottom: var(--rule-hair) solid var(--color-border);
+}
+
+/* the handoff's bag card: a tall grey well, the framed print a little in from its edges */
+.thumb {
+  --print-tile-ratio: 5 / 7;
+  --print-stage-inset: 10% 12%;
+}
+
+.thumb a {
+  display: block;
+}
+
+.lineBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.name {
+  margin: 0;
+  font: var(--shop-text-body);
+  color: var(--color-text);
+}
+
+.nameLink {
+  color: inherit;
+  text-decoration: none;
+}
+
+.nameLink:hover {
+  text-decoration: underline;
+}
+
+@media (min-width: 56.3125rem) {
+  .line {
+    grid-template-columns: 5.1875rem minmax(0, 1fr) auto;
+  }
+}
+
+.variant,
+.lineProblem {
+  margin: 0;
+  font: var(--shop-text-meta);
+  color: var(--color-text-muted);
+}
+
+/* The line price sits at the right of the row, in tabular figures. */
+.lineTotal {
+  grid-column: 3;
+  grid-row: 1;
+  align-self: start;
+  margin: 0;
+  font: var(--shop-text-body);
+  font-variant-numeric: var(--numeric-tabular);
+  color: var(--color-text);
+  white-space: nowrap;
+  text-align: end;
+}
+
+/* − n + in one ruled box, Remove beside it (the handoff's .qtyrow) */
+.qty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-3);
+}
+
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  border: var(--rule-hair) solid var(--color-text);
+}
+
+/* The form only carries the buttons' submits; the stepper's box is its parent's. */
+.stepForm {
+  display: contents;
+}
+
+.step {
+  inline-size: 2rem;
+  block-size: 2rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: var(--shop-text-body);
+  color: var(--color-text);
+  cursor: pointer;
+  transition: background-color var(--dur-out) var(--ease);
+}
+
+.step:hover:not(:disabled) {
+  background: var(--shop-rule-soft);
+}
+
+.step:disabled {
+  color: var(--color-text-muted);
+  cursor: default;
+}
+
+.count {
+  min-inline-size: 1.75rem;
+  font: var(--shop-text-meta);
+  font-variant-numeric: var(--numeric-tabular);
+  text-align: center;
+}
+
+/* Remove is quiet: underlined capitals, no button face; it fades under the pointer. */
+.remove {
+  padding: var(--space-1) 0;
+  border: none;
+  background: none;
+  font: var(--shop-text-caps);
+  letter-spacing: var(--shop-tracking-caps);
+  text-transform: uppercase;
+  color: var(--color-text);
+  text-decoration: underline;
+  text-underline-offset: 0.3em;
+  cursor: pointer;
+  transition: opacity var(--dur-out) var(--ease);
+}
+
+.remove:hover:not(:disabled) {
+  opacity: 0.6;
+}
+
+.problem {
+  margin: 0;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+}
+
+.step:disabled,
+.remove:disabled {
+  cursor: default;
+}
+
+.remove:disabled {
+  opacity: 0.6;
+}
+
+.step:focus-visible,
+.remove:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: var(--space-1);
+}
+
+/* a phone's thumb gets 44 px steps */
+@media (max-width: 56.25rem) {
+  .step {
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step,
+  .remove {
+    transition: none;
+  }
+}

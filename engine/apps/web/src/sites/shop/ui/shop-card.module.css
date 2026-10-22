@@ -1,0 +1,96 @@
+/* The shop's card (the handoff's oei.css §product card). Every value is a token. */
+
+.card {
+  display: block;
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.card:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+.well {
+  position: relative;
+  display: block;
+}
+
+.badge {
+  position: absolute;
+  inset-block-start: var(--shop-gap);
+  inset-inline-start: var(--shop-gap);
+  z-index: 1;
+  padding: 0 0.3125rem;
+  background: var(--color-surface);
+  font: var(--shop-text-caps);
+  font-size: 0.625rem;
+  line-height: 1.25rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.info {
+  display: block;
+  padding: var(--shop-gap);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-2);
+  min-block-size: 1.0625rem;
+  font: var(--shop-text-meta);
+}
+
+.title {
+  margin: 0;
+  font: inherit;
+  color: inherit;
+}
+
+.aside {
+  flex: none;
+  white-space: nowrap;
+}
+
+/* a Price inside keeps the row's 13 px */
+.aside > * {
+  font: inherit;
+}
+
+.meta {
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 0 var(--space-2);
+  color: var(--color-text-muted);
+}
+
+.card:hover .title,
+.card:focus-visible .title {
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 0.2em;
+}
+
+@media (max-width: 56.25rem) {
+  .info {
+    padding: var(--space-3) 0 0;
+  }
+
+  .row {
+    display: block;
+    line-height: 1.1875rem;
+  }
+
+  .aside {
+    display: block;
+  }
+
+  .badge {
+    inset-block-start: var(--space-2);
+    inset-inline-start: var(--space-2);
+    line-height: 1.125rem;
+  }
+}

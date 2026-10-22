@@ -1,0 +1,24 @@
+{
+  "caseId": "extra-shop-calendar-id",
+  "turns": [
+    {
+      "classifierLabel": "price_request",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Kalender dinding harganya berapa",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Harganya Rp 145.000."
+        }
+      ]
+    }
+  ]
+}

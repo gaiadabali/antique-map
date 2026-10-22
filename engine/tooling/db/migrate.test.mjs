@@ -1,5 +1,3 @@
-import { join } from 'node:path'
-
 import { describe, expect, it } from 'vitest'
 
 import {
@@ -44,55 +42,19 @@ describe('migrateEnv — what the migrate child is handed (3.5.c)', () => {
     RUN_MIGRATIONS: '1',
     PAYLOAD_DEV_PUSH: '1',
     NODE_ENV: 'production',
-    BRAND: 'from-the-shell',
-    TEST_STOREFRONT: 'emporium',
   }
 
-  it('is this database, a dev secret and the brand — never a push, RUN_MIGRATIONS or NODE_ENV', () => {
-    const env = migrateEnv({
-      database: 'fixture_atlas_p3_x',
-      brand: 'fixture-atlas',
-      repoRoot: '/repo',
-      env: parent,
-    })
-    expect(env).toEqual({
+  it('is this database and a dev secret — never a push, RUN_MIGRATIONS or NODE_ENV', () => {
+    expect(migrateEnv({ database: 'indies_p3_x', env: parent })).toEqual({
       PATH: '/bin',
-      DATABASE_URL: 'postgres://postgres:postgres@localhost:5432/fixture_atlas_p3_x',
-      PAYLOAD_SECRET: DEV_PAYLOAD_SECRET,
-      BRAND: 'fixture-atlas',
-      BRAND_ROOT: join('/repo', 'fixture-atlas'),
-    })
-  })
-
-  it('names the storefront for a per-storefront brand', () => {
-    const env = migrateEnv({
-      database: 'fixture_p3_x_gallery',
-      brand: 'fixture',
-      storefront: 'gallery',
-      repoRoot: '/repo',
-      env: parent,
-    })
-    expect(env.TEST_STOREFRONT).toBe('gallery')
-  })
-
-  it('carries no brand at all when a per-storefront brand names no storefront', () => {
-    const env = migrateEnv({
-      database: 'fixture_p3_x',
-      brand: 'fixture',
-      brandless: true,
-      repoRoot: '/repo',
-      env: parent,
-    })
-    expect(env).toEqual({
-      PATH: '/bin',
-      DATABASE_URL: 'postgres://postgres:postgres@localhost:5432/fixture_p3_x',
+      DATABASE_URL: 'postgres://postgres:postgres@localhost:5432/indies_p3_x',
       PAYLOAD_SECRET: DEV_PAYLOAD_SECRET,
     })
   })
 })
 
 describe('runMigrations', () => {
-  const base = { database: 'fixture_p3_x', brand: 'fixture', repoRoot: '/repo', env: {} }
+  const base = { database: 'indies_p3_x', repoRoot: '/repo', env: {} }
 
   it('runs `pnpm --filter @engine/cms migrate` from the repo root and relays its messages', async () => {
     const calls = []
@@ -110,9 +72,9 @@ describe('runMigrations', () => {
     expect(calls).toHaveLength(1)
     expect(calls[0].args).toEqual(['--silent', '--filter', '@engine/cms', 'migrate'])
     expect(calls[0].options.cwd).toBe('/repo')
-    expect(calls[0].options.env.DATABASE_URL).toMatch(/\/fixture_p3_x$/)
+    expect(calls[0].options.env.DATABASE_URL).toMatch(/\/indies_p3_x$/)
     expect(lines).toEqual([
-      '[db] migrate fixture_p3_x: pnpm --filter @engine/cms migrate, BRAND=fixture',
+      '[db] migrate indies_p3_x: pnpm --filter @engine/cms migrate',
       '[db]   Migrating: 20260929_initial',
       '[db]   INFO: Done.',
     ])

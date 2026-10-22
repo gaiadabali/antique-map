@@ -1,0 +1,116 @@
+/* Shell-only styles that the shared UI components' own modules do not carry: the lists of
+   links the header and footer slot in, and the contact block. Every value is a token
+   (`shared/styles/tokens` or the site brand files) — no raw colour, no font-family. */
+
+.nav ul,
+.navList,
+.footerList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4) var(--space-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: var(--text-small);
+  align-items: center;
+}
+
+.navList {
+  justify-content: center;
+  gap: var(--space-2) clamp(var(--space-5), 0.5rem + 1.8vw, var(--space-7));
+  font: inherit;
+}
+
+.footerList {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-1);
+  font: var(--text-small);
+}
+
+/* Header and footer links are quiet text: underlined on hover and on the current page only. */
+.navLink,
+.footerLink {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--color-text);
+  text-decoration: none;
+  text-underline-offset: 0.3em;
+}
+
+.navLink:hover,
+.navLink[aria-current='page'],
+.footerLink:hover {
+  text-decoration: underline;
+}
+
+.footerLink {
+  min-height: 36px;
+  color: var(--color-text);
+}
+
+@media (max-width: 48rem) {
+  .footerLink {
+    min-height: 44px;
+  }
+}
+
+.footerLink:hover {
+  text-decoration-thickness: var(--rule-hair);
+}
+
+.footerGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+}
+
+.footerTitle {
+  margin: 0;
+  font: var(--text-label);
+  color: var(--color-text-muted);
+}
+
+.legalList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-6);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: var(--text-caption);
+}
+
+.legalList .footerLink {
+  font: var(--text-caption);
+}
+
+.footerContact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: min(100%, 16rem);
+}
+
+.footerLine {
+  margin: 0;
+  font: var(--text-small);
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+/* The owner's announcement (`site-settings.announcement`), shown above the header on every page
+   of a site that has one set (qa 4.qa, finding F4). */
+.announcement {
+  background: var(--color-surface-dark);
+  color: var(--color-text-on-dark);
+  text-align: center;
+  padding: var(--space-2) var(--gutter);
+}
+
+.announcementText {
+  margin: 0;
+  font: var(--text-announcement);
+}

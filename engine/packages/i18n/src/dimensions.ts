@@ -4,7 +4,7 @@
  * before width, as dealers list them. Inches are to the nearest eighth, written as a vulgar
  * fraction — 450 mm is 17¾ in — which is how a frame shop reads them.
  */
-import type { LocaleCode } from '@engine/config/schema'
+import type { LocaleCode } from '@engine/config/constants'
 
 import { formattingTag } from './locales'
 

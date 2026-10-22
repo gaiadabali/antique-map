@@ -1,0 +1,66 @@
+- link "Skip to content":
+    - /url: '#main'
+- banner:
+    - link "Old East Indies, home":
+        - /url: /
+        - text: Old East Indies
+    - button "Open menu"
+- main:
+    - region "We're confirming your delivery price":
+        - paragraph: Order 100006
+        - heading "We're confirming your delivery price" [level=1]
+        - paragraph: Sending from Denpasar
+        - paragraph: We'll email you the final price.
+        - link "Check again":
+            - /url: /order/M1JV-lgf8WfQDM2FbBm3b2DN5aRIzDi04pHzz0SFqpk
+        - list:
+            - listitem: Balinese Dancer Photograph, c. 1927 · Mounted print × 1 Rp 450.000
+        - term: Items total
+        - definition: Rp 450.000
+- contentinfo:
+    - list:
+        - listitem:
+            - link "Privacy":
+                - /url: /privacy
+        - listitem:
+            - link "Terms":
+                - /url: /terms
+        - listitem:
+            - link "Antique Maps Indonesia — the originals we print from":
+                - /url: http://gallery.localhost:4417/
+    - navigation:
+        - list:
+            - listitem:
+                - link "Shop prints":
+                    - /url: /shop
+            - listitem:
+                - link "Gallery walls":
+                    - /url: /collections
+            - listitem:
+                - link "Where to buy":
+                    - /url: /stores
+            - listitem:
+                - link "Partnership":
+                    - /url: /partnership
+            - listitem:
+                - link "Delivery":
+                    - /url: /delivery
+            - listitem:
+                - link "Frequently asked":
+                    - /url: /faq
+            - listitem:
+                - link "About us":
+                    - /url: /about
+            - listitem:
+                - link "Contact":
+                    - /url: /contact
+    - paragraph: Our contact details are being added. Please check back soon.
+    - list:
+        - listitem:
+            - link "Instagram":
+                - /url: https://www.instagram.com/oldeastindiesart/
+        - listitem:
+            - link "Facebook":
+                - /url: https://www.facebook.com/OldEastIndies
+- button "Chat with us"
+- alert

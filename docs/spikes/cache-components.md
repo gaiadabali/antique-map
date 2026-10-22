@@ -6,11 +6,11 @@ each in one place — and **per-request nonces** for the CSP. The fallback (Cach
 not needed. Recorded in ARCHITECTURE.md §9; the doc contradictions it finds are listed at the end
 for ARC.
 
-| Setting | Where | Why (evidence below) |
-| --- | --- | --- |
-| `export const instant = false` | `(site)/[locale]/layout.tsx` only | a `connection()` outside `<Suspense>` fails `next build` otherwise (§1) |
-| `htmlLimitedBots: /.*/` | each app's `next.config.ts` | a prerendered — even empty — shell is served with the build's 200, so `notFound()` and `permanentRedirect()` could only reach the page as meta tags (§2) |
-| `currentBrand()` awaits `connection()` | the app's `shell/brand.ts` | Next renders a layout and its page concurrently, so the layout's `connection()` does not stop the page reading the brand at build (§1) |
+| Setting                                | Where                             | Why (evidence below)                                                                                                                                     |
+| -------------------------------------- | --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `export const instant = false`         | `(site)/[locale]/layout.tsx` only | a `connection()` outside `<Suspense>` fails `next build` otherwise (§1)                                                                                  |
+| `htmlLimitedBots: /.*/`                | each app's `next.config.ts`       | a prerendered — even empty — shell is served with the build's 200, so `notFound()` and `permanentRedirect()` could only reach the page as meta tags (§2) |
+| `currentBrand()` awaits `connection()` | the app's `shell/brand.ts`        | Next renders a layout and its page concurrently, so the layout's `connection()` does not stop the page reading the brand at build (§1)                   |
 
 Run on Windows 11, Node 24.18, from the production builds in `engine/apps/{gallery,emporium}` (built
 with `DATABASE_URL`, `PAYLOAD_SECRET`, `BRAND`, `BRAND_ROOT` unset), served with `next start` on
@@ -27,6 +27,14 @@ item route is the designed 404 and every spike action refuses (4.1 review, senio
 outlives the spike is the item route's one-address rule, `src/item/canonical.ts`, and the status
 guard `tests/e2e/status/status.spec.ts` (Playwright, on a production build).
 
+> **The spike's code is deleted (TASKS.md 1.4.c).** `engine/apps/gallery/src/spike/` (its
+> fixtures, forms, purchase panel, `check.mjs` and the boot rule for `SPIKE_ROUTES` /
+> `SPIKE_CONTROLS`) and the fixture item page `src/app/(site)/[locale]/item/[idSlug]/page.tsx`
+> are gone; the findings below stand, and the settings they led to — `instant = false`,
+> `htmlLimitedBots: /.*/`, the `connection()`-first brand read, `src/item/canonical.ts` — stay in
+> the app. To re-run a proof, restore the files from git at `e632809`
+> (`git show e632809:engine/apps/gallery/src/spike/check.mjs`). The flags now do nothing.
+
 ## 1. The build touches no database, brand or secret — and what that took
 
 `next build` of both apps, with the Payload admin mounted (`(payload)/admin/[[...segments]]`, the
@@ -40,12 +48,12 @@ ever served (§2).
 Three build failures on the way, each a rule the apps now follow:
 
 1. **A root parameter needs `generateStaticParams`.** `[locale]` sits in the root layout, and the
-   build refused it without one: *"A required root parameter (locale) was not provided in
-   generateStaticParams for /[locale]"*. The layout returns every engine locale (`LOCALE_CODES` —
+   build refused it without one: _"A required root parameter (locale) was not provided in
+   generateStaticParams for /[locale]"_. The layout returns every engine locale (`LOCALE_CODES` —
    brand-independent); nothing prerenders, and the brand's own subset is checked per request.
-2. **`connection()` outside `<Suspense>` fails the build** — *"Next.js encountered uncached or
+2. **`connection()` outside `<Suspense>` fails the build** — _"Next.js encountered uncached or
    runtime data during prerendering … [block] Set `export const instant = false` to allow a
-   blocking route"*. `instant = false` on the `(site)` root layout is Next's documented opt-out
+   blocking route"_. `instant = false` on the `(site)` root layout is Next's documented opt-out
    (route-segment-config/instant: "Setting `false` on the root layout disables static shell
    validation"). The alternative — a `<Suspense>` around the page in the root layout — was
    rejected: the response would flush a 200 and a fallback before the page could answer 404 or a
@@ -79,12 +87,12 @@ Next bypasses the shell for "HTML-limited bots" — `shouldForceDynamicPPRRender
 whole page per request with blocking metadata. `htmlLimitedBots: /.*/` (documented as "fully
 disable streaming metadata") makes every user agent one. Measured after the change:
 
-| Request | Before | After |
-| --- | --- | --- |
-| `GET /en/not-found` | 200, postponed | **404** |
-| `GET /nope` (a page slug with no page) | 404 | 404 |
-| `GET /product/1706-caf%C3%A9-java` | — | **308**, `Location` set (§3) |
-| the same, with **no `User-Agent` header** | — | 200, still the shell — and no meta refresh either: the redirect exists only in the RSC payload, so without JavaScript it never happens (senior-fe #5). `/nope` and `/product/9999-x` are 200 too |
+| Request                                   | Before         | After                                                                                                                                                                                            |
+| ----------------------------------------- | -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `GET /en/not-found`                       | 200, postponed | **404**                                                                                                                                                                                          |
+| `GET /nope` (a page slug with no page)    | 404            | 404                                                                                                                                                                                              |
+| `GET /product/1706-caf%C3%A9-java`        | —              | **308**, `Location` set (§3)                                                                                                                                                                     |
+| the same, with **no `User-Agent` header** | —              | 200, still the shell — and no meta refresh either: the redirect exists only in the RSC payload, so without JavaScript it never happens (senior-fe #5). `/nope` and `/product/9999-x` are 200 too |
 
 The last row is the one gap: a request without a `User-Agent` still takes the shell path. Browsers
 and crawlers send one; the fix is for the proxy to set a non-empty one when it is missing (Next
@@ -97,17 +105,17 @@ The fixture route `(site)/[locale]/item/[idSlug]` resolves by public id and redi
 `href()`'s URL whenever the address asked for is not exactly it. Item 1706's current slug is
 `café-de-java` (outside ASCII, so its URL is percent-encoded); 1726's is `bali`.
 
-| Asked for | Answer | `Location` → then |
-| --- | --- | --- |
-| `/product/1706-caf%C3%A9-de-java` | 200 | |
-| `/product/1706-caf%C3%A9-java` (an old encoded slug) | 308 | `/product/1706-caf%C3%A9-de-java` → 200 |
-| `/product/1706-van-t%27hoff` (an old link's odd slug) | 308 | `/product/1706-caf%C3%A9-de-java` → 200 |
-| `/product/1706-van-t'hoff`, `/product/1706` | 308 | the same → 200 |
-| `/product/1726-bali` | 200 | |
-| `/product/1726-b%61li` | 308 | `/product/1726-bali` → 200 — never a second 200 |
-| `/id/produk/1706-caf%C3%A9-de-java` | 308 | `/id/produk/1706-kafe-di-jawa` → 200 |
-| `/product/1726-bali/`, `/product//1726-bali` | 308 **by Next, before the proxy** (no `x-middleware-rewrite`) | `/product/1726-bali` |
-| `/product/9999-x`, `/product/01726-bali`, `/product/1726-bali%2F`, `/en/item/1726-bali` | 404 | |
+| Asked for                                                                               | Answer                                                        | `Location` → then                               |
+| --------------------------------------------------------------------------------------- | ------------------------------------------------------------- | ----------------------------------------------- |
+| `/product/1706-caf%C3%A9-de-java`                                                       | 200                                                           |                                                 |
+| `/product/1706-caf%C3%A9-java` (an old encoded slug)                                    | 308                                                           | `/product/1706-caf%C3%A9-de-java` → 200         |
+| `/product/1706-van-t%27hoff` (an old link's odd slug)                                   | 308                                                           | `/product/1706-caf%C3%A9-de-java` → 200         |
+| `/product/1706-van-t'hoff`, `/product/1706`                                             | 308                                                           | the same → 200                                  |
+| `/product/1726-bali`                                                                    | 200                                                           |                                                 |
+| `/product/1726-b%61li`                                                                  | 308                                                           | `/product/1726-bali` → 200 — never a second 200 |
+| `/id/produk/1706-caf%C3%A9-de-java`                                                     | 308                                                           | `/id/produk/1706-kafe-di-jawa` → 200            |
+| `/product/1726-bali/`, `/product//1726-bali`                                            | 308 **by Next, before the proxy** (no `x-middleware-rewrite`) | `/product/1726-bali`                            |
+| `/product/9999-x`, `/product/01726-bali`, `/product/1726-bali%2F`, `/en/item/1726-bali` | 404                                                           |                                                 |
 
 - **Every `Location` is encoded once** — `%C3%A9`, never `%25C3%25A9` — so no redirect loops.
 - **`permanentRedirect()` answers 308 Permanent Redirect, not 301** (Next's documented status for a
@@ -130,11 +138,11 @@ The fixture route `(site)/[locale]/item/[idSlug]` resolves by public id and redi
 - The record is `'use cache'` + `cacheTag('item:<id>')` + `cacheLife('max')`; availability is
   `'use cache'` + `cacheTag('availability:<id>')`. A Server Action stands in for an editor's publish
   (`revalidateTag('item:<id>', 'max')`) and for a sale (`revalidateTag('availability:<id>',
-  { expire: 0 })`).
+{ expire: 0 })`).
 - **Availability is never stale:** six flips in a row, each followed by one request, and every
   request showed the new state (`check.mjs`, on the synthetic brand and on Indies Gallery).
 - **The test discriminates:** the same run with availability invalidated by `'max'` failed at
-  round 1 — *"availability is sold on the very next request"* was `available`.
+  round 1 — _"availability is sold on the very next request"_ was `available`.
 - **The record is stale-while-revalidate:** after an edit the next request showed edition N, the
   one after N + 1.
 
@@ -142,7 +150,7 @@ The fixture route `(site)/[locale]/item/[idSlug]` resolves by public id and redi
 
 With the panel's live check delayed 1.5 s (`SPIKE_PANEL_DELAY_MS`), the item page's first bytes
 arrived at 25–62 ms and held the title, a post's result, the ship-to form, the bag and its removal
-forms and the panel's reserved placeholder (*Checking availability…*); the panel arrived at
+forms and the panel's reserved placeholder (_Checking availability…_); the panel arrived at
 ~1,540 ms and carried no `<form>` and no post result (`check.mjs`, `firstFlush`). The panel reads
 the `shipTo` cookie and the fake availability source inside `<Suspense>`.
 
@@ -174,11 +182,11 @@ for one build; `decide.ts` already copies it onto the request (C13
 guide: "Next.js parses the Content-Security-Policy header and extracts the nonce"). Chromium, with
 JavaScript on:
 
-| `script-src` | Item page | Home | `/admin/login` |
-| --- | --- | --- | --- |
-| `'self' 'nonce-…' 'strict-dynamic'` (fresh per request) | 0 violations, 13/13 scripts nonced, hydrated, panel swapped in | 0, 9/9 | 0, 14/14 |
-| `'self' 'strict-dynamic' 'sha256-…'` | 13 violations, not hydrated, panel stuck | 9 | 14 |
-| `'self'` | 5 violations (every inline script), not hydrated, panel stuck | 2 | 3 |
+| `script-src`                                            | Item page                                                      | Home   | `/admin/login` |
+| ------------------------------------------------------- | -------------------------------------------------------------- | ------ | -------------- |
+| `'self' 'nonce-…' 'strict-dynamic'` (fresh per request) | 0 violations, 13/13 scripts nonced, hydrated, panel swapped in | 0, 9/9 | 0, 14/14       |
+| `'self' 'strict-dynamic' 'sha256-…'`                    | 13 violations, not hydrated, panel stuck                       | 9      | 14             |
+| `'self'`                                                | 5 violations (every inline script), not hydrated, panel stuck  | 2      | 3              |
 
 Nor can Subresource Integrity (`experimental.sri`) stand in: it hashes the files a build emits,
 never the inline scripts a request renders (senior-fe #9). Hashes cannot hold: Next's inline scripts carry the page's RSC payload, which changes with what the

@@ -1,23 +1,19 @@
-// 2.2.g / 3.5.b — `pnpm check:generated`: regenerate → diff → fail, generic over a
-// pluggable list of generators (ARCHITECTURE.md §2, PARALLEL-TRACKS.md §2). This
+// 2.2.g / 1.3.c — `pnpm check:generated`: regenerate → diff → fail, generic over a
+// pluggable list of generators (CARRY-OVER.md §4). This
 // module is the mechanism, unit-proven against fixture generators;
 // `generators.mjs` is the real registry, running the CMS package's own scripts.
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 
 /**
- * A generator is one of:
+ * A generator is
  *
  *   { name, committedPath, regenerate(repoRoot), expected?(repoRoot), required? }
  *     `regenerate` returns what running the real generator today produces (or
  *     `null`: not wired up). It is compared with `expected()` when given — the
- *     BRAND-unset output, for a per-brand run — else with the file at
- *     `committedPath`, which nobody hand-edits (`referenceName` says which, in
- *     the message). A `required` generator's missing reference is drift;
- *     otherwise it is a gap.
- *
- *   { name, committedPath, check(repoRoot) } → { ok, detail? }
- *     a generator that judges for itself (`schema:check`'s exit code).
+ *     committed file read before a generator that rewrites it in place — else
+ *     with the file at `committedPath`, which nobody hand-edits. A `required`
+ *     generator's missing reference is drift; otherwise it is a gap.
  *
  * Throwing `NothingToCheckYet` reports a gap (a prerequisite a later task
  * adds); throwing anything else is a violation — a generator that cannot run
@@ -47,10 +43,6 @@ export function firstDifference(reference, fresh, referenceName = 'committed') {
 async function judge(repoRoot, generator) {
   const { name, committedPath } = generator
   try {
-    if (generator.check) {
-      const { ok, detail } = await generator.check(repoRoot)
-      return ok ? {} : { violation: { name, path: committedPath, detail } }
-    }
     const fresh = await generator.regenerate(repoRoot)
     if (fresh === null) {
       return {
@@ -67,14 +59,8 @@ async function judge(repoRoot, generator) {
       return { degraded: `${name}: nothing to check yet — ${committedPath} does not exist` }
     }
     if (reference === fresh) return {}
-    const referenceName =
-      generator.referenceName ?? (generator.expected ? 'with BRAND unset' : 'committed')
     return {
-      violation: {
-        name,
-        path: committedPath,
-        detail: firstDifference(reference, fresh, referenceName),
-      },
+      violation: { name, path: committedPath, detail: firstDifference(reference, fresh) },
     }
   } catch (error) {
     if (error instanceof NothingToCheckYet) {

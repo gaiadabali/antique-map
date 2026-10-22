@@ -1,5 +1,7 @@
 # Shot list — a map
 
+*Bahasa Indonesia:* [map.id.md](map.id.md)
+
 For maps, sea charts and city plans. Set up as in the [gallery guide](../gallery-guide.md)
 §4–§6: dark background, even light, colour card and ruler beside the sheet, camera
 straight above. **No hands in any frame.** Name files `<stock>_<role>_<nn>` (the

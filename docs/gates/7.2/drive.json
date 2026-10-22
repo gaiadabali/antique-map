@@ -1,0 +1,11 @@
+{
+  "storePanel": {
+    "secondsPerStep": {
+      "a store user sees the fresh order as new, and accepts it": 1.3,
+      "the store user books the driver": 1,
+      "the store user uploads the driver’s details": 1.1,
+      "the store user marks it on the way, then delivered": 1.5
+    },
+    "totalSeconds": 4.9
+  }
+}

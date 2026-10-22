@@ -1,0 +1,113 @@
+/* The pager: square, unboxed figures; the current page in ink. Every value is a token — no raw
+   colour, no font-family. */
+
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  font: var(--text-small);
+  font-variant-numeric: var(--numeric-tabular);
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.link,
+.ellipsis {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: var(--space-1) var(--space-3);
+  color: var(--color-text);
+  text-decoration: none;
+  border: var(--rule-hair) solid transparent;
+  border-radius: var(--radius-control);
+  transition: background-color var(--dur-out) var(--ease);
+}
+
+.link:hover {
+  background: var(--color-field);
+}
+
+.current {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+.current:hover {
+  background: var(--color-accent);
+}
+
+.disabled {
+  opacity: 0.45;
+  pointer-events: none;
+  cursor: default;
+}
+
+.ellipsis {
+  color: var(--color-text-muted);
+}
+
+/* The quiet pager: the numbers centred, the current page in ink. */
+.quiet {
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-3) var(--space-2);
+}
+
+.quiet .list {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* A phone: the numbers on their own row, Previous and Next beneath at either end. */
+@media (max-width: 47.5rem) {
+  .quiet {
+    justify-content: space-between;
+  }
+
+  .quiet .list {
+    order: -1;
+    flex-basis: 100%;
+  }
+}
+
+/* The boxed pager (the shop): the numbers in joined outlined squares, the current one filled. */
+.boxed {
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.boxed .list {
+  gap: 0;
+}
+
+.boxed .list .link,
+.boxed .ellipsis {
+  min-width: 2rem;
+  min-height: 2rem;
+  padding: 0 var(--space-2);
+  margin-inline-start: calc(-1 * var(--rule-hair));
+  border-color: var(--pager-rule, var(--color-border-strong));
+  font: var(--pager-font, var(--text-small));
+}
+
+.boxed .list .current {
+  position: relative;
+  border-color: var(--color-accent);
+}
+
+.boxed > .link {
+  font: var(--pager-font, var(--text-small));
+}

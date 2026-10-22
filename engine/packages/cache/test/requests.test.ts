@@ -12,7 +12,7 @@ import {
   COLLECTOR_KEY,
   invalidate,
   invalidationBatch,
-  itemTag,
+  productTag,
   type CollectingRequest,
   type RequestContext,
 } from '../src/index'
@@ -27,7 +27,7 @@ const batchOf = () =>
 /** `payload.create({ req, context })` as it treats the two: the call's context merged into req's. */
 async function save(
   req: CollectingRequest,
-  tag: ReturnType<typeof itemTag>,
+  tag: ReturnType<typeof productTag>,
   context?: RequestContext,
 ) {
   if (context) req.context = { ...req.context, ...context }
@@ -39,12 +39,12 @@ describe('operation(write, { req })', () => {
   it("puts its collector on the req's context for the write, and takes it off again", async () => {
     const batch = batchOf()
     const req: CollectingRequest = { context: { locale: 'en' } }
-    await batch.operation(() => save(req, itemTag(1)), { req })
-    expect(batch.pending).toEqual(['item:1'])
+    await batch.operation(() => save(req, productTag(1)), { req })
+    expect(batch.pending).toEqual(['product:1'])
     expect(req.context).toEqual({ locale: 'en' })
     // The req goes on to a later write, with a collector of its own.
-    await batch.operation(() => save(req, itemTag(2)), { req })
-    expect(batch.pending).toEqual(['item:1', 'item:2'])
+    await batch.operation(() => save(req, productTag(2)), { req })
+    expect(batch.pending).toEqual(['product:1', 'product:2'])
   })
 
   it('takes it off the merged copy Payload leaves on the req, and after a throw', async () => {
@@ -53,13 +53,13 @@ describe('operation(write, { req })', () => {
     await expect(
       batch.operation(
         async (context) => {
-          await save(req, itemTag(3), { ...context, depth: 0 })
+          await save(req, productTag(3), { ...context, depth: 0 })
           throw new Error('a later hook failed')
         },
         { req },
       ),
     ).rejects.toThrow('a later hook failed')
-    expect(batch.pending).toEqual(['item:3'])
+    expect(batch.pending).toEqual(['product:3'])
     expect(Object.hasOwn(req.context ?? {}, COLLECTOR_KEY)).toBe(false)
   })
 
@@ -105,16 +105,16 @@ describe('batch.context(): a jobs run', () => {
   it('keeps every tag at once, for a flush once the run has returned', async () => {
     const batch = batchOf()
     const run: CollectingRequest = { context: batch.context() }
-    await Promise.all([save(jobReq(run), itemTag(10)), save(jobReq(run), itemTag(11))])
-    expect(batch.pending).toEqual(['item:10', 'item:11'])
+    await Promise.all([save(jobReq(run), productTag(10)), save(jobReq(run), productTag(11))])
+    expect(batch.pending).toEqual(['product:10', 'product:11'])
   })
 
   it('survives Payload merging a job call’s context into the shared req, and never closes', async () => {
     const batch = batchOf()
     const run: CollectingRequest = { context: batch.context() }
-    await save(jobReq(run), itemTag(12), { depth: 0 })
+    await save(jobReq(run), productTag(12), { depth: 0 })
     await batch.flush()
-    await save(jobReq(run), itemTag(13))
-    expect(batch.pending).toEqual(['item:13'])
+    await save(jobReq(run), productTag(13))
+    expect(batch.pending).toEqual(['product:13'])
   })
 })

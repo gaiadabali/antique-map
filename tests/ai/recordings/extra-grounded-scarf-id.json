@@ -1,0 +1,24 @@
+{
+  "caseId": "extra-grounded-scarf-id",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Syal dari sutra ada",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Berikut beberapa yang sesuai — silakan lihat di bawah."
+        }
+      ]
+    }
+  ]
+}

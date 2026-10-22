@@ -1,0 +1,209 @@
+/* =====================================================================
+   Tier 1 primitives — raw scales shared by both sites and the admin.
+   The gallery wears Ivory and ink (phase 18, the client's choice), the
+   shop Heritage (phase 20): the ivory and heritage ramps below. The Outline Colour ramps
+   (phase 17) stay as the semantic fallbacks; nothing else reads them.
+   The brand files map the ramps to roles.
+   The admin reads only the linen-to-bronze ramp, the space scale and the
+   status colours below; keep those values as they are.
+   ===================================================================== */
+
+:root {
+  /* colour ramp (the admin and the phase 4–14 roles) */
+  --primitive-linen: #f4f1ea;
+  --primitive-paper: #ffffff;
+  --primitive-cream: #f1e5d3;
+  --primitive-off-black: #1a1916;
+  --primitive-brown: #593d21;
+  --primitive-ink-soft: #5a564f;
+  --primitive-warm-grey: #8c877d;
+  --primitive-warm-grey-deep: #6e6858; /* 4.92:1 on linen — muted text role needs AA */
+  --primitive-bronze: #6e5a43;
+  --primitive-champagne: #a39174;
+  --primitive-gold: #c4a86b;
+  --primitive-positive: #1f5c30; /* 5.4:1 on light surfaces — AA text on success tint */
+  --primitive-caution: #8a5a00;
+  --primitive-critical: #a3261f;
+  --primitive-scrim: #12121299;
+
+  /* Outline Colour: the ink and the paper. Contrast checked 2026-10-12 (ink on mineral 13.3:1,
+     soft ink 6.8:1, the rule-strong boundary 3.3:1). */
+  --primitive-copperplate: #1f2a30;
+  --primitive-copperplate-soft: #4b565c;
+  --primitive-mineral: #f3f4ef;
+  --primitive-mineral-raised: #fafbf7;
+  --primitive-mineral-deep: #e6e9e2; /* a work's window at rest; soft ink 6.1:1 */
+  --primitive-rule: #cfd5d1;
+  --primitive-rule-strong: #7d878b;
+
+  /* The pigments, each as tint (a window behind a work), wash (a field, ink type on it) and full
+     (a deep field, its own type colour). `-ink` is muted type on the wash, `-mist` on the full. */
+  --primitive-verdigris-tint: #dde8e2;
+  --primitive-verdigris-wash: #8fb3a7; /* ink 6.4:1 */
+  --primitive-verdigris-full: #2d695e; /* mineral 5.8:1 */
+  --primitive-verdigris-ink: #203b36; /* 5.3:1 on the wash */
+  --primitive-verdigris-mist: #d9e9e1; /* 5.1:1 on the full */
+
+  --primitive-gamboge-tint: #eedcb0; /* straw, not cream; soft ink 5.6:1, madder 5.8:1 */
+  --primitive-gamboge-wash: #d1a752; /* ochre; ink 6.5:1, madder 3.5:1 */
+  --primitive-gamboge-full: #c9963a; /* ink 5.5:1 */
+  --primitive-gamboge-ink: #45340d; /* 5.4:1 on the wash */
+  --primitive-gamboge-mist: #3a2c0a; /* 5.1:1 on the full */
+
+  --primitive-madder-tint: #f5e4e6;
+  --primitive-madder-wash: #cf9a96; /* rose-terracotta; ink 6.1:1, madder 3.3:1 */
+  --primitive-madder-full: #8c3249; /* mineral 7.1:1; 3.4:1 against the verdigris wash */
+  --primitive-madder-ink: #52242d; /* 5.3:1 on the wash */
+  --primitive-madder-mist: #f6dfe4; /* on the full */
+  --primitive-madder-deep: #74283b; /* the action pressed */
+
+  /* Ivory and ink (phase 18, the client's choice 2026-10-12): two distinct shops on one clean
+     base. Contrast checked 2026-10-12 — every text pair AA, input boundaries ≥ 3.5:1. */
+  /* the gallery: ivory, ink, a deep green accent, an ink footer */
+  --primitive-ivory: #f7f5f0;
+  --primitive-ivory-raised: #fdfcfa;
+  --primitive-ivory-stone: #eeebe4; /* tiles and panels; muted 5.7:1 on it */
+  --primitive-ivory-ink: #1b1c1a; /* 15.7:1 on ivory */
+  --primitive-ivory-muted: #5c5b56; /* 6.3:1 on ivory */
+  --primitive-ivory-rule: #e2ded6;
+  --primitive-ivory-rule-strong: #858179; /* 3.6:1 */
+  --primitive-ivory-green: #2d5b52; /* the gallery's action; ivory on it 7.1:1 */
+  --primitive-ivory-green-deep: #234840;
+  --primitive-ivory-foot-ink: #efece6; /* 14.5:1 on the ink footer */
+  --primitive-ivory-foot-muted: #b9b5ac; /* 8.4:1 */
+  /* the shop: a warmer white, a warm-stone panel, a bronze accent, an espresso footer */
+  --primitive-shell: #faf8f4;
+  --primitive-shell-raised: #fffefc;
+  --primitive-shell-stone: #efeae1; /* print tiles; muted 5.2:1 on it */
+  --primitive-shell-panel: #e9e1d4; /* the hero and page-head panel; muted 4.8:1 */
+  --primitive-shell-ink: #221e1a; /* 15.6:1 */
+  --primitive-shell-muted: #675f56; /* 5.9:1 */
+  --primitive-shell-rule: #e6dfd3;
+  --primitive-shell-rule-strong: #8b8274; /* 3.6:1 */
+  --primitive-shell-bronze: #8a5a2b; /* the shop's action; ivory on it 5.5:1 */
+  --primitive-shell-bronze-deep: #6f4720;
+  --primitive-shell-espresso: #2a211b; /* the footer */
+  --primitive-shell-foot-ink: #efe7dc; /* 12.9:1 */
+  --primitive-shell-foot-muted: #bfb3a3; /* 7.7:1 */
+  /* The shell ramp above no longer dresses the shop (phase 19): the gallery's bridge band to the
+     shop still wears its warm panel, so the gallery stays exactly as the client chose it. */
+
+  /* Heritage (phase 20, the user's choice 2026-10-14, replacing Cobalt): the shop in the colours
+     of the owner's real logo and catalogues — the logo's cream paper as the page, the catalogues'
+     walnut wall as the hero field, the logo's own umber ink on the action, an espresso footer.
+     Contrast checked 2026-10-14 — every text pair AA, input boundaries ≥ 3.5:1 on the page. */
+  --primitive-heritage-paper: #f6f1e7;
+  --primitive-heritage-raised: #fcfaf5;
+  --primitive-heritage-tile: #ece3d4; /* print tiles; muted 5.4:1, umber 7.8:1 on it */
+  --primitive-heritage-mist: #e4d8c5; /* a tile under the pointer; muted 4.9:1 */
+  --primitive-heritage-ink: #22180f; /* 15.5:1 on the paper */
+  --primitive-heritage-muted: #67574a; /* 6.1:1 */
+  --primitive-heritage-rule: #e2d8c8;
+  --primitive-heritage-rule-strong: #8e7c67; /* 3.6:1 on the paper, 3.9:1 on raised */
+  --primitive-heritage-umber: #5d3c1d; /* the logo's ink and the action; the paper on it 8.8:1 */
+  --primitive-heritage-umber-deep: #472c14; /* the action pressed; the paper on it 11.4:1 */
+  --primitive-heritage-walnut: #2e1f16; /* the hero field, the catalogues' wood wall */
+  --primitive-heritage-on: #f3e9d8; /* type on the walnut field, 13.2:1 */
+  --primitive-heritage-on-muted: #cdb99d; /* the second voice on the field, 8.3:1 */
+  --primitive-heritage-espresso: #1e1510; /* the footer */
+  --primitive-heritage-foot-ink: #efe6d6; /* 14.5:1 */
+  --primitive-heritage-foot-muted: #b8a58b; /* 7.5:1 */
+
+  /* Gallery white (the shop's redesign, 2026-10-20, replacing Heritage): the handoff's white page,
+     soft-black ink, grey wells under framed prints, one warm band colour, and the logo's umber
+     only where the pointer rests on the action. Contrast checked 2026-10-20: ink 14.2:1 and muted
+     6.4:1 on white, muted 5.7:1 on the warm band and 5.4:1 on the well; the control boundary
+     3.7:1 on white. */
+  --primitive-oei-white: #ffffff;
+  --primitive-oei-ink: #2b2b2b;
+  --primitive-oei-muted: #5f5f5f;
+  --primitive-oei-rule: #eaeaea;
+  --primitive-oei-rule-soft: #f2f2f2; /* a quiet hover fill, the shop's sub-nav rules */
+  --primitive-oei-rule-mid: #c9c9c9; /* decorative outlines: pager, swatch rings at rest */
+  --primitive-oei-rule-strong: #858585; /* a control's boundary, 3.7:1 */
+  --primitive-oei-well: #ebebeb; /* the wall a framed print hangs on */
+  --primitive-oei-well-hover: #e3e3e3;
+  --primitive-oei-warm: #f5f2ec; /* the hero's text half, the process band, the footer */
+  --primitive-oei-mount: #fbfaf7; /* the mount board inside a frame */
+  --primitive-oei-umber: #5d3c1d; /* the logo's ink: the action under the pointer, numerals */
+  --primitive-oei-umber-deep: #472c14;
+  --primitive-oei-shadow-print: 0 1px 1px #00000014, 0 10px 18px -10px #00000059;
+  --primitive-oei-shadow-lift: 0 2px 2px #00000014, 0 18px 28px -14px #00000066;
+  /* the shop's chat panel, as its handoff (oei-chat.js) drew it */
+  --primitive-oei-chat-line: #e7e5e1; /* the panel's rules and the chips' outline */
+  --primitive-oei-chat-bubble: #f2f1ee; /* the assistant's bubble, a hover fill */
+  --primitive-oei-chat-band: #f7f6f4; /* the disclosure's band under the header */
+  --primitive-oei-chat-muted: #6b6862; /* status, disclosure, the suggestions' label */
+  --primitive-oei-chat-field: #8c8882; /* the composer's boundary, 3.4:1 */
+  --primitive-oei-chat-online: #3f7a52; /* the avatar's online dot */
+  --primitive-oei-shadow-panel: 0 2px 4px #00000014, 0 30px 60px -20px #0000004d;
+
+  /* a print hung on its tile: a soft, low shadow */
+  --primitive-shadow-print: 0 1px 2px #0000001f, 0 10px 22px -6px #00000026;
+  --primitive-shadow-print-lift: 0 2px 4px #00000024, 0 18px 32px -8px #0000002e;
+
+  /* typography sizes (px values in comments are the 16px-rem baseline) */
+  --primitive-size-display: clamp(3rem, 1.5rem + 4.4vw, 6rem); /* 48–96 */
+  --primitive-size-h1: clamp(2.5rem, 1.55rem + 3vw, 4.5rem); /* 40–72 */
+  --primitive-size-h2: clamp(1.875rem, 1.35rem + 1.6vw, 3rem); /* 30–48 */
+  --primitive-size-h3: 1.5rem; /* 24 */
+  --primitive-size-card-title: 1.375rem; /* 22 */
+  --primitive-size-number: 2.5rem; /* 40 */
+  --primitive-size-body-large: 1.1875rem; /* 19 */
+  --primitive-size-body: 1rem; /* 16 */
+  --primitive-size-small: 0.875rem; /* 14 */
+  --primitive-size-micro: 0.8125rem; /* 13 */
+  --primitive-size-caption: 0.75rem; /* 12 */
+
+  --primitive-line-display: 0.98;
+  --primitive-line-h1: 1.04;
+  --primitive-line-h2: 1.1;
+  --primitive-line-h3: 1.2;
+  --primitive-line-body: 1.6;
+  --primitive-line-small: 1.5;
+
+  --primitive-tracking-display: -0.025em;
+  --primitive-tracking-h1: -0.02em;
+  --primitive-tracking-tagline: 0.14em;
+  --primitive-tracking-eyebrow: 0.1em;
+
+  /* 4px space scale */
+  --primitive-space-1: 0.25rem;
+  --primitive-space-2: 0.5rem;
+  --primitive-space-3: 0.75rem;
+  --primitive-space-4: 1rem;
+  --primitive-space-5: 1.5rem;
+  --primitive-space-6: 2rem;
+  --primitive-space-7: 3rem;
+  --primitive-space-8: 4rem;
+  --primitive-space-9: 6rem;
+  --primitive-space-10: 8rem;
+  --primitive-space-11: 11rem;
+
+  /* the page frame: full width at every desktop size, gutters that grow with it */
+  --primitive-gutter-fluid: clamp(1.25rem, 0.25rem + 4.2vw, 6rem); /* 20 → 96 */
+  --primitive-grid-gap: clamp(1rem, 0.4rem + 1.6vw, 2.75rem);
+  --primitive-section-space: clamp(4rem, 1.5rem + 7vw, 10rem);
+
+  /* shape */
+  --primitive-radius-none: 0;
+  --primitive-radius-control: 2px;
+  --primitive-rule-hair: 1px;
+  --primitive-rule-strong: 2px;
+  --primitive-focus-width: 2px;
+  --primitive-shadow-header: 0 2px 10px #0000000d;
+  --primitive-radius-pill: 999px;
+  --primitive-radius-panel: 1rem;
+  --primitive-radius-bubble: 1.125rem;
+  --primitive-shadow-panel: 0 18px 48px #0000002e, 0 2px 8px #0000001a;
+
+  /* motion */
+  --primitive-dur-in: 320ms;
+  --primitive-dur-out: 200ms;
+  --primitive-ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --primitive-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --primitive-dur-loop: 1200ms;
+
+  /* numeric style */
+  --primitive-numeric-tabular: tabular-nums;
+}

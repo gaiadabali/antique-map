@@ -189,7 +189,7 @@ export type NewsletterBlock = Block<
 
 export type DividerBlock = Block<'divider', { title: string | null }>
 
-/** Every block — the frozen list. Adding a member is a contract change (CONTRACTS.md). */
+/** Every block: the list a block registry and its renderers are checked against. */
 export type BlockVM =
   | ProseBlock
   | FigureBlock

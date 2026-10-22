@@ -5,7 +5,8 @@
 > galeri, G1–G15): [owner-interview.id.md](owner-interview.id.md)
 
 **Untuk:** pemilik Indies Gallery dan Old East Indies · **Dari:** tim desain ·
-**Disiapkan:** 1 Oktober 2026 · **Status:** belum dikirim (TASKS.md OA2, 6.1.b)
+**Disiapkan:** 1 Oktober 2026 · **Status:** sudah dijawab langsung, 1 Oktober 2026 — jawabannya
+di [owner-answers.md](owner-answers.md) (TASKS.md OA2, 6.1.b)
 
 Ini lanjutan dari [bagian pertama](owner-interview.id.md): 15 pertanyaan untuk toko,
 **diurutkan dari yang terpenting**. Cara menjawabnya sama — jawaban singkat, pesan suara,

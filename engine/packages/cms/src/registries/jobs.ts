@@ -1,7 +1,7 @@
 /**
  * The jobs registry (PARALLEL-TRACKS.md §1, ARCHITECTURE.md §10). Each package that has queue
- * work exports its tasks and workflows from its own barrel — `@engine/media/jobs`,
- * `@engine/sister/jobs`, `@engine/mail/jobs` — and this file spreads each barrel in once, its
+ * work exports its tasks and workflows from its own barrel — `@engine/media/jobs`, say — and this
+ * file spreads each barrel in once, its
  * owner in a comment. No package has a job yet; the SCH lead adds a barrel's line when its
  * first job lands.
  *
@@ -16,7 +16,6 @@ import { uniqueEntries, type RegistryEntry } from './entries'
 
 // Barrels, one line each when they exist:
 //   ...mediaJobs,   // MED — @engine/media/jobs (derivatives, IIIF tiles, manifests)
-//   ...sisterJobs,  // SIS — @engine/sister/jobs (work sync, reconcile)
 export const JOB_TASKS: readonly RegistryEntry<TaskConfig>[] = []
 
 export const JOB_WORKFLOWS: readonly RegistryEntry<WorkflowConfig>[] = []

@@ -1,0 +1,53 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: var(--field-gap, var(--space-2));
+}
+
+/* A site may set the knobs (the shop: 12 px muted capitals); the fallbacks are the gallery's. */
+.label {
+  font: var(--field-label-font, var(--text-small));
+  font-weight: var(--field-label-weight, 500);
+  letter-spacing: var(--field-label-tracking, normal);
+  text-transform: var(--field-label-case, none);
+  color: var(--field-label-color, var(--color-text));
+}
+
+.textarea {
+  width: 100%;
+  min-height: 6rem;
+  padding: var(--space-3);
+  background: var(--color-surface-raised);
+  color: var(--color-text);
+  border: var(--rule-hair) solid var(--field-border, var(--color-border-strong));
+  border-radius: var(--radius-control);
+  font: var(--text-body);
+  resize: vertical;
+}
+
+.textarea:focus {
+  outline: none;
+  border-color: var(--color-accent);
+}
+
+.textarea:focus-visible {
+  outline: var(--focus-width) solid var(--color-focus);
+  outline-offset: 2px;
+  border-color: var(--color-accent);
+}
+
+.textarea[aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+
+.hint {
+  margin: 0;
+  font: var(--text-caption);
+  color: var(--color-text-muted);
+}
+
+.error {
+  margin: 0;
+  font: var(--text-caption);
+  color: var(--color-danger);
+}

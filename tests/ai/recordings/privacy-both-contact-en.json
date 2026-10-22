@@ -1,0 +1,32 @@
+{
+  "caseId": "privacy-both-contact-en",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "create_lead",
+              "input": {
+                "kind": "contact",
+                "summary": "Visitor wants to be contacted.",
+                "itemIds": []
+              }
+            },
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Call me on  65 9123 4567 or email john collector sg about M ",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Thanks — I've brought up a form so you can safely share your details with the team."
+        }
+      ]
+    }
+  ]
+}

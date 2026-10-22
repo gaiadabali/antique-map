@@ -1,0 +1,131 @@
+- link "Skip to content":
+    - /url: '#main'
+- banner:
+    - link "Indies Gallery, home":
+        - /url: /
+        - text: Indies Gallery
+    - button "Open menu"
+- main:
+    - text: A still from the gallery film — shown here as a poster until the film loads Est. 2001 · Singapore
+    - heading "The islands, first drawn." [level=1]
+    - paragraph: Original maps and engravings of the East Indies, 1550–1900, held in Singapore and offered with the curator’s certificate.
+    - link "Explore":
+        - /url: /browse
+    - link "Sell to us":
+        - /url: /sell-to-us
+    - paragraph: Curator-certified
+    - paragraph: Every piece signed by Dr David E. Parry
+    - paragraph: Originals only
+    - paragraph: Not one reproduction in the gallery
+    - paragraph: Museum-collected
+    - paragraph: Singapore, Leiden and Louvre Abu Dhabi
+    - heading "About" [level=2]
+    - paragraph: Indies Gallery has bought and sold antique maps, prints, books and photographs of the East Indies for over twenty-five years. Our inventory runs past 9,500 authentic pieces, from the fifteenth century to the twentieth; 2,090 of them are listed online at any time.
+    - paragraph: Every object is offered with a certificate of authenticity from our curator, Dr David E. Parry, author of The Cartography of The East Indian Islands. Our clients include the National Museum of Singapore, the National Library of Australia, the Louvre Abu Dhabi and the University of Leiden — alongside collectors buying their first map.
+    - text: In the trade since
+    - paragraph: 25 years
+    - text: Objects handled
+    - paragraph: 9,500 authentic pieces
+    - text: Held by
+    - paragraph: 4 national collections
+    - article:
+        - text: 01/
+        - heading "Bird of Paradise by Conrad Gesner, Antique print" [level=3]
+        - img "Bird of Paradise by Conrad Gesner, Antique print — the whole sheet"
+        - paragraph: print
+        - paragraph:
+            - link "Explore":
+                - /url: /product/2050
+    - article:
+        - text: 02/
+        - heading "Batavia City View, Prospect von der Bastion Gelderland ausserhalb der Stadt Batavia by Francois Xavier Habermann" [level=3]
+        - img "Batavia City View, Prospect von der Bastion Gelderland ausserhalb der Stadt Batavia by Francois Xavier Habermann — the whole sheet"
+        - paragraph: print
+        - paragraph:
+            - link "Explore":
+                - /url: /product/2013
+    - article:
+        - text: 03/
+        - heading "Aquatic snails, Bulime de Mender by Charles d'Orbigny" [level=3]
+        - img "Aquatic snails, Bulime de Mender by Charles d'Orbigny — the whole sheet"
+        - paragraph: print
+        - paragraph:
+            - link "Explore":
+                - /url: /product/1973
+    - text: The curator at work The curator
+    - heading "Dr David E. Parry" [level=2]
+    - paragraph: He wrote the reference work on East Indies cartography. Every piece we sell passes his desk first — the plate identified, the state established, the condition recorded in plain words rather than a code.
+    - paragraph: His signed certificate travels with the object, and stays with it through every owner that follows.
+    - text: Archive
+    - heading "Recently placed" [level=2]
+    - paragraph: Pieces that have found a home with collectors and institutions. We keep the record of where a piece went — never its price.
+    - paragraph: A chart of the Sunda Strait
+    - paragraph: Placed with a private collector, Singapore
+    - paragraph: View of Batavia from the roadstead
+    - paragraph: Placed with an institutional collection
+    - paragraph: Map of the Moluccas, first state
+    - paragraph: Placed with a private collector, the Netherlands
+    - text: Old East Indies
+    - heading "Live with the collection" [level=2]
+    - paragraph: 'Prints, for everyday walls: our sister shop makes museum-grade reproductions from works like these — framed and ready for a wall that an original cannot hang on.'
+    - link "Shop the prints":
+        - /url: http://shop.localhost:4417/
+    - heading "Makers and places" [level=2]
+    - paragraph: Follow the engravers, cartographers and photographers — or the places they drew.
+    - link "Browse makers":
+        - /url: /makers
+        - heading "Browse makers" [level=3]
+    - link "Browse places":
+        - /url: /places
+        - heading "Browse places" [level=3]
+    - text: Enquire
+    - heading "Nothing here is sold online" [level=2]
+    - paragraph: Tell us which map interests you. We reply within two working days with its condition report, provenance and price — and, if you wish, arrange a private viewing.
+    - link "Enquire":
+        - /url: /browse
+    - link "Sell to us":
+        - /url: /sell-to-us
+- contentinfo:
+    - list:
+        - listitem:
+            - link "Privacy":
+                - /url: /privacy
+        - listitem:
+            - link "Terms":
+                - /url: /terms
+        - listitem:
+            - link "Old East Indies — printed editions from our collection":
+                - /url: http://shop.localhost:4417/
+    - navigation:
+        - list:
+            - listitem:
+                - link "The collection":
+                    - /url: /browse
+            - listitem:
+                - link "Makers":
+                    - /url: /makers
+            - listitem:
+                - link "Places":
+                    - /url: /places
+            - listitem:
+                - link "Stories":
+                    - /url: /stories
+            - listitem:
+                - link "Sell to us":
+                    - /url: /sell-to-us
+            - listitem:
+                - link "About us":
+                    - /url: /about
+            - listitem:
+                - link "Contact":
+                    - /url: /contact
+    - paragraph: Our contact details are being added. Please check back soon.
+    - list:
+        - listitem:
+            - link "Instagram":
+                - /url: https://www.instagram.com/indiesgalleryantiques/
+        - listitem:
+            - link "Facebook":
+                - /url: https://www.facebook.com/IndiesGallery/
+- button "Chat with us"
+- alert

@@ -1,7 +1,12 @@
 # Pull-based deploy manifest (DEPLOYMENT.md §3, §9). Helios's `gaiada-poll`
 # fetches this file from `production` at the pushed SHA with its own
 # read-only App token, verifies the release's checksum, and unpacks `subdir`
-# under the matching `site_user`.
+# under the matching `site_user`. One app, one entry (TASKS.md 2.1.b): the one
+# CloudPanel site serves both staging hostnames; the poller checks the one it
+# names, and /api/health must answer 200 on both (DEPLOYMENT.md §2-§3).
+#
+# `uindies` is the one site user task 3.1 provisions; until then no release
+# goes to `production` (the old `uig`/`uoei` sites run the two-app layout).
 #
 # `site_user` must equal the pm2 process name exactly, or the agent skips the
 # reload silently and the old code keeps serving (DEPLOYMENT.md §3).
@@ -13,12 +18,7 @@
 # unfilled placeholder").
 production:
   - server: helios
-    site_user: uig
-    domain: indies-gallery.gaiada.com
-    type: node
-    subdir: indies-gallery
-  - server: helios
-    site_user: uoei
+    site_user: uindies
     domain: old-east-indies.gaiada.com
     type: node
-    subdir: old-east-indies
+    subdir: web

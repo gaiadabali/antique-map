@@ -1,0 +1,5 @@
+.price {
+  font: var(--text-price);
+  color: var(--color-text);
+  font-variant-numeric: var(--numeric-tabular);
+}

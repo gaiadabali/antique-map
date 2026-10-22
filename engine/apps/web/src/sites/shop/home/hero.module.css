@@ -1,0 +1,137 @@
+/* The shop home's hero (the handoff's oei.css §hero): 750 px, two full-bleed halves under the clear
+   header — the words on the warm left, the framed lead print on the grey right. Every value is a
+   token. */
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  block-size: 46.875rem;
+}
+
+.words {
+  display: grid;
+  place-items: center;
+  padding-block-start: var(--shop-header);
+  background: var(--shop-warm);
+}
+
+.block {
+  inline-size: 26.875rem;
+  max-inline-size: calc(100% - 2 * var(--shop-gutter));
+  padding: var(--shop-gutter) var(--shop-gutter) 2.1875rem;
+  text-align: center;
+}
+
+/* two lines, as drawn ("Old maps, / new walls.") */
+.title {
+  max-inline-size: 6.4em;
+  margin: 0 auto;
+  font: var(--shop-title-hero);
+  text-wrap: balance;
+}
+
+/* `p.lede`: outranks the global `.site-lede` (the smoke test's hook) wherever the chunks land. */
+p.lede {
+  margin: 0.9375rem 0 0;
+  font: var(--shop-text-body);
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  text-wrap: pretty;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-1) var(--space-5);
+  margin-block-start: 1.3125rem;
+}
+
+.signals {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-2) var(--space-5);
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  list-style: none;
+  font: var(--shop-text-caps);
+  color: var(--color-text-muted);
+}
+
+.wall {
+  position: relative;
+  min-inline-size: 0;
+  background: var(--shop-well);
+}
+
+.printLink {
+  display: block;
+  block-size: 100%;
+}
+
+/* The tile is the whole right half: the frame centred below the header, clear of the caption. */
+.wall .tile {
+  --print-stage-inset: calc(var(--shop-header) + 2.5rem) 8% 3.75rem;
+
+  aspect-ratio: auto;
+  block-size: 100%;
+}
+
+.blank {
+  display: block;
+}
+
+.caption {
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block-end: 0;
+  display: grid;
+  margin: 0;
+  padding: 0 var(--shop-gap) var(--shop-gap);
+  font: var(--shop-text-meta);
+}
+
+.captionTitle {
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.captionTitle:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.captionPrice {
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 56.25rem) {
+  .hero {
+    grid-template-columns: 1fr;
+    block-size: auto;
+  }
+
+  .words {
+    min-block-size: 26.375rem;
+  }
+
+  .block {
+    inline-size: 100%;
+    max-inline-size: none;
+    padding: var(--shop-gutter);
+  }
+
+  .title {
+    font-size: 1.75rem;
+  }
+
+  .wall {
+    block-size: 26.375rem;
+  }
+
+  .wall .tile {
+    --print-stage-inset: 1.75rem 12% 2.75rem;
+  }
+}

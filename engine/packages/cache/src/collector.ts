@@ -10,6 +10,10 @@
  *   a tag added after that throws, since no flush would ever post it;
  * - the **batch's own** (`batch.context()`), for work that cannot be cut into operations — a
  *   jobs run — whose tags are kept at once, so the caller flushes only once that work returned.
+ *
+ * Each tag carries whether `invalidate()` asked for immediate expiry (`now`, 5.3sold): a tag kept
+ * more than once keeps `now` once any caller asked for it — over-invalidating a profile is safe,
+ * under-invalidating one is not.
  */
 import type { CacheTag } from './tags'
 
@@ -19,38 +23,61 @@ export type RequestContext = { [key: string]: unknown }
 /** The key a collecting context carries its collector under. */
 export const COLLECTOR_KEY = '@engine/cache:collector'
 
+/** A tag a collector holds, with whether it was asked to expire at once. */
+export type TaggedEntry = { readonly tag: CacheTag; readonly now: boolean }
+
+export type AddOptions = { readonly now?: boolean }
+
+/**
+ * Every collector's brand, by `Symbol.for`: the same symbol in every copy of this module. A built
+ * server can hold two copies (an app route's bundle, and the one Payload's hooks were loaded
+ * with), and an `instanceof` from one copy refuses the other's collector — the admin's seed
+ * screen hit that (2026-10-22). The brand is what `collectorOf` checks.
+ */
+const COLLECTOR_BRAND = Symbol.for('@engine/cache:collector-brand')
+
 export abstract class Collector {
-  abstract add(tags: readonly CacheTag[]): void
+  readonly [COLLECTOR_BRAND] = true
+  abstract add(tags: readonly CacheTag[], options?: AddOptions): void
 }
+
+const isCollector = (value: unknown): value is Collector =>
+  value instanceof Collector ||
+  (typeof value === 'object' &&
+    value !== null &&
+    (value as { [COLLECTOR_BRAND]?: unknown })[COLLECTOR_BRAND] === true &&
+    typeof (value as { add?: unknown }).add === 'function')
 
 /** One operation's tags, open until the operation returns. */
 export class OperationCollector extends Collector {
-  readonly #tags = new Set<CacheTag>()
+  readonly #tags = new Map<CacheTag, boolean>()
   #open = true
 
-  add(tags: readonly CacheTag[]): void {
+  add(tags: readonly CacheTag[], options?: AddOptions): void {
     if (!this.#open) {
       throw new Error(
         'invalidate(): its operation has already returned, so these tags would never be posted',
       )
     }
-    for (const tag of tags) this.#tags.add(tag)
+    const now = options?.now ?? false
+    for (const tag of tags) this.#tags.set(tag, (this.#tags.get(tag) ?? false) || now)
   }
 
-  close(): CacheTag[] {
+  close(): TaggedEntry[] {
     this.#open = false
-    return [...this.#tags]
+    return [...this.#tags].map(([tag, now]) => ({ tag, now }))
   }
 }
 
 /** A batch's own collector: every tag is kept the moment a hook adds it. */
 export class BatchCollector extends Collector {
-  constructor(private readonly keep: (tags: readonly CacheTag[]) => void) {
+  constructor(private readonly keep: (entries: readonly TaggedEntry[]) => void) {
     super()
   }
 
-  add(tags: readonly CacheTag[]): void {
-    this.keep(tags)
+  add(tags: readonly CacheTag[], options?: AddOptions): void {
+    const now = options?.now ?? false
+    this.keep(tags.map((tag) => ({ tag, now })))
   }
 }
 
@@ -60,7 +87,7 @@ export function collectorOf(
 ): Collector | null {
   if (!context || !Object.hasOwn(context, COLLECTOR_KEY)) return null
   const collector = context[COLLECTOR_KEY]
-  if (!(collector instanceof Collector)) {
+  if (!isCollector(collector)) {
     throw new TypeError(`invalidate(): context.${COLLECTOR_KEY} is not an invalidation collector`)
   }
   return collector

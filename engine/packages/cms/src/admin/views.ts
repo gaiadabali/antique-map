@@ -1,0 +1,22 @@
+/**
+ * The ADM lane's custom admin components, one barrel (`../registries/views.ts`'s header; the
+ * package export `@engine/cms/admin/views`). Exports only — no logic here.
+ */
+export { LeadsInboxView } from './leads/inbox'
+export { LeadSourceBlock } from './leads/source-block'
+export { LeadReplyBlock } from './leads/reply-block'
+export { CreatePartnerButton } from './leads/create-partner-button'
+export { PartnerLeadsList } from './leads/partner-leads'
+export { DailyWorkEnd, DailyWorkHeading } from './daily-work-heading'
+export { LanguageLink } from './language-link'
+export { LeadsNavLink } from './leads/nav-link'
+export { OrdersNavLink } from './orders/nav-link'
+export { StockImportNavLink } from './stock-import/nav-link'
+export { StockImportView } from './stock-import/view'
+export { SeedsNavLink } from './seeds/nav-link'
+export { SeedsView } from './seeds/view'
+export { AdminIcon, AdminLogo } from './brand/marks'
+export { RupiahCell } from './cells'
+export { DashboardView } from './dashboard/view'
+export { CatalogueWall } from './wall/view'
+export { DraftFromPhotosButton } from '../ai/admin/draft-button'

@@ -111,7 +111,6 @@ export type IntakeEntry = {
 }
 
 export type IntakeManifest = {
-  readonly brand: string
   readonly batch: string
   /** When the batch arrived, ISO 8601 with its offset. */
   readonly receivedAt: string

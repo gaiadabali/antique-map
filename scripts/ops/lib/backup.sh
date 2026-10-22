@@ -1,8 +1,12 @@
 # shellcheck shell=bash
-# Nightly dumps of every brand database this script provisioned (DEPLOYMENT.md §6), by a systemd
-# timer. Local disk only for now: an off-box copy needs a target this host does not have yet
-# (§6 wants 30 days off-box). An executable /etc/indies/backup-offbox, when the owner adds one,
-# is handed each finished dump and fails the run if it fails, so the timer shows the failure.
+# The nightly dump of the one database (DEPLOYMENT.md §9), by a systemd timer: pg_dump
+# --format=custom, checked with pg_restore --list, root-only, never half-written, refused under
+# 10% free disk, 7 days kept. The list is exactly this run's database: the two-app databases
+# (ig_db, oei_db) are gone after the retirement, and dumping a missing one would fail every night.
+# Local disk only until the owner names the off-box target (§9 Open; 30 days off-box, encrypted):
+# an executable /etc/indies/backup-offbox, when one is installed, is handed each finished dump
+# and fails the run if it fails, so the timer shows the failure. Nothing here touches RustFS:
+# whatever sits under masters/intake/ is never deleted by a backup.
 
 BACKUP_DIR=$BACKUP_ROOT
 BACKUP_LIST=/etc/indies/backup-databases
@@ -43,19 +47,10 @@ indies_db_backup_main() {
 }
 
 ensure_backups() {
-  say "backups: nightly pg_dump of each brand database (local, $BACKUP_RETAIN_DAYS days)"
+  say "backups: nightly pg_dump of $S_DB (local, $BACKUP_RETAIN_DAYS days)"
   ensure_dir /etc/indies 755 root:root
   ensure_dir "$BACKUP_DIR" 700 root:root
-  local have='' dbs app
-  [ -f "$BACKUP_LIST" ] && have="$(grep -E '^[a-z_][a-z0-9_]*$' "$BACKUP_LIST" || true)"
-  dbs="$(
-    printf '%s\n' "$have"
-    for app in $(selected_apps); do
-      load_site "$app"
-      printf '%s\n' "$S_DB"
-    done
-  )"
-  printf '%s\n' "$(sed '/^$/d' <<<"$dbs" | sort -u)" | put_file "$BACKUP_LIST" 644 root:root
+  printf '%s\n' "$S_DB" | put_file "$BACKUP_LIST" 644 root:root
 
   {
     printf '#!/usr/bin/env bash\n'
@@ -69,7 +64,7 @@ ensure_backups() {
   PUT_CHANGED=0
   cat <<INI | put_file /etc/systemd/system/indies-db-backup.service 644 root:root
 [Unit]
-Description=Nightly dump of the Indies brand databases (local; scripts/ops/helios-provision.sh)
+Description=Nightly dump of the Indies Platform database (local; scripts/ops/helios-provision.sh)
 After=postgresql.service postgresql@$PG_MAJOR-main.service
 
 [Service]
@@ -80,7 +75,7 @@ IOSchedulingClass=idle
 INI
   cat <<INI | put_file /etc/systemd/system/indies-db-backup.timer 644 root:root
 [Unit]
-Description=Nightly dump of the Indies brand databases
+Description=Nightly dump of the Indies Platform database
 
 [Timer]
 OnCalendar=*-*-* $BACKUP_AT
@@ -98,5 +93,5 @@ INI
     ensure_enabled_active indies-db-backup.timer
   fi
   [ -x /etc/indies/backup-offbox ] ||
-    note "no /etc/indies/backup-offbox: dumps stay on this disk until an off-box target exists (DEPLOYMENT.md §6)"
+    note "no /etc/indies/backup-offbox: dumps stay on this disk until the owner names an off-box target (DEPLOYMENT.md §9 Open)"
 }

@@ -1,10 +1,16 @@
 name: CI
 
-# Every push to main and every PR into it gets static checks; e2e and
-# Lighthouse are skipped on a docs-only change (`changes`, TASKS.md 2.3.a).
-# The deploy artifact and its release are a separate workflow (release.yml),
-# triggered by a push to `production` (DEPLOYMENT.md §3) — this file never
-# writes to Helios or GitHub Releases.
+# Every push to main and every PR into it gets the static checks and the production-dependency
+# audit; the unit tests, the real-database tests, e2e and Lighthouse are skipped on a docs-only
+# change (`changes`). The secret scan (secrets.yml) runs on every push to any branch; CodeQL is
+# GitHub's default setup, a repository setting with no workflow file (the user's decision of
+# 2026-10-08, the file removed 2026-10-10: the default setup refused its upload on every push).
+# The deploy artifact and its release are a separate workflow (release.yml), triggered by a push
+# to `production` (DEPLOYMENT.md §3) — this file never writes to Helios or GitHub Releases.
+#
+# Wall clock is the longest job, not the sum: the jobs run side by side, and inside a job the
+# independent steps run together (.github/scripts/run-parallel.sh). The e2e job is the long pole;
+# see e2e.yml for what it caches.
 on:
   push:
     branches: [main]
@@ -23,9 +29,9 @@ env:
   NEXT_TELEMETRY_DISABLED: '1'
 
 jobs:
-  # Docs-only pushes (docs/**, manual/**, *.md, TASKS.md, .claude/**) skip e2e
-  # and Lighthouse. `static` still runs — it is fast and `tasks:lint` reads
-  # TASKS.md itself, so a docs-only push is exactly the case it must not skip.
+  # Docs-only pushes (docs/**, manual/**, *.md, TASKS.md, .claude/**) skip every test job.
+  # `static` still runs — it is fast and `tasks:lint` reads TASKS.md itself, so a docs-only push is
+  # exactly the case it must not skip.
   changes:
     name: What changed
     runs-on: ubuntu-latest
@@ -49,60 +55,86 @@ jobs:
   static:
     name: Static checks
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: ./.github/actions/setup-pnpm-node
 
-      - name: File size (300-line rule)
-        run: pnpm check:filesize
-      - name: Brand-literal lint
-        run: pnpm lint:brand-literals
-      # No 'use client' module under engine/ reaches zod, the config schema, node:*, Payload or
-      # @engine/cms (engine/tooling/client-safe, TASKS.md 4.2) — named here as `pnpm verify` runs it.
-      - name: Client-safe gate
-        run: pnpm check:client-safe
-      - name: Route parity
-        run: pnpm check:routes
+      # High and critical advisories in what ships fail (SECURITY.md D2, CONVENTIONS.md §15). It
+      # reads the lockfile against the registry's advisories.
+      - name: pnpm audit --prod --audit-level=high
+        run: pnpm audit --prod --audit-level=high
+
+      - name: TASKS.md structure and progress table
+        run: pnpm tasks:lint && pnpm tasks:check
+
+      # Alone, before the others: it regenerates importMap.js in place and puts it back, and the
+      # type check reads that file.
       - name: Generated files are current
         run: pnpm check:generated
-      - name: TASKS.md structure
-        run: pnpm tasks:lint
 
-      # validateBrandConfigs() is 3.1's (engine/packages/config/src/validate.ts)
-      # — not written yet. Explicit, named skip rather than a silent gap, so
-      # this step starts failing loudly the day the script exists but this
-      # line was forgotten.
-      - name: Brand config validation (TODO 3.1 — validateBrandConfigs())
-        run: |
-          if pnpm run 2>/dev/null | grep -q 'validate:brand-configs'; then
-            pnpm run validate:brand-configs
-          else
-            echo "::notice::validateBrandConfigs() is not wired up yet (TASKS.md 3.1.a) — skipping explicitly, not silently."
-          fi
+      # Read-only checks over the same tree, side by side (each prints in its own group).
+      - name: File size, formatting, lint and types (in parallel)
+        run: >-
+          bash .github/scripts/run-parallel.sh
+          'File size (300-line rule)' 'pnpm check:filesize'
+          'Formatting' 'pnpm format:check'
+          'Lint' 'pnpm lint'
+          'Types' 'pnpm typecheck'
 
-      - name: Formatting
-        run: pnpm format:check
-      - name: Lint
-        run: pnpm lint
-      - name: Types
-        run: pnpm typecheck
-      - name: Unit tests
-        run: pnpm test
-
-      # Guard only: Helios fetches .gaiadeploy.yml itself from `production` at
-      # the pushed SHA, so this catches a bad manifest on the PR that broke
-      # it, not at deploy time. "Never commit TBD" (DEPLOYMENT.md §3) — a
-      # committed placeholder had another repo's poller failing every 60s for
-      # weeks.
-      - name: Deploy manifest exists, parses, and has no TBD
+      # Guard only: Helios fetches .gaiadeploy.yml itself from `production` at the pushed SHA, so
+      # this catches a bad manifest on the PR that broke it, not at deploy time. "Never commit TBD"
+      # (DEPLOYMENT.md §3) — a committed placeholder had another repo's poller failing every 60s
+      # for weeks. One app, one release subdir: exactly one entry, unpacking `web`.
+      - name: Deploy manifest exists, parses, has no TBD and one entry for web/
         run: |
           test -f .gaiadeploy.yml || { echo "::error::.gaiadeploy.yml is missing"; exit 1; }
           if grep -qE '\bTBD\b' .gaiadeploy.yml; then
             echo "::error::.gaiadeploy.yml still contains TBD"
             exit 1
           fi
-          python3 -c "import yaml; yaml.safe_load(open('.gaiadeploy.yml'))"
+          python3 - <<'PY'
+          import sys, yaml
+          entries = yaml.safe_load(open('.gaiadeploy.yml'))['production']
+          if len(entries) != 1 or entries[0].get('subdir') != 'web':
+              print(f"::error::.gaiadeploy.yml needs exactly one production entry with subdir web, found {entries}")
+              sys.exit(1)
+          PY
+
+  # The unit tests import no database test (`*.db.test.*` are their own run, `db-tests` below).
+  unit:
+    name: Unit tests
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: ./.github/actions/setup-pnpm-node
+      - name: Unit tests
+        run: pnpm test
+      - name: AI eval (recorded set)
+        run: pnpm ai:eval
+
+  # The CMS's real-database tests (`*.db.test.*`). Each test file gets its own database, cloned
+  # from one migrated template, and drops it after. CMS_TEST_POSTGRES_URL names the maintenance
+  # database; the role must be able to CREATE DATABASE. Without the variable they skip, so this job
+  # is what runs them.
+  db-tests:
+    name: Database tests
+    needs: changes
+    if: needs.changes.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      CMS_TEST_POSTGRES_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      # Postgres 18 on the runner (PGDG apt), not a container: no registry pull limit.
+      - uses: ./.github/actions/setup-postgres
+      - uses: ./.github/actions/setup-pnpm-node
+      - name: CMS real-database tests
+        run: pnpm test:db
 
   e2e:
     name: End-to-end
@@ -115,13 +147,12 @@ jobs:
     needs: changes
     if: needs.changes.outputs.code == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 25
-    # Lighthouse audits the routes that exist today (TASKS.md 4.4.c) on the release's own tree,
-    # started as a host runs it (.github/scripts/start-server.sh): the gallery's home and the
-    # spike's item page (SPIKE_ROUTES=1, local hosts only) for Indies Gallery on :4200, the
-    # emporium's home for Old East Indies on :4201 — lighthouserc.{gallery,emporium}.json.
-    # LOCAL_PRODUCTION_BUILD=1: a production build at a loopback SITE_URL is judged production
-    # without it (TASKS.md 4.2.d, 3.5's report); start-server.sh sets it on each server.
+    timeout-minutes: 15
+    # Lighthouse audits both sites' home pages (lighthouserc.web.json) on the release's own tree,
+    # ONE server started as a host runs it (.github/scripts/start-server.sh) and asked for by each
+    # hostname, gallery.localhost and shop.localhost, on one port, each host its own site.
+    # LOCAL_PRODUCTION_BUILD=1: a production build at local hosts is judged production without
+    # it (DEPLOYMENT.md §7); start-server.sh sets it on the server.
     env:
       LOCAL_PRODUCTION_BUILD: '1'
       PGHOST: 127.0.0.1
@@ -129,49 +160,54 @@ jobs:
       POSTGRES_USER: postgres
       PGPASSWORD: postgres
       DB_SUFFIX: ci
-    services:
-      postgres:
-        image: postgres:18.0
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        ports: ['5432:5432']
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 20
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      # Postgres 18 on the runner (PGDG apt), not a container: no registry pull limit.
+      - uses: ./.github/actions/setup-postgres
       - uses: ./.github/actions/setup-pnpm-node
 
+      # Turbopack's build cache, warm from the e2e job's last save on main (e2e.yml). Read only here.
+      - name: Restore the Next build cache
+        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: engine/apps/web/.next/cache
+          key: next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            next-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+
+      # The runner image ships psql; install it only if a future image drops it.
       - name: Postgres client
-        run: sudo apt-get install -y postgresql-client
+        run: command -v psql || sudo apt-get install -y postgresql-client
 
-      - name: db:fresh — ig and oei (created and migrated)
-        run: |
-          pnpm db:fresh --brand indies-gallery --suffix "$DB_SUFFIX"
-          pnpm db:fresh --brand old-east-indies --suffix "$DB_SUFFIX"
-
-      - name: Build both apps (no database env)
-        run: env -u DATABASE_URL -u PAYLOAD_SECRET pnpm build
-
-      # Next's own bundle as the gate (TASKS.md 5.5.e, ARCHITECTURE.md §15): no engine route's
-      # synchronously loaded chunks hold engine/packages/cms or Payload; a lazy import() may.
-      - name: Engine routes bundle no Payload (both apps)
-        run: node engine/tooling/bundle-scan/cli.mjs
+      # The database (4 s) and the build, which never reads one (CONVENTIONS.md §12: no
+      # DATABASE_URL or PAYLOAD_SECRET, and pg's PGHOST fallback at a port that refuses every
+      # connection), side by side.
+      - name: Database (created and migrated) and the build (no database env), in parallel
+        run: >-
+          bash .github/scripts/run-parallel.sh
+          'db:fresh' 'pnpm db:fresh --suffix "$DB_SUFFIX"'
+          'Build' 'env -u DATABASE_URL -u PAYLOAD_SECRET PGHOST=127.0.0.1 PGPORT=1 pnpm build'
 
       - name: Assemble the release tree
         run: bash .github/scripts/assemble-artifact.sh "$RUNNER_TEMP/artifact"
 
-      - name: Start the servers (ig with the spike's routes, oei)
-        run: |
-          set -euo pipefail
-          art="$RUNNER_TEMP/artifact"
-          bash .github/scripts/start-server.sh ig "$art/indies-gallery" gallery 4200 "indies_gallery_$DB_SUFFIX" indies-gallery "$art/indies-gallery/brand" SPIKE_ROUTES=1
-          bash .github/scripts/start-server.sh oei "$art/old-east-indies" emporium 4201 "old_east_indies_$DB_SUFFIX" old-east-indies "$art/old-east-indies/brand"
+      - name: Map gallery.localhost and shop.localhost to loopback
+        run: echo '127.0.0.1 gallery.localhost shop.localhost' | sudo tee -a /etc/hosts
 
-      - name: Lighthouse budgets (both apps)
+      # The bag cookie's signing secret: without it every page that reads the bag logs an error
+      # (docs/gates/phase-6-checks.md Finding 3). One random value per job, masked.
+      - name: BAG_COOKIE_KEY for the server
+        run: |
+          bag="$(openssl rand -base64 32)"
+          echo "::add-mask::$bag"
+          echo "BAG_COOKIE_KEY=$bag" >> "$GITHUB_ENV"
+
+      - name: Start the server (both hosts, one port)
+        run: >-
+          bash .github/scripts/start-server.sh web "$RUNNER_TEMP/artifact/web" 4200
+          "indies_$DB_SUFFIX" "BAG_COOKIE_KEY=$BAG_COOKIE_KEY"
+
+      - name: Lighthouse budgets (both hosts)
         run: pnpm lhci
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2

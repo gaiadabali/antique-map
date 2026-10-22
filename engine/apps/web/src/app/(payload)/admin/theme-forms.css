@@ -1,0 +1,172 @@
+/* The admin's record fields (TASKS.md 16): white paper inputs on the linen ground, labels in ink,
+   help in the muted tone, one bronze primary in the save bar. Sections (collapsibles, rows of an
+   array) are paper panels with a hairline; nothing rounds past 2 px. Tokens only. */
+
+/* ---- labels, help, errors -------------------------------------------------------------------- */
+
+.field-type .field-label,
+.field-label {
+  font: var(--admin-text-strong);
+  color: var(--admin-ink);
+}
+
+.field-label .required {
+  color: var(--admin-danger);
+}
+
+.field-description {
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+  max-inline-size: 72ch;
+}
+
+.field-error .tooltip-content,
+.field-type .tooltip--error,
+.field-error {
+  background: var(--admin-danger);
+  color: var(--admin-paper);
+  border-radius: var(--admin-radius-control);
+  font: var(--admin-text-small);
+}
+
+/* ---- controls -------------------------------------------------------------------------------- */
+
+.field-type input:not([type='checkbox']):not([type='radio']),
+.field-type textarea,
+.react-select .rs__control,
+.search-filter__input {
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-input-border);
+  border-radius: var(--admin-radius-control);
+  box-shadow: none;
+  color: var(--admin-ink-strong);
+  font: var(--admin-text-body);
+  transition:
+    border-color var(--admin-dur) var(--admin-ease),
+    box-shadow var(--admin-dur) var(--admin-ease);
+}
+
+.field-type input:not([type='checkbox']):not([type='radio']),
+.react-select .rs__control {
+  min-height: var(--admin-control-height);
+}
+
+.field-type input:not([type='checkbox']):not([type='radio']):hover,
+.field-type textarea:hover,
+.react-select .rs__control:hover {
+  border-color: var(--admin-ink);
+  box-shadow: none;
+}
+
+.field-type input:not([type='checkbox']):not([type='radio']):focus,
+.field-type textarea:focus,
+.react-select .rs__control--is-focused,
+.search-filter__input:focus {
+  border-color: var(--admin-accent);
+  box-shadow: 0 0 0 2px var(--admin-accent-tint);
+  outline: none;
+}
+
+.field-type input::placeholder,
+.field-type textarea::placeholder,
+.search-filter__input::placeholder,
+.react-select .rs__placeholder {
+  color: var(--admin-muted);
+}
+
+.field-type input:disabled,
+.field-type textarea:disabled,
+.field-type.read-only input,
+.react-select--is-disabled .rs__control,
+.react-select .rs__control--is-disabled {
+  background: var(--admin-wash);
+  border-color: var(--admin-hairline);
+  color: var(--admin-muted);
+}
+
+.field-type.error input,
+.field-type.error textarea,
+.react-select--error .rs__control {
+  border-color: var(--admin-danger);
+  background: var(--admin-paper);
+}
+
+/* One control height for every input in a row: the select's own typing box is 40 px, so the
+   control takes no vertical padding of its own (Payload's 7 px pushed it to 60). */
+.react-select .rs__control {
+  padding-block: 0;
+  min-block-size: var(--admin-control-height);
+}
+
+.react-select .rs__value-container {
+  padding-block: 0;
+}
+
+.react-select .rs__input-container {
+  block-size: calc(var(--admin-control-height) - 2px);
+}
+
+.react-select .rs__menu {
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+  box-shadow: var(--admin-shadow-popup);
+}
+
+.react-select .rs__option {
+  font: var(--admin-text-body);
+  color: var(--admin-ink);
+}
+
+.react-select .rs__option--is-focused {
+  background: var(--admin-accent-tint);
+}
+
+.react-select .rs__option--is-selected {
+  background: var(--admin-accent);
+  color: var(--admin-accent-on);
+}
+
+.react-select .rs__multi-value {
+  background: var(--admin-accent-tint);
+  border-radius: var(--admin-radius-control);
+  color: var(--admin-ink);
+}
+
+.checkbox-input__input,
+.checkbox-input input[type='checkbox'] {
+  border: 1px solid var(--admin-input-border);
+  border-radius: var(--admin-radius-control);
+  background: var(--admin-paper);
+}
+
+.checkbox-input--checked .checkbox-input__input {
+  background: var(--admin-accent);
+  border-color: var(--admin-accent);
+  color: var(--admin-accent-on);
+}
+
+.radio-input__styled-radio {
+  border-color: var(--admin-input-border);
+}
+
+.radio-input--is-selected .radio-input__styled-radio::before {
+  background: var(--admin-accent);
+}
+
+/* The browser's own file picker, in the palette: a paper button with an ink hairline. */
+input[type='file']::file-selector-button {
+  margin-inline-end: calc(var(--base) * 0.5);
+  min-block-size: 2.25rem;
+  padding: 0 calc(var(--base) * 0.6);
+  border: 1px solid var(--admin-input-border);
+  border-radius: var(--admin-radius-control);
+  background: var(--admin-paper);
+  color: var(--admin-ink);
+  font: var(--admin-text-strong);
+  cursor: pointer;
+}
+
+input[type='file']::file-selector-button:hover {
+  border-color: var(--admin-ink);
+}

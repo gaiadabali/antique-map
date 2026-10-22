@@ -1,20 +1,20 @@
 /**
  * `@engine/cache` stays a leaf (TASKS.md 4.8.c, 4.8.d; ARCHITECTURE.md §15 condition 4): its
- * modules import `next` and no engine package but C1's types; `next` is a peer, pinned for its
+ * modules import `next` and no engine package but the config's types; `next` is a peer, pinned for its
  * tests at the apps' version, and the lockfile resolves one `next` — two copies would give
  * `after()` and `revalidateTag()` request stores of their own, and `invalidate()` would find no
- * request inside one. What it restates of other contracts matches them: C13's
- * `REVALIDATE_REQUEST` and C1's work-uid prefix.
+ * request inside one. What it restates of other packages matches them: `@engine/http`'s
+ * `REVALIDATE_REQUEST`, and the sites and the gallery's work-uid prefix (`SITES`).
  */
 import { readdirSync, readFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { brandConfigSchema } from '@engine/config/schema'
+import { SITE_KEYS, SITES } from '@engine/config/sites'
 import ts from 'typescript'
 import { describe, expect, it } from 'vitest'
 
-import { REVALIDATE_ROUTE, workTag } from '../src/index'
+import { REVALIDATE_ROUTE, settingsTag, TAG_SITES, workTag } from '../src/index'
 
 const packageRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const repoRoot = path.resolve(packageRoot, '../../..')
@@ -149,45 +149,12 @@ describe('what it restates', () => {
     expect(read(file)).toContain(`route('${REVALIDATE_ROUTE.path}', 'WEB', 'revalidate', POST)`)
   })
 
-  it("C1's work-uid prefix: workTag() takes what ids.workUidPrefix does, and no other", () => {
-    // The synthetic brand's config, its prefix varied: C1 judges the field in a whole config.
-    const config = json(path.join(repoRoot, 'test/site/brand.gallery.json'))
-    const prefix = {
-      safeParse(value: string) {
-        const result = brandConfigSchema.safeParse({
-          ...config,
-          ids: { ...config.ids, workUidPrefix: value },
-        })
-        const refused =
-          !result.success &&
-          result.error.issues.some((issue) => issue.path.join('.') === 'ids.workUidPrefix')
-        return { success: !refused }
-      },
-    }
-    expect(brandConfigSchema.safeParse(config).success).toBe(true)
-    const samples = [
-      'FX',
-      'TG',
-      'ABC',
-      'A1',
-      'Z9Z9Z9Z9',
-      'ABCDEFGHI',
-      'A',
-      'a1',
-      '1A',
-      'A-B',
-      'ÅB',
-      '',
-    ]
-    for (const sample of samples) {
-      const byC1 = prefix.safeParse(sample).success
-      let byTag = true
-      try {
-        workTag(`${sample}-000123`)
-      } catch {
-        byTag = false
-      }
-      expect(byTag, sample).toBe(byC1)
-    }
+  it('the sites’ facts: workTag() takes the gallery’s work-uid prefix, and the site tags name a site', () => {
+    const prefix = SITES.gallery.works.uidPrefix
+    expect(workTag(`${prefix}-000123`)).toBe(`work:${prefix}-000123`)
+    expect(() => workTag(`${prefix.toLowerCase()}-000123`)).toThrow(/not a workUid/)
+    // Restated in the leaf (it imports no package): the sites a settings or redirects tag names.
+    expect([...TAG_SITES]).toEqual([...SITE_KEYS])
+    for (const site of SITE_KEYS) expect(settingsTag(site)).toBe(`settings:${site}`)
   })
 })

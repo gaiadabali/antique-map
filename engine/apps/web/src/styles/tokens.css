@@ -1,0 +1,13 @@
+/* =====================================================================
+   Token entry for the storefront layout.
+   Imports the shared tier-1 primitives, tier-3 semantic aliases, and both
+   site palettes. The gallery values are the default (:root); the shop
+   overrides only inside [data-site="shop"].
+   ===================================================================== */
+
+@import '../shared/styles/tokens/primitives.css';
+@import '../shared/styles/tokens/semantic.css';
+@import '../sites/gallery/tokens/brand.css';
+@import '../sites/shop/tokens/brand.css';
+@import '../sites/shop/tokens/layout.css';
+@import '../sites/shop/tokens/chat.css';

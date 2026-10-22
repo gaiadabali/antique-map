@@ -1,7 +1,7 @@
 /**
  * What the two schema scripts share (`./generate-migration`, `./schema-check`): a Payload
- * instance built from the one config with **no brand**, the migration folder's latest snapshot,
- * and a clean exit code. Run through `payload run`, which loads TypeScript and the nearest
+ * instance built from the one config, the migration folder's latest snapshot, and a clean exit
+ * code. Run through `payload run`, which loads TypeScript and the nearest
  * `.env*` file, and which would otherwise exit 0 whatever happened.
  *
  * Generating or diffing schema reads no secret and, unless asked to, opens no connection; the
@@ -12,14 +12,7 @@ import path from 'node:path'
 
 import { getPayload, type Payload, type SanitizedConfig } from 'payload'
 
-export async function schemaPayload(options: {
-  connect: boolean
-  /** Keep the caller's `BRAND` — only to prove the schema is the same with it (2.2.g). */
-  keepBrand?: boolean
-}): Promise<Payload> {
-  // A migration is generated from the brand-independent config, whatever the shell has set
-  // (ARCHITECTURE.md §2).
-  if (!options.keepBrand) delete process.env.BRAND
+export async function schemaPayload(options: { connect: boolean }): Promise<Payload> {
   process.env.PAYLOAD_MIGRATING = 'true'
   process.env.DISABLE_PAYLOAD_HMR = 'true'
   process.env.PAYLOAD_SECRET ||= 'schema-generation-only-never-signs-anything'

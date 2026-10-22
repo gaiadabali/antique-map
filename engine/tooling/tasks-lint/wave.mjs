@@ -1,6 +1,7 @@
 // `pnpm tasks:lint --phase <n> --wave <k>` (TASKS.md 2.2.f): whether this
 // specific wave is actually ready to dispatch — its phase's needs are ✅ and
-// every task in the wave has its dependencies ticked — not the whole
+// every task in the wave has its dependencies ticked, and no two of its tasks
+// own one path (as the full lint's owns-overlap rule) — not the whole
 // document's structural health (that's `lintFullFile`).
 //
 // The status suffixes (3.3.d, `status.mjs`) read as the board's rules say:
@@ -13,6 +14,7 @@
 //   piece of a cut one is blocked until the need is re-pointed — it will never
 //   be ✅. (A subtask ticked before the cut was delivered and still counts.)
 import { expandNeedsToken } from './needs.mjs'
+import { findWaveConflicts, overlapMessage } from './owns.mjs'
 import { isCut, statusEntry } from './status.mjs'
 
 /** A phase is done when every task that still counts is ticked (and at least one does). */
@@ -64,6 +66,12 @@ export function checkWaveReadiness(model, tasks, phaseNumber, waveLabel) {
   if (waveTasks.length === 0) {
     blockers.push(`phase ${phaseNumber} has no task in wave ${waveLabel} that is not ✂️ cut`)
     return { ready: false, blockers }
+  }
+
+  // Two tasks of the wave owning one path is the collision a wave exists to prevent: refused here
+  // as the full lint refuses it (PARALLEL-TRACKS.md §5, gate F4).
+  for (const conflict of findWaveConflicts(waveTasks)) {
+    blockers.push(`Owns overlap: ${overlapMessage(conflict)}`)
   }
 
   for (const task of waveTasks) {

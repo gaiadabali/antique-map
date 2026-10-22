@@ -1,0 +1,24 @@
+{
+  "caseId": "shop-price-framed-variant-en",
+  "turns": [
+    {
+      "classifierLabel": "price_request",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "What is the framed version of the Bali print",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "It's Rp 650.000."
+        }
+      ]
+    }
+  ]
+}

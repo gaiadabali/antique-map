@@ -1,18 +1,18 @@
 /**
- * The read side (ARCHITECTURE.md §9, CONVENTIONS.md §12): how a `'use cache'` scope tags itself,
- * and the lifetime a scope that shows an availability status declares.
+ * The read side (ARCHITECTURE.md §6, CONVENTIONS.md §12): how a `'use cache'` scope tags itself,
+ * and the lifetime a scope that shows a stock status declares.
  */
 import { cacheLife, cacheTag } from 'next/cache'
 
 import { requireCacheTag, type CacheTag } from './tags'
 
 /**
- * The backstop every cached scope that shows an availability status declares as **its own**
- * `cacheLife` (`cacheLife(AVAILABILITY_STATUS_LIFE)`), beside its `availability:<id>` tags: an
+ * The backstop every cached scope that shows a stock status declares as **its own**
+ * `cacheLife` (`cacheLife(AVAILABILITY_STATUS_LIFE)`), beside its `product-stock:<id>` tags: an
  * explicit outer `cacheLife` wins over an inner one, so a status read nested in a `'max'` listing
- * would otherwise keep the listing's lifetime. A missed invalidation, or a hold or checkout lock
- * lapsing at its `expiresAt` with no write to announce it, then heals within a minute. No
- * purchase control acts on a cached status: the purchase panel reads availability live.
+ * would otherwise keep the listing's lifetime. A missed invalidation, or an unpaid order
+ * expiring at its `expiresAt` with no write to announce it, then heals within a minute. No
+ * purchase control acts on a cached status: the bag and checkout read stock live.
  */
 export const AVAILABILITY_STATUS_LIFE = Object.freeze({
   stale: 30,

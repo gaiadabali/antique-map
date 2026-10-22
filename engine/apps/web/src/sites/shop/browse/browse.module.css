@@ -1,0 +1,206 @@
+/* The shop listing (the redesign of 2026-10-20, the handoff's oei.css §shop): breadcrumb, title
+   with its count, a hairline sub-nav of categories, a sticky sort bar, framed cards 4 to a row (2 on
+   a phone), the boxed pager. Every value is a token. */
+
+/* Breaks out of the shell's reading column; the shell's main already pads the top. */
+.browse {
+  display: flex;
+  flex-direction: column;
+  width: var(--page-wrap);
+  margin-inline-start: 50%;
+  translate: -50% 0;
+  margin-block-start: calc(1.625rem - var(--space-7));
+  padding: 0 var(--shop-gutter) var(--shop-section);
+}
+
+.head {
+  padding-block: 0.625rem;
+}
+
+.title {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.375rem;
+  margin: 0;
+  font: var(--shop-title-page);
+  line-height: 1.1;
+}
+
+.total {
+  padding-block-start: var(--space-1);
+  font: var(--shop-text-meta);
+  line-height: 1;
+  color: var(--color-text-muted);
+}
+
+.description {
+  max-inline-size: 31.25rem;
+  margin: 0.6875rem 0 0;
+  font: var(--shop-text-body);
+  color: var(--color-text-muted);
+}
+
+/* the category sub-nav: one row on hairlines, scrolling inside itself on a phone */
+.tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0.9375rem;
+  min-block-size: 3.1875rem;
+  margin-inline: calc(-1 * var(--shop-gutter));
+  padding-inline: var(--shop-gutter);
+  box-shadow:
+    inset 0 var(--rule-hair) 0 var(--shop-rule-soft),
+    inset 0 calc(-1 * var(--rule-hair)) 0 var(--shop-rule-soft);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  align-self: stretch;
+  font: var(--shop-text-body);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color var(--dur-out) var(--ease);
+}
+
+.tab:hover,
+.tab[aria-current='page'] {
+  color: var(--color-text);
+}
+
+.tab[aria-current='page'] {
+  font-weight: 500;
+}
+
+/* the sort bar sticks under the header while the grid scrolls */
+.toolbar {
+  position: sticky;
+  inset-block-start: var(--shop-header);
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  min-block-size: 3.0625rem;
+  margin-inline: calc(-1 * var(--shop-gutter));
+  padding-inline: var(--shop-gutter);
+  background: var(--color-surface);
+}
+
+.sortRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-inline-size: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.sortRow::-webkit-scrollbar {
+  display: none;
+}
+
+.sortLabel {
+  flex: none;
+  font: var(--shop-text-caps);
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.sorts {
+  display: inline-flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: var(--rule-hair) solid var(--shop-rule-mid);
+}
+
+.sorts li + li {
+  box-shadow: inset var(--rule-hair) 0 0 var(--shop-rule-mid);
+}
+
+.sortLink {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 1.5rem;
+  padding: 0 0.625rem;
+  font: var(--shop-text-caps);
+  font-weight: 400;
+  color: var(--color-text);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background-color var(--dur-out) var(--ease);
+}
+
+.sortLink:hover,
+.sortLink[aria-current='true'] {
+  background: var(--shop-rule-soft);
+}
+
+.sortLink[aria-current='true'] {
+  font-weight: 500;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-5) var(--shop-gap);
+  margin: 1.4375rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.empty {
+  margin: var(--space-7) 0;
+  font: var(--shop-text-body);
+  color: var(--color-text-muted);
+}
+
+.pager {
+  margin-block-start: 2.5rem;
+}
+
+.count {
+  margin: 1.25rem 0 0;
+  font: var(--shop-text-body);
+  color: var(--color-text-muted);
+  text-align: center;
+}
+
+/* the search page's head: the query as the title */
+.searchHead {
+  padding-block: var(--space-2) var(--space-5);
+  box-shadow: inset 0 calc(-1 * var(--rule-hair)) 0 var(--shop-rule-soft);
+}
+
+@media (max-width: 56.25rem) {
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .tabs {
+    min-block-size: 2.6875rem;
+  }
+
+  .toolbar {
+    min-block-size: 3.25rem;
+  }
+
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-5) var(--shop-gap);
+  }
+}
+
+@media (pointer: coarse) {
+  .sortLink {
+    min-block-size: 2.75rem;
+  }
+}

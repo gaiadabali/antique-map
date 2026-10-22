@@ -1,0 +1,88 @@
+- link "Skip to content":
+    - /url: '#main'
+- banner:
+    - link "Indies Gallery, home":
+        - /url: /
+        - text: Indies Gallery
+    - button "Open menu"
+- main:
+    - article:
+        - navigation "Breadcrumb":
+            - list:
+                - listitem:
+                    - link "Browse the collection":
+                        - /url: /browse
+                - listitem: Bird of Paradise by Conrad Gesner, Antique print
+        - heading "Bird of Paradise by Conrad Gesner, Antique print" [level=1]
+        - paragraph:
+            - emphasis: Bird of paradise from Conrad Gessner’s Historiae Animalium (1551-58)
+        - paragraph: c. 1558
+        - paragraph: Stock no. P.2863
+        - img "Bird of Paradise by Conrad Gesner, Antique print — the whole sheet"
+        - button "Zoom into the image"
+        - text: Price on request
+        - paragraph: Held in Singapore
+        - link "Ask about this":
+            - /url: /contact
+        - paragraph: Our WhatsApp number and email address are being connected — please write to us from the Contact page soon.
+        - paragraph: Shipping and duties are quoted after we agree the price, and paid before the work is sent.
+        - region "About this work":
+            - text: About this work
+            - term: Type
+            - definition: Print
+            - term: Place
+            - definition: Zurich
+            - term: Date of this issue
+            - definition: c. 1558
+            - term: Dimensions
+            - definition: 35 × 25 cm (13.8 × 9.8 in)
+            - term: Condition
+            - definition:
+                - paragraph: VG+
+        - paragraph:
+            - link "Browse the collection":
+                - /url: /browse
+- contentinfo:
+    - list:
+        - listitem:
+            - link "Privacy":
+                - /url: /privacy
+        - listitem:
+            - link "Terms":
+                - /url: /terms
+        - listitem:
+            - link "Old East Indies — printed editions from our collection":
+                - /url: http://shop.localhost:4417/
+    - navigation:
+        - list:
+            - listitem:
+                - link "The collection":
+                    - /url: /browse
+            - listitem:
+                - link "Makers":
+                    - /url: /makers
+            - listitem:
+                - link "Places":
+                    - /url: /places
+            - listitem:
+                - link "Stories":
+                    - /url: /stories
+            - listitem:
+                - link "Sell to us":
+                    - /url: /sell-to-us
+            - listitem:
+                - link "About us":
+                    - /url: /about
+            - listitem:
+                - link "Contact":
+                    - /url: /contact
+    - paragraph: Our contact details are being added. Please check back soon.
+    - list:
+        - listitem:
+            - link "Instagram":
+                - /url: https://www.instagram.com/indiesgalleryantiques/
+        - listitem:
+            - link "Facebook":
+                - /url: https://www.facebook.com/IndiesGallery/
+- button "Chat with us"
+- alert

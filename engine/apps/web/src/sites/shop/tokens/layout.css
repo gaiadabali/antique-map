@@ -1,0 +1,107 @@
+/* =====================================================================
+   The shop's layout knobs (the redesign of 2026-10-20): the handoff's
+   measured skeleton — The Poster Club's margins, rails and cards for the
+   listing pages, King & McGaw's grid for the product page — as tokens, so
+   the shop's components carry no raw size. The shared components read the
+   knobs they have (`--button-*`, `--print-*`) with their old values as the
+   fallback, so the gallery, which sets none, is unchanged.
+   ===================================================================== */
+
+[data-site='shop'] {
+  /* the page frame: 25 px margins and 10 px gutters (12 / 6 on a phone) */
+  --shop-gutter: 1.5625rem;
+  --shop-gap: 0.625rem;
+  --shop-section: 3.125rem;
+  --shop-header: 5rem;
+  --shop-logo: 3.5rem;
+  --shop-footer-logo: 5.25rem;
+  --shop-content: 87rem; /* 1392 px: the widest a band's content runs */
+
+  /* type: Cormorant for titles, Karla for everything read or clicked */
+  --shop-text-caps: 500 0.75rem / 1.5 var(--font-body);
+  --shop-tracking-caps: 0.08em;
+  --shop-text-meta: 400 0.8125rem / 1.3 var(--font-body); /* 13: card rows, captions */
+  --shop-text-body: 400 0.875rem / 1.55 var(--font-body); /* 14: running text */
+  --shop-text-read: 400 1.0625rem / 1.76 var(--font-body); /* 17: the product page's prose */
+  --shop-title-hero: 500 2.375rem / 1.1 var(--font-display); /* 38 */
+  --shop-title-page: 500 1.75rem / 1.15 var(--font-display); /* 28 */
+  --shop-title-sub: 500 1.25rem / 1.25 var(--font-display); /* 20 */
+  --shop-title-product: 500 3.375rem / 1.1 var(--font-display); /* 54 */
+  --shop-title-about: 500 3rem / 1.2 var(--font-display); /* 48 */
+  --shop-numeral: 500 2rem / 2.5rem var(--font-display); /* the process band's 01 02 03 */
+
+  /* colours the shop's own components name */
+  --shop-well: var(--primitive-oei-well);
+  --shop-well-hover: var(--primitive-oei-well-hover);
+  --shop-warm: var(--primitive-oei-warm);
+  --shop-umber: var(--primitive-oei-umber);
+  --shop-umber-deep: var(--primitive-oei-umber-deep);
+  --shop-rule-soft: var(--primitive-oei-rule-soft);
+  --shop-rule-mid: var(--primitive-oei-rule-mid);
+  --shop-mount: var(--primitive-oei-mount);
+  --shop-on-umber: var(--primitive-oei-white);
+  --shop-overlay-rule: #2b2b2b24;
+  --shop-sheet-shadow: 0 -2px 8px #00000014;
+
+  /* a print framed in code: a soft-black frame, a 7 % mount, over a grey well */
+  --shop-frame: var(--primitive-oei-ink);
+  --shop-frame-width: clamp(4px, 0.5cqi, 8px);
+  --shop-mount-pad: 7%;
+
+  /* the shared components' knobs (their fallbacks are the gallery's values) */
+  --button-height: 2.75rem;
+  --button-height-small: 2rem;
+  --button-pad: 1.5rem;
+  --button-pad-small: 1.25rem;
+  --button-font: var(--shop-text-caps);
+  --button-font-size: 0.75rem;
+  --button-tracking: var(--shop-tracking-caps);
+  --button-case: uppercase;
+  --print-tile-ratio: 10 / 13;
+  --print-tile-bg: var(--shop-well);
+  --print-tile-bg-hover: var(--shop-well-hover);
+  --print-stage-inset: 9% 11%;
+  --print-frame-width: var(--shop-frame-width);
+  --print-frame-color: var(--shop-frame);
+  --print-mount-pad: var(--shop-mount-pad);
+  --print-mount: var(--shop-mount);
+  --pager-rule: var(--shop-rule-mid);
+  --pager-font: 400 0.75rem / 1 var(--font-body);
+  --field-label-font: var(--shop-text-caps);
+  --field-label-weight: 500;
+  --field-label-tracking: var(--shop-tracking-caps);
+  --field-label-case: uppercase;
+  --field-label-color: var(--color-text-muted);
+  --field-height: 2.75rem;
+  --field-gap: 0.375rem;
+  --field-border: var(--color-text);
+  /* the floating chat: the handoff's ink button, white words, umber under the pointer */
+  --chat-launcher-bg: var(--primitive-oei-ink);
+  --chat-launcher-ink: var(--primitive-oei-white);
+  --chat-launcher-bg-hover: var(--shop-umber);
+  --chat-launcher-border: 0;
+  --chat-launcher-shadow: 0 1px 2px #0000001f, 0 12px 28px -12px #00000059;
+  --chat-launcher-pad: 0 1.375rem;
+}
+
+/* On touch every control keeps a 44 px target, whatever the drawing's height. */
+@media (pointer: coarse) {
+  [data-site='shop'] {
+    --button-height: 2.75rem;
+    --button-height-small: 2.75rem;
+  }
+}
+
+@media (max-width: 56.25rem) {
+  [data-site='shop'] {
+    --shop-gutter: 0.75rem;
+    --shop-gap: 0.375rem;
+    --shop-section: 2.25rem;
+    --shop-header: 4.25rem;
+    --shop-logo: 3rem;
+    --shop-footer-logo: 4.5rem;
+    --shop-title-product: 500 2.25rem / 1.17 var(--font-display);
+    --shop-title-about: 500 2.25rem / 1.17 var(--font-display);
+    --shop-text-read: 400 1rem / 1.75 var(--font-body);
+  }
+}

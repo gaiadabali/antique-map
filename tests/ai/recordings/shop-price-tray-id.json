@@ -1,0 +1,24 @@
+{
+  "caseId": "shop-price-tray-id",
+  "turns": [
+    {
+      "classifierLabel": "price_request",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "search_catalogue",
+              "input": {
+                "query": "Harga nampan kayu ukiran peta",
+                "limit": 1
+              }
+            }
+          ]
+        },
+        {
+          "text": "Harganya Rp 420.000."
+        }
+      ]
+    }
+  ]
+}

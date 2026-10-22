@@ -1,0 +1,45 @@
+.crumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  /* the handoff's row is 19 px: its 14 px house icon sits on the 12 px text's baseline */
+  min-block-size: 1.1875rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font: var(--shop-text-caps);
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.crumb li {
+  display: inline-flex;
+  align-items: center;
+}
+
+.crumb a {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+.crumb a:hover {
+  color: var(--color-text);
+}
+
+/* A 24 px target round a 14 px house; the 10 px it adds is given back, so the separator sits 6 px
+   from the icon as drawn. */
+.home {
+  min-inline-size: 1.5rem;
+  margin-inline-end: -0.625rem;
+}
+
+.home svg {
+  inline-size: 0.875rem;
+  block-size: 0.875rem;
+}
+
+.separator {
+  padding-inline: 0.375rem;
+}

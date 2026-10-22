@@ -1,0 +1,25 @@
+{
+  "caseId": "gallery-grounded-no-match-en",
+  "turns": [
+    {
+      "classifierLabel": "browse",
+      "calls": [
+        {
+          "tools": [
+            {
+              "name": "handoff_link",
+              "input": {
+                "channel": "whatsapp",
+                "topic": "general",
+                "itemIds": []
+              }
+            }
+          ]
+        },
+        {
+          "text": "I don't have anything matching that right now. The team can help further."
+        }
+      ]
+    }
+  ]
+}

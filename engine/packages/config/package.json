@@ -2,14 +2,13 @@
   "name": "@engine/config",
   "version": "0.0.0",
   "private": true,
-  "description": "The brand config spine: the BrandConfig schema and module registry (C1) and the route map with href() (C10). The leaf package: it imports no other engine package.",
+  "description": "The sites and their constants: SITES, siteFromHost() and each site's routes (href and its inverse), the locale and currency constants, and the environment half of the boot check. The leaf package: it imports no other engine package.",
   "type": "module",
   "exports": {
     "./constants": "./src/constants/index.ts",
+    "./sites": "./src/sites/index.ts",
     "./schema": "./src/schema.ts",
-    "./routes": "./src/routes.ts",
-    "./loader": "./src/loader/index.ts",
-    "./validate": "./src/validate/index.ts",
+    "./routes": "./src/sites/routes/index.ts",
     "./boot-check": "./src/boot-check/index.ts",
     "./link-keys": "./src/boot-check/link-keys.ts"
   },

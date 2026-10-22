@@ -4,8 +4,6 @@
  * The words every part of the manifest shares: methods, lanes, how a caller proves itself, a
  * mounted route, and an operation served at a sub-path of a catch-all route.
  */
-import type { ModuleKey } from '@engine/config/schema'
-
 export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 /**
  * The only methods an HTML form sends. Every operation a page calls — C6's commerce API, the
@@ -45,19 +43,13 @@ export type EngineRoute = {
    * whole credential and it reads no cookie, so a cross-site post can do nothing a cookie allows.
    */
   readonly sameOrigin: boolean
-  /** The module whose absence makes the handler answer 404 (the file is mounted regardless). */
-  readonly module?: ModuleKey
 }
 
-/**
- * One operation at a sub-path of a catch-all route (`/api/x/auth/<path>`): its method, who may
- * call it, and the module without which the handler answers 404.
- */
+/** One operation at a sub-path of a catch-all route: its method and who may call it. */
 export type SubRoute = {
   readonly method: FormMethod
   readonly path: string
   readonly auth: readonly RouteAuth[]
-  readonly module?: ModuleKey
 }
 
 export const GET = ['GET'] as const

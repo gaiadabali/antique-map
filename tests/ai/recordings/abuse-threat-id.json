@@ -1,0 +1,9 @@
+{
+  "caseId": "abuse-threat-id",
+  "turns": [
+    {
+      "classifierLabel": "abuse",
+      "calls": []
+    }
+  ]
+}

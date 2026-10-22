@@ -1,0 +1,53 @@
+/* A page's or a section's opening. Every value is a token — no raw colour, no font-family. */
+
+.head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  column-gap: var(--space-8);
+  margin-block-end: clamp(var(--space-6), 1rem + 2.4vw, var(--space-8));
+}
+
+.text {
+  min-width: 0;
+}
+
+/* Two selectors deep: the shell's `.site-main h1` sets its own margin. */
+.head .titlePage,
+.head .titleSection {
+  margin: 0;
+  text-wrap: balance;
+}
+
+.head .titlePage {
+  font: var(--text-h1);
+  letter-spacing: var(--tracking-h1);
+  max-inline-size: 16ch;
+}
+
+.head .titleSection {
+  font: var(--text-h2);
+  letter-spacing: var(--tracking-h1);
+  max-inline-size: 22ch;
+}
+
+.lede {
+  margin: var(--space-5) 0 0;
+  max-inline-size: var(--measure-text);
+  font: var(--text-body-large);
+  color: var(--color-text-muted);
+  text-wrap: pretty;
+}
+
+.action {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+@media (max-width: 47.5rem) {
+  .head {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--space-5);
+  }
+}

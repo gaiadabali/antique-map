@@ -1,54 +1,75 @@
 #!/usr/bin/env bash
-# The release smoke (TASKS.md 4.4.f): the packed tarball, extracted as a host extracts it, holds
-# both brands' subdirs — each with brand/site/brand.config.json, its server.js, .next/static and a
-# sharp that loads — and each boots from it: the home page 200 with the brand's name, and
-# /admin/login 200. release.yml runs it before anything is published.
+# The release smoke (TASKS.md 4.4.f, 2.1.b, 2.2): the packed tarball, extracted as a host extracts
+# it, holds the one subdir `web/` — its server.js, .next/static, each site's public files and a
+# sharp that loads — and boots from it, on one port, answering both sites' hostnames, each with
+# its own site: its home in English and Indonesian 200 with its site's name, and /api/health 200.
+# The admin answers on the admin host alone (SECURITY.md X2): /admin/login is 200 on the shop's
+# host and 404 on the gallery's, and a host on no list is a plain 404. release.yml runs it before
+# anything is published.
 #
 #   smoke-artifact.sh <tarball>
 #
 # Needs the job's Postgres (PGHOST, PGPORT, POSTGRES_USER, PGPASSWORD) with a migrated database
-# per brand, named <brand>_<DB_SUFFIX> with `-` as `_` (`pnpm db:fresh --suffix $DB_SUFFIX`).
+# named indies_<DB_SUFFIX> (`pnpm db:fresh --suffix $DB_SUFFIX`). Each hostname is pinned to
+# loopback with curl's `--resolve`, so no resolver or /etc/hosts decides.
 set -euo pipefail
 
 tarball="$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"
 here="$(cd "$(dirname "$0")" && pwd)"
 root="${RUNNER_TEMP:-/tmp}/smoke"
-: "${DB_SUFFIX:?DB_SUFFIX names the smoke databases}"
+: "${DB_SUFFIX:?DB_SUFFIX names the smoke database}"
 rm -rf "$root"
 mkdir -p "$root"
 tar -xzf "$tarball" -C "$root"
 export SERVERS_DIR="$root/servers"
 
-port=4300
-failed=0
-for pair in indies-gallery:gallery old-east-indies:emporium; do
-  brand="${pair%%:*}" app="${pair#*:}"
-  release="$root/$brand"
-  server_dir="$release/engine/apps/$app"
-  for path in brand/site/brand.config.json "engine/apps/$app/server.js" "engine/apps/$app/.next/static"; do
-    test -e "$release/$path" || {
-      echo "::error::$brand/$path missing from the tarball"
-      exit 1
-    }
-  done
-  echo "$brand: brand/site holds $(cd "$release/brand/site" && printf '%s ' *)"
-  echo "$brand: sharp from the server's folder: $(cd "$server_dir" && node -e "import('sharp').then((s) => console.log(s.default.versions.sharp, 'libvips', s.default.versions.vips))")"
-  name="$(node -e "process.stdout.write(require(process.argv[1]).name)" "$release/brand/site/brand.config.json")"
-
-  bash "$here/start-server.sh" "smoke-$brand" "$release" "$app" "$port" \
-    "${brand//-/_}_${DB_SUFFIX}" "$brand" "$release/brand"
-  home="$(curl -s -m 30 -w '\n%{http_code}' "http://localhost:$port/")"
-  home_code="${home##*$'\n'}"
-  admin_code="$(curl -s -m 60 -o /dev/null -w '%{http_code}' "http://localhost:$port/admin/login")"
-  health_code="$(curl -s -m 120 -o /dev/null -w '%{http_code}' "http://localhost:$port/api/health")"
-  if grep -qF "$name" <<< "$home"; then has_name=yes; else has_name=no; fi
-  echo "$brand: / $home_code (brand name \"$name\" in the page: $has_name), /admin/login $admin_code, /api/health $health_code"
-  if [ "$home_code" != 200 ] || [ "$has_name" != yes ] || [ "$admin_code" != 200 ] || [ "$health_code" != 200 ]; then
-    echo "::error::$brand did not boot from the tarball as a host would run it"
-    cat "$SERVERS_DIR/smoke-$brand.log"
-    failed=1
-  fi
-  kill "$(cat "$SERVERS_DIR/smoke-$brand.pid")" 2>/dev/null || true
-  port=$((port + 1))
+release="$root/web"
+app=engine/apps/web
+for path in "$app/server.js" "$app/.next/static" "$app/public/gallery/logo.svg" "$app/public/shop/logo.svg"; do
+  test -e "$release/$path" || {
+    echo "::error::web/$path missing from the tarball"
+    exit 1
+  }
 done
+echo "web: sharp from the server's folder: $(cd "$release/$app" && node -e "import('sharp').then((s) => console.log(s.default.versions.sharp, 'libvips', s.default.versions.vips))")"
+
+port=4300
+bash "$here/start-server.sh" smoke-web "$release" "$port" "indies_${DB_SUFFIX}"
+failed=0
+fail() {
+  echo "::error::$1"
+  failed=1
+}
+code() { # code <host> <path> — the status, the host pinned to loopback
+  curl -s -o /dev/null -m 60 -w '%{http_code}' --resolve "$1:$port:127.0.0.1" "http://$1:$port$2"
+}
+
+# Each host, its own site (`SITES.<site>.name`, engine/packages/config/src/sites/table.ts), and
+# where the admin answers.
+for row in "gallery.localhost|Indies Gallery|404" "shop.localhost|Old East Indies|200"; do
+  IFS='|' read -r host name admin <<< "$row"
+  for home in / /id; do
+    page="$(curl -s --resolve "$host:$port:127.0.0.1" -m 30 -w '\n%{http_code}' "http://$host:$port$home")"
+    status="${page##*$'\n'}"
+    if grep -qF "$name" <<< "$page"; then has_name=yes; else has_name=no; fi
+    echo "$host: $home $status (\"$name\" in the page: $has_name)"
+    [ "$status" = 200 ] && [ "$has_name" = yes ] || fail "$host$home did not answer its own site"
+  done
+  admin_code="$(code "$host" /admin/login)"
+  health_code="$(code "$host" /api/health)"
+  echo "$host: /admin/login $admin_code (want $admin), /api/health $health_code"
+  [ "$admin_code" = "$admin" ] || fail "$host: /admin/login answered $admin_code, not $admin"
+  [ "$health_code" = 200 ] || fail "$host: /api/health answered $health_code"
+done
+for path in /api/users /admin; do
+  status="$(code gallery.localhost "$path")"
+  echo "gallery.localhost: $path $status (want 404: the admin and its REST are the shop host's)"
+  [ "$status" = 404 ] || fail "gallery.localhost: $path answered $status"
+done
+unknown="$(code unknown.localhost /)"
+echo "unknown.localhost: / $unknown (want 404: a host on no list picks no site)"
+[ "$unknown" = 404 ] || fail "unknown.localhost answered $unknown"
+
+[ "$failed" = 0 ] || cat "$SERVERS_DIR/smoke-web.log"
+kill "$(cat "$SERVERS_DIR/smoke-web.pid")" 2>/dev/null || true
 exit "$failed"

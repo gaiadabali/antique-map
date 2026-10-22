@@ -1,7 +1,9 @@
 /**
- * `POST /api/x/cron/reconcile` — mounted by every app (C13), built by PAY. Until then it
- * authenticates like every cron route and answers 404.
+ * `POST /api/x/cron/reconcile` — `@engine/http/cron/reconcile` (TASKS.md 6.4.c): asks the provider
+ * about orders pending over ten minutes and applies what it hears. Behind `CRON_SECRET`.
  */
-import { unbuiltCron } from '../auth'
+import { paymentReconcileRoute } from '@engine/cms/shop/payments/http'
 
-export const POST = unbuiltCron('PAY')
+import { refuseCron } from '../auth'
+
+export const POST = paymentReconcileRoute({ refuse: refuseCron })
