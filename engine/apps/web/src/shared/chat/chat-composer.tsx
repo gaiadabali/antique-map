@@ -1,8 +1,10 @@
 'use client'
 
 /**
- * The composer: one rounded row holding an auto-growing textarea (one to four lines, the body face)
- * and a round send button inside it, which becomes a Stop button while a reply streams. Enter sends,
+ * The composer: an auto-growing textarea (one to four lines, the body face) and its send button,
+ * which becomes a Stop button while a reply streams — a round icon inside one rounded row (the
+ * gallery), or the words "Send" / "Stop" on a solid button beside a ruled field (the shop's
+ * handoff, `sendAs="text"`). Enter sends,
  * Shift+Enter starts a new line. The label stays for assistive technology, visually hidden. The
  * textarea is never disabled while the session starts — the visitor can type at once, and Send
  * enables when the session is ready — only when the session has failed.
@@ -38,6 +40,7 @@ export function ChatComposer({
   streaming,
   canSend,
   disabled,
+  sendAs = 'icon',
   textareaRef,
   onChange,
   onSend,
@@ -49,6 +52,7 @@ export function ChatComposer({
   readonly streaming: boolean
   readonly canSend: boolean
   readonly disabled: boolean
+  readonly sendAs?: 'icon' | 'text'
   readonly textareaRef: RefObject<HTMLTextAreaElement | null>
   readonly onChange: (value: string) => void
   readonly onSend: () => void
@@ -62,6 +66,21 @@ export function ChatComposer({
     element.style.height = `${element.scrollHeight}px`
   }, [value, textareaRef])
 
+  const field = (
+    <textarea
+      id="chat-composer"
+      ref={textareaRef}
+      className={styles.input}
+      rows={1}
+      value={value}
+      maxLength={maxChars}
+      placeholder={text.composerPlaceholder}
+      disabled={disabled}
+      onChange={(event) => onChange(event.target.value)}
+      onKeyDown={(event) => handleComposerKeyDown(event, onSend)}
+    />
+  )
+
   return (
     <form
       className={styles.form}
@@ -73,41 +92,46 @@ export function ChatComposer({
       <label htmlFor="chat-composer" className={styles.label}>
         {text.composerLabel}
       </label>
-      <div className={styles.field}>
-        <textarea
-          id="chat-composer"
-          ref={textareaRef}
-          className={styles.input}
-          rows={1}
-          value={value}
-          maxLength={maxChars}
-          placeholder={text.composerPlaceholder}
-          disabled={disabled}
-          onChange={(event) => onChange(event.target.value)}
-          onKeyDown={(event) => handleComposerKeyDown(event, onSend)}
-        />
-        {streaming ? (
-          <button
-            type="button"
-            className={styles.action}
-            aria-label={text.stop}
-            title={text.stop}
-            onClick={onStop}
-          >
-            <StopIcon className={styles.icon} />
-          </button>
-        ) : (
-          <button
-            type="submit"
-            className={styles.action}
-            aria-label={text.send}
-            title={text.send}
-            disabled={!canSend}
-          >
-            <SendIcon className={styles.icon} />
-          </button>
-        )}
-      </div>
+      {sendAs === 'text' ? (
+        <div className={styles.row}>
+          <div className={styles.box}>{field}</div>
+          {streaming ? (
+            <button type="button" className={styles.textAction} onClick={onStop}>
+              {text.stop}
+            </button>
+          ) : (
+            // always ready to press, as drawn: an empty or early send is ignored by the panel
+            <button type="submit" className={styles.textAction} disabled={disabled}>
+              {text.send}
+            </button>
+          )}
+        </div>
+      ) : (
+        <div className={styles.field}>
+          {field}
+          {streaming ? (
+            <button
+              type="button"
+              className={styles.action}
+              aria-label={text.stop}
+              title={text.stop}
+              onClick={onStop}
+            >
+              <StopIcon className={styles.icon} />
+            </button>
+          ) : (
+            <button
+              type="submit"
+              className={styles.action}
+              aria-label={text.send}
+              title={text.send}
+              disabled={!canSend}
+            >
+              <SendIcon className={styles.icon} />
+            </button>
+          )}
+        </div>
+      )}
     </form>
   )
 }

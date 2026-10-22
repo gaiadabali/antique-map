@@ -101,7 +101,7 @@ export function planProductRow(row: Row, vocab: Vocabulary, variant: boolean): P
       .map((each) => each.trim())
       .filter((each) => each !== '')
 
-    const categoryMatch = vocab.terms('', category)
+    const categoryMatch = vocab.categories(category)
     if (!('id' in categoryMatch)) {
       return {
         row: row.row,
@@ -109,8 +109,8 @@ export function planProductRow(row: Row, vocab: Vocabulary, variant: boolean): P
         hold: [
           {
             column: 'category',
-            problem: `The category '${category}' matches no term on record — did you mean ${categoryMatch.suggestions.join(', ')}?`,
-            fix: 'Add the category as a term, then import again.',
+            problem: `The category '${category}' matches no category on record — did you mean ${categoryMatch.suggestions.join(', ')}?`,
+            fix: 'Add the category under Shop — products › Categories, then import again.',
           },
         ],
       }

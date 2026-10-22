@@ -31,6 +31,8 @@ type Props = {
   readonly empty: ReactNode
   readonly enlargeLabel: string
   readonly dialogTitle: string
+  /** The line under the enlarged picture (the product's name). */
+  readonly caption: string
   readonly closeLabel: string
   readonly viewsLabel: string
 }
@@ -40,6 +42,7 @@ export function ProductGallery({
   empty,
   enlargeLabel,
   dialogTitle,
+  caption,
   closeLabel,
   viewsLabel,
 }: Props) {
@@ -91,9 +94,13 @@ export function ProductGallery({
             onClose={() => setOpen(false)}
             title={dialogTitle}
             closeLabel={closeLabel}
+            variant="lightbox"
           >
-            <div className={styles.large}>{view.large}</div>
-            {view.note ? <span className={styles.note}>{view.note}</span> : null}
+            <div className={styles.frame}>
+              <div className={styles.large}>{view.large}</div>
+            </div>
+            <p className={styles.caption}>{caption}</p>
+            {view.note ? <p className={styles.captionNote}>{view.note}</p> : null}
           </Dialog>
         </>
       ) : null}

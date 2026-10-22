@@ -25,6 +25,7 @@ export function ChatThread({
   contact,
   pageTitle,
   suggestions,
+  suggestionsInThread = true,
   canPick,
   notices,
   onPick,
@@ -41,6 +42,8 @@ export function ChatThread({
   /** The item or product page the chat was opened from, if any. */
   readonly pageTitle: string | null
   readonly suggestions: readonly string[]
+  /** Under the greeting (the gallery); off when the panel shows them in its tray (the shop). */
+  readonly suggestionsInThread?: boolean
   readonly canPick: boolean
   readonly notices: readonly string[]
   readonly onPick: (suggestion: string) => void
@@ -58,7 +61,7 @@ export function ChatThread({
       <AgentRow agentName={agentName} avatar>
         <AgentBubble role="greeting">{greetingText(text, site, pageTitle)}</AgentBubble>
       </AgentRow>
-      {state.entries.length === 0 && (
+      {suggestionsInThread && state.entries.length === 0 && (
         <ChatSuggestions
           label={text.suggestionsLabel}
           suggestions={suggestions}

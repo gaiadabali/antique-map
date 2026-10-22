@@ -43,8 +43,10 @@ export type FeaturedProduct = {
 
 const LIMIT = 6
 
+/** The newest products; with `categoryId`, the newest of that category (a page block's rail). */
 export async function loadFeaturedProducts(
   _locale: SiteLocale,
+  categoryId: number | null = null,
 ): Promise<readonly FeaturedProduct[]> {
   'use cache'
   cacheLife('hours')
@@ -54,7 +56,13 @@ export async function loadFeaturedProducts(
     overrideAccess: false,
     limit: LIMIT,
     sort: '-updatedAt',
-    where: { and: [{ _status: { equals: 'published' } }, { site: { equals: 'shop' } }] },
+    where: {
+      and: [
+        { _status: { equals: 'published' } },
+        { site: { equals: 'shop' } },
+        ...(categoryId === null ? [] : [{ category: { equals: categoryId } }]),
+      ],
+    },
     select: {
       name: true,
       slug: true,

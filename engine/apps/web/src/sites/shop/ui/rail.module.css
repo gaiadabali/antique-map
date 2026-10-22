@@ -80,7 +80,7 @@
   }
 
   .rail {
-    margin-block-start: var(--space-5);
+    margin-block-start: 1.25rem;
     margin-inline: calc(-1 * var(--shop-gutter));
     padding-inline: var(--shop-gutter);
     scroll-padding-inline: var(--shop-gutter);

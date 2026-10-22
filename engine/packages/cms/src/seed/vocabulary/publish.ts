@@ -16,20 +16,21 @@
  */
 import type { Payload, PayloadRequest } from 'payload'
 
-export type VocabularyCollection = 'places' | 'terms' | 'makers'
+export type VocabularyCollection = 'places' | 'terms' | 'makers' | 'categories'
 
 export type PublishReport = {
   places: number
   terms: number
   makers: number
+  categories: number
   /** Rows Payload refused to publish: `collection #id: message`. */
   held: string[]
 }
 
 /** The rows to publish, by collection, in order; `fill` maps a row to its blank-only fields. */
 export type PublishTargets = {
-  readonly [K in VocabularyCollection]: readonly number[]
-} & { readonly fill?: ReadonlyMap<string, Readonly<Record<string, string>>> }
+  readonly [K in Exclude<VocabularyCollection, 'categories'>]: readonly number[]
+} & { readonly categories?: readonly number[] } & { readonly fill?: ReadonlyMap<string, Readonly<Record<string, string>>> }
 
 /** The `fill` key of a row: `terms:12`. */
 export const fillKey = (collection: VocabularyCollection, id: number) => `${collection}:${id}`
@@ -42,8 +43,8 @@ export async function publishVocabulary(
   req: PayloadRequest,
   targets: PublishTargets,
 ): Promise<PublishReport> {
-  const report: PublishReport = { places: 0, terms: 0, makers: 0, held: [] }
-  for (const collection of ['places', 'terms', 'makers'] as const) {
+  const report: PublishReport = { places: 0, terms: 0, makers: 0, categories: 0, held: [] }
+  for (const collection of ['places', 'terms', 'makers', 'categories'] as const) {
     report[collection] = await publishDrafts(payload, req, collection, targets, report.held)
   }
   return report
@@ -56,7 +57,7 @@ async function publishDrafts(
   targets: PublishTargets,
   held: string[],
 ): Promise<number> {
-  const ids = [...new Set(targets[collection])]
+  const ids = [...new Set(targets[collection] ?? [])]
   let published = 0
   for (let start = 0; start < ids.length; start += 200) {
     const chunk = ids.slice(start, start + 200)

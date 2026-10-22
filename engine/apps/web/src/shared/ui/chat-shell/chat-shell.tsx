@@ -9,6 +9,10 @@ export type ChatShellProps = {
   readonly children?: ReactNode
   readonly composer?: ReactNode
   readonly disclosure?: ReactNode
+  /** Where the disclosure sits: under the composer (default) or as a band under the header. */
+  readonly disclosureAt?: 'top' | 'bottom'
+  /** Fixed content between the log and the composer, such as suggested questions. */
+  readonly tray?: ReactNode
   readonly onClose?: () => void
   readonly closeLabel?: string
   /** The accessible name of the conversation log. */
@@ -18,7 +22,8 @@ export type ChatShellProps = {
 }
 
 /**
- * Panel frame for the chat: header, scrollable log, composer slot and disclosure slot. The frame is
+ * Panel frame for the chat: header, scrollable log, an optional tray, composer slot and disclosure
+ * slot (under the composer, or as a band under the header). The frame is
  * layout and surfaces only; the messenger's own parts (header, bubbles, composer) are the caller's.
  */
 export function ChatShell({
@@ -27,13 +32,16 @@ export function ChatShell({
   children,
   composer,
   disclosure,
+  disclosureAt = 'bottom',
+  tray,
   onClose,
   closeLabel = 'Close chat',
   logLabel,
   logRef,
 }: ChatShellProps): React.ReactElement {
   return (
-    <div className={styles.shell}>
+    // data-chat: the hook a site's tokens use to tune shared parts inside the panel (its buttons)
+    <div className={styles.shell} data-chat="">
       {header ?? (
         <div className={styles.header}>
           <h2 className={styles.title}>{title}</h2>
@@ -46,6 +54,11 @@ export function ChatShell({
           >
             ×
           </button>
+        </div>
+      )}
+      {disclosure && disclosureAt === 'top' && (
+        <div className={styles.disclosure} data-at="top">
+          {disclosure}
         </div>
       )}
 
@@ -62,8 +75,11 @@ export function ChatShell({
         {children}
       </div>
 
+      {tray && <div className={styles.tray}>{tray}</div>}
       {composer && <div className={styles.composer}>{composer}</div>}
-      {disclosure && <div className={styles.disclosure}>{disclosure}</div>}
+      {disclosure && disclosureAt === 'bottom' && (
+        <div className={styles.disclosure}>{disclosure}</div>
+      )}
     </div>
   )
 }

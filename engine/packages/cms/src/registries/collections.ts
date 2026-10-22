@@ -12,6 +12,7 @@
  */
 import type { CollectionConfig, GlobalConfig } from 'payload'
 
+import { Categories } from '../collections/categories'
 import { ChatSessions } from '../collections/chat-sessions'
 import { Discounts } from '../collections/discounts'
 import { Events } from '../collections/events'
@@ -44,6 +45,7 @@ const COLLECTIONS: readonly CollectionConfig[] = [
   Makers,
   Places,
   Products,
+  Categories,
   Discounts,
   Stores,
   StockLevels,

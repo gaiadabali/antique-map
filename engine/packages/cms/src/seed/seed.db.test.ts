@@ -52,7 +52,7 @@ describe.skipIf(!server)('the seed layers, on a real database', () => {
 
   it('--publish publishes the seeded drafts, changes nothing else, and publishes once', async () => {
     const payload = stack.payload
-    const all = async (collection: 'places' | 'terms' | 'makers') =>
+    const all = async (collection: 'places' | 'terms' | 'makers' | 'categories') =>
       (
         await payload.find({
           collection,
@@ -63,7 +63,7 @@ describe.skipIf(!server)('the seed layers, on a real database', () => {
         })
       ).docs as unknown as Record<string, unknown>[]
     const rest = ({ _status: _s, updatedAt: _u, ...fields }: Record<string, unknown>) => fields
-    const collections = ['places', 'terms', 'makers'] as const
+    const collections = ['places', 'terms', 'makers', 'categories'] as const
     const before = Object.fromEntries(
       await Promise.all(collections.map(async (c) => [c, await all(c)])),
     )
@@ -78,6 +78,7 @@ describe.skipIf(!server)('the seed layers, on a real database', () => {
       places: before.places.length,
       terms: before.terms.length,
       makers: before.makers.length,
+      categories: before.categories.length,
       held: [],
     })
     for (const collection of collections) {
@@ -111,7 +112,13 @@ describe.skipIf(!server)('the seed layers, on a real database', () => {
     )
     const again = await seedLayer('vocabulary', { payload, publish: true })
     expect(again.vocabulary!.makers.created).toBe(1)
-    expect(again.vocabulary!.published).toEqual({ places: 0, terms: 0, makers: 1, held: [] })
+    expect(again.vocabulary!.published).toEqual({
+      places: 0,
+      terms: 0,
+      makers: 1,
+      categories: 0,
+      held: [],
+    })
     const recreated = await payload.find({
       collection: 'makers',
       overrideAccess: false,
@@ -120,7 +127,13 @@ describe.skipIf(!server)('the seed layers, on a real database', () => {
     })
     expect((recreated.docs[0] as { _status?: string } | undefined)?._status).toBe('published')
     const third = await seedLayer('vocabulary', { payload, publish: true })
-    expect(third.vocabulary!.published).toEqual({ places: 0, terms: 0, makers: 0, held: [] })
+    expect(third.vocabulary!.published).toEqual({
+      places: 0,
+      terms: 0,
+      makers: 0,
+      categories: 0,
+      held: [],
+    })
   }, 300_000)
 
   it('the gallery sample imports its 50 rows: drafted, addressed, no price', async () => {

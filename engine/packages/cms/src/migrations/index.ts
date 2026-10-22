@@ -5,6 +5,10 @@ import * as migration_20261006_053750_indies_6_6 from './20261006_053750_indies_
 import * as migration_20261006_054525_indies_9_1 from './20261006_054525_indies_9_1'
 import * as migration_20261007_080534_indies_8_3 from './20261007_080534_indies_8_3'
 import * as migration_20261020_065238_partner_sign_in from './20261020_065238_partner_sign_in'
+import * as migration_20261021_075316_shop_categories from './20261021_075316_shop_categories'
+import * as migration_20261021_080409_shop_page_blocks from './20261021_080409_shop_page_blocks'
+import * as migration_20261021_084010_shop_apply_anchor from './20261021_084010_shop_apply_anchor'
+import * as migration_20261021_092446_pages_share_image from './20261021_092446_pages_share_image'
 
 export const migrations = [
   {
@@ -41,5 +45,25 @@ export const migrations = [
     up: migration_20261020_065238_partner_sign_in.up,
     down: migration_20261020_065238_partner_sign_in.down,
     name: '20261020_065238_partner_sign_in',
+  },
+  {
+    up: migration_20261021_075316_shop_categories.up,
+    down: migration_20261021_075316_shop_categories.down,
+    name: '20261021_075316_shop_categories',
+  },
+  {
+    up: migration_20261021_080409_shop_page_blocks.up,
+    down: migration_20261021_080409_shop_page_blocks.down,
+    name: '20261021_080409_shop_page_blocks',
+  },
+  {
+    up: migration_20261021_084010_shop_apply_anchor.up,
+    down: migration_20261021_084010_shop_apply_anchor.down,
+    name: '20261021_084010_shop_apply_anchor',
+  },
+  {
+    up: migration_20261021_092446_pages_share_image.up,
+    down: migration_20261021_092446_pages_share_image.down,
+    name: '20261021_092446_pages_share_image',
   },
 ]

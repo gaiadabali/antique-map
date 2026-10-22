@@ -27,6 +27,7 @@ export const SHELL_MESSAGES = defineMessages({
   'shell.whatsapp': 'Ask on WhatsApp',
   'shell.email': 'Email',
   'shell.phone': 'Phone',
+  'shell.newTab': '{label} (opens in a new tab)',
   'shell.hours': 'Hours',
   'shell.replyPromise': 'Reply promise',
   'shell.announcement': 'Announcement',

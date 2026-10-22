@@ -1,10 +1,11 @@
+/* A site may set the knobs (sites/shop/tokens/chat.css); the fallbacks are the gallery's. */
 .typing {
   position: relative;
   display: inline-flex;
   margin: 0;
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-chat-agent);
-  border: var(--rule-hair) solid var(--color-border);
+  padding: var(--chat-typing-pad, var(--space-3) var(--space-4));
+  background: var(--chat-bubble-bg, var(--color-chat-agent));
+  border: var(--chat-bubble-border, var(--rule-hair) solid var(--color-border));
   border-radius: var(--radius-bubble);
   border-end-start-radius: var(--radius-control);
 }
@@ -22,12 +23,12 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  height: 1.5rem;
+  height: var(--chat-typing-height, 1.5rem);
 }
 
 .dot {
-  width: 0.4375rem;
-  height: 0.4375rem;
+  width: var(--chat-dot, 0.4375rem);
+  height: var(--chat-dot, 0.4375rem);
   background: var(--color-text-muted);
   border-radius: 50%;
   animation: bounce var(--dur-loop) var(--ease) infinite;

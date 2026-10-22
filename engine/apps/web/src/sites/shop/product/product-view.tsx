@@ -19,6 +19,7 @@ import {
 } from '../../../shared/ui'
 import { ChatPageContext } from '../../../shared/chat/chat-page-context'
 import { formatRupiah } from '../../../shared/ui/price/format-rupiah'
+import { GALLERY_LIVE, GALLERY_LIVE_LINK } from '../gallery-live'
 import { productText, variantPickerText, type ProductText } from './copy'
 import { ProductGallery, type GalleryView } from './product-gallery'
 import styles from './product.module.css'
@@ -78,6 +79,7 @@ export function ProductView({
             }
             enlargeLabel={text('product.enlarge')}
             dialogTitle={text('product.enlargeTitle', { name: product.name })}
+            caption={product.name}
             closeLabel={text('product.closeEnlarge')}
             viewsLabel={text('product.views')}
           />
@@ -114,8 +116,10 @@ export function ProductView({
           {product.relatedWork && (
             <p className={styles.original}>
               {text('product.original', { title: product.relatedWork.title })}{' '}
-              <TextLink href={product.relatedWork.href} rel="noopener">
-                {product.relatedWork.href.replace(/^https?:\/\/[^/]+/, '') || 'Indies Gallery'}
+              {/* For now the owner's live gallery site, in a new tab (`../gallery-live`); the
+                  related work's own address again once the new gallery launches. */}
+              <TextLink {...GALLERY_LIVE_LINK}>
+                {GALLERY_LIVE.replace(/^https?:\/\//, '').replace(/\/$/, '')}
               </TextLink>
             </p>
           )}
@@ -137,16 +141,20 @@ export function ProductView({
             ))}
           </ul>
         </div>
+      </div>
 
-        {product.description !== '' && (
-          <section className={styles.story} aria-labelledby="product-story">
+      {/* Under the picture and the buy block: a warm band, the title at the left, the words in the
+          details' column at the right. */}
+      {product.description !== '' && (
+        <section className={styles.story} aria-labelledby="product-story">
+          <div className={styles.storyInner}>
             <h2 id="product-story" className={styles.storyTitle}>
               {text('product.description')}
             </h2>
             <p className={styles.storyText}>{product.description}</p>
-          </section>
-        )}
-      </div>
+          </div>
+        </section>
+      )}
     </article>
   )
 }

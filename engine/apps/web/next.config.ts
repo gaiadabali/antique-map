@@ -45,6 +45,10 @@ const nextConfig: NextConfig = {
   // the HTML as a meta tag. Next bypasses the shell for an "HTML-limited bot"; all user agents are
   // one here (the 4.1.e spike, ARCHITECTURE.md §9). Metadata renders in the <head>, never streamed.
   htmlLimitedBots: /.*/,
+  // Instant-navigation checks only where a segment names `instant`. Next 16.3's default validates
+  // every page implicitly, so each site root layout's `instant = false` no longer covered its pages
+  // and every storefront page reported its request-time read (the site, then live stock) in dev.
+  experimental: { instantInsights: { validationLevel: 'manual-warning' } },
   poweredByHeader: false,
   // `next dev` writes no AGENTS.md/CLAUDE.md into the app: the repository root's own carry the
   // rules, and an untracked pair per app is noise in every worktree (TASKS.md 5.6.d, gate F5).

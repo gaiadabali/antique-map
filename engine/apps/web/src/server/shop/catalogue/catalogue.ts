@@ -114,18 +114,22 @@ export async function search(options: {
 }
 
 /** A product page's editorial data (no availability): its metadata reads this, cached. */
-export async function productEditorial(slug: string): Promise<ProductVM | null> {
+export async function productEditorial(
+  slug: string,
+  locale: 'en' | 'id' = 'en',
+): Promise<ProductVM | null> {
   'use cache'
   cacheLife('hours')
   cacheTags([CATALOGUE])
-  return getProduct(await cms(), slug)
+  return getProduct(await cms(), slug, locale)
 }
 
 /** A product page's data, with its live availability merged into the product and its variants. */
 export async function product(
   slug: string,
+  locale: 'en' | 'id' = 'en',
 ): Promise<(ProductVM & { variants: readonly (VariantVM & { available: boolean })[] }) | null> {
-  const found = await productEditorial(slug)
+  const found = await productEditorial(slug, locale)
   if (!found) return null
   await connection()
   const [availability] = [...(await availabilityFor(await cms(), [found.id])).values()]

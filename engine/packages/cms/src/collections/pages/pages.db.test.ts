@@ -1,10 +1,20 @@
 /**
  * Publishing a page the way the admin does (TASKS.md 5.4 review, F1): the admin saves one locale at
  * a time, so the publish guard sees `title` as that locale's string. A draft saved in English then
- * published in English goes live; a publish without an English title is refused.
+ * published in English goes live; a publish without an English title is refused. A publish expires
+ * the site's `pages:<site>` cache tag. Outside a Next request there is no `after()` to run that
+ * in, so `invalidate` is recorded here instead.
  */
 import { getPayload } from 'payload'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+
+const invalidated = vi.hoisted(() => [] as string[][])
+vi.mock('@engine/cache', async (original) => ({
+  ...(await original<typeof import('@engine/cache')>()),
+  invalidate: (tags: readonly string[]) => {
+    invalidated.push([...tags])
+  },
+}))
 
 import { startWorksStack, server } from '../works/works.test-support'
 
@@ -41,6 +51,7 @@ describe.skipIf(!server)('pages: publishing from the admin on a real database', 
     const body = (await published.json()) as { doc: { _status: string; body: string } }
     expect(body.doc._status).toBe('published')
     expect(body.doc.body).toBe('Since 2001, in Singapore.')
+    expect(invalidated).toContainEqual(['pages:gallery'])
   })
 
   it('refuses to publish with a blank English title', async () => {

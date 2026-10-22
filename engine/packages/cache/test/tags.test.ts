@@ -200,6 +200,7 @@ describe('each kind has its expiry', () => {
   it('the kinds known today, each named by its collection', () => {
     expect(Object.keys(TAG_KINDS).sort()).toEqual([
       'catalogue',
+      'pages',
       'product',
       'product-price',
       'product-stock',

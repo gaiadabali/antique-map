@@ -12,7 +12,9 @@
  *   card, or in a wood frame, on a dark background): `rendered`, both labelled "Digital mockup"
  *   wherever shown. A framed mock-up hangs on a wall: role `in-room`; a mounted one lies `flat`.
  */
-import { basename } from 'node:path'
+import { basename, extname } from 'node:path'
+
+import { slugify } from '../../fields/slug'
 
 import type { ImageKind, ProductImage } from './types'
 
@@ -47,6 +49,7 @@ export function productImage(
   return {
     path,
     fileName: basename(path),
+    legacyFileName: basename(path),
     kind,
     ...KIND[kind],
     altEn: `${names.en}${ALT[kind].en}`,
@@ -59,4 +62,34 @@ export function artworkFirst(images: readonly ProductImage[]): ProductImage[] {
   const isArtwork = (image: ProductImage) =>
     image.kind === 'artwork' || image.kind === 'artwork-branded'
   return [...images.filter(isArtwork), ...images.filter((image) => !isArtwork(image))]
+}
+
+/** What a picture's name says after the product's: nothing for the artwork itself. */
+const NAME_SUFFIX: Record<ImageKind, string> = {
+  artwork: '',
+  'artwork-branded': '-close-view',
+  'mockup-mounted': '-mounted',
+  'mockup-framed': '-framed',
+}
+
+/**
+ * Every picture named after its product and its kind, once across the catalogue: the product's
+ * English name as a slug (`balinese-dancer-photograph-c-1927`), the kind's suffix, the file's
+ * extension; a second picture of the same name takes `-2`, `-3` … (two designs share a title,
+ * a product shows two mounted mock-ups). Never the extraction's code (`MP.012`, `IG04-3`).
+ */
+export function nameImages<
+  P extends { readonly nameEn: string; readonly images: readonly ProductImage[] },
+>(products: readonly P[]): P[] {
+  const taken = new Map<string, number>()
+  return products.map((product) => ({
+    ...product,
+    images: product.images.map((image) => {
+      const base = `${slugify(product.nameEn) || 'product'}${NAME_SUFFIX[image.kind]}`
+      const count = (taken.get(base) ?? 0) + 1
+      taken.set(base, count)
+      const name = count === 1 ? base : `${base}-${count}`
+      return { ...image, fileName: `${name}${extname(image.path).toLowerCase()}` }
+    }),
+  }))
 }

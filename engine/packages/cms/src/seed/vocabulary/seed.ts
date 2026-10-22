@@ -28,7 +28,7 @@ import type { Payload, PayloadRequest, RequestContext } from 'payload'
 
 import { reqOf } from '../req'
 import { fold } from '../../import/vocabulary'
-import { TERM_KINDS } from '../../collections/terms/kinds'
+import { ensureCategory } from './category'
 import { fillKey, publishVocabulary, type PublishReport } from './publish'
 import { SETTINGS_DEFAULTS } from './settings'
 import { sortNameOf } from './sort-name'
@@ -38,6 +38,7 @@ export { sortNameOf } from './sort-name'
 export type VocabularyReport = {
   places: { created: number; present: number }
   terms: { created: number; present: number }
+  categories: { created: number; present: number }
   makers: { created: number; present: number }
   siteSettings: 'seeded' | 'present'
   /** With `publish`: the seeded rows this run moved from draft to published (`./publish`). */
@@ -92,11 +93,6 @@ export function subjectSeeds(): readonly SubjectSeed[] {
 export function categorySeeds(): readonly SubjectSeed[] {
   return (data('categories.json') as { categories: SubjectSeed[] }).categories
 }
-
-/** The `category` kind arrives with TASKS.md 3.2.a; until then the categories are subject terms. */
-const CATEGORY_KIND = (TERM_KINDS as readonly string[]).includes('category')
-  ? 'category'
-  : 'subject'
 
 export function makerSeeds(): readonly MakerSeed[] {
   return (data('makers.json') as { makers: MakerSeed[] }).makers
@@ -155,6 +151,7 @@ export async function seedVocabulary(
   const report: VocabularyReport = {
     places: { created: 0, present: 0 },
     terms: { created: 0, present: 0 },
+    categories: { created: 0, present: 0 },
     makers: { created: 0, present: 0 },
     siteSettings: 'present',
   }
@@ -172,6 +169,7 @@ export async function seedVocabulary(
   // is a publish-only requirement, filled there where the row has none (`./publish`).
   const termIds: number[] = []
   const makerIds: number[] = []
+  const categoryIds: number[] = []
   const fill = new Map<string, Record<string, string>>()
   for (const grade of gradeSeeds()) {
     const term = await ensureTerm(payload, req, 'grade', grade.label, gradeFields(grade))
@@ -179,14 +177,16 @@ export async function seedVocabulary(
     termIds.push(term.id)
     fill.set(fillKey('terms', term.id), { equivalent: grade.equivalent })
   }
-  const subjects = [
-    ...subjectSeeds().map((seed) => ({ kind: 'subject', seed })),
-    ...categorySeeds().map((seed) => ({ kind: CATEGORY_KIND, seed })),
-  ]
-  for (const { kind, seed } of subjects) {
-    const term = await ensureTerm(payload, req, kind, seed.label, undefined, seed.labelId)
+  for (const seed of subjectSeeds()) {
+    const term = await ensureTerm(payload, req, 'subject', seed.label, undefined, seed.labelId)
     count(report.terms, term.created)
     termIds.push(term.id)
+  }
+
+  for (const [position, seed] of categorySeeds().entries()) {
+    const category = await ensureCategory(payload, req, seed, position)
+    count(report.categories, category.created)
+    categoryIds.push(category.id)
   }
 
   for (const maker of makerSeeds()) {
@@ -229,6 +229,7 @@ export async function seedVocabulary(
       places: [...slugToId.values()],
       terms: termIds,
       makers: makerIds,
+      categories: categoryIds,
       fill,
     })
   }

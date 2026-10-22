@@ -38,7 +38,10 @@ describe('the migration set', () => {
       expect(text).not.toMatch(/import \{ MigrateUpArgs/)
       const up = text.indexOf('export async function up(')
       expect(text.indexOf("SET LOCAL lock_timeout = '5s'")).toBeGreaterThan(up)
-      expect(text.indexOf("SET LOCAL lock_timeout = '5s'")).toBeLessThan(text.indexOf('CREATE'))
+      // Before up()'s first schema statement, whichever it is: a migration may only ALTER.
+      const firstStatement = up + text.slice(up).search(/\b(CREATE|ALTER|DROP)\s/)
+      expect(firstStatement).toBeGreaterThan(up)
+      expect(text.indexOf("SET LOCAL lock_timeout = '5s'")).toBeLessThan(firstStatement)
     }
   })
 

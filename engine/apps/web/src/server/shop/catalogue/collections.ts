@@ -11,6 +11,7 @@ import { cacheLife } from 'next/cache'
 import { cacheTags, catalogueTag } from '@engine/cache'
 import { cms } from '@engine/cms/instance'
 
+import { categoryDetails } from './category-details'
 import { collectionsOf, type CollectionVM } from './collections-of'
 import { getCategories, getCategoryId, listProducts } from './queries'
 
@@ -24,11 +25,13 @@ export async function collections(): Promise<readonly CollectionVM[]> {
   cacheLife('hours')
   cacheTags([CATALOGUE])
   const payload = await cms()
+  // A category's own cover picture leads its card; without one, its newest product's.
+  const covers = new Map((await categoryDetails('en')).map((each) => [each.slug, each.image]))
   return collectionsOf(await getCategories(payload), async (category) => {
     const categoryId = await getCategoryId(payload, category.slug)
     if (categoryId === null) return { count: 0, image: null }
     // One card is enough: the lead picture is the newest product's, the total is the count.
     const { items, total } = await listProducts(payload, { categoryId, pageSize: 1 })
-    return { count: total, image: items[0]?.image ?? null }
+    return { count: total, image: covers.get(category.slug) ?? items[0]?.image ?? null }
   })
 }

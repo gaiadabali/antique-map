@@ -5,7 +5,8 @@
  * columns — the links in small capitals at the left, the stacked logo dead centre, the languages,
  * search and the bag at the right — sticky, with a hairline under it. On the home it lies clear
  * over the hero until the page has scrolled 30 px, then turns white. On a phone the links and
- * languages move into a full-screen drawer behind the menu button. Every word arrives as a prop.
+ * languages move into a full-screen drawer behind the menu button, which slides in from the left
+ * and back out when closed (it stays mounted until its exit has played). Every word arrives as a prop.
  */
 import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react'
 
@@ -47,6 +48,8 @@ export function ShopHeader({
   menuLabel,
 }: Props) {
   const [open, setOpen] = useState(false)
+  // mounted: the drawer stays in the page while its exit plays, then leaves
+  const [mounted, setMounted] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const menuId = useId()
   const closeRef = useRef<HTMLButtonElement>(null)
@@ -92,7 +95,10 @@ export function ShopHeader({
           aria-expanded={open}
           aria-controls={menuId}
           aria-label={openLabel}
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            setMounted(true)
+            setOpen(true)
+          }}
         >
           <span aria-hidden="true" />
           <span aria-hidden="true" />
@@ -121,9 +127,14 @@ export function ShopHeader({
         {bag}
       </div>
 
-      {open && (
+      {mounted && (
         <div
           className={styles.drawer}
+          data-state={open ? 'open' : 'closing'}
+          aria-hidden={open ? undefined : true}
+          onAnimationEnd={(event) => {
+            if (!open && event.target === event.currentTarget) setMounted(false)
+          }}
           id={menuId}
           role="dialog"
           aria-modal="true"
@@ -151,7 +162,7 @@ export function ShopHeader({
                     aria-current={link.current ? 'page' : undefined}
                     onClick={() => setOpen(false)}
                   >
-                    {link.label}
+                    <span>{link.label}</span>
                   </a>
                 </li>
               ))}

@@ -3,7 +3,8 @@
  * of framed cards — name and price, then "Reproduction" — with "Shop all prints" under it. The read
  * is `loadFeaturedProducts()` (`server/shop/home`), public-only, prices formatted through
  * `formatRupiah`; inside `<Suspense>`, and an empty state when the database holds no published
- * product yet — never a crash.
+ * product yet — never a crash. The words are the page's `productRail` block; the arrows and the
+ * "From" before a price are the lexicon's.
  */
 import { Suspense } from 'react'
 
@@ -20,38 +21,40 @@ import { CapsLink } from '../ui/caps-link'
 import { Rail } from '../ui/rail'
 import { RailSkeleton } from '../ui/rail-skeleton'
 import { ShopCard } from '../ui/shop-card'
+import type { ProductRailVM } from '../../../server/shop/pages/blocks'
 import styles from './home.module.css'
 import type { HomeText } from './home-messages'
 
 type Props = {
   readonly locale: 'en' | 'id'
   readonly t: HomeText
+  readonly block: ProductRailVM
   /** The browse page, reached from the link under the rail. */
   readonly allHref: string
 }
 
 export function FeaturedProducts(props: Props) {
   return (
-    <Suspense fallback={<RailSkeleton title={props.t('home.shop.featuredTitle')} flush />}>
+    <Suspense fallback={<RailSkeleton title={props.block.title} flush />}>
       <ProductsRail {...props} />
     </Suspense>
   )
 }
 
-async function ProductsRail({ locale, t, allHref }: Props) {
+async function ProductsRail({ locale, t, block, allHref }: Props) {
   let products: readonly FeaturedProduct[] = []
   try {
-    products = await loadFeaturedProducts(locale)
+    products = await loadFeaturedProducts(locale, block.categoryId)
   } catch {
     products = []
   }
   if (products.length === 0) {
     return (
-      <section className={styles.empty} aria-labelledby="home-featured">
-        <h2 id="home-featured" className={styles.emptyTitle}>
-          {t('home.shop.emptyTitle')}
+      <section className={styles.empty} aria-labelledby={`rail-${block.id}`}>
+        <h2 id={`rail-${block.id}`} className={styles.emptyTitle}>
+          {block.emptyTitle || block.title}
         </h2>
-        <p className={styles.emptyBody}>{t('home.shop.emptyBody')}</p>
+        {block.emptyBody ? <p className={styles.emptyBody}>{block.emptyBody}</p> : null}
       </section>
     )
   }
@@ -59,11 +62,11 @@ async function ProductsRail({ locale, t, allHref }: Props) {
   const href = createHref(SITES.shop)
   return (
     <Rail
-      id="home-featured"
-      title={t('home.shop.featuredTitle')}
+      id={`rail-${block.id}`}
+      title={block.title}
       previousLabel={t('home.shop.railPrevious')}
       nextLabel={t('home.shop.railNext')}
-      more={<CapsLink href={allHref}>{t('home.shop.shopAll')}</CapsLink>}
+      more={block.linkLabel ? <CapsLink href={allHref}>{block.linkLabel}</CapsLink> : undefined}
       flush
     >
       {products.map((product) => {

@@ -78,8 +78,10 @@ export async function SiteRoot(props: {
   const locale = siteLocale(props.site, (await props.params).locale)
   if (locale === null) notFound()
   const shell = shellOf(site, locale)
+  // Extensions and in-browser translation write attributes onto `<html>` before hydration; the
+  // suppression is one level deep, so a mismatch anywhere in the body still reports.
   return (
-    <html lang={locale} data-site={site.key} className={fontVariables}>
+    <html lang={locale} data-site={site.key} className={fontVariables} suppressHydrationWarning>
       <body>
         <SiteShell shell={{ ...shell, locale }} t={shellText(site.key, locale)}>
           {props.children}

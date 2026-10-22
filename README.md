@@ -57,10 +57,60 @@ tool drafts listings from photographs.
 
 ```bash
 pnpm install
-docker compose -f docker-compose.dev.yml up -d   # Postgres 18, Mailpit, MinIO
-cp .env.example .env.local
-pnpm dev                                         # gallery.localhost:3000 and shop.localhost:3000
-pnpm verify                                      # the full gate
+docker compose -f docker-compose.dev.yml up -d    # Postgres 18, Mailpit, MinIO
+cp .env.example engine/apps/web/.env.local        # or `pnpm worktree:env` in a worktree
+pnpm db:fresh                                     # a migrated database, indies_<DB_SUFFIX>
+pnpm --filter @engine/web dev                     # gallery.localhost:3000 and shop.localhost:3000
+pnpm verify                                       # the full gate
 ```
 
-The commands change as phases 1–2 reshape the repo; `docs/CONVENTIONS.md` holds the current ones.
+An existing database takes new migrations with `pnpm --filter @engine/cms migrate` (with the app's
+`DATABASE_URL`). After a migration, a regenerated `importMap.js` or a `next build` in the same folder,
+restart the dev server; if Turbopack still reports a module "instantiated because it was required",
+delete `engine/apps/web/.next/dev` and start it again.
+
+### Data
+
+| Command | Fills |
+| ------- | ----- |
+| `pnpm data:seed --layer vocabulary --publish` | places, tags, grades, makers, the shop's categories, site settings |
+| `pnpm data:seed --layer shop --publish` | the mock shop: stores, products, stock |
+| `LEGACY_DATA_DIR=<dir> pnpm data:seed --layer shop-catalogue --publish` | the owner's 156 real designs (Animals 21, Bali 46, Botanicals 27, Landscapes 33, Maps 16, Travel posters 13) with pictures and stock; retires the mock products. `<dir>` holds `old-east-indies/designs` and `old-east-indies/instagram`, never committed ([docs/DATA.md](docs/DATA.md) §2) |
+| `pnpm --filter @engine/cms media:derivatives` | the web sizes of newly uploaded pictures (a seed run outside the app leaves them pending) |
+| `pnpm data:seed-pages [--publish]` | the shop's home, partnership and stores pages as CMS blocks, in both languages, exactly as the site draws them; seeded once, never over an edited page |
+
+A seed run outside the app posts its cache invalidations to `REVALIDATE_ORIGIN` (default
+`http://127.0.0.1:<PORT>`); a dev server on another port keeps its cached listings until it restarts.
+
+## The shop in the CMS
+
+Everything Old East Indies shows is edited in `/admin`:
+
+| Admin | What it holds |
+| ----- | ------------- |
+| **Shop — products › Products** | in tabs — Product, Images, Price and variants, Search engines; address, category and status in the sidebar |
+| **Shop — products › Categories** | the shop's collections: name, short description, cover picture, order, search-engine text, draft/published. A product belongs to one |
+| **Stores and stock › Stores** | in tabs — Store, Location, Contact and hours, Photographs; "takes orders" and "listed" in the sidebar |
+| **Content › Pages** (site Shop) | a page built from **sections** (blocks): add, drag, remove, each word per language. The address `home` is the home, `partnership` the partnership page, `stores` the stores page; any other address is a page at `/{address}` |
+
+**Sections a shop page can use:** home hero, collections rail, products rail (optionally one category),
+numbered steps, story with prints, bridge to the gallery · page hero, band of facts, offer with terms,
+partnership enquiry form, partner sign-in · text, picture and text, questions and answers, call to
+action, stores directory. Links are picked, not typed — a shop page, a section on the page (`#apply`),
+or a web address — and follow the visitor's language.
+
+Until a built-in page (home, partnership, stores) is published in the CMS, the site draws its built-in
+sections with the lexicon's words, so unpublishing one never leaves a hole. A change to a published page
+or category reaches the site without a deploy (`pages:shop` and `catalogue:shop` cache tags).
+
+**Search engines and sharing.** Every public page has a title, description, canonical, `hreflang` and
+Open Graph / Twitter tags. Its sharing picture is the page's own — a product's photograph, a category's
+cover (else its newest product's), a page's **Social sharing picture** (Pages › Search engines) — and
+otherwise the site's card, `public/shop/og.png` (1200 × 630). The bag, checkout and order pages are
+`noindex`.
+
+Code: blocks `engine/packages/cms/src/collections/pages/blocks/` · loader and projection
+`engine/apps/web/src/server/shop/pages/` · renderers and built-in sections
+`engine/apps/web/src/sites/shop/blocks/` · seed `engine/apps/web/src/server/shop/pages/seed/`.
+
+The commands change as the repo is reshaped; `docs/CONVENTIONS.md` holds the current ones.

@@ -1,16 +1,26 @@
-/* The shop's 404 (the redesign of 2026-10-20): the plain page head, one way back below it.
+/* The shop's 404: centred on the page — the status in large numerals, the title, one way back.
    Tokens only. */
 .page {
-  width: var(--page-wrap);
-  margin-inline-start: 50%;
-  translate: -50% 0;
-  padding-inline: var(--shop-gutter);
-  padding-block-end: var(--section-space);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  min-block-size: 60vh;
+  padding: var(--section-space) var(--shop-gutter);
+  text-align: center;
 }
 
-.links {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-4);
-  padding-block-start: var(--space-6);
+.code {
+  margin: 0;
+  font: var(--shop-title-hero);
+  font-size: 6rem;
+  line-height: 1;
+  color: var(--shop-umber);
+}
+
+.title {
+  margin: 0;
+  font: var(--shop-title-hero);
+  text-wrap: balance;
 }

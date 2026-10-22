@@ -58,9 +58,19 @@ export type BagCodeVM = {
   readonly discountText: string | null
 }
 
+/**
+ * The summary's delivery line against the owner's free-delivery threshold, measured after the
+ * discount (COMMERCE.md §5): `free` once the bag reaches it, else what is still to add; `null`
+ * when the owner set no threshold. The fee itself is checkout's, once a pin is dropped.
+ */
+export type BagDeliveryVM =
+  | { readonly kind: 'free'; readonly freeOverText: string }
+  | { readonly kind: 'short'; readonly shortText: string; readonly freeOverText: string }
+
 export type BagVM = {
   readonly lines: readonly BagLineVM[]
   readonly subtotalText: string
+  readonly delivery: BagDeliveryVM | null
   readonly code: BagCodeVM | null
   readonly totalText: string
   /** Why the bag cannot go to payment, by lexicon key; `null` when its lines can be bought. */
@@ -107,11 +117,23 @@ export async function readBag(): Promise<BagVM> {
   return {
     lines: quote.lines.map((line) => lineVM(line, byId)),
     subtotalText: formatRupiah(quote.subtotalIdr),
+    delivery: deliveryVM(
+      quote.subtotalIdr - quote.discountIdr,
+      inputs.settings.delivery.freeOverIdr,
+    ),
     code: codeVM(storedCode, checked, quote),
     totalText: formatRupiah(quote.totalIdr),
     refusal: quote.refusal === undefined ? null : { key: refusalKey(quote.refusal) },
     canCheckout: quote.refusal === undefined,
   }
+}
+
+function deliveryVM(afterDiscountIdr: number, freeOverIdr: number | null): BagDeliveryVM | null {
+  if (freeOverIdr === null || freeOverIdr <= 0) return null
+  const freeOverText = formatRupiah(freeOverIdr)
+  return afterDiscountIdr >= freeOverIdr
+    ? { kind: 'free', freeOverText }
+    : { kind: 'short', shortText: formatRupiah(freeOverIdr - afterDiscountIdr), freeOverText }
 }
 
 function lineVM(line: QuoteLine, byId: ReadonlyMap<number, BagDisplay>): BagLineVM {

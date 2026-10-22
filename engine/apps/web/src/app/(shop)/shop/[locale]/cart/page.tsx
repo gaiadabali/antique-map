@@ -4,6 +4,7 @@ import type { Metadata } from 'next'
 
 import { readBag } from '../../../../../server/shop/bag'
 import { BagView } from '../../../../../sites/shop/bag/bag-view'
+import { bagText } from '../../../../../sites/shop/bag/copy'
 import { currentSite } from '../../../../../shell/site'
 import { siteLocale } from '../../../../../shell/messages'
 
@@ -12,8 +13,15 @@ import { siteLocale } from '../../../../../shell/messages'
  * (`SURFACE_ROUTES.cart`); the public addresses are `/bag` (en) and `/keranjang` (id), which the
  * proxy rewrites here — the bag is never reached at `/shop/cart`.
  */
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
+/** A private page: titled for the tab, never indexed, never given a sharing card. */
+export async function generateMetadata({
+  params,
+}: PageProps<'/shop/[locale]/cart'>): Promise<Metadata> {
+  const locale = siteLocale('shop', (await params).locale)
+  return {
+    ...(locale === null ? {} : { title: bagText(locale).shared('cart.title') }),
+    robots: { index: false, follow: false },
+  }
 }
 
 export default async function BagPage({ params }: PageProps<'/shop/[locale]/cart'>) {

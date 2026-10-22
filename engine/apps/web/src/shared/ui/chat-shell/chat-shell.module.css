@@ -1,6 +1,9 @@
 /*
- * The chat frame: a column of header, log, composer and a one-line disclosure. Header, composer and
- * disclosure sit on the raised surface; the log sits on the ground, so the bubbles read as raised.
+ * The chat frame: a column of header, log, an optional tray, composer and a one-line disclosure.
+ * Header, composer and disclosure sit on the raised surface; the log sits on the ground, so the
+ * bubbles read as raised. A site may set the knobs (sites/shop/tokens/chat.css: the shop's
+ * handoff draws the disclosure as a band under the header and the suggestions in a tray above the
+ * composer); the fallbacks are the gallery's.
  */
 .shell {
   display: flex;
@@ -9,7 +12,7 @@
   max-height: 100dvh;
   color: var(--color-text);
   background: var(--color-chat-agent);
-  border: var(--rule-hair) solid var(--color-border);
+  border: var(--chat-shell-border, var(--rule-hair) solid var(--color-border));
   border-radius: inherit;
   overflow: hidden;
 }
@@ -56,17 +59,24 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--chat-log-gap, var(--space-2));
   min-height: 0;
-  padding: var(--space-4);
+  padding: var(--chat-log-pad, var(--space-4));
   overflow-y: auto;
   overscroll-behavior: contain;
   background: var(--color-chat-ground);
 }
 
+.tray {
+  flex: none;
+  padding: var(--chat-tray-pad, 0 var(--space-4) var(--space-3));
+  background: var(--color-chat-ground);
+}
+
 .composer {
-  padding: var(--space-3) var(--space-4) var(--space-2);
+  padding: var(--chat-composer-pad, var(--space-3) var(--space-4) var(--space-2));
   background: var(--color-chat-agent);
+  border-top: var(--chat-composer-rule, 0);
 }
 
 .disclosure {
@@ -77,14 +87,25 @@
   background: var(--color-chat-agent);
 }
 
+/* The band under the header: the words at the left on their own quiet ground, ruled below. */
+.disclosure[data-at='top'] {
+  flex: none;
+  padding: var(--chat-band-pad, var(--space-2) var(--space-4));
+  font: var(--chat-band-font, var(--text-caption));
+  text-align: start;
+  color: var(--chat-band-ink, var(--color-text-muted));
+  background: var(--chat-band-bg, var(--color-surface-deep));
+  border-bottom: var(--chat-band-rule, var(--rule-hair) solid var(--color-border));
+}
+
 .disclosure p {
   margin: 0;
 }
 
 .disclosure a {
-  color: inherit;
+  color: var(--chat-band-link, inherit);
   text-decoration: underline;
-  text-underline-offset: 2px;
+  text-underline-offset: var(--chat-band-link-offset, 2px);
 }
 
 .disclosure a:hover {

@@ -36,6 +36,23 @@ describe('the pages publish guard', () => {
     expect(await englishTitle('Tentang', { id: 1 }, reqIn('id', 'About'))).toBe('About')
   })
 
+  it('leaves an Indonesian save in Indonesian after reading the English title', async () => {
+    // Payload sets a shared request's locale to the one a read asks for, as this fake does.
+    const req = {
+      locale: 'id',
+      fallbackLocale: false,
+      t: ((key: string) => key) as never,
+      payload: {
+        findByID: async ({ locale }: { locale: string }) => {
+          req.locale = locale
+          return { title: 'About' }
+        },
+      },
+    }
+    expect(await englishTitle('Tentang', { id: 1 }, req as never)).toBe('About')
+    expect(req.locale).toBe('id')
+  })
+
   it('refuses an English publish with a blank title', async () => {
     await expect(
       pagePublishGuard({

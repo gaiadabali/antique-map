@@ -1,7 +1,9 @@
 /* The product gallery (the handoff's oei.css §product, K&M §G). Every value is a token. */
 
 .gallery {
-  --dialog-width: min(84rem, calc(100% - 2 * var(--shop-gutter)));
+  /* the lightbox's frame wraps its picture, so it is as wide as the picture */
+  --dialog-width: fit-content;
+  --lightbox-frame: var(--space-4);
 
   min-inline-size: 0;
 }
@@ -102,25 +104,63 @@
   color: var(--color-surface);
 }
 
-/* the dialog's picture: as large as the window allows, whole */
+/* the lightbox: the picture on white in an ink frame, its caption in small capitals beneath */
+.frame {
+  padding: var(--lightbox-frame);
+  background: var(--color-surface-dark);
+  box-shadow: var(--shadow-panel);
+}
+
+.caption {
+  margin: var(--space-5) 0 0;
+  font: var(--shop-text-caps);
+  letter-spacing: var(--shop-tracking-caps);
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--color-text-on-dark);
+}
+
+/* a synthetic view's label, quieter under the name */
+.captionNote {
+  margin: var(--space-1) 0 0;
+  font: var(--shop-text-caps);
+  font-size: 0.625rem;
+  font-weight: 400;
+  letter-spacing: var(--shop-tracking-caps);
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--color-text-on-dark);
+  opacity: 0.7;
+}
+
+/* the dialog's picture: the print's own shape with an even margin on white, as large as the
+   window allows (its height less the frame and the caption, its width less the gutters), whole */
 .large {
   display: grid;
   place-items: center;
-  block-size: min(75dvh, 60rem);
+  background: var(--color-surface);
 }
 
 .large > * {
   --print-tile-bg: var(--color-surface);
-  --print-stage-inset: 2%;
+  --print-stage-inset: 9%;
 
-  aspect-ratio: auto;
-  inline-size: 100%;
-  block-size: 100%;
+  aspect-ratio: var(--print-ratio);
+  inline-size: min(
+    calc(100vw - 2 * var(--shop-gutter) - 2 * var(--lightbox-frame)),
+    calc((100dvh - 10rem) * var(--print-ratio)),
+    calc(60rem * var(--print-ratio))
+  );
+  block-size: auto;
 }
 
 @media (max-width: 56.25rem) {
   .stage {
     block-size: auto;
     aspect-ratio: 1 / 1.1;
+  }
+
+  .gallery {
+    --lightbox-frame: var(--space-2);
   }
 }

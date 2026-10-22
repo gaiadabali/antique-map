@@ -5,11 +5,16 @@
  * `photograph` on every file), puts the pictures on the product in order, and with `publish`
  * saves the product published, which runs its publish checks (CONTENT-MODEL.md §8).
  *
- * Idempotent: a media row is keyed by its file name and never re-made; a product whose pictures
+ * Idempotent: a media row is keyed by its file name and never re-made — one an earlier run stored
+ * under the extraction's code (`MP.012.webp`) is found by that name and renamed to the product's
+ * (`./images` `nameImages`), the same row, so no product loses it; a product whose pictures
  * already match and that is already published is left alone. A product the import did not create
  * (held or rejected) or a picture that cannot be read is reported, never guessed around.
  */
-import type { Payload, RequestContext } from 'payload'
+import { readFileSync } from 'node:fs'
+import { extname } from 'node:path'
+
+import type { File, Payload, RequestContext } from 'payload'
 
 import { reqOf } from '../req'
 import type { CatalogueProduct, ProductImage } from './types'
@@ -32,20 +37,63 @@ const idOf = (value: unknown): number | undefined =>
     ? (value as { id?: number }).id
     : (value as number | undefined)
 
-async function ensureMedia(
+const MIME: Readonly<Record<string, string>> = {
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.png': 'image/png',
+  '.webp': 'image/webp',
+}
+
+/** The picture's bytes under the name it is stored by. */
+function fileOf(image: ProductImage): File {
+  const data = readFileSync(image.path)
+  return {
+    data,
+    name: image.fileName,
+    mimetype: MIME[extname(image.path).toLowerCase()] ?? 'application/octet-stream',
+    size: data.length,
+  }
+}
+
+async function mediaNamed(
   payload: Payload,
-  image: ProductImage,
+  filename: string,
   context: RequestContext | undefined,
-): Promise<{ id: number; created: boolean }> {
+): Promise<number | null> {
   const found = await payload.find({
     collection: 'media',
     overrideAccess: true,
     req: reqOf(payload, 'en', context),
     depth: 0,
     limit: 1,
-    where: { filename: { equals: image.fileName } },
+    where: { filename: { equals: filename } },
   })
-  if (found.docs.length > 0) return { id: found.docs[0]!.id as number, created: false }
+  return (found.docs[0]?.id as number | undefined) ?? null
+}
+
+async function ensureMedia(
+  payload: Payload,
+  image: ProductImage,
+  context: RequestContext | undefined,
+): Promise<{ id: number; created: boolean }> {
+  const named = await mediaNamed(payload, image.fileName, context)
+  if (named !== null) return { id: named, created: false }
+  const legacy =
+    image.legacyFileName === image.fileName
+      ? null
+      : await mediaNamed(payload, image.legacyFileName, context)
+  if (legacy !== null) {
+    // The same row under its new name: the stored file is replaced by the same bytes, renamed.
+    await payload.update({
+      collection: 'media',
+      id: legacy,
+      data: {} as never,
+      file: fileOf(image),
+      overwriteExistingFiles: true,
+      req: reqOf(payload, 'en', context),
+    })
+    return { id: legacy, created: false }
+  }
   const created = (await payload.create({
     collection: 'media',
     data: {
@@ -55,7 +103,7 @@ async function ensureMedia(
       role: image.role,
       provenance: image.provenance,
     } as never,
-    filePath: image.path,
+    file: fileOf(image),
     req: reqOf(payload, 'en', context),
   })) as unknown as { id: number }
   await payload.update({

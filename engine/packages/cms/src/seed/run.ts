@@ -237,13 +237,15 @@ export function renderSeedRun(run: SeedRun): string {
     const v = run.vocabulary
     lines.push(
       `vocabulary: places ${v.places.created} created / ${v.places.present} present, ` +
-        `terms ${v.terms.created} / ${v.terms.present}, makers ${v.makers.created} / ` +
+        `terms ${v.terms.created} / ${v.terms.present}, categories ${v.categories.created} / ` +
+        `${v.categories.present}, makers ${v.makers.created} / ` +
         `${v.makers.present}, site-settings ${v.siteSettings}`,
     )
     if (v.published) {
       const p = v.published
       lines.push(
         `vocabulary published: places ${p.places}, terms ${p.terms}, makers ${p.makers}, ` +
+          `categories ${p.categories}, ` +
           `held ${p.held.length}`,
         ...p.held.map((line) => `  held: ${line}`),
       )

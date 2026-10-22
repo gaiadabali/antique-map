@@ -2,8 +2,8 @@
  * The shop home's "Shop by" (the redesign of 2026-10-20): the shop's real collections as a rail of
  * framed cards, each one link to its collection, with "See the gallery walls" under it. The read is
  * `collections()` (published-only, projected, cached), streamed inside `<Suspense>` so the build
- * never touches a database; on an error or with no collection the section is left out. Every word
- * is the home's lexicon or the collections' own copy.
+ * never touches a database; on an error or with no collection the section is left out. The title and
+ * the link's words are the page's `categoryRail` block; the rail's arrows are the lexicon's.
  */
 import { Suspense } from 'react'
 
@@ -24,19 +24,22 @@ import type { HomeText } from './home-messages'
 type Props = {
   readonly locale: 'en' | 'id'
   readonly t: HomeText
+  readonly title: string
+  /** The link to the collections index under the rail; none when empty. */
+  readonly linkLabel: string | null
   /** The collections index (`href('collection', {}, locale)`), reached from the link under it. */
   readonly allHref: string
 }
 
 export function ShopBy(props: Props) {
   return (
-    <Suspense fallback={<RailSkeleton title={props.t('home.shop.chipsEyebrow')} />}>
+    <Suspense fallback={<RailSkeleton title={props.title} />}>
       <Tiles {...props} />
     </Suspense>
   )
 }
 
-async function Tiles({ locale, t, allHref }: Props) {
+async function Tiles({ locale, t, title, linkLabel, allHref }: Props) {
   let list: readonly CollectionVM[] = []
   try {
     list = await collections()
@@ -50,10 +53,10 @@ async function Tiles({ locale, t, allHref }: Props) {
   return (
     <Rail
       id="home-shop-by"
-      title={t('home.shop.chipsEyebrow')}
+      title={title}
       previousLabel={t('home.shop.railPrevious')}
       nextLabel={t('home.shop.railNext')}
-      more={<CapsLink href={allHref}>{t('home.shop.setsCta')}</CapsLink>}
+      more={linkLabel ? <CapsLink href={allHref}>{linkLabel}</CapsLink> : undefined}
     >
       {list.map((collection) => {
         const ratio = printRatioOf(collection.image)

@@ -117,12 +117,15 @@
 }
 
 @media (max-width: 56.25rem) {
+  /* the handoff keeps its 50 px band on a phone, and the words take the story's 24 px lead */
   .section {
     grid-template-columns: 1fr;
+    padding-block: 3.125rem;
   }
 
   .words {
     max-inline-size: none;
+    margin-block-start: var(--space-5);
   }
 
   .box {

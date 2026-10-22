@@ -10,7 +10,7 @@
  * resolved server-side (`lexicon.chatPanelText`), so no lexicon ships before the visitor asks.
  */
 import dynamic from 'next/dynamic'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { ChatIcon } from './chat-icons'
 import type { ChatPanelProps } from './chat-panel'
@@ -20,11 +20,20 @@ const ChatPanel = dynamic<ChatPanelProps>(() => import('./chat-panel').then((m) 
   ssr: false,
 })
 
-export type ChatLauncherProps = Omit<ChatPanelProps, 'onClose'> & { readonly label: string }
+export type ChatLauncherProps = Omit<ChatPanelProps, 'onClose'> & {
+  readonly label: string
+  /** Stop above the site footer once it scrolls into view, keeping the usual gap (the shop). */
+  readonly dock?: boolean
+}
 
-export function ChatLauncher({ label, ...panelProps }: ChatLauncherProps): React.ReactElement {
+export function ChatLauncher({
+  label,
+  dock = false,
+  ...panelProps
+}: ChatLauncherProps): React.ReactElement {
   const [open, setOpen] = useState(false)
   const launcherRef = useRef<HTMLButtonElement>(null)
+  useDock(launcherRef, dock && !open)
 
   function closePanel(): void {
     setOpen(false)
@@ -38,6 +47,7 @@ export function ChatLauncher({ label, ...panelProps }: ChatLauncherProps): React
         ref={launcherRef}
         type="button"
         className={styles.launcher}
+        data-dock={dock || undefined}
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
       >
@@ -54,4 +64,41 @@ export function ChatLauncher({ label, ...panelProps }: ChatLauncherProps): React
       <ChatPanel {...panelProps} onClose={closePanel} />
     </div>
   )
+}
+
+/**
+ * The launcher rides up with the page once the site footer reaches it (the handoff's `dock()`),
+ * so it stops above the footer's edge with its usual bottom gap and never covers the footer. The
+ * footer is the launcher's own preceding sibling, never a card's or a quote's.
+ */
+function useDock(ref: React.RefObject<HTMLButtonElement | null>, on: boolean): void {
+  useEffect(() => {
+    const launcher = ref.current
+    if (!on || !launcher) return
+    let footer = launcher.previousElementSibling
+    while (footer && footer.tagName !== 'FOOTER') footer = footer.previousElementSibling
+    if (!footer) return
+    const edge = footer
+    let frame = 0
+    const set = () => {
+      frame = 0
+      const lift = Math.max(0, window.innerHeight - edge.getBoundingClientRect().top)
+      launcher.style.translate = lift > 0 ? `0 ${-Math.round(lift)}px` : ''
+    }
+    const request = () => {
+      if (!frame) frame = requestAnimationFrame(set)
+    }
+    window.addEventListener('scroll', request, { passive: true, capture: true })
+    window.addEventListener('resize', request)
+    const observer = new ResizeObserver(request)
+    observer.observe(document.body)
+    set()
+    return () => {
+      if (frame) cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', request, { capture: true })
+      window.removeEventListener('resize', request)
+      observer.disconnect()
+      launcher.style.translate = ''
+    }
+  }, [ref, on])
 }

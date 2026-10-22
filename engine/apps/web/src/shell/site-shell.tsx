@@ -94,6 +94,7 @@ export async function SiteShell({ shell, t, children }: Props) {
       )}
       <ChatLauncher
         label={t('shell.chat')}
+        dock={shell.site.key === 'shop'}
         site={shell.site.key}
         locale={locale}
         origin={siteOrigin(shell.site.key) ?? ''}

@@ -8,7 +8,9 @@ import { browseText } from '../../../../../../sites/shop/browse/copy'
 import { BrowseView } from '../../../../../../sites/shop/browse/browse-view'
 import { currentSite, siteHref } from '../../../../../../shell/site'
 import { siteLocale } from '../../../../../../shell/messages'
-import { pageMetadata } from '../../../../../../server/seo'
+import { pageMetadata, shareImageOf, trimDescription } from '../../../../../../server/seo'
+import { categoryDetails } from '../../../../../../server/shop/catalogue/category-details'
+import { collections } from '../../../../../../server/shop/catalogue/collections'
 
 const SORTS: readonly ListingSort[] = ['featured', 'newest', 'priceAsc', 'priceDesc']
 
@@ -35,15 +37,24 @@ export async function generateMetadata({
   const slug = (await params).slug
   const [category, text] = await Promise.all([categoryId(slug), browseText(locale)])
   if (category === null) return {}
-  const categoriesList = await categories()
-  const label = categoriesList.find((each) => each.slug === slug)?.label ?? slug
+  const [categoriesList, details, cards] = await Promise.all([
+    categories(),
+    categoryDetails(locale),
+    collections(),
+  ])
+  const own = details.find((each) => each.slug === slug)
+  const label = own?.label ?? categoriesList.find((each) => each.slug === slug)?.label ?? slug
   const href = siteHref('shop')
   return pageMetadata({
     site: 'shop',
     locale,
     paths: { en: href('collection', { slug }, 'en'), id: href('collection', { slug }, 'id') },
-    title: label,
-    description: text('browse.description'),
+    title: own?.seoTitle ?? label,
+    description: trimDescription(
+      own?.seoDescription ?? own?.description ?? text('browse.description'),
+    ),
+    // The category's cover, else the picture its card on the collections index shows.
+    image: shareImageOf(own?.image ?? cards.find((each) => each.slug === slug)?.image),
     origin: site.origin,
   })
 }

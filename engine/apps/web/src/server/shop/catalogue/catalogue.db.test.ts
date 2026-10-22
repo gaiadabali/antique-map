@@ -90,8 +90,8 @@ describe.skipIf(!server)('shop catalogue loaders, on a real database', () => {
       (await invalidationBatch().operation((context) =>
         stack.payload.create({
           context,
-          collection: 'terms',
-          data: { kind: 'room', label: 'Prints', _status: 'published' } as never,
+          collection: 'categories',
+          data: { label: 'Prints', _status: 'published' } as never,
         }),
       )) as unknown as { id: number }
     ).id

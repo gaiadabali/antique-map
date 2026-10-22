@@ -59,8 +59,8 @@ describe.skipIf(!server)('the shop sitemap sources on a real database', () => {
     const categoryTerm = (await invalidationBatch().operation((context) =>
       stack.payload.create({
         context,
-        collection: 'terms',
-        data: { kind: 'room', label: 'Sitemap category', _status: 'published' } as never,
+        collection: 'categories',
+        data: { label: 'Sitemap category', _status: 'published' } as never,
       }),
     )) as unknown as { id: number }
     term = categoryTerm.id

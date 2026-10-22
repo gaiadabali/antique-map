@@ -9,12 +9,20 @@ import type { Metadata } from 'next'
 
 import { readCheckout } from '../../../../../server/shop/checkout'
 import { CheckoutView } from '../../../../../sites/shop/checkout/checkout-view'
+import { checkoutText } from '../../../../../sites/shop/checkout/copy'
 import { createHref, SITES } from '@engine/config/sites'
 import { currentSite } from '../../../../../shell/site'
 import { siteLocale } from '../../../../../shell/messages'
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
+/** A private page: titled for the tab, never indexed, never given a sharing card. */
+export async function generateMetadata({
+  params,
+}: PageProps<'/shop/[locale]/checkout'>): Promise<Metadata> {
+  const locale = siteLocale('shop', (await params).locale)
+  return {
+    ...(locale === null ? {} : { title: checkoutText(locale)('checkout.reviewTitle') }),
+    robots: { index: false, follow: false },
+  }
 }
 
 export default async function CheckoutPage({ params }: PageProps<'/shop/[locale]/checkout'>) {

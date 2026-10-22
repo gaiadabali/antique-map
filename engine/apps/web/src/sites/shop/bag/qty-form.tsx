@@ -1,9 +1,11 @@
 'use client'
 
 /**
- * One line's quantity stepper and remove button (6.2; EXPERIENCE-SHOP.md §5): plain forms posting
- * to the bag's server actions, so the edit works without JavaScript. The labels and the one error
- * line arrive as server-rendered strings; the actions return outcomes, never prices.
+ * One line's quantity stepper and remove button (6.2; the handoff's Bag: − n + in one ruled box,
+ * Remove as underlined capitals beside it). Plain forms posting to the bag's server actions, so the
+ * edit works without JavaScript: each step is a submit button carrying the line's next quantity
+ * (one fewer at 1 is 0, which removes the line). The labels and the one error line arrive as
+ * server-rendered strings; the actions return outcomes, never prices.
  */
 import { useActionState } from 'react'
 
@@ -15,11 +17,14 @@ export type QtyFormProps = {
   readonly productId: number
   readonly variantSku: string | null
   readonly qty: number
-  readonly min: number
   readonly max: number
+  /** The stepper's group name ("Quantity"). */
   readonly label: string
-  readonly updateLabel: string
+  readonly fewerLabel: string
+  readonly moreLabel: string
+  /** The visible word ("Remove"); the button's name says which line (`removeName`). */
   readonly removeLabel: string
+  readonly removeName: string
   readonly rangeMessage: string
   readonly cappedMessage: string
 }
@@ -30,11 +35,12 @@ export function QtyForm({
   productId,
   variantSku,
   qty,
-  min,
   max,
   label,
-  updateLabel,
+  fewerLabel,
+  moreLabel,
   removeLabel,
+  removeName,
   rangeMessage,
   cappedMessage,
 }: QtyFormProps): React.ReactElement {
@@ -48,32 +54,38 @@ export function QtyForm({
         : null
   return (
     <div className={styles.qty}>
-      <form action={update} className={styles.qtyForm}>
-        <label className={styles.qtyLabel} htmlFor={`qty-${productId}-${variantSku ?? 'single'}`}>
-          {label}
-        </label>
-        <input
-          id={`qty-${productId}-${variantSku ?? 'single'}`}
-          name="qty"
-          type="number"
-          inputMode="numeric"
-          min={min}
-          max={max}
-          defaultValue={qty}
-          className={styles.qtyInput}
-          required
-        />
+      <form action={update} className={styles.stepper} role="group" aria-label={label}>
         <input type="hidden" name="productId" value={productId} />
         <input type="hidden" name="variantSku" value={variantSku ?? ''} />
-        <button type="submit" className={styles.qtyUpdate} disabled={pending}>
-          {updateLabel}
+        <button
+          type="submit"
+          name="qty"
+          value={qty - 1}
+          className={styles.step}
+          aria-label={fewerLabel}
+          disabled={pending}
+        >
+          −
+        </button>
+        <span className={styles.count} aria-live="polite">
+          {qty}
+        </span>
+        <button
+          type="submit"
+          name="qty"
+          value={qty + 1}
+          className={styles.step}
+          aria-label={moreLabel}
+          disabled={pending || qty >= max}
+        >
+          +
         </button>
       </form>
       <form action={remove}>
         <input type="hidden" name="productId" value={productId} />
         <input type="hidden" name="variantSku" value={variantSku ?? ''} />
         <input type="hidden" name="qty" value="0" />
-        <button type="submit" className={styles.remove} disabled={removing}>
+        <button type="submit" className={styles.remove} aria-label={removeName} disabled={removing}>
           {removeLabel}
         </button>
       </form>

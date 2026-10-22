@@ -92,7 +92,7 @@ function fromPriceOf(doc: {
   return lowest === highest ? null : lowest
 }
 
-/** A product's category as a page shows it, from the term Payload populated. */
+/** A product's category as a page shows it, from the category Payload populated. */
 function categoryOf(doc: { category?: unknown }): CategoryVM | null {
   if (typeof doc.category !== 'object' || doc.category === null) return null
   const term = doc.category as { slug?: unknown; label?: unknown }
@@ -100,29 +100,46 @@ function categoryOf(doc: { category?: unknown }): CategoryVM | null {
   return { slug: term.slug, label: term.label }
 }
 
-/** TODO(3.2.a): the `category` kind does not exist yet, so a category is any published term a
- * published product points at; when the kind lands, this filters `kind: 'category'` in the query. */
+/**
+ * The shop's published categories that hold at least one published product, in the order the
+ * CMS gives them (its order, then name).
+ */
 export async function getCategories(payload: Payload): Promise<readonly CategoryVM[]> {
-  const { docs } = await payload.find({
-    collection: 'products',
-    overrideAccess: false,
-    where: publishedShopProducts(),
-    select: { category: true },
-    limit: 300,
-    depth: 1,
-  })
-  const seen = new Map<string, CategoryVM>()
-  for (const doc of docs) {
-    const category = categoryOf(doc)
-    if (category && !seen.has(category.slug)) seen.set(category.slug, category)
-  }
-  return [...seen.values()].sort((a, b) => a.label.localeCompare(b.label))
+  const [categories, products] = await Promise.all([
+    payload.find({
+      collection: 'categories',
+      overrideAccess: false,
+      where: { _status: { equals: 'published' } },
+      select: { slug: true, label: true },
+      sort: ['position', 'label'],
+      limit: 200,
+      depth: 0,
+    }),
+    payload.find({
+      collection: 'products',
+      overrideAccess: false,
+      where: publishedShopProducts(),
+      select: { category: true },
+      pagination: false,
+      depth: 0,
+    }),
+  ])
+  const used = new Set(
+    (products.docs as readonly { category?: unknown }[]).map((doc) => Number(doc.category)),
+  )
+  return (categories.docs as readonly { id: number; slug?: unknown; label?: unknown }[])
+    .filter((doc) => used.has(doc.id))
+    .flatMap((doc) =>
+      typeof doc.slug === 'string' && typeof doc.label === 'string'
+        ? [{ slug: doc.slug, label: doc.label }]
+        : [],
+    )
 }
 
-/** The id of the published term a category page's slug names, or `null` when there is none. */
+/** The id of the published category a category page's slug names, or `null` when there is none. */
 export async function getCategoryId(payload: Payload, slug: string): Promise<number | null> {
   const { docs } = await payload.find({
-    collection: 'terms',
+    collection: 'categories',
     overrideAccess: false,
     where: { and: [{ _status: { equals: 'published' } }, { slug: { equals: slug } }] },
     select: { id: true },
@@ -197,11 +214,20 @@ export async function productsByIds(
   return { items, page: 1, pages: 1, total: items.length }
 }
 
-/** A product by its slug, or `null`: nothing at that address. */
-export async function getProduct(payload: Payload, slug: string): Promise<ProductVM | null> {
+/**
+ * A product by its slug in the page's language, or `null`: nothing at that address. A field with
+ * no Indonesian text falls back to the English.
+ */
+export async function getProduct(
+  payload: Payload,
+  slug: string,
+  locale: 'en' | 'id' = 'en',
+): Promise<ProductVM | null> {
   const { docs } = await payload.find({
     collection: 'products',
     overrideAccess: false,
+    locale,
+    fallbackLocale: 'en',
     where: {
       and: [publishedShopProducts(), { slug: { equals: slug } }],
     },

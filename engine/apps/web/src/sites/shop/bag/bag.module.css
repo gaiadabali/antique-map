@@ -13,6 +13,7 @@
 .title {
   margin: 0;
   font: var(--shop-title-page);
+  line-height: 1.1;
 }
 
 /* empty: the line 12 under the title, the way back 21 under the line */
@@ -64,6 +65,12 @@
   border-bottom: var(--rule-hair) solid var(--color-border);
 }
 
+/* the handoff's bag card: a tall grey well, the framed print a little in from its edges */
+.thumb {
+  --print-tile-ratio: 5 / 7;
+  --print-stage-inset: 10% 12%;
+}
+
 .thumb a {
   display: block;
 }
@@ -97,7 +104,6 @@
 }
 
 .variant,
-.unit,
 .lineProblem {
   margin: 0;
   font: var(--shop-text-meta);
@@ -117,60 +123,66 @@
   text-align: end;
 }
 
+/* − n + in one ruled box, Remove beside it (the handoff's .qtyrow) */
 .qty {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  margin-top: var(--space-3);
   gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-3);
 }
 
-.qtyForm {
-  display: flex;
+.stepper {
+  display: inline-flex;
   align-items: center;
-  gap: var(--space-2);
+  border: var(--rule-hair) solid var(--color-text);
 }
 
-.qtyLabel {
-  font: var(--text-small);
-  color: var(--color-text-muted);
-}
-
-.qtyInput,
-.qtyUpdate,
-.remove {
-  min-height: 2.75rem;
+.step {
+  inline-size: 2rem;
+  block-size: 2rem;
+  padding: 0;
+  border: 0;
+  background: none;
   font: var(--shop-text-body);
   color: var(--color-text);
-  background: var(--color-surface);
-  border: var(--rule-hair) solid var(--color-text);
-  border-radius: 0;
+  cursor: pointer;
+  transition: background-color var(--dur-out) var(--ease);
 }
 
-.qtyInput {
-  width: 4rem;
-  padding: var(--space-1) var(--space-2);
+.step:hover:not(:disabled) {
+  background: var(--shop-rule-soft);
+}
+
+.step:disabled {
+  color: var(--color-text-muted);
+  cursor: default;
+}
+
+.count {
+  min-inline-size: 1.75rem;
+  font: var(--shop-text-meta);
   font-variant-numeric: var(--numeric-tabular);
+  text-align: center;
 }
 
-/* Update and remove are quiet: underlined ink, no button face. */
-.qtyUpdate,
+/* Remove is quiet: underlined capitals, no button face; it fades under the pointer. */
 .remove {
-  padding: var(--space-2) var(--space-1);
+  padding: var(--space-1) 0;
+  border: none;
+  background: none;
   font: var(--shop-text-caps);
   letter-spacing: var(--shop-tracking-caps);
   text-transform: uppercase;
-  cursor: pointer;
-  border: none;
-  background: none;
   color: var(--color-text);
   text-decoration: underline;
-  text-underline-offset: 0.18em;
+  text-underline-offset: 0.3em;
+  cursor: pointer;
+  transition: opacity var(--dur-out) var(--ease);
 }
 
-.remove {
-  text-align: start;
-  color: var(--color-text-muted);
+.remove:hover:not(:disabled) {
+  opacity: 0.6;
 }
 
 .problem {
@@ -179,15 +191,32 @@
   color: var(--color-text-muted);
 }
 
-.qtyUpdate:disabled,
+.step:disabled,
 .remove:disabled {
-  opacity: 0.6;
   cursor: default;
 }
 
-.qtyUpdate:focus-visible,
-.remove:focus-visible,
-.qtyInput:focus-visible {
+.remove:disabled {
+  opacity: 0.6;
+}
+
+.step:focus-visible,
+.remove:focus-visible {
   outline: var(--focus-width) solid var(--color-focus);
   outline-offset: var(--space-1);
+}
+
+/* a phone's thumb gets 44 px steps */
+@media (max-width: 56.25rem) {
+  .step {
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step,
+  .remove {
+    transition: none;
+  }
 }

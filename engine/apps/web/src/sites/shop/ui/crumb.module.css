@@ -2,6 +2,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  /* the handoff's row is 19 px: its 14 px house icon sits on the 12 px text's baseline */
+  min-block-size: 1.1875rem;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -26,8 +28,11 @@
   color: var(--color-text);
 }
 
+/* A 24 px target round a 14 px house; the 10 px it adds is given back, so the separator sits 6 px
+   from the icon as drawn. */
 .home {
   min-inline-size: 1.5rem;
+  margin-inline-end: -0.625rem;
 }
 
 .home svg {

@@ -53,7 +53,7 @@ describe('publishVocabulary', () => {
       terms: [],
       makers: [5],
     })
-    expect(report).toEqual({ places: 2, terms: 0, makers: 1, held: [] })
+    expect(report).toEqual({ places: 2, terms: 0, makers: 1, categories: 0, held: [] })
     expect(updates.map((u) => `${u.collection}:${u.id}`)).toEqual([
       'places:1',
       'places:3',
@@ -73,7 +73,7 @@ describe('publishVocabulary', () => {
     })
     await publishVocabulary(payload, req, { places: [1], terms: [], makers: [] })
     const again = await publishVocabulary(payload, req, { places: [1], terms: [], makers: [] })
-    expect(again).toEqual({ places: 0, terms: 0, makers: 0, held: [] })
+    expect(again).toEqual({ places: 0, terms: 0, makers: 0, categories: 0, held: [] })
     expect(updates).toHaveLength(1)
   })
 

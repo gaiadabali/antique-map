@@ -201,6 +201,27 @@
   color: var(--color-text-muted);
 }
 
+/* "View bag" on the stock line: the line's small capitals, in ink, underlined */
+.stock .stockLink {
+  font: inherit;
+  letter-spacing: inherit;
+  color: var(--color-text);
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  transition: opacity var(--dur-out) var(--ease);
+}
+
+/* under the pointer it fades, as the footer's social icons do */
+.stock .stockLink:hover {
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stock .stockLink {
+    transition: none;
+  }
+}
+
 .status {
   text-transform: none;
   letter-spacing: 0;

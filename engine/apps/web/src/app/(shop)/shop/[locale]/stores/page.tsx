@@ -1,14 +1,24 @@
-/** The shop's stores page (13.2): every listed store by area, from the public projection. */
+/**
+ * The shop's stores page (13.2): every listed store by area, from the public projection. Its
+ * sections are the CMS's published `stores` page, or — until there is one — the directory alone
+ * with the lexicon's words (`sites/shop/blocks/defaults/stores`).
+ */
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { connection } from 'next/server'
 
-import { listedStores } from '../../../../../server/shop/stores'
-import { pageMetadata } from '../../../../../server/seo'
+import type { SiteLocale } from '@engine/config/sites'
+
+import { pageMetadata, shareImageOf, trimDescription } from '../../../../../server/seo'
 import { siteLocale } from '../../../../../shell/messages'
 import { currentSite, siteHref } from '../../../../../shell/site'
+import { defaultStoresBlocks } from '../../../../../sites/shop/blocks/defaults/stores'
+import { pageBlocks } from '../../../../../sites/shop/blocks/page-blocks'
+import { ShopBlocks } from '../../../../../sites/shop/blocks/shop-blocks'
 import { storesText } from '../../../../../sites/shop/stores/copy'
-import { StoresView } from '../../../../../sites/shop/stores/stores-view'
+
+const storesBlocks = (locale: SiteLocale) =>
+  pageBlocks('stores', locale, () => defaultStoresBlocks(locale))
 
 export async function generateMetadata({
   params,
@@ -17,13 +27,15 @@ export async function generateMetadata({
   const site = await currentSite('shop')
   if (locale === null || site.origin === null) return {}
   const t = storesText(locale)
+  const page = await storesBlocks(locale)
   const href = siteHref('shop')
   return pageMetadata({
     site: 'shop',
     locale,
     paths: { en: href('stores', {}, 'en'), id: href('stores', {}, 'id') },
-    title: t('stores.title'),
-    description: t('stores.description'),
+    title: page.seoTitle ?? t('stores.title'),
+    description: trimDescription(page.seoDescription ?? t('stores.description')),
+    image: shareImageOf(page.seoImage),
     origin: site.origin,
   })
 }
@@ -34,5 +46,6 @@ export default async function StoresPage({ params }: PageProps<'/shop/[locale]/s
   await connection()
   const locale = siteLocale('shop', (await params).locale)
   if (locale === null) notFound()
-  return <StoresView groups={await listedStores(locale)} locale={locale} />
+  const page = await storesBlocks(locale)
+  return <ShopBlocks blocks={page.blocks} locale={locale} frame="bare" />
 }

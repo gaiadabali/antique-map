@@ -35,7 +35,7 @@ export const PRODUCT_DETAIL_SELECT = {
 } as const
 
 export const PRODUCT_POPULATE = {
-  terms: { label: true },
+  categories: { label: true },
   media: { url: true, alt: true },
 } as const
 

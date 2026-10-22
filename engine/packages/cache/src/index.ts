@@ -8,6 +8,7 @@ export {
   EDITORIAL_EXPIRY,
   IMMEDIATE_EXPIRY,
   MAX_TAG_LENGTH,
+  pagesTag,
   parseCacheTag,
   productPriceTag,
   productStockTag,

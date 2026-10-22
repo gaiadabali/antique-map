@@ -42,6 +42,7 @@
 .stepBody {
   margin: 0.4375rem 0 0;
   font: var(--shop-text-body);
+  line-height: 1.5;
   color: var(--color-text-muted);
 }
 

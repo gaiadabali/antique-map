@@ -54,7 +54,7 @@ export const Stores: CollectionConfig = {
     group: ADMIN_GROUPS.storesAndStock,
     hidden: hiddenFromAllButAllStaff,
     useAsTitle: 'name',
-    defaultColumns: ['code', 'name', 'area', 'active', 'updatedAt'],
+    defaultColumns: ['name', 'area', 'code', 'active', 'listed', 'updatedAt'],
     description: {
       en: 'The shops that hold stock and send orders. Each store’s staff see only their own store.',
       id: 'Toko yang menyimpan stok dan mengirim pesanan. Staf setiap toko hanya melihat tokonya sendiri.',

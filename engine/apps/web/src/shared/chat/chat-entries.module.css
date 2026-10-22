@@ -1,10 +1,11 @@
-/* The visitor's side of the thread, and the cards and status lines the agent adds. */
+/* The visitor's side of the thread, and the cards and status lines the agent adds. A site may set
+   the knobs (sites/shop/tokens/chat.css); the fallbacks are the gallery's. */
 .visitor {
   align-self: flex-end;
-  max-width: 85%;
-  margin: var(--space-2) 0 0;
-  padding: var(--space-3) var(--space-4);
-  font: var(--text-body);
+  max-width: var(--chat-bubble-width, 85%);
+  margin: var(--chat-visitor-margin, var(--space-2) 0 0);
+  padding: var(--chat-bubble-pad, var(--space-3) var(--space-4));
+  font: var(--chat-bubble-font, var(--text-body));
   color: var(--color-chat-visitor-ink);
   overflow-wrap: anywhere;
   white-space: pre-wrap;
@@ -25,17 +26,17 @@
   align-items: center;
   gap: var(--space-3);
   width: 100%;
-  padding: var(--space-2);
+  padding: var(--chat-card-pad, var(--space-2));
   color: var(--color-text);
   text-decoration: none;
   background: var(--color-chat-agent);
-  border: var(--rule-hair) solid var(--color-border);
+  border: var(--rule-hair) solid var(--chat-line, var(--color-border));
   border-radius: calc(var(--radius-bubble) * 0.66);
   transition: border-color var(--dur-out) var(--ease);
 }
 
 .card:hover {
-  border-color: var(--color-accent);
+  border-color: var(--chat-card-hover, var(--color-accent));
 }
 
 .card:focus-visible {
@@ -45,10 +46,10 @@
 
 .image {
   flex: none;
-  width: 4rem;
-  height: 4rem;
-  object-fit: cover;
-  background: var(--color-surface-deep);
+  width: var(--chat-card-thumb, 4rem);
+  height: var(--chat-card-thumb, 4rem);
+  object-fit: var(--chat-card-fit, cover);
+  background: var(--chat-card-well, var(--color-surface-deep));
   border-radius: calc(var(--radius-bubble) * 0.4);
 }
 
@@ -57,12 +58,12 @@
   flex: 1 1 auto;
   flex-direction: column;
   min-width: 0;
-  padding-inline-start: var(--space-1);
+  padding-inline-start: var(--chat-card-text-inset, var(--space-1));
 }
 
 .cardTitle {
-  font: var(--text-body);
-  font-weight: 700;
+  font: var(--chat-card-title-font, var(--text-body));
+  font-weight: var(--chat-card-title-weight, 700);
   color: var(--color-text-strong);
   overflow-wrap: anywhere;
 }
@@ -73,7 +74,7 @@
 }
 
 .cardPrice {
-  font: var(--text-price);
+  font: var(--chat-card-price-font, var(--text-price));
   font-variant-numeric: var(--numeric-tabular);
   color: var(--color-text);
 }

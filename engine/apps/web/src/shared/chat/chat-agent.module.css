@@ -32,7 +32,7 @@
   bottom: -1px;
   width: 0.75rem;
   height: 0.75rem;
-  background: var(--color-success);
+  background: var(--chat-online, var(--color-success));
   border: 2px solid var(--color-chat-agent);
   border-radius: 50%;
 }

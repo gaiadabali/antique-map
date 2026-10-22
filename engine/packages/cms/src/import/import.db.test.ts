@@ -25,8 +25,8 @@ describe.skipIf(!server)('the import, on a real database', () => {
   beforeAll(async () => {
     stack = await startStaffStack('cms_import_test', (config, key) => getPayload({ config, key }))
     await stack.payload.create({
-      collection: 'terms',
-      data: { label: 'Souvenirs', slug: 'souvenirs', kind: 'subject' } as never,
+      collection: 'categories',
+      data: { label: 'Souvenirs', slug: 'souvenirs' } as never,
     })
     await makeProduct(stack.payload, 'OEI-PRINT', ['OEI-PRINT-A3', 'OEI-PRINT-A4'])
     await makeProduct(stack.payload, 'OEI-MUG', ['OEI-MUG-BLACK'])

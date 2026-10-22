@@ -19,7 +19,8 @@ export const PRODUCT_KEYS = defineMessages({
   'product.addToBag': 'Add to bag',
   'product.addingFailed': 'We could not add it just now — try again.',
   'product.added': 'Added to your bag.',
-  'product.viewBag': 'View your bag',
+  'product.addedButton': 'Added to bag',
+  'product.viewBag': 'View bag',
   'product.refused': "That's just sold out — we could not add it.",
   'product.capped': 'You already have the most you can buy of this.',
   'product.delivery':
@@ -77,6 +78,8 @@ export type VariantPickerText = {
   readonly outOfStock: string
   readonly inStock: string
   readonly added: string
+  /** The button's word once the product is in the bag. */
+  readonly addedButton: string
   readonly capped: string
   readonly refused: string
   readonly addingFailed: string
@@ -99,6 +102,7 @@ export function variantPickerText(
     outOfStock: text('product.outOfStock'),
     inStock: text('product.inStock'),
     added: text('product.added'),
+    addedButton: text('product.addedButton'),
     capped: text('product.capped'),
     refused: text('product.refused'),
     addingFailed: text('product.addingFailed'),

@@ -90,6 +90,8 @@ export type Vocabulary = {
   readonly places: (value: string) => Match<number>
   /** A term of one kind: grade, subject, category … — labels are matched folded. */
   readonly terms: (kind: string, value: string) => Match<number>
+  /** One of the shop's `categories`, by its English name, folded. */
+  readonly categories: (value: string) => Match<number>
 }
 
 export async function buildVocabulary(payload: Payload, req: PayloadRequest): Promise<Vocabulary> {
@@ -113,8 +115,7 @@ export async function buildVocabulary(payload: Payload, req: PayloadRequest): Pr
   for (const doc of await read('places'))
     for (const name of namesOf(doc)) placeIndex.add(name, doc.id)
 
-  // A category matches any kind's label: the shop's categories are terms, and §9's category kind
-  // is the `category` column's target once it exists. Ambiguity holds the row, never guesses.
+  // Ambiguity holds the row, never guesses.
   const termIndex = new FoldIndex<number>()
   const termKind = new Map<number, string>()
   for (const doc of await read('terms')) {
@@ -128,6 +129,14 @@ export async function buildVocabulary(payload: Payload, req: PayloadRequest): Pr
     termKind.set(doc.id, kind)
   }
 
+  const categoryIndex = new FoldIndex<number>()
+  for (const doc of await read('categories')) {
+    const label = doc.label as unknown
+    const name =
+      typeof label === 'string' ? label : ((label as { en?: string } | undefined)?.en ?? '')
+    if (name.trim() !== '') categoryIndex.add(name, doc.id)
+  }
+
   const resolve = <T>(value: string, index: FoldIndex<T>, all: readonly string[]): Match<T> => {
     const unique = index.unique(value)
     if (unique !== null) return { id: unique }
@@ -137,6 +146,7 @@ export async function buildVocabulary(payload: Payload, req: PayloadRequest): Pr
   return {
     makers: (value) => resolve(value, makerIndex, makerIndex.names),
     places: (value) => resolve(value, placeIndex, placeIndex.names),
+    categories: (value) => resolve(value, categoryIndex, categoryIndex.names),
     terms: (kind, value) => {
       const id = termIndex.unique(value)
       if (id === null || (kind !== '' && termKind.get(id) !== kind)) {

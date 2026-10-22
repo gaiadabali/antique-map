@@ -53,16 +53,15 @@ export function VariantPicker({
   const canAdd = available && (variants.length === 0 || (chosenVariant?.available ?? false))
   const legendId = `variant-${sku}-legend`
   const added = state?.outcome === 'added' || state?.outcome === 'updated'
+  // Success reads on the stock line; anything else gets its own line under it.
   const message =
-    state === null
+    state === null || added
       ? null
-      : added
-        ? text.added
-        : state.outcome === 'capped'
-          ? text.capped
-          : state.outcome === 'refused'
-            ? text.refused
-            : text.addingFailed
+      : state.outcome === 'capped'
+        ? text.capped
+        : state.outcome === 'refused'
+          ? text.refused
+          : text.addingFailed
 
   return (
     <form className={styles.picker} action={add}>
@@ -136,21 +135,24 @@ export function VariantPicker({
               <path d="m3 8.5 3 3 7-7" />
             </svg>
           ) : null}
-          {canAdd ? text.addToBag : text.outOfStock}
+          {!canAdd ? text.outOfStock : added ? text.addedButton : text.addToBag}
         </button>
       </div>
       <p className={styles.stock} aria-live="polite">
         {canAdd ? text.inStock : text.outOfStock}
+        {added && (
+          <>
+            {' · '}
+            {text.added}{' '}
+            <TextLink href={bagHref} className={styles.stockLink}>
+              {text.viewBag}
+            </TextLink>
+          </>
+        )}
       </p>
       {message !== null && (
         <p className={styles.status} role="status" aria-live="polite">
           {message}
-          {added && (
-            <>
-              {' '}
-              <TextLink href={bagHref}>{text.viewBag}</TextLink>
-            </>
-          )}
         </p>
       )}
     </form>

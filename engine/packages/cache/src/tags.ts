@@ -76,6 +76,7 @@ export const TAG_KINDS = {
   settings: site,
   redirects: site,
   catalogue: site,
+  pages: site,
 } as const satisfies Record<string, Kind>
 
 export type TagKind = keyof typeof TAG_KINDS
@@ -110,6 +111,8 @@ export const productPriceTag = (id: number): CacheTag => byRecordId('product-pri
 export const settingsTag = (site: TagSite): CacheTag => build('settings', site)
 export const redirectsTag = (site: TagSite): CacheTag => build('redirects', site)
 export const catalogueTag = (site: TagSite): CacheTag => build('catalogue', site)
+/** A site's CMS pages (`pages`): the shop's home, partnership, stores and its other pages. */
+export const pagesTag = (site: TagSite): CacheTag => build('pages', site)
 
 /**
  * The tag `value` spells, or `null` when no builder makes it — the check `/api/x/revalidate`

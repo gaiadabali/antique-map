@@ -36,7 +36,7 @@ export const Products: CollectionConfig = {
     group: ADMIN_GROUPS.shop,
     hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'name',
-    defaultColumns: ['name', 'sku', 'price', '_status', 'updatedAt'],
+    defaultColumns: ['name', 'sku', 'category', 'price', '_status', 'updatedAt'],
     listSearchableFields: ['name', 'sku', 'variants.sku'],
     description: {
       en: 'Shown on Old East Indies only. What the shop sells. Stock is entered per store under Stock.',

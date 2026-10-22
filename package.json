@@ -23,6 +23,7 @@
     "db:fresh": "node engine/tooling/db/cli.mjs fresh",
     "data:seed": "pnpm --filter @engine/cms run seed",
     "data:import": "pnpm --filter @engine/cms run import",
+    "data:seed-pages": "pnpm --filter @engine/cms exec payload run ../../apps/web/src/server/shop/pages/seed/cli.ts --",
     "data:purge-seed": "pnpm --filter @engine/cms run seed:purge",
     "db:drop": "node engine/tooling/db/cli.mjs drop",
     "db:list": "node engine/tooling/db/cli.mjs list",

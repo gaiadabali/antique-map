@@ -150,7 +150,8 @@
   }
 }
 
-/* The phone's drawer: a full white sheet, the links as serif rows on hairlines. */
+/* The phone's drawer: a full white sheet, the links as serif rows on hairlines. It slides in from
+   the left and back out the same way; with reduced motion it simply appears and goes. */
 .drawer {
   position: fixed;
   inset: 0;
@@ -159,6 +160,40 @@
   flex-direction: column;
   background: var(--color-surface);
   overflow-y: auto;
+  animation: drawer-in var(--dur-in) var(--ease-out) both;
+}
+
+.drawer[data-state='closing'] {
+  pointer-events: none;
+  animation: drawer-out var(--dur-out) var(--ease) both;
+}
+
+@keyframes drawer-in {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: none;
+  }
+}
+
+@keyframes drawer-out {
+  from {
+    transform: none;
+  }
+
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* No motion, but the animation still ends (in a millisecond), so a closed drawer still leaves. */
+@media (prefers-reduced-motion: reduce) {
+  .drawer,
+  .drawer[data-state='closing'] {
+    animation-duration: 1ms;
+  }
 }
 
 .drawerTop {
@@ -218,7 +253,8 @@
   color: var(--color-text-muted);
 }
 
-.drawerNav a[aria-current='page'] {
+/* The label alone is underlined; on the link itself the line would run under the chevron too. */
+.drawerNav a[aria-current='page'] > span {
   text-decoration: underline;
   text-underline-offset: 0.2em;
   text-decoration-thickness: var(--rule-hair);

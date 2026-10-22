@@ -21,7 +21,7 @@ export async function generateMetadata({
   const site = await currentSite('shop')
   if (locale === null || site.origin === null) return {}
   // Metadata needs no availability: the cached editorial read, never a live stock query.
-  const found = await productEditorial((await params).slug)
+  const found = await productEditorial((await params).slug, locale)
   if (found === null) return {}
   const text = productText(locale)
   const href = siteHref('shop')
@@ -45,7 +45,7 @@ export default async function ShopProduct({ params }: PageProps<'/shop/[locale]/
   const locale = siteLocale('shop', raw)
   if (locale === null) notFound()
 
-  const found = await productOf(slug)
+  const found = await productOf(slug, locale)
   if (found === null) notFound()
 
   const href = siteHref('shop')

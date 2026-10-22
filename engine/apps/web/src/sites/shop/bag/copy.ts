@@ -25,6 +25,13 @@ export const BAG_KEYS = defineMessages({
     'Online delivery is temporarily unavailable. Message us on WhatsApp and we will sort it out.',
   'bag.codeApplied': 'Code {code} applied — it is checked again at checkout.',
   'bag.codeCleared': 'The code was removed.',
+  'bag.fewer': 'One fewer',
+  'bag.more': 'One more',
+  'bag.remove': 'Remove',
+  'bag.continue': 'Continue shopping',
+  'bag.deliveryFree': 'Delivery is free — your bag is over {amount}.',
+  'bag.deliveryShort':
+    '{short} more for free delivery. Otherwise the Gojek or Grab fee shows at checkout once you drop a pin.',
 })
 
 export type BagMessageKey = keyof typeof BAG_KEYS

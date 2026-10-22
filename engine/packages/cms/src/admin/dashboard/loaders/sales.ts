@@ -80,7 +80,7 @@ async function categoryByProduct(
   const terms =
     categoryIds.size === 0
       ? []
-      : await findAll(ctx, 'terms', {
+      : await findAll(ctx, 'categories', {
           where: { id: { in: [...categoryIds] } },
           select: { label: true },
         })

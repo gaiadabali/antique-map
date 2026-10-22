@@ -6,7 +6,7 @@
 import { join } from 'node:path'
 
 import { SKU_MAX_LENGTH, SKU_PATTERN } from '../../collections/products/skus'
-import { artworkFirst, productImage } from './images'
+import { artworkFirst, nameImages, productImage } from './images'
 import { categoryOf, INSTAGRAM_CATEGORIES, productName } from './naming'
 import {
   SKU_PREFIX,
@@ -93,5 +93,5 @@ export function buildCatalogue(
       seen.add(sku)
     }
   }
-  return products
+  return nameImages(products)
 }

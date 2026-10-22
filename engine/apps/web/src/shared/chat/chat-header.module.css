@@ -93,6 +93,67 @@
   }
 }
 
+/* The plain look (the shop, its handoff's oei-chat.js .head): a 36 px ink avatar holding the chat
+   icon, the name in the serif at 20 px, the status at 12 px free to wrap, and "Talk to a person"
+   as the words alone — 13 px medium, underlined 4 px below in the ink, no icon or rule, shown at
+   every width. */
+.header[data-look='plain'] {
+  padding: var(--space-3) var(--space-2) var(--space-3) var(--space-4);
+  border-bottom-color: var(--chat-line, var(--color-border));
+}
+
+.header[data-look='plain'] .avatar {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.avatarIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.header[data-look='plain'] .name {
+  overflow: visible;
+  font: 500 1.25rem / 1.1 var(--font-display);
+  color: var(--color-text);
+  white-space: normal;
+}
+
+.header[data-look='plain'] .status {
+  margin-block-start: 2px;
+  overflow: visible;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--chat-muted, var(--color-text-muted));
+  white-space: normal;
+}
+
+.header[data-look='plain'] .talk {
+  padding-inline: 0.625rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text);
+  text-decoration: underline;
+  text-decoration-thickness: var(--rule-hair);
+  text-underline-offset: 4px;
+  border: 0;
+  border-radius: 0;
+}
+
+.header[data-look='plain'] .talk .icon {
+  display: none;
+}
+
+@media (max-width: 479px) {
+  .header[data-look='plain'] .talkLabel {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .talk,
   .close {

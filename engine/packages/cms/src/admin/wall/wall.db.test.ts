@@ -78,8 +78,8 @@ describe.skipIf(!server)('the Catalogue Wall, on a real database', () => {
       create('products', { sku, name: `Product ${sku}`, price: 95000, ...extra })
 
     const category = (await payload.create({
-      collection: 'terms',
-      data: { kind: 'subject', label: 'Prints' } as never,
+      collection: 'categories',
+      data: { label: 'Prints' } as never,
     })) as unknown as Doc
     const live = { images: [{ image: productImage }], category: category.id, _status: 'published' }
     const out = await product('WALL-OUT', live)

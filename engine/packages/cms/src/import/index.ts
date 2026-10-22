@@ -37,3 +37,4 @@ export {
 } from './types'
 export type { PlannedRow, Row, WritableRow, ImportCollection } from './plan'
 export type { Sheet } from './csv'
+export { cliInvalidation, postCliTags } from './cli-cache'

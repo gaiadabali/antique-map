@@ -84,8 +84,14 @@
 }
 
 .areaLink:hover,
-.areaLink:focus-visible {
+.areaLink:focus-visible,
+.areaLink[aria-current] {
   color: var(--color-text);
+}
+
+/* the area being read, as the handoff marks it: ink and a heavier weight */
+.areaLink[aria-current] {
+  font-weight: 500;
 }
 
 .area {
@@ -102,6 +108,7 @@
 .areaTitle {
   margin: 0;
   font: var(--shop-title-page);
+  line-height: 1.1;
 }
 
 .count {
@@ -118,9 +125,29 @@
   list-style: none;
 }
 
+/* a photograph at the left, the words beside it */
 .store {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr);
+  column-gap: var(--space-4);
+  align-items: start;
   padding: 1rem 1.5625rem 1.25rem 0;
   border-block-start: var(--rule-hair) solid var(--color-border);
+}
+
+/* the store's photograph: a square, cropped to fill, on the grey well while it loads */
+.photo {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  aspect-ratio: 1;
+  margin-block-start: 0.375rem;
+  object-fit: cover;
+  background: var(--shop-well);
+}
+
+.storeBody {
+  min-inline-size: 0;
 }
 
 .name {
@@ -140,7 +167,7 @@
   margin-block-start: 0;
 }
 
-.store > a {
+.storeBody > a {
   margin-block-start: 0.75rem;
 }
 

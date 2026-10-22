@@ -18,6 +18,8 @@ export type PageMetadataInput = {
    */
   readonly paths: Readonly<Record<'en' | 'id', string>>
   readonly title: string
+  /** The title as written, without the layout's ` · Site` template (a home page names the site). */
+  readonly absoluteTitle?: boolean
   readonly description: string
   readonly image?: {
     readonly url: string
@@ -39,15 +41,25 @@ const LOCALE_OG: Record<'en' | 'id', string> = {
   id: 'id_ID',
 }
 
+/**
+ * The picture a page shares when it has none of its own: the site's Open Graph card
+ * (`public/<site>/og.png`, 1200 × 630). A page's `openGraph` replaces the layout's whole object,
+ * so without this every page that names no picture would share none.
+ */
+export function siteOgImage(site: SiteKey): NonNullable<PageMetadataInput['image']> {
+  return { url: `/${site}/og.png`, alt: SITE_NAMES[site], width: 1200, height: 630 }
+}
+
 export function pageMetadata(input: PageMetadataInput): Metadata {
-  const { site, locale, paths, title, description, image, noindex, origin } = input
+  const { site, locale, paths, title, absoluteTitle, description, noindex, origin } = input
+  const image = input.image ?? siteOgImage(site)
   const at = (l: 'en' | 'id') => `${origin}${paths[l]}`
   const canonical = at(locale)
   const xDefault = at('en')
   const languages: Record<string, string> = { en: at('en'), id: at('id'), 'x-default': xDefault }
 
   return {
-    title,
+    title: absoluteTitle ? { absolute: title } : title,
     description,
     metadataBase: new URL(origin),
     alternates: { canonical, languages },
@@ -58,13 +70,13 @@ export function pageMetadata(input: PageMetadataInput): Metadata {
       title,
       description,
       url: canonical,
-      images: image ? [image] : undefined,
+      images: [image],
     },
     twitter: {
-      card: image ? 'summary_large_image' : 'summary',
+      card: 'summary_large_image',
       title,
       description,
-      images: image ? [image.url] : undefined,
+      images: [image.url],
     },
     robots: noindex ? { index: false, follow: false } : undefined,
   }
@@ -90,4 +102,25 @@ export function workTitle(title: string, maker?: string, year?: string | number)
   }
   parts.push('| Indies Gallery')
   return parts.join(' ')
+}
+
+/** A page's own picture as `pageMetadata` shares it; `undefined` (the site's card) without one. */
+export function shareImageOf(
+  image:
+    | {
+        readonly url: string
+        readonly alt: string
+        readonly width: number | null
+        readonly height: number | null
+      }
+    | null
+    | undefined,
+): PageMetadataInput['image'] {
+  if (!image) return undefined
+  return {
+    url: image.url,
+    alt: image.alt,
+    ...(image.width ? { width: image.width } : {}),
+    ...(image.height ? { height: image.height } : {}),
+  }
 }

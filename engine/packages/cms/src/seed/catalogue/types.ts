@@ -80,7 +80,11 @@ export type CategoryLabel = { readonly en: string; readonly id: string }
 /** One picture of a product, with what it is and how it was made (CONTENT-MODEL.md §6). */
 export type ProductImage = {
   readonly path: string
+  /** The name the picture is stored under: the product's name and the picture's kind
+   * (`exotic-bali-1930s-framed.webp`), never the extraction's code (`./images` `nameImages`). */
   readonly fileName: string
+  /** The name an earlier run stored it under (the file on disk, `MP.012.webp`): found, renamed. */
+  readonly legacyFileName: string
   readonly kind: ImageKind
   readonly role: 'flat' | 'in-room'
   readonly provenance: 'photograph' | 'composite' | 'rendered'

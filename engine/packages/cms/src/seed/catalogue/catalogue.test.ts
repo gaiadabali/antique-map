@@ -262,19 +262,20 @@ describe('pictures', () => {
     const [image] = byName('SEED-MP.001').images
     expect(byName('SEED-MP.001').images).toHaveLength(1)
     expect(image!.path.replaceAll('\\', '/')).toBe('/data/designs/images/MP.001.jpg')
-    expect(image!.fileName).toBe('MP.001.jpg')
+    expect(image!.fileName).toBe('map-of-bali-island-1849.jpg')
+    expect(image!.legacyFileName).toBe('MP.001.jpg')
     expect([image!.role, image!.provenance]).toEqual(['flat', 'photograph'])
   })
 
-  it('orders an Instagram design artwork first, then its mock-ups in file order', () => {
+  it('orders an Instagram design artwork first, then its mock-ups in file order, each named by kind', () => {
     expect(byName('SEED-IG01').images.map((image) => image.fileName)).toEqual([
-      'a-c1.jpg',
-      'a-c0.jpg',
+      'lombok-turtle-snorkelling.jpg',
+      'lombok-turtle-snorkelling-mounted.jpg',
     ])
     expect(byName('SEED-IG02').images.map((image) => image.fileName)).toEqual([
-      'b-c2.jpg',
-      'b-c0.jpg',
-      'b-c1.jpg',
+      'exotic-bali-1930s-close-view.jpg',
+      'exotic-bali-1930s-framed.jpg',
+      'exotic-bali-1930s-mounted.jpg',
     ])
   })
 

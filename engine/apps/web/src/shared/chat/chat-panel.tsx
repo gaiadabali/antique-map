@@ -17,6 +17,7 @@ import { ChatComposer } from './chat-composer'
 import { talkToPersonLink } from './chat-contact'
 import { ChatDisclosure } from './chat-disclosure'
 import { ChatHeader } from './chat-header'
+import { ChatSuggestions } from './chat-suggestions'
 import { ChatThread } from './chat-thread'
 import { sendChatMessage, startChatSession, type StreamHandle } from './chat-client'
 import { useChatPageInfo } from './chat-page-context'
@@ -119,6 +120,11 @@ export function ChatPanel({
     composerRef.current?.focus({ preventScroll: true })
   }
 
+  // The shop draws its handoff's chat: the disclosure as a band under the header, the suggestions
+  // in a tray above the composer, and Send in words.
+  const plain = site === 'shop'
+  const pickable = session === 'ready' && !state.streaming
+
   const notices: string[] = []
   if (state.errorMessage !== null) {
     notices.push(
@@ -135,9 +141,26 @@ export function ChatPanel({
         logRef={logRef}
         logLabel={text.threadLabel}
         header={
-          <ChatHeader text={text} talk={talkToPersonLink(contact, origin)} onClose={onClose} />
+          <ChatHeader
+            text={text}
+            talk={talkToPersonLink(contact, origin)}
+            look={plain ? 'plain' : 'default'}
+            onClose={onClose}
+          />
         }
         disclosure={<ChatDisclosure text={text} privacyHref="/privacy" />}
+        disclosureAt={plain ? 'top' : 'bottom'}
+        tray={
+          plain && state.entries.length === 0 ? (
+            <ChatSuggestions
+              label={text.suggestionsLabel}
+              suggestions={suggestions}
+              disabled={!pickable}
+              showLabel
+              onPick={(suggestion) => send(suggestion, false)}
+            />
+          ) : null
+        }
         composer={
           <ChatComposer
             text={text}
@@ -146,6 +169,7 @@ export function ChatPanel({
             streaming={state.streaming}
             canSend={session === 'ready' && composer.trim() !== ''}
             disabled={session === 'failed'}
+            sendAs={plain ? 'text' : 'icon'}
             textareaRef={composerRef}
             onChange={setComposer}
             onSend={() => send(composer)}
@@ -162,6 +186,7 @@ export function ChatPanel({
           contact={contact}
           pageTitle={pageInfo?.title ?? null}
           suggestions={suggestions}
+          suggestionsInThread={!plain}
           canPick={session === 'ready'}
           notices={notices}
           onPick={(suggestion) => send(suggestion, false)}

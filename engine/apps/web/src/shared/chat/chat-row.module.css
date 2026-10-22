@@ -1,3 +1,5 @@
+/* A site may set the knobs (sites/shop/tokens/chat.css: the shop's handoff draws no avatar column
+   and a flat bubble on a quiet fill); the fallbacks are the gallery's. */
 .agentRow {
   display: flex;
   align-items: flex-end;
@@ -6,12 +8,12 @@
 }
 
 .runStart {
-  margin-top: var(--space-2);
+  margin-top: var(--chat-run-gap, var(--space-2));
 }
 
 /* Holds the avatar, or its empty place, so a run's messages share one left edge. */
 .slot {
-  display: inline-flex;
+  display: var(--chat-avatar-column, inline-flex);
   flex: none;
   width: 1.75rem;
   min-height: 1.75rem;
@@ -19,21 +21,23 @@
 
 .body {
   display: flex;
+  flex: var(--chat-row-flex, 0 1 auto);
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-2);
   min-width: 0;
-  max-width: calc(100% - 2.25rem);
+  max-width: var(--chat-row-width, calc(100% - 2.25rem));
 }
 
 .agentBubble {
+  max-width: var(--chat-bubble-width, none);
   margin: 0;
-  padding: var(--space-3) var(--space-4);
-  font: var(--text-body);
+  padding: var(--chat-bubble-pad, var(--space-3) var(--space-4));
+  font: var(--chat-bubble-font, var(--text-body));
   color: var(--color-chat-agent-ink);
   overflow-wrap: anywhere;
-  background: var(--color-chat-agent);
-  border: var(--rule-hair) solid var(--color-border);
+  background: var(--chat-bubble-bg, var(--color-chat-agent));
+  border: var(--chat-bubble-border, var(--rule-hair) solid var(--color-border));
   border-radius: var(--radius-bubble);
   border-end-start-radius: var(--radius-control);
 }

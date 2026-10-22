@@ -45,16 +45,25 @@ export async function englishTitle(
   if (locale === DEFAULT_LOCALE || locale === 'all') return typeof title === 'string' ? title : ''
   // A save in another locale: the English title is the stored one.
   if (originalDoc?.id === undefined) return ''
-  const stored = await req.payload.findByID({
-    collection: 'pages',
-    id: originalDoc.id,
-    locale: DEFAULT_LOCALE,
-    fallbackLocale: false,
-    draft: true,
-    depth: 0,
-    select: { title: true },
-    overrideAccess: true,
-    req,
-  })
-  return typeof stored?.title === 'string' ? stored.title : ''
+  // The read shares the save's request (and so its transaction), and Payload sets a request's
+  // locale to the one a read asks for: without the restore, the Indonesian save that called this
+  // would go on to write its words into English (found 2026-10-21).
+  const { locale: saving, fallbackLocale } = req
+  try {
+    const stored = await req.payload.findByID({
+      collection: 'pages',
+      id: originalDoc.id,
+      locale: DEFAULT_LOCALE,
+      fallbackLocale: false,
+      draft: true,
+      depth: 0,
+      select: { title: true },
+      overrideAccess: true,
+      req,
+    })
+    return typeof stored?.title === 'string' ? stored.title : ''
+  } finally {
+    req.locale = saving
+    req.fallbackLocale = fallbackLocale
+  }
 }

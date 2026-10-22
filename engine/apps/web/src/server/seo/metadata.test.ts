@@ -68,6 +68,35 @@ describe('pageMetadata', () => {
     expect(meta.openGraph?.images).toEqual([{ url: '/shop/og.png', alt: 'Foo' }])
   })
 
+  it("shares the site's card, alt and size included, when the page names no picture", () => {
+    const meta = pageMetadata({
+      site: 'shop',
+      locale: 'en',
+      paths: { en: '/stores', id: '/id/toko' },
+      title: 'Our stores',
+      description: 'The shops that stock us.',
+      origin: 'https://oldeastindies.com',
+    })
+    expect(meta.openGraph?.images).toEqual([
+      { url: '/shop/og.png', alt: 'Old East Indies', width: 1200, height: 630 },
+    ])
+    expect(meta.twitter?.images).toEqual(['/shop/og.png'])
+    expect((meta.twitter as { card?: string }).card).toBe('summary_large_image')
+  })
+
+  it('writes an absolute title when asked, outside the layout template', () => {
+    const meta = pageMetadata({
+      site: 'shop',
+      locale: 'en',
+      paths: { en: '/', id: '/id' },
+      title: 'Old East Indies',
+      absoluteTitle: true,
+      description: 'Prints.',
+      origin: 'https://oldeastindies.com',
+    })
+    expect(meta.title).toEqual({ absolute: 'Old East Indies' })
+  })
+
   it('Indonesian alternates use the translated segment, not the English one', () => {
     const meta = pageMetadata({
       site: 'gallery',

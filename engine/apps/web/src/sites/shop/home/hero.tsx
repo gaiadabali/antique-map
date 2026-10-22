@@ -4,7 +4,8 @@
  * on the grey right half with its name and price at the corner, the way a gallery labels a wall.
  * The print is the first of the home's featured products with a published image — the same cached
  * read as the "Begin with these" rail, so no second query. Until that read lands, or while the shop
- * holds no product, the bare well keeps its place. Every word comes from the shop's lexicon.
+ * holds no product, the bare well keeps its place. The words are the page's `homeHero` block (the
+ * CMS, or the lexicon's defaults); the placeholder and the "From" before a price are the lexicon's.
  */
 import { Suspense, type ReactNode } from 'react'
 
@@ -25,20 +26,15 @@ import {
   loadFeaturedProducts,
   type FeaturedProduct,
 } from '../../../server/shop/home/load-featured-products'
+import type { HomeHeroVM } from '../../../server/shop/pages/blocks'
+import { linkProps } from '../blocks/link-props'
 import { windowRatio } from './frame-ratio'
 import styles from './hero.module.css'
 import type { HomeText } from './home-messages'
 
-const SIGNALS = [
-  'home.shop.signalRestored',
-  'home.shop.signalBali',
-  'home.shop.signalShops',
-] as const
-
 type Props = {
   readonly locale: 'en' | 'id'
-  /** The shop's browse page in the visitor's locale. */
-  readonly shopHref: string
+  readonly block: HomeHeroVM
   readonly t: HomeText
 }
 
@@ -61,28 +57,36 @@ type FrameProps = Props & {
   readonly pending?: boolean
 }
 
-function Frame({ shopHref, t, print, caption, pending = false }: FrameProps) {
+function Frame({ block, print, caption, pending = false }: FrameProps) {
   return (
     <section className={styles.hero} aria-labelledby={pending ? undefined : 'home-title'}>
       <div className={styles.words}>
         <div className={styles.block}>
           <h1 id={pending ? undefined : 'home-title'} className={styles.title}>
-            {t('home.shop.title')}
+            {block.title}
           </h1>
-          <p className={styles.lede}>{t('home.shop.lede')}</p>
-          <div className={styles.actions}>
-            <Button variant="secondary" size="small" href={shopHref}>
-              {t('home.shop.ctaShop')}
-            </Button>
-            <CapsLink href="#process">{t('home.shop.ctaProcess')}</CapsLink>
-          </div>
-          <ul className={styles.signals}>
-            {SIGNALS.map((key) => (
-              <li key={key}>
-                <Caps>{t(key)}</Caps>
-              </li>
-            ))}
-          </ul>
+          {block.lede ? <p className={styles.lede}>{block.lede}</p> : null}
+          {block.primary || block.secondary ? (
+            <div className={styles.actions}>
+              {block.primary ? (
+                <Button variant="secondary" size="small" {...linkProps(block.primary)}>
+                  {block.primary.label}
+                </Button>
+              ) : null}
+              {block.secondary ? (
+                <CapsLink {...linkProps(block.secondary)}>{block.secondary.label}</CapsLink>
+              ) : null}
+            </div>
+          ) : null}
+          {block.signals.length > 0 ? (
+            <ul className={styles.signals}>
+              {block.signals.map((signal) => (
+                <li key={signal}>
+                  <Caps>{signal}</Caps>
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
       </div>
       <div className={styles.wall}>

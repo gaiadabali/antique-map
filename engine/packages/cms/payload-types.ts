@@ -71,6 +71,7 @@ export interface Config {
     makers: Maker
     places: Place
     products: Product
+    categories: Category
     discounts: Discount
     stores: Store
     'stock-levels': StockLevel
@@ -102,6 +103,7 @@ export interface Config {
     makers: MakersSelect<false> | MakersSelect<true>
     places: PlacesSelect<false> | PlacesSelect<true>
     products: ProductsSelect<false> | ProductsSelect<true>
+    categories: CategoriesSelect<false> | CategoriesSelect<true>
     discounts: DiscountsSelect<false> | DiscountsSelect<true>
     stores: StoresSelect<false> | StoresSelect<true>
     'stock-levels': StockLevelsSelect<false> | StockLevelsSelect<true>
@@ -1023,6 +1025,7 @@ export interface Store {
    * Where buyers know it by, e.g. Ubud or Sanur. Shown on the store list and the tracking page.
    */
   area?: string | null
+  notes?: string | null
   address?: string | null
   /**
    * Decimal degrees, e.g. -8.5069. Orders are sent from the nearest active store.
@@ -1051,7 +1054,6 @@ export interface Store {
    * Shown on the shop’s Stores page while it is active.
    */
   listed?: boolean | null
-  notes?: string | null
   updatedAt: string
   createdAt: string
 }
@@ -1071,15 +1073,11 @@ export interface Product {
    * Required in English, the default language; another language left blank shows the English.
    */
   name?: string | null
-  /**
-   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
-   */
-  slug: string
   description?: string | null
   /**
-   * The shop category this product belongs to. The list also shows other subject tags; ignore those.
+   * The antique this is made from, if any — linked only while that antique is published.
    */
-  category?: (number | null) | Term
+  relatedWork?: (number | null) | Work
   images?:
     | {
         /**
@@ -1107,14 +1105,61 @@ export interface Product {
       }[]
     | null
   /**
-   * The antique this is made from, if any — linked only while that antique is published.
+   * Optional. Left empty, the product’s name and description are used.
    */
-  relatedWork?: (number | null) | Work
-  site: 'shop'
   seo?: {
     title?: string | null
     description?: string | null
   }
+  /**
+   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
+   */
+  slug: string
+  /**
+   * The shop category this product belongs to.
+   */
+  category?: (number | null) | Category
+  site: 'shop'
+  translationStatus: 'entered' | 'machine' | 'reviewed'
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
+}
+/**
+ * Shown on Old East Indies only. The shop’s collections — each product belongs to one. Unpublish a category to hide it from the shop.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number
+  /**
+   * Required in English, the default language; another language left blank shows the English.
+   */
+  label?: string | null
+  /**
+   * A sentence or two under the title of the category’s page.
+   */
+  description?: string | null
+  /**
+   * Shown on the collections index. Left empty, the first product’s picture is used.
+   */
+  image?: (number | null) | Media
+  /**
+   * Optional. Left empty, the name and description are used.
+   */
+  seo?: {
+    title?: string | null
+    description?: string | null
+  }
+  /**
+   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
+   */
+  slug: string
+  /**
+   * Lower comes first on the collections index and the home page.
+   */
+  position?: number | null
   translationStatus: 'entered' | 'machine' | 'reviewed'
   updatedAt: string
   createdAt: string
@@ -1463,20 +1508,389 @@ export interface Partner {
   createdAt: string
 }
 /**
- * Information and editorial pages for either site.
+ * Pages of either site. A shop page is built from sections: its home is the page with the address “home”, the partnership page “partnership”, the stores page “stores”.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "pages".
  */
 export interface Page {
   id: number
-  site: 'gallery' | 'shop'
-  kind: 'page' | 'story' | 'collection'
   title: string
   /**
-   * The page address, such as "about-us" or "delivery".
+   * The page from top to bottom. Add, drag to reorder, or remove sections; each section’s words are entered per language.
    */
-  slug: string
+  layout?:
+    | (
+        | {
+            title: string
+            lede?: string | null
+            primaryLabel?: string | null
+            secondaryLabel?: string | null
+            primaryLink?: {
+              to?:
+                | (
+                    | 'home'
+                    | 'browse'
+                    | 'collection'
+                    | 'partnership'
+                    | 'stores'
+                    | 'search'
+                    | 'tracking'
+                    | 'anchor'
+                    | 'url'
+                  )
+                | null
+              /**
+               * A block’s section name, e.g. apply or process.
+               */
+              anchor?: string | null
+              url?: string | null
+            }
+            secondaryLink?: {
+              to?:
+                | (
+                    | 'home'
+                    | 'browse'
+                    | 'collection'
+                    | 'partnership'
+                    | 'stores'
+                    | 'search'
+                    | 'tracking'
+                    | 'anchor'
+                    | 'url'
+                  )
+                | null
+              /**
+               * A block’s section name, e.g. apply or process.
+               */
+              anchor?: string | null
+              url?: string | null
+            }
+            signals?:
+              | {
+                  text: string
+                  id?: string | null
+                }[]
+              | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'homeHero'
+          }
+        | {
+            /**
+             * The rail shows every published category that holds a product, in the categories’ order.
+             */
+            title?: string | null
+            linkLabel?: string | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'categoryRail'
+          }
+        | {
+            title?: string | null
+            linkLabel?: string | null
+            /**
+             * Optional. Empty: the newest products of the whole shop.
+             */
+            category?: (number | null) | Category
+            emptyTitle?: string | null
+            emptyBody?: string | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'productRail'
+          }
+        | {
+            title: string
+            steps?:
+              | {
+                  title: string
+                  body?: string | null
+                  id?: string | null
+                }[]
+              | null
+            /**
+             * Optional. A link to “a section on this page” uses this name.
+             */
+            anchor?: string | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'steps'
+          }
+        | {
+            title: string
+            lead?: string | null
+            body?: string | null
+            facts?:
+              | {
+                  text: string
+                  id?: string | null
+                }[]
+              | null
+            linkLabel?: string | null
+            link?: {
+              to?:
+                | (
+                    | 'home'
+                    | 'browse'
+                    | 'collection'
+                    | 'partnership'
+                    | 'stores'
+                    | 'search'
+                    | 'tracking'
+                    | 'anchor'
+                    | 'url'
+                  )
+                | null
+              /**
+               * A block’s section name, e.g. apply or process.
+               */
+              anchor?: string | null
+              url?: string | null
+            }
+            id?: string | null
+            blockName?: string | null
+            blockType: 'story'
+          }
+        | {
+            label?: string | null
+            title: string
+            body?: string | null
+            linkLabel?: string | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'originals'
+          }
+        | {
+            eyebrow?: string | null
+            title: string
+            lede?: string | null
+            primaryLabel?: string | null
+            secondaryLabel?: string | null
+            primaryLink?: {
+              to?:
+                | (
+                    | 'home'
+                    | 'browse'
+                    | 'collection'
+                    | 'partnership'
+                    | 'stores'
+                    | 'search'
+                    | 'tracking'
+                    | 'anchor'
+                    | 'url'
+                  )
+                | null
+              /**
+               * A block’s section name, e.g. apply or process.
+               */
+              anchor?: string | null
+              url?: string | null
+            }
+            secondaryLink?: {
+              to?:
+                | (
+                    | 'home'
+                    | 'browse'
+                    | 'collection'
+                    | 'partnership'
+                    | 'stores'
+                    | 'search'
+                    | 'tracking'
+                    | 'anchor'
+                    | 'url'
+                  )
+                | null
+              /**
+               * A block’s section name, e.g. apply or process.
+               */
+              anchor?: string | null
+              url?: string | null
+            }
+            id?: string | null
+            blockName?: string | null
+            blockType: 'pageHero'
+          }
+        | {
+            facts?:
+              | {
+                  text: string
+                  id?: string | null
+                }[]
+              | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'factStrip'
+          }
+        | {
+            eyebrow?: string | null
+            title: string
+            body?: string | null
+            terms?:
+              | {
+                  label: string
+                  value: string
+                  id?: string | null
+                }[]
+              | null
+            linkLabel?: string | null
+            link?: {
+              to?:
+                | (
+                    | 'home'
+                    | 'browse'
+                    | 'collection'
+                    | 'partnership'
+                    | 'stores'
+                    | 'search'
+                    | 'tracking'
+                    | 'anchor'
+                    | 'url'
+                  )
+                | null
+              /**
+               * A block’s section name, e.g. apply or process.
+               */
+              anchor?: string | null
+              url?: string | null
+            }
+            warm?: boolean | null
+            /**
+             * Optional. A link to “a section on this page” uses this name.
+             */
+            anchor?: string | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'offer'
+          }
+        | {
+            eyebrow?: string | null
+            title: string
+            body?: string | null
+            talkFirst?: string | null
+            whatsappMessage?: string | null
+            /**
+             * Optional. A link to “a section on this page” uses this name.
+             */
+            anchor?: string | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'enquiry'
+          }
+        | {
+            eyebrow?: string | null
+            title: string
+            body?: string | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'partnerSignIn'
+          }
+        | {
+            title?: string | null
+            /**
+             * Leave an empty line between paragraphs.
+             */
+            body: string
+            /**
+             * Optional. A link to “a section on this page” uses this name.
+             */
+            anchor?: string | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'text'
+          }
+        | {
+            image: number | Media
+            side?: ('left' | 'right') | null
+            eyebrow?: string | null
+            title: string
+            body?: string | null
+            linkLabel?: string | null
+            link?: {
+              to?:
+                | (
+                    | 'home'
+                    | 'browse'
+                    | 'collection'
+                    | 'partnership'
+                    | 'stores'
+                    | 'search'
+                    | 'tracking'
+                    | 'anchor'
+                    | 'url'
+                  )
+                | null
+              /**
+               * A block’s section name, e.g. apply or process.
+               */
+              anchor?: string | null
+              url?: string | null
+            }
+            /**
+             * Optional. A link to “a section on this page” uses this name.
+             */
+            anchor?: string | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'imageText'
+          }
+        | {
+            title?: string | null
+            items?:
+              | {
+                  question: string
+                  answer: string
+                  id?: string | null
+                }[]
+              | null
+            /**
+             * Optional. A link to “a section on this page” uses this name.
+             */
+            anchor?: string | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'faq'
+          }
+        | {
+            title: string
+            body?: string | null
+            linkLabel: string
+            link?: {
+              to?:
+                | (
+                    | 'home'
+                    | 'browse'
+                    | 'collection'
+                    | 'partnership'
+                    | 'stores'
+                    | 'search'
+                    | 'tracking'
+                    | 'anchor'
+                    | 'url'
+                  )
+                | null
+              /**
+               * A block’s section name, e.g. apply or process.
+               */
+              anchor?: string | null
+              url?: string | null
+            }
+            id?: string | null
+            blockName?: string | null
+            blockType: 'callToAction'
+          }
+        | {
+            title: string
+            /**
+             * Write {count} where the number of stores goes, e.g. “Stocked in {count} shops across Bali.”
+             */
+            lede?: string | null
+            empty?: string | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'storeDirectory'
+          }
+      )[]
+    | null
   intro?: string | null
   hero?: (number | null) | Media
   /**
@@ -1487,10 +1901,23 @@ export interface Page {
    * For a curated collection page.
    */
   works?: (number | Work)[] | null
+  /**
+   * Optional. Left empty, the page’s title and first words are used.
+   */
   seo?: {
     title?: string | null
     description?: string | null
+    /**
+     * Shown when the page is shared on WhatsApp, Facebook or X; best 1200 × 630. Left empty, the site’s own card is used.
+     */
+    image?: (number | null) | Media
   }
+  site: 'gallery' | 'shop'
+  kind?: ('page' | 'story' | 'collection') | null
+  /**
+   * The page address, such as "about-us" or "delivery". A shop’s home is "home".
+   */
+  slug: string
   updatedAt: string
   createdAt: string
   _status?: ('draft' | 'published') | null
@@ -1643,6 +2070,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'products'
         value: number | Product
+      } | null)
+    | ({
+        relationTo: 'categories'
+        value: number | Category
       } | null)
     | ({
         relationTo: 'discounts'
@@ -2101,9 +2532,8 @@ export interface PlacesSelect<T extends boolean = true> {
 export interface ProductsSelect<T extends boolean = true> {
   sku?: T
   name?: T
-  slug?: T
   description?: T
-  category?: T
+  relatedWork?: T
   images?:
     | T
     | {
@@ -2121,14 +2551,36 @@ export interface ProductsSelect<T extends boolean = true> {
         active?: T
         id?: T
       }
-  relatedWork?: T
-  site?: T
   seo?:
     | T
     | {
         title?: T
         description?: T
       }
+  slug?: T
+  category?: T
+  site?: T
+  translationStatus?: T
+  updatedAt?: T
+  createdAt?: T
+  _status?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories_select".
+ */
+export interface CategoriesSelect<T extends boolean = true> {
+  label?: T
+  description?: T
+  image?: T
+  seo?:
+    | T
+    | {
+        title?: T
+        description?: T
+      }
+  slug?: T
+  position?: T
   translationStatus?: T
   updatedAt?: T
   createdAt?: T
@@ -2160,6 +2612,7 @@ export interface StoresSelect<T extends boolean = true> {
   code?: T
   name?: T
   area?: T
+  notes?: T
   address?: T
   lat?: T
   lng?: T
@@ -2173,7 +2626,6 @@ export interface StoresSelect<T extends boolean = true> {
       }
   active?: T
   listed?: T
-  notes?: T
   updatedAt?: T
   createdAt?: T
 }
@@ -2528,10 +2980,261 @@ export interface MastersSelect<T extends boolean = true> {
  * via the `definition` "pages_select".
  */
 export interface PagesSelect<T extends boolean = true> {
-  site?: T
-  kind?: T
   title?: T
-  slug?: T
+  layout?:
+    | T
+    | {
+        homeHero?:
+          | T
+          | {
+              title?: T
+              lede?: T
+              primaryLabel?: T
+              secondaryLabel?: T
+              primaryLink?:
+                | T
+                | {
+                    to?: T
+                    anchor?: T
+                    url?: T
+                  }
+              secondaryLink?:
+                | T
+                | {
+                    to?: T
+                    anchor?: T
+                    url?: T
+                  }
+              signals?:
+                | T
+                | {
+                    text?: T
+                    id?: T
+                  }
+              id?: T
+              blockName?: T
+            }
+        categoryRail?:
+          | T
+          | {
+              title?: T
+              linkLabel?: T
+              id?: T
+              blockName?: T
+            }
+        productRail?:
+          | T
+          | {
+              title?: T
+              linkLabel?: T
+              category?: T
+              emptyTitle?: T
+              emptyBody?: T
+              id?: T
+              blockName?: T
+            }
+        steps?:
+          | T
+          | {
+              title?: T
+              steps?:
+                | T
+                | {
+                    title?: T
+                    body?: T
+                    id?: T
+                  }
+              anchor?: T
+              id?: T
+              blockName?: T
+            }
+        story?:
+          | T
+          | {
+              title?: T
+              lead?: T
+              body?: T
+              facts?:
+                | T
+                | {
+                    text?: T
+                    id?: T
+                  }
+              linkLabel?: T
+              link?:
+                | T
+                | {
+                    to?: T
+                    anchor?: T
+                    url?: T
+                  }
+              id?: T
+              blockName?: T
+            }
+        originals?:
+          | T
+          | {
+              label?: T
+              title?: T
+              body?: T
+              linkLabel?: T
+              id?: T
+              blockName?: T
+            }
+        pageHero?:
+          | T
+          | {
+              eyebrow?: T
+              title?: T
+              lede?: T
+              primaryLabel?: T
+              secondaryLabel?: T
+              primaryLink?:
+                | T
+                | {
+                    to?: T
+                    anchor?: T
+                    url?: T
+                  }
+              secondaryLink?:
+                | T
+                | {
+                    to?: T
+                    anchor?: T
+                    url?: T
+                  }
+              id?: T
+              blockName?: T
+            }
+        factStrip?:
+          | T
+          | {
+              facts?:
+                | T
+                | {
+                    text?: T
+                    id?: T
+                  }
+              id?: T
+              blockName?: T
+            }
+        offer?:
+          | T
+          | {
+              eyebrow?: T
+              title?: T
+              body?: T
+              terms?:
+                | T
+                | {
+                    label?: T
+                    value?: T
+                    id?: T
+                  }
+              linkLabel?: T
+              link?:
+                | T
+                | {
+                    to?: T
+                    anchor?: T
+                    url?: T
+                  }
+              warm?: T
+              anchor?: T
+              id?: T
+              blockName?: T
+            }
+        enquiry?:
+          | T
+          | {
+              eyebrow?: T
+              title?: T
+              body?: T
+              talkFirst?: T
+              whatsappMessage?: T
+              anchor?: T
+              id?: T
+              blockName?: T
+            }
+        partnerSignIn?:
+          | T
+          | {
+              eyebrow?: T
+              title?: T
+              body?: T
+              id?: T
+              blockName?: T
+            }
+        text?:
+          | T
+          | {
+              title?: T
+              body?: T
+              anchor?: T
+              id?: T
+              blockName?: T
+            }
+        imageText?:
+          | T
+          | {
+              image?: T
+              side?: T
+              eyebrow?: T
+              title?: T
+              body?: T
+              linkLabel?: T
+              link?:
+                | T
+                | {
+                    to?: T
+                    anchor?: T
+                    url?: T
+                  }
+              anchor?: T
+              id?: T
+              blockName?: T
+            }
+        faq?:
+          | T
+          | {
+              title?: T
+              items?:
+                | T
+                | {
+                    question?: T
+                    answer?: T
+                    id?: T
+                  }
+              anchor?: T
+              id?: T
+              blockName?: T
+            }
+        callToAction?:
+          | T
+          | {
+              title?: T
+              body?: T
+              linkLabel?: T
+              link?:
+                | T
+                | {
+                    to?: T
+                    anchor?: T
+                    url?: T
+                  }
+              id?: T
+              blockName?: T
+            }
+        storeDirectory?:
+          | T
+          | {
+              title?: T
+              lede?: T
+              empty?: T
+              id?: T
+              blockName?: T
+            }
+      }
   intro?: T
   hero?: T
   body?: T
@@ -2541,7 +3244,11 @@ export interface PagesSelect<T extends boolean = true> {
     | {
         title?: T
         description?: T
+        image?: T
       }
+  site?: T
+  kind?: T
+  slug?: T
   updatedAt?: T
   createdAt?: T
   _status?: T

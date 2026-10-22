@@ -68,66 +68,81 @@ describe.skipIf(!process.env.CMS_TEST_POSTGRES_URL)(
       // `locale: 'all'`, which is how the admin's "all locales" tab submits. A plain string under
       // the default locale alone leaves the guard reading `undefined`, so every publish here goes
       // through `locale: 'all'` with `title` (and the other localized fields) keyed by locale.
-      await stack.api.create({
-        collection: 'pages',
-        locale: 'all',
-        data: {
-          site: 'gallery',
-          kind: 'page',
-          title: { en: 'About us' },
-          slug: 'about',
-          intro: { en: 'Since 2001.' },
-          body: { en: 'Paragraph one.\n\nParagraph two.' },
-          _status: 'published',
-        },
-      })
-      await stack.api.create({
-        collection: 'pages',
-        data: {
-          site: 'gallery',
-          kind: 'page',
-          title: 'Draft page',
-          slug: 'draft-page',
-          body: 'Not published.',
-        },
-      })
-      await stack.api.create({
-        collection: 'pages',
-        locale: 'all',
-        data: {
-          site: 'shop',
-          kind: 'page',
-          title: { en: 'Shop about' },
-          slug: 'about',
-          body: { en: 'The shop, not the gallery.' },
-          _status: 'published',
-        },
-      })
-      await stack.api.create({
-        collection: 'pages',
-        locale: 'all',
-        data: {
-          site: 'shop',
-          kind: 'page',
-          title: { en: 'Delivery' },
-          slug: 'delivery',
-          body: { en: 'Only the shop has this page.' },
-          _status: 'published',
-        },
-      })
-      await stack.api.create({
-        collection: 'pages',
-        locale: 'all',
-        data: {
-          site: 'gallery',
-          kind: 'story',
-          title: { en: 'A cartographer in Batavia' },
-          slug: 'a-cartographer-in-batavia',
-          body: { en: 'An essay.' },
-          works: [work.id],
-          _status: 'published',
-        },
-      })
+      await invalidationBatch().operation((context) =>
+        stack.api.create({
+          collection: 'pages',
+          locale: 'all',
+          data: {
+            site: 'gallery',
+            kind: 'page',
+            title: { en: 'About us' },
+            slug: 'about',
+            intro: { en: 'Since 2001.' },
+            body: { en: 'Paragraph one.\n\nParagraph two.' },
+            _status: 'published',
+          },
+          context,
+        }),
+      )
+      await invalidationBatch().operation((context) =>
+        stack.api.create({
+          collection: 'pages',
+          data: {
+            site: 'gallery',
+            kind: 'page',
+            title: 'Draft page',
+            slug: 'draft-page',
+            body: 'Not published.',
+          },
+          context,
+        }),
+      )
+      await invalidationBatch().operation((context) =>
+        stack.api.create({
+          collection: 'pages',
+          locale: 'all',
+          data: {
+            site: 'shop',
+            kind: 'page',
+            title: { en: 'Shop about' },
+            slug: 'about',
+            body: { en: 'The shop, not the gallery.' },
+            _status: 'published',
+          },
+          context,
+        }),
+      )
+      await invalidationBatch().operation((context) =>
+        stack.api.create({
+          collection: 'pages',
+          locale: 'all',
+          data: {
+            site: 'shop',
+            kind: 'page',
+            title: { en: 'Delivery' },
+            slug: 'delivery',
+            body: { en: 'Only the shop has this page.' },
+            _status: 'published',
+          },
+          context,
+        }),
+      )
+      await invalidationBatch().operation((context) =>
+        stack.api.create({
+          collection: 'pages',
+          locale: 'all',
+          data: {
+            site: 'gallery',
+            kind: 'story',
+            title: { en: 'A cartographer in Batavia' },
+            slug: 'a-cartographer-in-batavia',
+            body: { en: 'An essay.' },
+            works: [work.id],
+            _status: 'published',
+          },
+          context,
+        }),
+      )
     }, 180_000)
     afterAll(() => stack?.stop(), 60_000)
 

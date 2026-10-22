@@ -2,8 +2,8 @@
  * The bag page (6.2, 6.6.c; EXPERIENCE-SHOP.md §5): server-rendered lines and totals, a quantity
  * stepper and remove per line, the welcome-code field, and a checkout CTA that stays inert until
  * the bag holds something to buy. Every figure arrived computed by the server
- * (`../server/shop/bag`); delivery is staff-quoted after the order is placed (COMMERCE.md's
- * 2026-10-06 decision), so the bag page names no fee and no free-delivery threshold. Links never
+ * (`../server/shop/bag`); the bag has no pin, so it names no fee — only whether the owner's
+ * free-delivery threshold is met, or what is still to add (the handoff's Bag). Links never
  * prefetch and the styles are tokens only (DESIGN-SYSTEM.md). Since the redesign of 2026-10-20 it
  * wears the handoff's skeleton: the title, the ruled lines at the left, the summary on the warm
  * band in a 465 px column at the right.
@@ -12,7 +12,7 @@ import type { SiteLocale } from '@engine/config/sites'
 
 import type { BagVM } from '../../../server/shop/bag'
 import { createHref, SITES } from '@engine/config/sites'
-import { Button, Mat, MatNote } from '../../../shared/ui'
+import { Button, PrintTile, PrintTileNote } from '../../../shared/ui'
 import { productText } from '../product/copy'
 import { imageAlt } from '../product/synthetic'
 import { CapsLink } from '../ui/caps-link'
@@ -24,6 +24,7 @@ import { QtyForm } from './qty-form'
 
 const QTY_MIN = 1
 const QTY_MAX = 10
+const THUMB_PRINT_RATIO = 4 / 5
 const CODE_PROBLEM_KEYS = [
   'codeInvalid.unknown',
   'codeInvalid.expired',
@@ -72,13 +73,14 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
                 <div className={styles.thumb} aria-hidden={line.image === null ? true : undefined}>
                   {(() => {
                     const picture = (
-                      <Mat size="compact" ratio={1}>
+                      // The handoff's bag card: a 4 : 5 print, framed, hung on a 5 : 7 grey well.
+                      <PrintTile ratio={THUMB_PRINT_RATIO}>
                         {line.image !== null ? (
                           <img
                             src={line.image.url}
                             srcSet={line.image.srcSet}
-                            sizes="8rem"
-                            width={80}
+                            sizes="6rem"
+                            width={64}
                             height={80}
                             decoding="async"
                             alt={imageAlt(words, {
@@ -87,9 +89,9 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
                             })}
                           />
                         ) : (
-                          <MatNote>{line.name}</MatNote>
+                          <PrintTileNote>{line.name}</PrintTileNote>
                         )}
-                      </Mat>
+                      </PrintTile>
                     )
                     return line.slug !== null ? (
                       <a
@@ -120,9 +122,7 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
                   {line.variantLabel !== null && (
                     <p className={styles.variant}>{line.variantLabel}</p>
                   )}
-                  {line.status === 'ok' ? (
-                    <p className={styles.unit}>{line.unitText}</p>
-                  ) : (
+                  {line.status !== 'ok' && (
                     <p className={styles.lineProblem} role="status">
                       {line.status === 'out_of_stock'
                         ? text('bag.lineOutOfStock')
@@ -133,11 +133,12 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
                     productId={line.productId}
                     variantSku={line.variantSku}
                     qty={line.qty}
-                    min={QTY_MIN}
                     max={QTY_MAX}
                     label={text.shared('cart.quantity')}
-                    updateLabel={text('bag.update')}
-                    removeLabel={text.shared('cart.remove', { title: line.name })}
+                    fewerLabel={text('bag.fewer')}
+                    moreLabel={text('bag.more')}
+                    removeLabel={text('bag.remove')}
+                    removeName={text.shared('cart.remove', { title: line.name })}
                     rangeMessage={text('bag.qtyRange', { min: QTY_MIN, max: QTY_MAX })}
                     cappedMessage={text('bag.qtyCapped', { max: QTY_MAX })}
                   />
@@ -149,23 +150,6 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
 
           {/* The bag's summary, not a landmark: it sits inside the bag's own named region. */}
           <div className={summary.summary}>
-            <CodeForm
-              label={text.shared('cart.codeLabel')}
-              applyLabel={text.shared('cart.codeApply')}
-              appliedCode={codeVM?.code ?? null}
-              problem={
-                codeVM === undefined || codeVM.problem === null
-                  ? null
-                  : (problemTexts[codeVM.problem.key] ?? null)
-              }
-              appliedMessage={
-                codeVM === undefined ? null : text('bag.codeApplied', { code: codeVM.code })
-              }
-              problemTexts={problemTexts}
-              unknownMessage={text.shared('codeInvalid.unknown')}
-              clearMessage={text('bag.codeCleared')}
-            />
-
             <dl className={summary.totals}>
               <div className={summary.totalRow}>
                 <dt>{text('bag.subtotal')}</dt>
@@ -177,11 +161,22 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
                   <dd>−{codeVM.discountText}</dd>
                 </div>
               )}
-              <div className={[summary.totalRow, summary.grand].filter(Boolean).join(' ')}>
-                <dt>{text('bag.total')}</dt>
-                <dd>{bag.totalText}</dd>
-              </div>
+              {/* Without a discount the total is the subtotal: the handoff shows the one row. */}
+              {codeVM?.discountText != null && (
+                <div className={[summary.totalRow, summary.grand].join(' ')}>
+                  <dt>{text('bag.total')}</dt>
+                  <dd>{bag.totalText}</dd>
+                </div>
+              )}
             </dl>
+
+            {bag.delivery !== null && (
+              <p className={summary.deliveryNote}>
+                {bag.delivery.kind === 'free'
+                  ? text('bag.deliveryFree', { amount: bag.delivery.freeOverText })
+                  : text('bag.deliveryShort', { short: bag.delivery.shortText })}
+              </p>
+            )}
 
             {bag.refusal !== null && (
               <p className={summary.refusal} role="status">
@@ -206,6 +201,30 @@ export function BagView({ bag, locale }: BagViewProps): React.ReactElement {
                   {text.shared('cart.checkout')}
                 </Button>
               )}
+            </div>
+
+            <div className={summary.more}>
+              <CapsLink href={href('browse', {}, locale)}>{text('bag.continue')}</CapsLink>
+            </div>
+
+            {/* The welcome code, under the summary's actions. */}
+            <div className={summary.codeBlock}>
+              <CodeForm
+                label={text.shared('cart.codeLabel')}
+                applyLabel={text.shared('cart.codeApply')}
+                appliedCode={codeVM?.code ?? null}
+                problem={
+                  codeVM === undefined || codeVM.problem === null
+                    ? null
+                    : (problemTexts[codeVM.problem.key] ?? null)
+                }
+                appliedMessage={
+                  codeVM === undefined ? null : text('bag.codeApplied', { code: codeVM.code })
+                }
+                problemTexts={problemTexts}
+                unknownMessage={text.shared('codeInvalid.unknown')}
+                clearMessage={text('bag.codeCleared')}
+              />
             </div>
           </div>
         </div>

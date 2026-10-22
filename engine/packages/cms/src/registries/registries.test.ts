@@ -73,6 +73,7 @@ const SLUGS = [
   'makers',
   'places',
   'products',
+  'categories',
   'discounts',
   'stores',
   'stock-levels',

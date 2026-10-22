@@ -1,20 +1,25 @@
 /**
- * The shop's partnership page (ticket 4.3.c): the composition lives beside it, this page hands it
- * the lexicon's words and the site-settings contact for the WhatsApp and email buttons, and names
- * the page in the metadata. The enquiry form makes a `partnership` lead (9.1.c); Turnstile's public
- * site key is read here, at request time, and reaches the browser only as a prop (SECURITY.md K2).
+ * The shop's partnership page (ticket 4.3.c; the redesign of 2026-10-20): its sections are the
+ * CMS's published `partnership` page, or — until there is one — the built-in sections with the
+ * lexicon's words (`sites/shop/blocks/defaults/partnership`). The enquiry form makes a
+ * `partnership` lead (9.1.c); its block reads the site-settings contact and Turnstile's public site
+ * key at request time (`sites/shop/partnership/enquiry-sections`).
  */
 import type { Metadata } from 'next'
 import { connection } from 'next/server'
 
 import type { SiteLocale } from '@engine/config/sites'
 
-import { pageMetadata } from '../../../../../server/seo'
-import { loadSiteSettings } from '../../../../../server/site-settings'
+import { pageMetadata, shareImageOf, trimDescription } from '../../../../../server/seo'
 import { siteLocale } from '../../../../../shell/messages'
 import { currentSite, siteHref } from '../../../../../shell/site'
-import { Partnership } from './partnership'
-import { partnershipText } from './partnership-messages'
+import { defaultPartnershipBlocks } from '../../../../../sites/shop/blocks/defaults/partnership'
+import { pageBlocks } from '../../../../../sites/shop/blocks/page-blocks'
+import { ShopBlocks } from '../../../../../sites/shop/blocks/shop-blocks'
+import { partnershipText } from '../../../../../sites/shop/partnership/page-messages'
+
+const partnershipBlocks = (locale: SiteLocale) =>
+  pageBlocks('partnership', locale, () => defaultPartnershipBlocks(locale))
 
 export async function generateMetadata({
   params,
@@ -23,29 +28,24 @@ export async function generateMetadata({
   const site = await currentSite('shop')
   if (locale === null || site.origin === null) return {}
   const t = partnershipText(locale)
+  const page = await partnershipBlocks(locale)
   const href = siteHref('shop')
   return pageMetadata({
     site: 'shop',
     locale,
     paths: { en: href('partnership', {}, 'en'), id: href('partnership', {}, 'id') },
-    title: t('partnership.eyebrow'),
-    description: t('partnership.lede'),
+    title: page.seoTitle ?? t('partnership.eyebrow'),
+    description: trimDescription(page.seoDescription ?? t('partnership.lede')),
+    image: shareImageOf(page.seoImage),
     origin: site.origin,
   })
 }
 
 export default async function PartnershipPage({ params }: PageProps<'/shop/[locale]/partnership'>) {
-  // Dynamic at request time: the settings read is cached by tag, never at build — and the layout's
-  // own `connection()` does not hold this page back (shell/site.ts).
+  // Dynamic at request time: the reads are cached by tag, never at build — and the layout's own
+  // `connection()` does not hold this page back (shell/site.ts).
   await connection()
-  const { locale } = await params
-  const settings = await loadSiteSettings('shop', locale as SiteLocale)
-  return (
-    <Partnership
-      contact={{ whatsapp: settings.contact.whatsapp, email: settings.contact.email }}
-      t={partnershipText(locale as SiteLocale)}
-      locale={locale === 'id' ? 'id' : 'en'}
-      turnstileSiteKey={process.env.TURNSTILE_SITE_KEY?.trim() || null}
-    />
-  )
+  const locale = siteLocale('shop', (await params).locale) ?? 'en'
+  const page = await partnershipBlocks(locale)
+  return <ShopBlocks blocks={page.blocks} locale={locale} frame="page" />
 }

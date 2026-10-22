@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest'
 
 import type { SiteKey, SiteLocale } from '@engine/config/sites'
 
-import { partnershipText } from '../../app/(shop)/shop/[locale]/partnership/partnership-messages'
+import { partnershipText } from '../../sites/shop/partnership/page-messages'
 import { browseText as galleryBrowseText } from '../../sites/gallery/browse/copy'
 import { contactText } from '../../sites/gallery/contact/messages'
 import { homeText as galleryHomeText } from '../../sites/gallery/home/home-messages'

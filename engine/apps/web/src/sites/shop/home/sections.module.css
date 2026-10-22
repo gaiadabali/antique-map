@@ -32,7 +32,8 @@
 }
 
 .facts {
-  margin: 0.375rem 0 1.125rem;
+  /* 16, not the drawn 18: the caps link below sits 2 px down its 21 px line box */
+  margin: 0.375rem 0 1rem;
   padding: 0;
   list-style: none;
 }
@@ -96,7 +97,7 @@
 .editArt {
   inline-size: 20rem;
   max-inline-size: 100%;
-  margin-block-start: var(--space-6);
+  margin-block-start: 1.875rem;
 }
 
 /* an original from the gallery, with its title under the frame */
@@ -152,8 +153,10 @@
     outline-offset: -2px;
   }
 
+  /* under the slider: the grid's 24 plus the handoff's own 24 */
   .storyText {
     max-inline-size: none;
+    margin-block-start: var(--space-5);
   }
 
   .storyTitle {

@@ -23,112 +23,149 @@ const staffOnly: FieldAccess = ({ req }) => hasRole(req.user, 'owner', 'editor',
 
 export const STAFF_ONLY = { read: staffOnly } as const
 
+/**
+ * The edit screen in four tabs — the store, where it is, how to reach it, its photographs — with
+ * whether it takes orders and is listed in the sidebar. Tabs without a `name` only arrange the
+ * form: every field keeps its place in the data and the database.
+ */
 export const STORE_FIELDS: Field[] = [
   {
-    name: 'code',
-    type: 'text',
-    label: { en: 'Store code', id: 'Kode toko' },
-    required: true,
-    unique: true,
-    maxLength: 32,
-    access: STAFF_ONLY,
-    admin: {
-      description: {
-        en: 'The code the store list and the stock spreadsheets match on, e.g. UBD-01.',
-        id: 'Kode yang dicocokkan oleh daftar toko dan lembar stok, mis. UBD-01.',
-      },
-    },
-  },
-  {
-    name: 'name',
-    type: 'text',
-    label: { en: 'Name', id: 'Nama' },
-    required: true,
-    maxLength: 120,
-  },
-  {
-    name: 'area',
-    type: 'text',
-    label: { en: 'Area', id: 'Area' },
-    maxLength: 80,
-    admin: {
-      description: {
-        en: 'Where buyers know it by, e.g. Ubud or Sanur. Shown on the store list and the tracking page.',
-        id: 'Nama daerah yang dikenal pembeli, mis. Ubud atau Sanur. Ditampilkan di daftar toko dan halaman pelacakan.',
-      },
-    },
-  },
-  {
-    name: 'address',
-    type: 'textarea',
-    label: { en: 'Address', id: 'Alamat' },
-    maxLength: 500,
-    validate: validateAddress,
-  },
-  {
-    type: 'row',
-    fields: [
+    type: 'tabs',
+    tabs: [
       {
-        name: 'lat',
-        type: 'number',
-        label: { en: 'Latitude', id: 'Lintang' },
-        validate: validateCoordinate('lat'),
-        admin: {
-          step: 0.000001,
-          description: {
-            en: 'Decimal degrees, e.g. -8.5069. Orders are sent from the nearest active store.',
-            id: 'Derajat desimal, mis. -8.5069. Pesanan dikirim dari toko aktif terdekat.',
+        label: { en: 'Store', id: 'Toko' },
+        fields: [
+          {
+            name: 'code',
+            type: 'text',
+            label: { en: 'Store code', id: 'Kode toko' },
+            required: true,
+            unique: true,
+            maxLength: 32,
+            access: STAFF_ONLY,
+            admin: {
+              description: {
+                en: 'The code the store list and the stock spreadsheets match on, e.g. UBD-01.',
+                id: 'Kode yang dicocokkan oleh daftar toko dan lembar stok, mis. UBD-01.',
+              },
+            },
           },
-        },
-      },
-      {
-        name: 'lng',
-        type: 'number',
-        label: { en: 'Longitude', id: 'Bujur' },
-        validate: validateCoordinate('lng'),
-        admin: {
-          step: 0.000001,
-          description: {
-            en: 'Decimal degrees, e.g. 115.2625.',
-            id: 'Derajat desimal, mis. 115.2625.',
+          {
+            name: 'name',
+            type: 'text',
+            label: { en: 'Name', id: 'Nama' },
+            required: true,
+            maxLength: 120,
           },
-        },
+          {
+            name: 'area',
+            type: 'text',
+            label: { en: 'Area', id: 'Area' },
+            maxLength: 80,
+            admin: {
+              description: {
+                en: 'Where buyers know it by, e.g. Ubud or Sanur. Shown on the store list and the tracking page.',
+                id: 'Nama daerah yang dikenal pembeli, mis. Ubud atau Sanur. Ditampilkan di daftar toko dan halaman pelacakan.',
+              },
+            },
+          },
+          {
+            name: 'notes',
+            type: 'textarea',
+            label: { en: 'Staff notes', id: 'Catatan staf' },
+            maxLength: 2000,
+            access: STAFF_ONLY,
+          },
+        ],
       },
-    ],
-  },
-  {
-    name: 'whatsapp',
-    type: 'text',
-    label: { en: 'WhatsApp', id: 'WhatsApp' },
-    maxLength: 16,
-    validate: validateWhatsApp,
-    access: STAFF_ONLY,
-    admin: {
-      description: {
-        en: 'The store’s own number, +62… — for staff. Buyers contact the shop’s online number.',
-        id: 'Nomor toko sendiri, +62… — untuk staf. Pembeli menghubungi nomor online toko.',
-      },
-    },
-  },
-  {
-    name: 'hours',
-    type: 'textarea',
-    label: { en: 'Opening hours', id: 'Jam buka' },
-    localized: true,
-    maxLength: 300,
-  },
-  {
-    name: 'images',
-    type: 'array',
-    label: { en: 'Showroom photographs', id: 'Foto ruang pamer' },
-    maxRows: 12,
-    fields: [
       {
-        name: 'image',
-        type: 'upload',
-        relationTo: 'media',
-        required: true,
-        label: { en: 'Photograph', id: 'Foto' },
+        label: { en: 'Location', id: 'Lokasi' },
+        fields: [
+          {
+            name: 'address',
+            type: 'textarea',
+            label: { en: 'Address', id: 'Alamat' },
+            maxLength: 500,
+            validate: validateAddress,
+          },
+          {
+            type: 'row',
+            fields: [
+              {
+                name: 'lat',
+                type: 'number',
+                label: { en: 'Latitude', id: 'Lintang' },
+                validate: validateCoordinate('lat'),
+                admin: {
+                  step: 0.000001,
+                  description: {
+                    en: 'Decimal degrees, e.g. -8.5069. Orders are sent from the nearest active store.',
+                    id: 'Derajat desimal, mis. -8.5069. Pesanan dikirim dari toko aktif terdekat.',
+                  },
+                },
+              },
+              {
+                name: 'lng',
+                type: 'number',
+                label: { en: 'Longitude', id: 'Bujur' },
+                validate: validateCoordinate('lng'),
+                admin: {
+                  step: 0.000001,
+                  description: {
+                    en: 'Decimal degrees, e.g. 115.2625.',
+                    id: 'Derajat desimal, mis. 115.2625.',
+                  },
+                },
+              },
+            ],
+          },
+        ],
+      },
+      {
+        label: { en: 'Contact and hours', id: 'Kontak dan jam buka' },
+        fields: [
+          {
+            name: 'whatsapp',
+            type: 'text',
+            label: { en: 'WhatsApp', id: 'WhatsApp' },
+            maxLength: 16,
+            validate: validateWhatsApp,
+            access: STAFF_ONLY,
+            admin: {
+              description: {
+                en: 'The store’s own number, +62… — for staff. Buyers contact the shop’s online number.',
+                id: 'Nomor toko sendiri, +62… — untuk staf. Pembeli menghubungi nomor online toko.',
+              },
+            },
+          },
+          {
+            name: 'hours',
+            type: 'textarea',
+            label: { en: 'Opening hours', id: 'Jam buka' },
+            localized: true,
+            maxLength: 300,
+          },
+        ],
+      },
+      {
+        label: { en: 'Photographs', id: 'Foto' },
+        fields: [
+          {
+            name: 'images',
+            type: 'array',
+            label: { en: 'Showroom photographs', id: 'Foto ruang pamer' },
+            maxRows: 12,
+            fields: [
+              {
+                name: 'image',
+                type: 'upload',
+                relationTo: 'media',
+                required: true,
+                label: { en: 'Photograph', id: 'Foto' },
+              },
+            ],
+          },
+        ],
       },
     ],
   },
@@ -157,12 +194,5 @@ export const STORE_FIELDS: Field[] = [
         id: 'Ditampilkan di halaman Toko selama toko aktif.',
       },
     },
-  },
-  {
-    name: 'notes',
-    type: 'textarea',
-    label: { en: 'Staff notes', id: 'Catatan staf' },
-    maxLength: 2000,
-    access: STAFF_ONLY,
   },
 ]

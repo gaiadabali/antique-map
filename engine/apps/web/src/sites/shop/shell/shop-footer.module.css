@@ -1,7 +1,8 @@
-/* The shop's footer (the handoff of 2026-10-20, oei.css §footer): a warm band — the logo in a
-   279 px column, then Explore and Contact set flush right (each a small-capitals title over one
-   row of 13 px links, 24 apart; 75 between the groups) — then a white bar. On a phone the groups
-   are full-bleed rows on hairlines. Every value is a token. */
+/* The shop's footer (the third handoff of 2026-10-20, oei.css §footer): a warm band in three
+   columns like the header — the logo at the left, Explore's 13 px links dead centre (24 apart, no
+   title), Contact flush right (a small-capitals title over 16 px icons in 32 px targets, 20 apart),
+   both rows on the logo's foot — then a white bar. On a phone the groups are full-bleed rows on
+   hairlines and the icons grow to 44 px targets. Every value is a token. */
 
 .footer {
   margin-block-start: auto;
@@ -9,9 +10,9 @@
 
 .band {
   display: grid;
-  grid-template-columns: 17.4375rem minmax(0, 1fr);
-  gap: var(--space-7);
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: end;
+  gap: 2.5rem;
   padding: 2.6875rem var(--shop-gutter) 0.9375rem;
   background: var(--shop-warm);
 }
@@ -22,15 +23,18 @@
   inline-size: auto;
 }
 
+/* The two groups are the grid's middle and right cells on a desktop. */
 .groups {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 1.25rem 4.6875rem;
+  display: contents;
 }
 
-.group {
+.explore,
+.contact {
   min-inline-size: 0;
+}
+
+.contact {
+  justify-self: end;
 }
 
 .title {
@@ -45,10 +49,16 @@
 .links {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   column-gap: var(--space-5);
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+/* Explore's row is as tall as the icon row, so the two read on one line. */
+.explore .links {
+  min-block-size: 2rem;
 }
 
 .links a {
@@ -64,6 +74,30 @@
 .links a[aria-current='page'] {
   text-decoration: underline;
   text-underline-offset: 0.3em;
+}
+
+.social {
+  column-gap: 1.25rem;
+}
+
+/* The header's icon: a 16 px glyph centred in a 32 px target pulled 8 px into its neighbours. */
+.links .icon {
+  display: inline-grid;
+  place-items: center;
+  inline-size: 2rem;
+  block-size: 2rem;
+  margin-inline: -0.5rem;
+  color: var(--color-text);
+  transition: opacity var(--dur-out) var(--ease);
+}
+
+.links .icon:hover {
+  opacity: 0.6;
+}
+
+.icon svg {
+  inline-size: 1rem;
+  block-size: 1rem;
 }
 
 .line {
@@ -102,35 +136,61 @@
   margin-inline-start: auto;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .links .icon {
+    transition: none;
+  }
+}
+
 @media (max-width: 56.25rem) {
   .band {
     grid-template-columns: 1fr;
     gap: var(--space-5);
-    padding-block: 1.75rem 0;
+    padding-block-start: 1.75rem;
   }
 
   .groups {
+    display: flex;
     flex-direction: column;
-    gap: 0;
     margin-inline: calc(-1 * var(--shop-gutter));
   }
 
-  .group {
+  .explore,
+  .contact {
     padding: 0.875rem var(--shop-gutter);
     box-shadow: inset 0 var(--rule-hair) 0 var(--shop-rule-mid);
   }
 
+  .contact {
+    justify-self: auto;
+  }
+
+  .social {
+    column-gap: 1.75rem;
+  }
+
+  .links .icon {
+    inline-size: 2.75rem;
+    block-size: 2.75rem;
+    margin-inline: -0.875rem;
+  }
+
+  /* Two rows 12 apart, the bridge centred on the second: each link's 24 px target circle
+     stays clear of its neighbours (WCAG 2.5.8's spacing rule) at the handoff's 18 px rows. */
   .bar {
     flex-wrap: wrap;
-    gap: 0 var(--space-5);
-    padding-block: var(--space-1);
+    gap: var(--space-3) 1.25rem;
+    padding-block: 0.625rem;
   }
 
   .bar a {
-    min-block-size: 2.25rem;
+    min-block-size: 1.125rem;
   }
 
   .sister {
+    flex-basis: 100%;
+    justify-content: center;
     margin-inline-start: 0;
+    text-align: center;
   }
 }

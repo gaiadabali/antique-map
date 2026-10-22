@@ -1,50 +1,41 @@
 /**
  * The shop home's last sections (the redesign of 2026-10-20, the handoff's Poster Club story and
- * editorial skeletons): the trade offer — its words at the left, two of the shop's framed prints
- * beside them (no photographs of shops or hotels exist yet) — and the bridge to the originals: two
- * of the gallery's own antiques, one on the left half, one framed in the sister gallery's warm panel. Every word is the lexicon.
+ * editorial skeletons): a story — its words at the left, two of the shop's framed prints beside
+ * them (no photographs of shops or hotels exist yet) — and the bridge to the originals: two of the
+ * gallery's own antiques, one on the left half, one framed in the sister gallery's warm panel. The
+ * words are the page's `story` and `originals` blocks.
  */
+import type { OriginalsVM, StoryVM } from '../../../server/shop/pages/blocks'
+import { linkProps } from '../blocks/link-props'
 import { Caps, CapsLink } from '../ui/caps-link'
+import { GALLERY_LIVE_LINK } from '../gallery-live'
 import { FeaturedPrint } from './featured-print'
 import { OriginalPrint } from './original-print'
-import type { HomeText } from './home-messages'
 import styles from './sections.module.css'
 
-export type SectionProps = {
-  readonly locale: 'en' | 'id'
-  readonly href: (
-    surface: 'browse' | 'partnership' | 'collection',
-    params: Record<string, never>,
-    locale: 'en' | 'id',
-  ) => string
-  readonly t: HomeText
-}
+type Locale = { readonly locale: 'en' | 'id' }
 
-const FACTS = ['home.shop.tradeFact1', 'home.shop.tradeFact2', 'home.shop.tradeFact3'] as const
-
-/** Trade and gifting: the offer, its facts and the way in, beside two framed prints. */
-export function Trade({ locale, href, t }: SectionProps) {
+/** A story (the home's trade and gifting): its words, facts and the way in, beside two prints. */
+export function Story({ locale, block }: Locale & { readonly block: StoryVM }) {
+  const titleId = `story-${block.id}`
   return (
-    <section className={styles.story} aria-labelledby="home-trade">
+    <section className={styles.story} aria-labelledby={titleId}>
       <div className={styles.storyText}>
-        <h2 id="home-trade" className={styles.storyTitle}>
-          {t('home.shop.tradeTitle')}
+        <h2 id={titleId} className={styles.storyTitle}>
+          {block.title}
         </h2>
-        <p className={styles.storyLead}>{t('home.shop.tradeLead')}</p>
-        <p className={styles.storyBody}>{t('home.shop.tradeBodyMore')}</p>
-        <ul className={styles.facts}>
-          {FACTS.map((key) => (
-            <li key={key}>{t(key)}</li>
-          ))}
-        </ul>
-        <CapsLink href={href('partnership', {}, locale)}>{t('home.shop.tradeCta')}</CapsLink>
+        {block.lead ? <p className={styles.storyLead}>{block.lead}</p> : null}
+        {block.body ? <p className={styles.storyBody}>{block.body}</p> : null}
+        {block.facts.length > 0 ? (
+          <ul className={styles.facts}>
+            {block.facts.map((fact) => (
+              <li key={fact}>{fact}</li>
+            ))}
+          </ul>
+        ) : null}
+        {block.link ? <CapsLink {...linkProps(block.link)}>{block.link.label}</CapsLink> : null}
       </div>
-      <div
-        className={styles.storyPhotos}
-        role="group"
-        aria-label={t('home.shop.tradeTitle')}
-        tabIndex={0}
-      >
+      <div className={styles.storyPhotos} role="group" aria-label={block.title} tabIndex={0}>
         <FeaturedPrint
           locale={locale}
           index={1}
@@ -63,30 +54,25 @@ export function Trade({ locale, href, t }: SectionProps) {
 }
 
 /** The bridge to the gallery's originals, on its own host (absolute, in the visitor's locale). */
-export function Originals({
-  locale,
-  sisterHref,
-  t,
-}: {
-  readonly locale: 'en' | 'id'
-  readonly sisterHref: string
-  readonly t: HomeText
-}) {
+export function Originals({ locale, block }: Locale & { readonly block: OriginalsVM }) {
+  const titleId = `originals-${block.id}`
   return (
-    <section className={styles.edit} aria-labelledby="home-originals">
+    <section className={styles.edit} aria-labelledby={titleId}>
       <div className={styles.editPhoto}>
         <OriginalPrint locale={locale} index={0} sizes="50vw" className={styles.editWall} />
       </div>
       <div className={styles.editPanel}>
-        <Caps className={styles.label}>{t('home.shop.originalsLabel')}</Caps>
-        <h2 id="home-originals" className={styles.editTitle}>
-          {t('home.shop.originalsTitle')}
+        {block.label ? <Caps className={styles.label}>{block.label}</Caps> : null}
+        <h2 id={titleId} className={styles.editTitle}>
+          {block.title}
         </h2>
         <div className={styles.editArt}>
           <OriginalPrint locale={locale} index={1} sizes="20rem" className={styles.editTile} />
         </div>
-        <p className={styles.editBody}>{t('home.shop.originalsBody')}</p>
-        <CapsLink href={sisterHref}>{t('home.shop.originalsCta')}</CapsLink>
+        {block.body ? <p className={styles.editBody}>{block.body}</p> : null}
+        {/* For now the owner's live gallery site, in a new tab (`../gallery-live`); the new
+            gallery's home again once it launches. */}
+        {block.linkLabel ? <CapsLink {...GALLERY_LIVE_LINK}>{block.linkLabel}</CapsLink> : null}
       </div>
     </section>
   )

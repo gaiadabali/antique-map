@@ -91,25 +91,33 @@ a.category:hover {
   block-size: 0.75rem;
 }
 
-.story {
-  grid-column: 2 / 7;
-  padding-block-start: var(--space-8);
+/* About this product: across the page under the picture and the buy block, on the page's white,
+   ruled at its head; the title in the gallery's columns, the words in the details' (8–12). */
+.storyInner {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: 2.25rem;
+  margin-inline: 2.25rem;
+  padding-block: var(--space-8) var(--space-9);
+  border-block-start: var(--rule-hair) solid var(--shop-rule-mid);
 }
 
 .storyTitle {
+  grid-column: 1 / 7;
   margin: 0;
   font: var(--shop-title-about);
 }
 
 .storyText {
-  margin: var(--space-5) 0 0;
+  grid-column: 8 / 13;
+  margin: 0;
   font: var(--shop-text-read);
   white-space: pre-line;
 }
 
 @media (max-width: 56.25rem) {
   .page {
-    margin-block-start: calc(var(--space-6) - var(--space-7));
+    margin-block-start: calc(2.5rem - var(--space-7));
   }
 
   .layout {
@@ -118,7 +126,7 @@ a.category:hover {
   }
 
   .name {
-    margin-block-start: var(--space-7);
+    margin-block-start: 2.5rem;
   }
 
   .category {
@@ -126,7 +134,17 @@ a.category:hover {
     line-height: 1.75rem;
   }
 
-  .story {
-    padding-block-start: var(--space-7);
+  .layout:has(+ .story) {
+    padding-block-end: var(--space-7);
+  }
+
+  .storyInner {
+    display: block;
+    margin-inline: 1.125rem;
+    padding-block: var(--space-7);
+  }
+
+  .storyText {
+    margin-block-start: var(--space-5);
   }
 }

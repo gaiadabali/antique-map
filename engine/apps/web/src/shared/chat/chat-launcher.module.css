@@ -66,9 +66,10 @@
 /* The foot of the page keeps clear of the 48 px button (16 px off the edge) on a phone: the
    footer's own bottom padding grows to hold it, on the footer's ground, so the last line and the
    last card stand fully above it at the end of the scroll. It targets the site footer, the one
-   that precedes the launcher, and lapses when the panel replaces the launcher. */
+   that precedes the launcher, and lapses when the panel replaces the launcher or when the
+   launcher docks above the footer instead (the shop). */
 @media (max-width: 47.999rem) {
-  :global(footer):has(~ .launcher) {
+  :global(footer):has(~ .launcher:not([data-dock])) {
     padding-block-end: calc(var(--space-8) + var(--space-4) + env(safe-area-inset-bottom, 0px));
   }
 }
@@ -123,16 +124,18 @@
   border-radius: inherit;
 }
 
-/* From tablet up: a side panel at the bottom right, its own height, scrolling inside its log. */
+/* From tablet up: a side panel at the bottom right, its own height, scrolling inside its log. A site
+   may set its width, rule and shadow (sites/shop/tokens/chat.css). */
 @media (min-width: 768px) {
   .panel {
     inset: auto calc(var(--space-5) + env(safe-area-inset-right, 0px))
       calc(var(--space-5) + env(safe-area-inset-bottom, 0px)) auto;
-    width: min(420px, calc(100vw - 2 * var(--space-5)));
+    width: min(var(--chat-panel-width, 420px), calc(100vw - 2 * var(--space-5)));
     height: min(640px, calc(100dvh - 2 * var(--space-5)));
     padding: 0;
     border-radius: var(--radius-panel);
-    border: var(--rule-hair) solid var(--color-text);
+    border: var(--chat-panel-border, var(--rule-hair) solid var(--color-text));
+    box-shadow: var(--chat-panel-shadow, none);
   }
 }
 
