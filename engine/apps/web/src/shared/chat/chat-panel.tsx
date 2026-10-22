@@ -82,6 +82,24 @@ export function ChatPanel({
   }, [])
 
   useEffect(() => {
+    // A session that cannot start disables the composer. If the visitor's focus was on it, the
+    // browser drops focus to the page body, behind the dialog; keep it inside, on the first
+    // control that still works (the close button).
+    if (session !== 'failed') return
+    const active = document.activeElement
+    const lost =
+      active === null ||
+      active === document.body ||
+      (active instanceof HTMLTextAreaElement && active.disabled) ||
+      (active instanceof HTMLButtonElement && active.disabled)
+    if (!lost) return
+    const fallback = Array.from(
+      rootRef.current?.querySelectorAll<HTMLElement>('button, a[href], textarea, input') ?? [],
+    ).find((el) => !(el as HTMLButtonElement).disabled)
+    fallback?.focus()
+  }, [session])
+
+  useEffect(() => {
     function onKey(event: KeyboardEvent): void {
       if (isEscapeKey(event)) onClose()
     }

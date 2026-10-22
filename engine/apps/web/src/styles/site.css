@@ -41,6 +41,13 @@ html[data-site='shop'] {
   scroll-behavior: smooth;
 }
 
+/* Keyboard focus never glides: a smooth scroll is still under way when focus lands, so a focused
+   control is momentarily off screen, or under the sticky header (WCAG 2.4.11). Mouse and touch
+   anchors keep the glide; focus-visible is only set by the keyboard. */
+html[data-site='shop']:has(:focus-visible) {
+  scroll-behavior: auto;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html[data-site='shop'] {
     scroll-behavior: auto;

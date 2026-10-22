@@ -138,6 +138,11 @@
   border: var(--rule-hair) solid var(--color-text);
 }
 
+/* The form only carries the buttons' submits; the stepper's box is its parent's. */
+.stepForm {
+  display: contents;
+}
+
 .step {
   inline-size: 2rem;
   block-size: 2rem;

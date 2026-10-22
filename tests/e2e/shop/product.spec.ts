@@ -227,7 +227,7 @@ test.describe('Shop product page (6.1.c)', () => {
     await page.goto('/bag')
     const line = page.getByRole('listitem').filter({ hasText: variantLabel })
     await expect(line).toBeVisible()
-    await expect(line.getByRole('spinbutton')).toHaveValue('1')
+    await expect(line.getByRole('group', { name: 'Quantity' })).toContainText('1')
 
     // Pressing again, same product and variant, merges into the same line (`addToBag`'s
     // `updated` outcome) rather than adding a second one.
@@ -239,7 +239,7 @@ test.describe('Shop product page (6.1.c)', () => {
 
     await page.goto('/bag')
     await expect(page.getByRole('listitem').filter({ hasText: variantLabel })).toHaveCount(1)
-    await expect(line.getByRole('spinbutton')).toHaveValue('2')
+    await expect(line.getByRole('group', { name: 'Quantity' })).toContainText('2')
   })
 
   test('the zero-stock product shows "Out of stock" at 390 px, has no working add button, and a forced post of the real add action is refused', async ({

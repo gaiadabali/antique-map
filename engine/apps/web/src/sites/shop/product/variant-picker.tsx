@@ -138,7 +138,7 @@ export function VariantPicker({
           {!canAdd ? text.outOfStock : added ? text.addedButton : text.addToBag}
         </button>
       </div>
-      <p className={styles.stock} aria-live="polite">
+      <p className={styles.stock} role="status">
         {canAdd ? text.inStock : text.outOfStock}
         {added && (
           <>

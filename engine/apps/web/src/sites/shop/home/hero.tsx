@@ -65,7 +65,7 @@ function Frame({ block, print, caption, pending = false }: FrameProps) {
           <h1 id={pending ? undefined : 'home-title'} className={styles.title}>
             {block.title}
           </h1>
-          {block.lede ? <p className={styles.lede}>{block.lede}</p> : null}
+          {block.lede ? <p className={`site-lede ${styles.lede}`}>{block.lede}</p> : null}
           {block.primary || block.secondary ? (
             <div className={styles.actions}>
               {block.primary ? (
