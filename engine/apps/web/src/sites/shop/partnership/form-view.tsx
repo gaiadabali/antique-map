@@ -8,7 +8,9 @@
  * not a field's (the security check, the rate limit) shows above the button. Tokens and shared
  * components only.
  */
-import { Button, FormMessage, Input } from '../../../shared/ui'
+import { Button } from '../../../shared/ui/button'
+import { FormMessage } from '../../../shared/ui/form-message'
+import { Input } from '../../../shared/ui/input'
 
 import type { FormText } from './form-text'
 import styles from './partnership-form.module.css'

@@ -1,14 +1,15 @@
-'use client'
-
 /**
  * A rail of cards (the handoff's Poster Club carousel): the section's title at the left, two small
  * arrows at the right on a desktop, four cards in view that snap card by card, and a link centred
  * under them. On a phone the cards are narrower, the next one peeks and a swipe moves the rail; the
- * arrows step it by one card. Every word arrives as a prop.
+ * arrows step it by one card. A Server Component with no client code of its own: the arrows carry
+ * data attributes and the header's one delegated listener (`./rail-steps`) does the scrolling.
+ * Every word arrives as a prop.
  */
-import { Children, useRef, type ReactNode } from 'react'
+import { Children, type ReactNode } from 'react'
 
 import styles from './rail.module.css'
+import { RAIL_FOR_ATTRIBUTE, RAIL_STEP_ATTRIBUTE } from './rail-attributes'
 
 type Props = {
   readonly id: string
@@ -23,14 +24,24 @@ type Props = {
 }
 
 export function Rail({ id, title, previousLabel, nextLabel, children, more, flush }: Props) {
-  const list = useRef<HTMLUListElement>(null)
-  const step = (direction: -1 | 1) => {
-    const rail = list.current
-    const first = rail?.firstElementChild as HTMLElement | null
-    if (!rail || !first) return
-    const gap = parseFloat(getComputedStyle(rail).columnGap) || 0
-    rail.scrollBy({ left: direction * (first.offsetWidth + gap), behavior: 'smooth' })
-  }
+  const listId = `${id}-list`
+  const arrow = (direction: '-1' | '1', label: string, path: string) => (
+    <button
+      type="button"
+      aria-label={label}
+      {...{ [RAIL_STEP_ATTRIBUTE]: direction, [RAIL_FOR_ATTRIBUTE]: listId }}
+    >
+      <svg
+        viewBox="0 0 8 14"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        aria-hidden="true"
+      >
+        <path d={path} />
+      </svg>
+    </button>
+  )
   return (
     <section className={styles.section} data-flush={flush || undefined} aria-labelledby={id}>
       <div className={styles.head}>
@@ -38,31 +49,11 @@ export function Rail({ id, title, previousLabel, nextLabel, children, more, flus
           {title}
         </h2>
         <div className={styles.arrows}>
-          <button type="button" aria-label={previousLabel} onClick={() => step(-1)}>
-            <svg
-              viewBox="0 0 8 14"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              aria-hidden="true"
-            >
-              <path d="M7 1 1 7l6 6" />
-            </svg>
-          </button>
-          <button type="button" aria-label={nextLabel} onClick={() => step(1)}>
-            <svg
-              viewBox="0 0 8 14"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              aria-hidden="true"
-            >
-              <path d="m1 1 6 6-6 6" />
-            </svg>
-          </button>
+          {arrow('-1', previousLabel, 'M7 1 1 7l6 6')}
+          {arrow('1', nextLabel, 'm1 1 6 6-6 6')}
         </div>
       </div>
-      <ul ref={list} className={styles.rail}>
+      <ul id={listId} className={styles.rail}>
         {Children.map(children, (child) => (child ? <li>{child}</li> : null))}
       </ul>
       {more ? <div className={styles.more}>{more}</div> : null}

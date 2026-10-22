@@ -7,7 +7,7 @@
  */
 import { useActionState, useState } from 'react'
 
-import { Button } from '../../../shared/ui'
+import { Button } from '../../../shared/ui/button'
 import { partnerSignInAction } from '../../../server/shop/partners/actions'
 import styles from './sign-in.module.css'
 
