@@ -1,0 +1,27 @@
+/* A staff member's draft preview (TASKS.md 27.5.a): a quiet line above everything, never shown to
+   a visitor. Every value is a token. */
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1) var(--space-3);
+  padding: var(--space-1) var(--shop-gutter);
+  background: var(--color-surface-raised);
+  box-shadow: inset 0 calc(-1 * var(--rule-hair)) 0 var(--color-border);
+  font: var(--text-small);
+  color: var(--color-text);
+}
+
+.bar p {
+  margin: 0;
+}
+
+.bar a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 1.5rem;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}

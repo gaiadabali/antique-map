@@ -10,10 +10,10 @@
  * Then the owner's own bulk demotion of every owner is still judged (400), so the guard was not
  * simply switched off.
  */
+import { ADMINS_LOCK_KEY } from '@engine/cms-core/collections/users'
 import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { ADMINS_LOCK_KEY } from './guards'
 import { server, startStaffStack, type StaffStack } from './staff.test-support'
 
 type Client = { query: (text: string) => Promise<unknown>; release: () => void }

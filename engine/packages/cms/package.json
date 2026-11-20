@@ -2,11 +2,12 @@
   "name": "@engine/cms",
   "version": "0.0.0",
   "private": true,
-  "description": "The one Payload config: one CMS and one database serving both sites (the gallery and the shop). Collections, access helpers, the database adapter (db/), the job/view/plugin registries and the one migration set.",
+  "description": "The one Payload config: one CMS and one database serving both sites (the gallery and the shop). Its shared collections (users, media, pages, redirects, leads, events, chat sessions, site settings), access helpers and database tooling come from @engine/cms-core; here are the site-specific collections, the options it passes those factories, the job/view/plugin registries and the one migration set.",
   "type": "module",
   "exports": {
     "./payload.config": "./src/payload.config.ts",
     "./instance": "./src/instance.ts",
+    "./media/public-file": "./src/collections/media/public-file.ts",
     "./access": "./src/access/index.ts",
     "./ai": "./src/ai/index.ts",
     "./import": "./src/import/index.ts",
@@ -42,6 +43,8 @@
   },
   "dependencies": {
     "@engine/cache": "workspace:*",
+    "@engine/cms-core": "workspace:*",
+    "@engine/cms-shop": "workspace:*",
     "@engine/config": "workspace:*",
     "@engine/media": "workspace:*",
     "@payloadcms/db-postgres": "3.90.2",

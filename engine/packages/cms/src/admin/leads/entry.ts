@@ -4,7 +4,7 @@
  */
 import type { AdminViewConfig } from 'payload'
 
-import type { RegistryEntry } from '../../registries/entries'
+import type { RegistryEntry } from '@engine/cms-core/registries/entries'
 
 export const leadsViewEntries: readonly RegistryEntry<AdminViewConfig>[] = [
   {

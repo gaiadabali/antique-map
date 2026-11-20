@@ -9,8 +9,8 @@ import type { CopyValues } from '@engine/i18n'
 
 import galleryEn from '../sites/gallery/lexicon/en.json'
 import galleryId from '../sites/gallery/lexicon/id.json'
-import shopEn from '../sites/shop/lexicon/en.json'
-import shopId from '../sites/shop/lexicon/id.json'
+import shopEn from '@engine/storefront/lexicon/en.json'
+import shopId from '@engine/storefront/lexicon/id.json'
 
 export const SITE_COPY = {
   gallery: { en: galleryEn, id: galleryId },

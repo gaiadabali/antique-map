@@ -4,9 +4,10 @@
  * with `GET` (the app's `(payload)/admin/seeds/runner`, which also refuses production).
  * `.jsx`: see `../leads/shared.jsx`'s header.
  */
-import { roleOf } from '../../collections/users/roles'
-import { Notice } from '../leads/shared'
-import { AdminPage } from '../page'
+import { roleOf } from '@engine/cms-core/access'
+
+import { Notice } from '@engine/cms-core/admin/shared'
+import { AdminPage } from '@engine/cms-core/admin/page'
 import { SeedsClient } from './client'
 import { L } from './copy'
 

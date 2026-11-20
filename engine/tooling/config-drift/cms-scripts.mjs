@@ -1,5 +1,6 @@
-// The CMS package's own generator scripts (engine/packages/cms/package.json,
-// TASKS.md 3.2.c–d), run as `pnpm --filter @engine/cms run <script>` in the
+// A CMS package's own generator scripts (engine/packages/cms/package.json,
+// engine/packages/cms-shop/package.json; TASKS.md 3.2.c–d, 23.1.c), run as
+// `pnpm --filter <cms> run <script>` in the
 // environment from `contexts.mjs`. Each call is one Payload process (~5 s), so
 // runs are memoised per (script, arguments) and bounded in number; nothing
 // here ever writes a committed file for good (see `importMap()`).
@@ -13,6 +14,25 @@ import { generatorEnv } from './contexts.mjs'
 
 export const CMS_PACKAGE = '@engine/cms'
 export const PAYLOAD_TYPES = 'engine/packages/cms/payload-types.ts'
+
+/**
+ * Every CMS and the apps whose admin it serves (PLAN-V2 §4.4: `check:generated` runs both): today's
+ * one CMS serves every app but the shop's; the shop's CMS serves the shop app.
+ */
+export const CMSES = [
+  {
+    name: 'payload-types',
+    pkg: CMS_PACKAGE,
+    typesPath: PAYLOAD_TYPES,
+    owns: (app) => app !== 'shop',
+  },
+  {
+    name: 'payload-types.cms-shop',
+    pkg: '@engine/cms-shop',
+    typesPath: 'engine/packages/cms-shop/payload-types.ts',
+    owns: (app) => app === 'shop',
+  },
+]
 
 /** A counting semaphore: at most `limit` of the returned function's tasks at once. */
 export function limiter(limit) {
@@ -39,12 +59,20 @@ export function limiter(limit) {
 const defaultLimit = Math.max(1, Math.min(4, availableParallelism() - 1))
 
 /** Scripts bound to one repository: `run(script, args)` → `{ code, stdout, stderr }`. */
-export function cmsScripts(repoRoot, { limit = defaultLimit, parentEnv = process.env } = {}) {
-  const bounded = limiter(limit)
+export function cmsScripts(
+  repoRoot,
+  {
+    limit = defaultLimit,
+    parentEnv = process.env,
+    pkg = CMS_PACKAGE,
+    typesPath = PAYLOAD_TYPES,
+    bounded = limiter(limit),
+  } = {},
+) {
   const memo = new Map()
 
   function run(script, args, extraEnv = {}) {
-    const argv = ['--silent', '--filter', CMS_PACKAGE, 'run', script, ...args]
+    const argv = ['--silent', '--filter', pkg, 'run', script, ...args]
     const env = { ...generatorEnv(parentEnv), ...extraEnv }
     return bounded(() => runPnpm(argv, { cwd: repoRoot, env }))
   }
@@ -80,7 +108,7 @@ export function cmsScripts(repoRoot, { limit = defaultLimit, parentEnv = process
         try {
           await output('payload', ['generate:types'], { PAYLOAD_TS_OUTPUT_PATH: file })
           const raw = readFileSync(file, 'utf8')
-          return await prettierAs(repoRoot, PAYLOAD_TYPES, raw, parentEnv)
+          return await prettierAs(repoRoot, typesPath, raw, parentEnv)
         } finally {
           rmSync(dir, { recursive: true, force: true })
         }

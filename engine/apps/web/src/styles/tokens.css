@@ -5,9 +5,9 @@
    overrides only inside [data-site="shop"].
    ===================================================================== */
 
-@import '../shared/styles/tokens/primitives.css';
-@import '../shared/styles/tokens/semantic.css';
-@import '../sites/gallery/tokens/brand.css';
-@import '../sites/shop/tokens/brand.css';
-@import '../sites/shop/tokens/layout.css';
-@import '../sites/shop/tokens/chat.css';
+@import '@engine/ui/tokens/primitives.css';
+@import '@engine/ui/tokens/semantic.css';
+@import '@engine/ui/tokens/gallery.css';
+@import '@engine/ui/tokens/shop.css';
+@import '@engine/storefront/tokens/layout.css';
+@import '@engine/storefront/tokens/chat.css';

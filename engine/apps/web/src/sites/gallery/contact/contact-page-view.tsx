@@ -8,7 +8,7 @@
  * from `loadSiteSettings()`; when neither has arrived yet (OA2) the buttons give way to the
  * placeholder notice and the button links the Contact page — never a fake number.
  */
-import { Band, SectionHead, TextLink } from '../../../shared/ui'
+import { Band, SectionHead, TextLink } from '@engine/ui'
 
 import type { LeadFormKind } from './lead-form-view'
 import { LeadForm } from './lead-form'

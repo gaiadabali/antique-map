@@ -40,6 +40,9 @@ export function parseFilter(params: Params): WallFilter {
   }
 }
 
+/** The wall's own address: the home is the shop's "Today" (TASKS.md 27.6.a). */
+export const WALL_PATH = '/admin/wall'
+
 /** The address of `filter` with `patch` applied; defaults are left out. A change resets the page. */
 export function wallHref(filter: WallFilter, patch: Partial<WallFilter> = {}): string {
   const next = { ...filter, page: 1, ...patch }
@@ -49,7 +52,7 @@ export function wallHref(filter: WallFilter, patch: Partial<WallFilter> = {}): s
   if (next.q !== '') query.set('q', next.q)
   if (next.page > 1) query.set('page', String(next.page))
   const text = query.toString()
-  return text === '' ? '/admin' : `/admin?${text}`
+  return text === '' ? WALL_PATH : `${WALL_PATH}?${text}`
 }
 
 export const isFiltered = (filter: WallFilter): boolean =>

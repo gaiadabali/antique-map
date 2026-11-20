@@ -1,7 +1,7 @@
+import { englishTitle, pagePublishGuard } from '@engine/cms-core/collections/pages'
 import { describe, expect, it } from 'vitest'
 
 import { PAGE_KIND_LABELS } from './kinds'
-import { englishTitle, pagePublishGuard } from './publish-guard'
 
 describe('pages labels', () => {
   it('every page kind label has en and id', () => {

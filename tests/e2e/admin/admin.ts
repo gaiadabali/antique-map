@@ -4,7 +4,7 @@
  */
 import { expect, test, type Page } from '@playwright/test'
 
-import { savedToken } from '../support/sessions'
+import { savedToken, saveTokens } from '../support/sessions'
 import { PASSWORD } from './accounts'
 
 export type Language = 'en' | 'id'
@@ -33,6 +33,9 @@ export async function signIn(page: Page, email: string): Promise<void> {
   await page.locator('#field-password').fill(PASSWORD)
   await page.locator('button[type="submit"]').click()
   await page.waitForURL((url) => !url.pathname.endsWith('/login'))
+  // Kept for the specs after this one (and the next run), so the form is filled in once.
+  const cookie = (await page.context().cookies()).find((each) => each.name === 'payload-token')
+  if (cookie) saveTokens({ [email]: cookie.value })
 }
 
 /** Switches the admin's language on the account page, as a person would. */
@@ -49,7 +52,9 @@ export async function sidebar(page: Page): Promise<Record<string, string[]>> {
   await page.goto('/admin')
   const nav = page.getByRole('complementary').getByRole('navigation').first()
   await expect(nav).toBeAttached()
-  // Open it if it is closed (Payload keeps the choice per person), so a screenshot shows it.
+  // Open it if it is closed (Payload keeps the choice per person), so a screenshot shows it —
+  // once the page has settled (the laptop's open sidebar opens a frame after hydration).
+  await page.waitForLoadState('networkidle')
   const open = page.getByRole('button', { name: /^(Open Menu|Buka Menu)$/ })
   if (await open.isVisible()) await open.click()
   await expect(page.getByRole('button', { name: /^(Close Menu|Tutup Menu)$/ })).toBeVisible()
@@ -146,11 +151,11 @@ export async function rest(page: Page, path: string): Promise<{ status: number; 
 }
 
 /**
- * The number the home's strip of today's work shows for a link (`@engine/cms/admin/wall`, 16.2),
- * or null when the strip has no such link. The count is its own element, before the label.
+ * The number a card of the Today home shows for a link (`@engine/cms/admin/today`, 27.6.a), or
+ * null when the home has no such card. The count is its own element, before the label.
  */
 export async function widgetCount(page: Page, href: string): Promise<number | null> {
-  const link = page.locator(`a.wall-strip__item[href="${href}"]`)
+  const link = page.locator(`a.today-card[href="${href}"]`)
   if ((await link.count()) === 0) return null
-  return Number((await link.first().locator('.wall-strip__count').innerText()).trim())
+  return Number((await link.first().locator('.today-card__count').innerText()).replace(/\D/g, ''))
 }

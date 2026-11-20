@@ -113,7 +113,13 @@ describe('outbound requests go to listed hosts, with a timeout (S1, S3)', () => 
   const callers = source
     .filter((file) => /\bfetch\(|(?:\?\?|[:=])\s*fetch\b|globalThis\.fetch/.test(code(file.text)))
     .filter((file) => !file.path.startsWith('engine/packages/migrate/')) // the offline importer, run by a person
-    .filter((file) => !/\/(shared\/(beacon|chat)|sites\/)|-client\.jsx$/.test(file.path)) // browser code: same-origin paths
+    // browser code: same-origin paths
+    .filter(
+      (file) =>
+        !/\/(shared\/(beacon|chat)|sites\/|packages\/chat\/src\/client\/|packages\/ui\/src\/beacon\/)|-client\.jsx$/.test(
+          file.path,
+        ),
+    )
   const server = callers.map((file) => file.path).sort()
 
   it('server-side fetches are exactly the geocoder, Turnstile, Midtrans, the admin image reader and the cache poster', () => {
@@ -175,7 +181,7 @@ describe('outbound requests go to listed hosts, with a timeout (S1, S3)', () => 
 describe('logs carry no request body or personal data (L1, L2)', () => {
   const logCalls = source
     .filter((file) =>
-      /\/(api\/x|server\/(chat|leads|orders|shop)|shop\/(orders|payments|fulfilment|notify)|http\/src)/.test(
+      /\/(api\/x|server\/(chat|leads|orders|shop)|shop\/(orders|payments|fulfilment|notify)|http\/src|packages\/chat\/src\/server)/.test(
         file.path,
       ),
     )

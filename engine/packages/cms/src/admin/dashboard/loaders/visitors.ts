@@ -3,10 +3,10 @@
  * sources, phone vs desktop, English vs Indonesian. Counted from `page.viewed` beacon events by
  * their collect-stamped `day` — the days are never re-derived from `at`.
  */
-import { compared, type Compared, type Counted } from '../compare'
-import type { DashboardContext } from '../context'
-import { shiftDay } from '../period'
-import { eventsFilter, num, rowsOf, sql, topCounts } from '../sql'
+import { compared, type Compared, type Counted } from '@engine/cms-core/admin/dashboard/compare'
+import type { DashboardContext } from '@engine/cms-core/admin/dashboard/context'
+import { shiftDay } from '@engine/cms-core/admin/dashboard/period'
+import { eventsFilter, num, rowsOf, sql, topCounts } from '@engine/cms-core/admin/dashboard/sql'
 
 export type VisitorsDay = {
   readonly day: string

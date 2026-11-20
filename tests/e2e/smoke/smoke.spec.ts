@@ -24,7 +24,9 @@ const homeOf = (site: SmokeMetadata, locale: string) =>
  * gallery's second is its about lead).
  */
 const homeCopy = (site: SmokeMetadata, locale: string, key: 'title' | 'lede'): string => {
-  const file = `engine/apps/web/src/sites/${site.site}/lexicon/${locale}.json`
+  // The shop's lexicon moved to `@engine/storefront` in phase 23 (23.3); the gallery's is still in web.
+  const root = site.site === 'shop' ? 'engine/packages/storefront/src' : 'engine/apps/web/src'
+  const file = `${root}/sites/${site.site}/lexicon/${locale}.json`
   const messages = JSON.parse(readFileSync(file, 'utf8')) as Record<string, string>
   const text = messages[`home.${site.site}.${key}`]
   if (!text) throw new Error(`${file} has no home.${site.site}.${key}`)

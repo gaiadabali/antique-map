@@ -11,6 +11,9 @@ import { headers } from 'next/headers'
 import type { ShellMessageKey } from './messages'
 import { siteHref, type ShellText } from './site'
 import styles from './shell.module.css'
+import { isCurrent } from '@engine/site/shell'
+
+export { isCurrent }
 
 /** One link: its surface, its params and the lexicon key of its label. */
 export type NavItemSpec = {
@@ -35,14 +38,6 @@ export function navItems(site: SiteKey): readonly NavItemSpec[] {
         { label: 'nav.stores', href: (l) => href('stores', {}, l) },
         { label: 'nav.partnership', href: (l) => href('partnership', {}, l) },
       ]
-}
-
-/** True when `path` is the link's page or one beneath it. */
-export function isCurrent(path: string | null, target: string): boolean {
-  if (path === null) return false
-  const here = path.split(/[?#]/)[0]?.replace(/\/+$/, '') ?? ''
-  const there = target.replace(/\/+$/, '')
-  return here === there || here.startsWith(`${there}/`)
 }
 
 export async function PrimaryNav({

@@ -3,9 +3,9 @@
  * loaded data (`./loaders`) and the admin's language and renders; none reads anything. A panel with
  * no events says so, rather than showing zeros with deltas.
  */
-import { text, word } from './copy'
-import { formatNumber, formatRate } from './format'
-import { Empty, Panel, Ranked, Stat } from './ui'
+import { text, word } from '@engine/cms-core/admin/dashboard/copy'
+import { formatNumber, formatRate } from '@engine/cms-core/admin/dashboard/format'
+import { Empty, Panel, Ranked, Stat } from '@engine/cms-core/admin/dashboard/ui'
 
 export function VisitorsPanel({ data, language }) {
   const t = (key) => text(language, key)

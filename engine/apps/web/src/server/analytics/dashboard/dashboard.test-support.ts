@@ -10,14 +10,14 @@ import {
   makeOrder,
   makeProduct,
   tokenHash,
-} from '../../../../../../packages/cms/src/collections/stock-levels/shop.test-support'
+} from '../../../../../../packages/cms-shop/src/collections/stock-levels/shop.test-support'
 import {
   server,
   startStaffStack,
   type Caller,
   type StaffStack,
 } from '../../../../../../packages/cms/src/collections/users/staff.test-support'
-import { shiftDay, witaDay } from '../../../../../../packages/cms/src/admin/dashboard/period'
+import { shiftDay, witaDay } from '../../../../../../packages/cms-core/src/admin/dashboard/period'
 
 import { collect } from '../collect'
 import { rateLimiter } from '../rate'
@@ -102,7 +102,7 @@ export async function startDashboardStack(prefix: string): Promise<Dashboardish>
           body,
           referer: null,
         },
-        { getPayload: async () => stack.payload, env: ENV, now: () => new Date(events[0]!.at) },
+        { openPayload: async () => stack.payload, env: ENV, now: () => new Date(events[0]!.at) },
       )
       if (response.status !== 204) throw new Error(`collect answered ${response.status}`)
     },

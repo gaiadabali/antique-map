@@ -1,0 +1,148 @@
+/* The stock matrix's table (TASKS.md 27.4.b). Tokens only (`@engine/ui` `tokens/admin.css`,
+   DESIGN.md "The admin"); the page, the search, the filter tabs and the pager are the shared
+   `ix-*` panel vocabulary. Phone first: at 390 px the table scrolls inside its own region with the
+   product column held in place, each count box is a 44 px target, and nothing is wider than the
+   screen. A low count is named in words ("Low") as well as tinted. */
+
+.sm-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.sm-search {
+  flex: 1 1 14rem;
+  min-inline-size: 0;
+}
+
+.sm-search .ix-input {
+  min-inline-size: 0;
+}
+
+.sm-count {
+  margin-block: calc(var(--base) * 0.25) calc(var(--base) * 0.5);
+}
+
+.sm-scroll {
+  max-inline-size: 100%;
+  overflow: auto;
+  max-block-size: 75vh;
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+}
+
+.sm-scroll:focus-visible {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 2px;
+}
+
+.sm-table {
+  inline-size: auto;
+  min-inline-size: 100%;
+}
+
+.sm-table th,
+.sm-table td {
+  padding: calc(var(--base) * 0.35) calc(var(--base) * 0.5);
+  vertical-align: top;
+}
+
+.sm-table thead th {
+  position: sticky;
+  inset-block-start: 0;
+  z-index: 1;
+}
+
+.sm-table tbody tr + tr > * {
+  border-block-start: 1px solid var(--admin-hairline);
+}
+
+.sm-product {
+  position: sticky;
+  inset-inline-start: 0;
+  min-inline-size: 9rem;
+  max-inline-size: 16rem;
+  background: var(--admin-paper);
+  border-inline-end: 1px solid var(--admin-hairline);
+  text-align: start;
+}
+
+.sm-table thead .sm-product {
+  z-index: 2;
+  background: var(--admin-wash);
+}
+
+.sm-table tbody .sm-product {
+  font: var(--admin-text-body);
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--admin-ink);
+  white-space: normal;
+}
+
+.sm-name {
+  font: var(--admin-text-strong);
+}
+
+.sm-variant,
+.sm-code {
+  display: block;
+  font: var(--admin-text-small);
+  letter-spacing: normal;
+  text-transform: none;
+  color: var(--admin-muted);
+  overflow-wrap: anywhere;
+}
+
+.sm-table th.sm-store {
+  min-inline-size: 6.5rem;
+  max-inline-size: 10rem;
+  white-space: normal;
+}
+
+.sm-cell {
+  min-inline-size: 6.5rem;
+}
+
+.sm-cell .sm-input {
+  inline-size: 5.5rem;
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+.sm-cell--low .sm-input {
+  background: var(--admin-warning-tint);
+  border-color: var(--admin-warning);
+}
+
+.sm-cell--none {
+  color: var(--admin-muted);
+  text-align: center;
+}
+
+.sm-low,
+.sm-status,
+.sm-error {
+  display: block;
+  margin-block-start: calc(var(--base) * 0.15);
+  font: var(--admin-text-small);
+  max-inline-size: 9rem;
+}
+
+.sm-low {
+  font-weight: 600;
+  color: var(--admin-ink);
+}
+
+.sm-status {
+  color: var(--admin-muted);
+}
+
+.sm-error {
+  color: var(--admin-danger);
+}

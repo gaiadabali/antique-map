@@ -1,0 +1,10 @@
+27.4 timed count: 18.1 s (store user, 390 px, typed "MP.050", pace model {"start":6,"tapThink":1.5,"read":2,"fieldThink":1.2,"charMs":250})
+TIMED menu item: 26.6 s (target 30 s), 6 clicks, 7 keys
+TIMED announcement: 36.5 s (target 45 s), 5 clicks, 61 keys
+TIMED staff added and signed in: 57.1 s (target 60 s)
+27.3 timings (s): {"storeToDelivered":12.6,"ownerReassign":5.4}
+TIMED product: 95.9 s (target 150 s), 23 clicks
+TIMED hero: 43.5 s (target 60 s), 8 clicks
+TIMED stockCount: 16.5 s (target 20 s), 4 clicks
+TIMED orderDelivered: 32.4 s (target 45 s), 7 clicks
+TIMED reassign: 23 s (target 30 s), 4 clicks

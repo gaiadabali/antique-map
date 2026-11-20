@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { STATE_TAG_WORDS, WALL_COPY } from './copy'
-import { thumbnailUrl, thumbnailWidth } from './image'
+import { thumbnailUrl, thumbnailWidth } from '@engine/cms-core/admin/image'
 import { deriveProductState, deriveWorkState } from './state'
 
 const work = { draft: false, hasImage: true, unverifiedAiDrafts: 0, availability: 'available' }

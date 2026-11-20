@@ -1,21 +1,24 @@
-# Indies Platform — two websites, one CMS
+# Indies Platform — two websites, two apps, one repo
 
-The websites and admin for one owner's two businesses, run from **one app and one database**:
+The websites and admins for one owner's two businesses: **two apps, two Payload CMSs and two databases in one
+repo**, sharing code through `engine/packages/*` ([docs/PLAN-V2.md](docs/PLAN-V2.md), DR-17). Until phase 26
+lands, today's one app (`engine/apps/web`, one database, the site chosen by hostname) still serves both:
 
 | Site | Shows / sells | Domain | Held |
 | ---- | ------------- | ------ | ---- |
 | **Indies Gallery** | the owner's antique maps, prints and photographs — a catalogue with deep zoom; interested people and sellers reach the owner on WhatsApp or email. Nothing is sold online and no price is shown | `antiquemapsindonesia.com` | Singapore |
 | **Old East Indies** | the owner's merchandise — a real online store. Guest checkout, Midtrans, and the nearest of 100+ Bali stores delivers by Gojek/Grab, with simple status tracking | `oldeastindies.com` | Bali stores |
 
-The **hostname picks the site**. One **Payload CMS** at `/admin` is the system of record for both: catalogue, stock
-per store, orders, partners, leads and analytics. An **AI chat** helps visitors and hands them to the owner; a CMS
+**Each app serves one site** (`engine/apps/shop`, `engine/apps/gallery`), with its own **Payload CMS** at its own
+host's `/admin` as that site's system of record: the shop's products, stock per store, orders and partners; the
+gallery's works, makers and places; each site's pages, leads and analytics. An **AI chat** helps visitors and hands them to the owner; a CMS
 tool drafts listings from photographs.
 
 |              |                                                                                   |
 | ------------ | --------------------------------------------------------------------------------- |
 | **Stack**    | Next.js 16.3 (App Router, Cache Components) · React 19 · TypeScript strict · CSS Modules |
-| **CMS**      | Payload 3.90, embedded in the same process at `/admin` — roles `owner`, `editor`, `store` |
-| **Database** | PostgreSQL 18 — one database                                                      |
+| **CMS**      | Payload 3.90, embedded in each app at `/admin` — shop roles `owner`, `editor`, `store`; gallery `owner`, `editor` |
+| **Database** | PostgreSQL 18 — one per app: `indies_shop`, `indies_gallery`                       |
 | **Media**    | S3-compatible object storage (RustFS) · sharp derivatives · static zoom tiles       |
 | **Payments** | Midtrans (QRIS, bank transfer, cards)                                              |
 | **AI**       | Claude API — visitor chat and the CMS drafting tool                                |
@@ -26,7 +29,8 @@ tool drafts listings from photographs.
 
 | Document | For |
 | -------- | --- |
-| [docs/PLAN.md](docs/PLAN.md) | **The spine** — what we are building, the settled decisions (DR-1…15), the 11 phases |
+| [docs/PLAN-V2.md](docs/PLAN-V2.md) | **The spine** — two apps, two CMSs, two databases (DR-17): the target shape, what moves where, phases 21–26 |
+| [docs/PLAN.md](docs/PLAN.md) | What we are building and the settled decisions (DR-2…16 stand; DR-1 retired by DR-17), the first 11 phases |
 | [TASKS.md](TASKS.md) | The progress board: phases → tasks → subtasks, each task ending in a Check; the owner's open decisions |
 | [AGENTS.md](AGENTS.md) | Rules every agent follows; read before touching anything |
 | [docs/WORKFLOW.md](docs/WORKFLOW.md) | Lanes, file ownership, migrations, dispatch and the report format |
@@ -63,6 +67,11 @@ pnpm db:fresh                                     # a migrated database, indies_
 pnpm --filter @engine/web dev                     # gallery.localhost:3000 and shop.localhost:3000
 pnpm verify                                       # the full gate
 ```
+
+**Any port works.** `dev` and `start` bind the port the app builds its links and the admin's trusted
+origin on: `PORT` from the shell, else from `engine/apps/web/.env.local`, else **3000**
+(`engine/tooling/next-port`). Another port is `PORT=4000 pnpm --filter @engine/web dev` (PowerShell:
+`$env:PORT=4000; pnpm --filter @engine/web dev`). The admin is at `http://shop.localhost:<port>/admin`.
 
 An existing database takes new migrations with `pnpm --filter @engine/cms migrate` (with the app's
 `DATABASE_URL`). After a migration, a regenerated `importMap.js` or a `next build` in the same folder,

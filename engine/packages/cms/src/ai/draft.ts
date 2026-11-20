@@ -11,9 +11,9 @@
  * photograph; a second run on the same work; a user's 21st run in an hour; a model refusal; a
  * reply that is not exactly the schema.
  */
+import { isCatalogueStaff, type RequestUser } from '@engine/cms-core/access'
 import { ValidationError, type Payload } from 'payload'
 
-import { isCatalogueStaff, type RequestUser } from '../access/roles'
 import type { AiDraftableField } from '../collections/works/vocabulary'
 import type { DraftLimiter } from './limits'
 import { planDraft, type CurrentWork, type DraftPlan } from './plan'

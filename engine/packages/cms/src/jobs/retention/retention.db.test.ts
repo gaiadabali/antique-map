@@ -12,8 +12,8 @@ import {
   startStaffStack,
   type StaffStack,
 } from '../../collections/users/staff.test-support'
-import { openShop, type Shop } from '../../shop/orders/orders-db.test-support'
-import { memoryStore, placeOrder } from '../../shop/fulfilment/fulfilment-db.test-support'
+import { openShop, type Shop } from '@engine/cms-shop/orders/orders-db.test-support'
+import { memoryStore, placeOrder } from '@engine/cms-shop/fulfilment/fulfilment-db.test-support'
 import { runRetention } from './sweep'
 
 /** 03:15 WITA is 19:15 UTC the day before; any fixed instant will do. */

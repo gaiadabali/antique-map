@@ -2,7 +2,7 @@
  * Phase 4's Checks on a production build (TASKS.md 4.1.e, 4.2.c, 4.2.d, 4.3.e; ticket 4.qa), run
  * by each host's a11y project:
  *
- * - 4.2.c: `/style-guide` holds a section for every component folder under `shared/ui`;
+ * - 4.2.c: `/style-guide` holds a section for every component folder under `@engine/ui`'s `src/components`;
  * - 4.1.e: this host renders its own palette from the same component classes as the other host —
  *   since Outline Colour (phase 17) the two share the mineral paper and the copperplate ink and differ
  *   by their pigment, so the deep surfaces (tint and full) are compared;
@@ -31,7 +31,7 @@ const WIDTHS = [
   { width: 1280, height: 800 },
 ] as const
 const SHOTS = process.env.PHASE4_SHOTS
-const UI_DIR = join(process.cwd(), 'engine/apps/web/src/shared/ui')
+const UI_DIR = join(process.cwd(), 'engine/packages/ui/src/components')
 
 const meta = (testInfo: TestInfo) => testInfo.project.metadata as SmokeMetadata
 const prefixOf = (m: SmokeMetadata, locale: string) =>

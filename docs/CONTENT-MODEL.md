@@ -8,8 +8,14 @@ maps to, §8).
 
 ## 1. Ground rules
 
-- **One database, one schema** (DR-1). A record that belongs to one site carries `site` (`gallery` | `shop`); the
-  hostname picks the site, and every public read filters by it.
+- **One database per site** (DR-17, [PLAN-V2.md](PLAN-V2.md) §4.1). `cms-shop` (database `indies_shop`) holds
+  `products`, `categories`, `stores`, `stock-levels`, `orders`, `order-notifications`, `discounts`, `partners`,
+  `payment-events`; `cms-gallery` (`indies_gallery`) holds `works`, `makers`, `places`, `masters`, `terms`. Both
+  get `pages`, `media`, `users`, `redirects`, `leads`, `events`, `chat-sessions` and `site-settings` from one
+  `cms-core` factory each, without a `site` field; shop users have roles `owner`, `editor`, `store`, gallery users
+  `owner`, `editor`. `products.relatedWork` becomes a stock-number text field. **Until phase 26**, today's one
+  database and one schema stand (DR-1): a record that belongs to one site carries `site` (`gallery` | `shop`);
+  the hostname picks the site, and every public read filters by it.
 - **Drafts are Payload's `_status`, and only that.** Collections with drafts: `works`, `products`, `makers`,
   `places`, `terms`, `pages`. No status field holds a second "draft" value.
 - **Public reads are published-only and projected**: `overrideAccess: false`, `_status: 'published'`, and a
@@ -125,9 +131,21 @@ object — from which the derivatives and deep-zoom tiles are made. An image's *
 `master` → masters (_staff_), focal point, and the pipeline's read-only `assetId`, `derivatives { status,
 version, blurDataUri }` and `iiif { status }` (deep zoom). `role` and `provenance` never change after creation.
 
+**Media holds videos and PDFs too** (the admin's "Media"). `kind` (`image` · `video` · `pdf`) is derived from the
+sniffed type on every save, never typed, and never changes: a replacement file is the same kind. Everything above
+is an **image's** — alt, subject, role, provenance, master, the pipeline — required of an image only and shown for
+an image only. A **video** (MP4, WebM) has `title` **L** and `description` **L** (required: its text alternative);
+a **PDF** (≤ 20 MB) has `title` **L** (required: its link's name) and an optional `description` **L**. Neither
+goes through the pipeline. Every relation that needs an image — products, works, makers, categories, stores, the
+header's logos, a page's pictures and sharing image — takes `kind: image` only (Payload's upload validation, on
+every write path); a shop page's **Video** block takes a video (and an optional image poster), its **PDF link**
+block a PDF.
+
 - **The upload is never public.** It lands under the private `uploads/` prefix; the public reads only
   `derivatives/` and capped `iiif/` tiles, written without camera metadata. A public REST or GraphQL read of
-  `media` is refused: images are reached through the published record that places them.
+  `media` is refused: images are reached through the published record that places them. A **video or a PDF** is
+  served whole, from the site's own origin, by `/api/x/media/{id}` — only while a published shop page places it in
+  a Video or PDF link block, never an image (SECURITY.md F7).
 - **Alt text** has a deterministic baseline built from the record ("Engraved map of Bali by François Valentijn,
   1726, hand-coloured, recto"), which can publish; staff improve it. An `ai-draft` alt cannot publish until a
   person verifies it.

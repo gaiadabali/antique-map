@@ -16,7 +16,7 @@ import {
   Skeleton,
   StockTag,
   Toast,
-} from '../ui'
+} from '@engine/ui'
 
 import { samplePlate } from './fixtures'
 import { Section } from './section'

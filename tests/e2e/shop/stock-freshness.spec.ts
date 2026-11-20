@@ -6,33 +6,14 @@
  * every product "Out of stock" after its stock was loaded by SQL (`catalogue.cache.test.ts` guards
  * the source; this proves the running build).
  *
- * Needs the database: `GATE_DB=local` (this worktree's `DATABASE_URL` from `.env.local`, through the
- * local dev Postgres container). Otherwise the case is skipped and says so.
+ * Needs the database: `GATE_DB=local` — this worktree's own (`DB_SUFFIX`, or `E2E_DATABASE_URL`),
+ * read and written through `../admin/local.mjs` exactly as the admin specs and `gate.spec.ts` do.
+ * (It once read `DATABASE_URL` from the root `.env.local` — the developer's own database, not the
+ * one the server under test runs on: TASKS.md 27.7.) Otherwise the case is skipped and says so.
  */
-import { execFileSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
-import { dirname, join, resolve } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 import { expect, test } from '@playwright/test'
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '../../..')
-const CONTAINER = process.env.E2E_PG_CONTAINER ?? 'indies-platform-dev-postgres-1'
-
-function databaseName(): string {
-  const env = readFileSync(join(root, '.env.local'), 'utf8')
-  const url = /^DATABASE_URL=(.+)$/m.exec(env)?.[1]?.trim()
-  if (!url) throw new Error('GATE_DB=local needs DATABASE_URL in .env.local')
-  return new URL(url).pathname.slice(1)
-}
-
-function sql(query: string): string {
-  return execFileSync(
-    'docker',
-    ['exec', CONTAINER, 'psql', '-U', 'postgres', '-d', databaseName(), '-tAc', query],
-    { encoding: 'utf8' },
-  ).trim()
-}
+import { sql } from '../admin/local.mjs'
 
 test.describe('stock changes show without a product edit', () => {
   test.skip(process.env.GATE_DB !== 'local', 'SKIPPED (no db access): GATE_DB=local is not set')

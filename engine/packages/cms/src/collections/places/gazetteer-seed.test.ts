@@ -8,6 +8,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { SLUG_PATTERN, slugify } from '@engine/cms-core/fields'
 import { describe, expect, it } from 'vitest'
 
 import { ancestryProblem, MAX_PLACE_DEPTH } from '../../validators/place-ancestry'
@@ -17,7 +18,6 @@ import {
   nameKey,
   type HistoricalName,
 } from '../../validators/place-historical-names'
-import { slugify, SLUG_PATTERN } from '../../fields/slug'
 import { PLACE_TYPES } from './place-types'
 
 type SeedPlace = {

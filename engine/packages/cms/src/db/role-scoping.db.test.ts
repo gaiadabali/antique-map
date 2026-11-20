@@ -8,12 +8,11 @@
  *   loaders' Local API read returns only the fields it selects (R5, R6);
  * - the last owner cannot be removed (A7).
  */
+import { asUser, PUBLISHED_ONLY } from '@engine/cms-core/access'
 import { Forbidden, getPayload, NotFound } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { asUser } from '../access/as-user'
-import { PUBLISHED_ONLY } from '../access/published'
-import { makeOrder, makeProduct } from '../collections/stock-levels/shop.test-support'
+import { makeOrder, makeProduct } from '@engine/cms-shop/collections/stock-levels/shop.test-support'
 import {
   fieldError,
   idsOf,

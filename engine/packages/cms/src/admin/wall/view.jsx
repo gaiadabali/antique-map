@@ -1,16 +1,16 @@
 /**
- * The Catalogue Wall, the admin's home (TASKS.md 16.2; the surface brief's THESIS): every antique
- * and product as a matted card wearing its state, under the strip of today's work and a filter row.
- * Payload renders a replaced dashboard (`admin.components.views.dashboard`) inside its own default
- * template, so the sidebar and header stay; this view is the main column only.
+ * The Catalogue Wall (TASKS.md 16.2; the surface brief's THESIS): every antique and product as a
+ * matted card wearing its state, under the strip of today's work and a filter row. It was the
+ * admin's home until TASKS.md 27.6.a gave the shop its "Today" (`../today`); it is now its own
+ * view at `/admin/wall`, the gallery group's first entry, inside Payload's frame (`./page-view.jsx`).
  *
  * Store staff never see it: they are redirected to their order panel before anything renders
  * (a real server redirect, not the blank second of the old client-side one). Everything is read
  * through the Local API as the signed-in user (`./data.ts`). `.jsx`: see `../leads/shared.jsx`.
  */
+import { hasRole } from '@engine/cms-core/access'
 import { redirect } from 'next/navigation'
 
-import { hasRole } from '../../collections/users/roles'
 import { countNewLeads, countOrders } from '../widgets/dashboard'
 import { languageOf, t } from './copy'
 import { loadCatalogueCounts, loadWall } from './data'

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-import { Button, Checkbox, Input, Select, Textarea, TextLink } from '../ui'
+import { Button, Checkbox, Input, Select, Textarea, TextLink } from '@engine/ui'
 
 import { Section } from './section'
 import styles from './style-guide.module.css'

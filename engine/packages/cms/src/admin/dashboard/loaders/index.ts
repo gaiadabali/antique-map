@@ -4,20 +4,24 @@
  * them. The owner check runs first and throws `DashboardForbidden` for anyone else, so the view
  * has nothing to render for an editor or a store user but the panel-less state.
  */
+import type { SignedIn } from '@engine/cms-core/access'
 import type { Payload } from 'payload'
 
-import type { SignedIn } from '../../../collections/users/roles'
-import { ownerContext, type DashboardContext, type Site } from '../context'
-import type { Period } from '../period'
+import {
+  ownerContext,
+  type DashboardContext,
+  type Site,
+} from '@engine/cms-core/admin/dashboard/context'
+import type { Period } from '@engine/cms-core/admin/dashboard/period'
 
 import { loadAntiques, type AntiquesPanel } from './antiques'
 import { loadAsks, type AsksPanel } from './asks'
 import { loadBusiness, type BusinessPanel } from './business'
 import { loadChat, type ChatPanel } from './chat'
-import { loadFulfilment, type FulfilmentPanel } from './fulfilment'
+import { loadFulfilment, type FulfilmentPanel } from '@engine/cms-shop/admin/dashboard/fulfilment'
 import { loadFunnel, type FunnelPanel } from './funnel'
-import { loadPayments, type PaymentsPanel } from './payments'
-import { loadSales, type SalesPanel } from './sales'
+import { loadPayments, type PaymentsPanel } from '@engine/cms-shop/admin/dashboard/payments'
+import { loadSales, type SalesPanel } from '@engine/cms-shop/admin/dashboard/sales'
 import { loadSearch, type SearchPanel } from './search'
 import { loadVisitors, type VisitorsPanel } from './visitors'
 import { loadVitals, type VitalsPanel } from './vitals'

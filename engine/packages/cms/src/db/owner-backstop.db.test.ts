@@ -7,7 +7,6 @@
  * Its own database on the server `CMS_TEST_POSTGRES_URL` names, migrated with the one migration
  * set and dropped afterwards; without that variable it skips (a setup state, CONVENTIONS.md §10).
  */
-import { createTestDatabase } from './test-database.test-support'
 import {
   buildConfig,
   commitTransaction,
@@ -23,11 +22,12 @@ import { createRequire } from 'node:module'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { createTestDatabase } from '@engine/cms-core/db/test-database'
+import { testOrigin } from '@engine/cms-core/db/test-origin'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { migrations } from '../migrations'
 import { engineConfig } from '../payload.config'
-import { testOrigin } from './test-origin.test-support'
 
 const server = process.env.CMS_TEST_POSTGRES_URL
 const { env: originEnv } = testOrigin(4168)

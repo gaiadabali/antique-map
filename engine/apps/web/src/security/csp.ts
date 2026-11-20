@@ -14,6 +14,11 @@
  * - **The admin** (X2): its own policy. Payload's admin styles its widgets inline and its code
  *   editor runs a worker from a blob, so `style-src` allows inline styles and `worker-src` blobs;
  *   scripts stay nonce-only, and the admin loads nothing from a third party.
+ * - **The shop page preview** (TASKS.md 27.5.a): the admin's Live Preview frames a shop page on the
+ *   shop's own origin. When the admin's host is the shop's (`ADMIN_HOST`, the default), the
+ *   admin's `frame-src` allows that one origin and the shop's storefront pages allow it as their
+ *   one `frame-ancestors`; otherwise both stay `'none'`. The gallery and the checkout are never
+ *   framed.
  *
  * `style-src 'unsafe-inline'` stays on storefront pages: React writes `style=""` attributes, which
  * a nonce cannot cover; script injection, the XSS vector, is closed by `script-src`.
@@ -25,7 +30,7 @@
  *   import { contentSecurityPolicy } from './security/csp'
  *   export const proxy = createProxy({ contentSecurityPolicy: contentSecurityPolicy() })
  */
-import { parsePublicPath, SITES, type SiteKey } from '@engine/config/sites'
+import { adminOrigin, parsePublicPath, siteOrigin, SITES, type SiteKey } from '@engine/config/sites'
 
 type Env = Readonly<Record<string, string | undefined>>
 
@@ -59,6 +64,17 @@ export type CspOptions = {
   readonly development?: boolean
   /** The public media origin (`MEDIA_PUBLIC_URL`'s), where derivatives and tiles are served. */
   readonly mediaOrigin?: string | null
+  /**
+   * The shop page preview's origin (`previewOriginOf`): the admin may frame it, and — passed for a
+   * shop request — a storefront page may be framed by it. `null`: no frames either way.
+   */
+  readonly previewOrigin?: string | null
+  /**
+   * The site is served over plain http — a local hostname (`originOf`), never a real one: no
+   * `upgrade-insecure-requests`, which would send the preview frame to an https origin that
+   * does not exist there.
+   */
+  readonly plainHttp?: boolean
 }
 
 type Surface = 'storefront' | 'checkout' | 'admin'
@@ -83,13 +99,16 @@ export function buildCsp(surface: Surface, nonce: string, options: CspOptions = 
   const connect = [`'self'`, ...media, ...MIDTRANS, TURNSTILE]
   const frames = [...MIDTRANS, TURNSTILE]
   const workers = [`'self'`]
+  const ancestors: string[] = []
   if (options.development) scripts.push(`'unsafe-eval'`)
   if (surface === 'admin') {
     // The admin loads nothing from a third party: no Snap, no Turnstile, no frames of its own.
     connect.splice(0, connect.length, `'self'`)
-    frames.splice(0)
+    // Its one frame: the shop page preview, on the shop's own origin (27.5.a).
+    frames.splice(0, frames.length, ...(options.previewOrigin ? [options.previewOrigin] : []))
     workers.push('blob:')
   }
+  if (surface === 'storefront' && options.previewOrigin) ancestors.push(options.previewOrigin)
   if (surface === 'checkout') {
     scripts.push(`'unsafe-eval'`, 'blob:')
     workers.push('blob:')
@@ -111,10 +130,10 @@ export function buildCsp(surface: Surface, nonce: string, options: CspOptions = 
     ['object-src', [`'none'`]],
     ['base-uri', [`'none'`]],
     ['form-action', [`'self'`]],
-    ['frame-ancestors', [`'none'`]],
+    ['frame-ancestors', ancestors.length === 0 ? [`'none'`] : ancestors],
   ]
   const policy = directives.map(([name, values]) => `${name} ${values.join(' ')}`)
-  if (!options.development) policy.push('upgrade-insecure-requests')
+  if (!options.development && !options.plainHttp) policy.push('upgrade-insecure-requests')
   return policy.join('; ')
 }
 
@@ -130,14 +149,39 @@ export function mediaOriginOf(env: Env): string | null {
 }
 
 /**
+ * The origin a shop page preview is framed from and on: the shop's, when the admin answers there
+ * (`ADMIN_HOST` is the shop's canonical host, the default); else `null` — staff cookies would not
+ * reach a frame on another host, so no frame is allowed at all.
+ */
+export function previewOriginOf(env: Env): string | null {
+  const shop = siteOrigin('shop', env)
+  return shop !== null && shop === adminOrigin(env) ? shop : null
+}
+
+/**
+ * A published video's or PDF's own answer (`/api/x/media/{id}`, `@engine/http/media`): not a page,
+ * so not a page's policy — a sandbox, so that a script inside a PDF a browser renders as a
+ * document of its own runs in an opaque origin, never the site's.
+ */
+export const MEDIA_FILE_CSP = 'sandbox'
+const MEDIA_FILE_PATH = /^\/api\/x\/media\/[^/]+$/
+
+/**
  * The builder `createProxy({ contentSecurityPolicy })` takes: a fresh nonce and the policy for the
  * request's surface, on every call.
  */
 export function contentSecurityPolicy(env: Env = process.env) {
   // Read on each request, like the proxy's host allow-list: nothing runs at import.
-  return (context: CspContext & { readonly locale?: unknown }): string =>
-    buildCsp(surfaceOf(context), newNonce(), {
+  return (context: CspContext & { readonly locale?: unknown }): string => {
+    if (MEDIA_FILE_PATH.test(context.pathname)) return MEDIA_FILE_CSP
+    const surface = surfaceOf(context)
+    // The admin frames the preview; only the shop's own pages are framed by it.
+    const framed = surface === 'admin' || context.site === 'shop'
+    return buildCsp(surface, newNonce(), {
       development: env.NODE_ENV !== 'production',
       mediaOrigin: mediaOriginOf(env),
+      previewOrigin: framed ? previewOriginOf(env) : null,
+      plainHttp: siteOrigin(context.site, env)?.startsWith('http://') === true,
     })
+  }
 }

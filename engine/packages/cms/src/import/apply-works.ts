@@ -7,12 +7,13 @@
  */
 import { ValidationError } from 'payload'
 
-import { freshReq, type UpsertContext } from './apply'
-import type { Problem } from './types'
-import { splitLocales } from './bilingual'
-import { changes } from './diff'
-import type { WritableRow } from './plan'
-import type { UpsertResult } from './apply'
+import { freshReq, type UpsertContext } from '@engine/cms-core/import/apply'
+import { ensureMedia } from '@engine/cms-core/import/media'
+import type { Problem } from '@engine/cms-core/import/types'
+import { splitLocales } from '@engine/cms-core/import/bilingual'
+import { changes } from '@engine/cms-core/import/diff'
+import type { WritableRow } from '@engine/cms-core/import/plan'
+import type { UpsertResult } from '@engine/cms-core/import/apply'
 
 type Doc = Record<string, unknown> & { id: number }
 
@@ -32,37 +33,12 @@ const credits = (rows: unknown): unknown =>
     certainty: row.certainty,
   }))
 
+export { ensureMedia }
+
 const idOf = (value: unknown): unknown => {
   if (value === null || value === undefined) return undefined
   if (typeof value === 'object' && 'id' in (value as object)) return (value as Doc).id
   return value
-}
-
-/** Creates or finds the `media` row for one image file, keyed by filename, alt from the title. */
-export async function ensureMedia(
-  ctx: UpsertContext,
-  fileName: string,
-  path: string,
-  alt: string,
-  subject: 'work' | 'product',
-  role: string,
-): Promise<number> {
-  const { docs } = await ctx.payload.find({
-    collection: 'media',
-    overrideAccess: true,
-    req: await freshReq(ctx),
-    depth: 0,
-    limit: 1,
-    where: { filename: { equals: fileName } },
-  })
-  if (docs.length > 0) return docs[0]!.id as number
-  const created = (await ctx.payload.create({
-    collection: 'media',
-    data: { alt, subject, role, provenance: 'photograph' } as never,
-    filePath: path,
-    req: await freshReq(ctx),
-  })) as unknown as Doc
-  return created.id as number
 }
 
 /** Applies one antiques row: a create, an update of only what changed, or nothing. */

@@ -1,12 +1,12 @@
 import { describe, expect, it, vi } from 'vitest'
 
 vi.mock('server-only', () => ({}))
-vi.mock('./chat/env', () => ({
+vi.mock('@engine/chat/server/env', () => ({
   CHAT_LIMITS: { sessionsPerIpPerHour: 6, messagesPerIpPerHour: 60, messageIntervalMs: 2_000 },
 }))
 
 import { LIMITS, RateLimiter } from '../security/rate-limit'
-import { SlidingWindow } from './chat/limits'
+import { SlidingWindow } from '@engine/chat/server/limits'
 import { MAX_LIMITER_ENTRIES, setNewest, SweepClock } from './bounded-map'
 import { PostLimiter } from './leads/rate'
 

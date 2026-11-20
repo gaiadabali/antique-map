@@ -4,9 +4,8 @@
  * no URL. Both make and change records; removing one, which can orphan a published image's
  * provenance, is the owner's.
  */
+import { staffWithRoles, type UserRole } from '@engine/cms-core/access'
 import type { Access } from 'payload'
-
-import { staffWithRoles, type UserRole } from '../users/roles'
 
 /** The roles that read, make and change records — the upload step checks the same. */
 export const MASTER_WRITERS = ['owner', 'editor'] as const satisfies readonly UserRole[]

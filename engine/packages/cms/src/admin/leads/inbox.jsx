@@ -3,7 +3,7 @@
  * The view itself is `./inbox-body.jsx`, split out so tests never import `@payloadcms/next`
  * (its templates pull in .css files that Node cannot load).
  */
-import { AdminPage } from '../page'
+import { AdminPage } from '@engine/cms-core/admin/page'
 import { LeadsInboxViewBody } from './inbox-body'
 
 export async function LeadsInboxView(props) {

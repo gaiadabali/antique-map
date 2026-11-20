@@ -1,0 +1,36 @@
+/* The quick "Add a staff member" (TASKS.md 27.6.c): its button above Payload's staff list, on the
+   list's own gutter, and its form's role choice. The rest is the admin's ix-* classes. Tokens only. */
+
+.ix-staff-bar {
+  display: flex;
+  justify-content: flex-end;
+  padding-inline: var(--gutter-h, calc(var(--base) * 0.75));
+  margin-block: calc(var(--base) * 0.5);
+}
+
+.ix-staff-bar a.ix-btn {
+  text-decoration: none;
+}
+
+/* The form's role choice: plain lines, as the import screen's kind picker — no browser fieldset
+   frame — each radio a fixed size beside its words. */
+.ix-staff-roles {
+  margin: 0 0 calc(var(--base) * 0.5);
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+
+.ix-staff-roles .ix-check {
+  flex: none;
+}
+
+/* The store finder (`./store-picker.jsx`): its count tight under the box, the list's options at a
+   finger's height. */
+.ix-staff-count {
+  margin: 0;
+}
+
+.ix-staff-stores option {
+  padding-block: calc(var(--base) * 0.25);
+}

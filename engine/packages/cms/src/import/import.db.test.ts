@@ -9,9 +9,9 @@ import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { runImportFile } from './apply'
-import { PRODUCT_COLUMNS, STORE_COLUMNS } from './kinds'
+import { PRODUCT_COLUMNS, STORE_COLUMNS } from '@engine/cms-core/import/kinds'
 import { server, startStaffStack, type StaffStack } from '../collections/users/staff.test-support'
-import { makeOrder, makeProduct } from '../collections/stock-levels/shop.test-support'
+import { makeOrder, makeProduct } from '@engine/cms-shop/collections/stock-levels/shop.test-support'
 
 const csv = (header: readonly string[], rows: readonly string[]) =>
   new TextEncoder().encode(`${header.join(',')}\n${rows.join('\n')}`)

@@ -7,53 +7,47 @@
     - button "Open menu"
 - main:
     - article:
-        - navigation "Breadcrumb":
+        - region "Bali, by Valentijn — run MWIYW3PY":
+            - navigation "Breadcrumb":
+                - list:
+                    - listitem:
+                        - link "Browse the collection":
+                            - /url: /browse
+                    - listitem: Bali, by Valentijn — run MWIYW3PY
+            - heading "Bali, by Valentijn — run MWIYW3PY" [level=1]
+            - paragraph: E2E Valentijn (Cartographer), 1726
+            - paragraph: Map
+            - text: Price on request
+            - paragraph: Held in Singapore
+            - link "Ask about this":
+                - /url: /contact
+            - paragraph: Our WhatsApp number and email address are being connected — please write to us from the Contact page soon.
+            - paragraph: We reply the same working day, Singapore time.
+            - paragraph: Shipping and duties are quoted after we agree the price, and paid before the work is sent.
             - list:
-                - listitem:
-                    - link "Browse the collection":
-                        - /url: /browse
-                - listitem: Bird of Paradise by Conrad Gesner, Antique print
-        - heading "Bird of Paradise by Conrad Gesner, Antique print" [level=1]
-        - paragraph:
-            - emphasis: Bird of paradise from Conrad Gessner’s Historiae Animalium (1551-58)
-        - paragraph: c. 1558
-        - paragraph: Stock no. P.2863
-        - img "Bird of Paradise by Conrad Gesner, Antique print — the whole sheet"
-        - button "Zoom into the image"
-        - text: Price on request
-        - paragraph: Held in Singapore
-        - link "Ask about this":
-            - /url: /contact
-        - paragraph: Our WhatsApp number and email address are being connected — please write to us from the Contact page soon.
-        - paragraph: Shipping and duties are quoted after we agree the price, and paid before the work is sent.
+                - listitem: A certificate with every original
+                - listitem: Originals only
+                - listitem: Lifetime authenticity guarantee
+            - figure "Zoom into the image":
+                - img "A hand-coloured map of Bali, run MWIYW3PY"
+                - button "Zoom into the image"
         - region "About this work":
-            - text: About this work
+            - heading "About this work" [level=2]
             - term: Type
-            - definition: Print
-            - term: Place
-            - definition: Zurich
+            - definition: Map
+            - term: Maker
+            - definition: E2E Valentijn (Cartographer)
             - term: Date of this issue
-            - definition: c. 1558
-            - term: Dimensions
-            - definition: 35 × 25 cm (13.8 × 9.8 in)
+            - definition: '1726'
             - term: Condition
             - definition:
-                - paragraph: VG+
+                - paragraph: E2E Very good
         - paragraph:
             - link "Browse the collection":
                 - /url: /browse
 - contentinfo:
-    - list:
-        - listitem:
-            - link "Privacy":
-                - /url: /privacy
-        - listitem:
-            - link "Terms":
-                - /url: /terms
-        - listitem:
-            - link "Old East Indies — printed editions from our collection":
-                - /url: http://shop.localhost:4417/
     - navigation:
+        - heading "Explore" [level=2]
         - list:
             - listitem:
                 - link "The collection":
@@ -67,6 +61,8 @@
             - listitem:
                 - link "Stories":
                     - /url: /stories
+        - heading "About" [level=2]
+        - list:
             - listitem:
                 - link "Sell to us":
                     - /url: /sell-to-us
@@ -76,6 +72,7 @@
             - listitem:
                 - link "Contact":
                     - /url: /contact
+    - heading "Contact" [level=2]
     - paragraph: Our contact details are being added. Please check back soon.
     - list:
         - listitem:
@@ -84,5 +81,15 @@
         - listitem:
             - link "Facebook":
                 - /url: https://www.facebook.com/IndiesGallery/
+    - list:
+        - listitem:
+            - link "Privacy":
+                - /url: /privacy
+        - listitem:
+            - link "Terms":
+                - /url: /terms
+        - listitem:
+            - link "Old East Indies — printed editions from our collection":
+                - /url: http://shop.localhost:4861/
 - button "Chat with us"
 - alert

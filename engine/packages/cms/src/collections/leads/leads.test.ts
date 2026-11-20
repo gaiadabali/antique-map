@@ -1,6 +1,9 @@
+import {
+  LEAD_KIND_LABELS,
+  LEAD_STATUS_LABELS,
+  SOURCE_LABELS,
+} from '@engine/cms-core/collections/leads'
 import { describe, expect, it } from 'vitest'
-
-import { LEAD_KIND_LABELS, LEAD_STATUS_LABELS, SOURCE_LABELS } from './kinds'
 
 describe('leads labels', () => {
   it('every lead kind label has en and id', () => {

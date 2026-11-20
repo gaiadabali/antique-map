@@ -10,18 +10,23 @@
  *
  * `.jsx` for the reason `../widgets/dashboard.jsx` gives; `view.d.ts` types the export.
  */
+import { hasRole } from '@engine/cms-core/access'
 import { redirect } from 'next/navigation'
 
-import { hasRole } from '../../collections/users/roles'
-
-import { fill, text } from './copy'
-import { DashboardForbidden, isSite } from './context'
+import { fill, text } from '@engine/cms-core/admin/dashboard/copy'
+import { DashboardForbidden, isSite } from '@engine/cms-core/admin/dashboard/context'
 import { loadDashboard } from './loaders'
 import { AsksPanel, ChatPanel } from './panels-business'
-import { FulfilmentPanel, FunnelPanel, PaymentsPanel, SalesPanel, VitalsPanel } from './panels-shop'
+import {
+  FulfilmentPanel,
+  FunnelPanel,
+  PaymentsPanel,
+  SalesPanel,
+  VitalsPanel,
+} from '@engine/cms-shop/admin/dashboard/panels-shop'
 import { AntiquesPanel, SearchPanel, VisitorsPanel } from './panels-traffic'
-import { resolvePeriod } from './period'
-import { Empty } from './ui'
+import { resolvePeriod } from '@engine/cms-core/admin/dashboard/period'
+import { Empty } from '@engine/cms-core/admin/dashboard/ui'
 
 const first = (value) => (Array.isArray(value) ? value[0] : value)
 

@@ -24,6 +24,16 @@ export type DecideOptions = {
   readonly contentSecurityPolicy?: ContentSecurityPolicy | undefined
   /** Payload's `cookiePrefix`; its language cookie is `<prefix>-lng`. */
   readonly cookiePrefix?: string | undefined
+  /**
+   * The one site this app serves (PLAN-V2 §3): its own `SITE_HOSTS` and `ADMIN_HOST` alone, its
+   * pages at `/<locale>/…`. Unset, today's app: both sites by `Host`, each in `/<site>/<locale>/…`.
+   */
+  readonly app?: SiteKey | undefined
+  /**
+   * Headers set on every answer the proxy gives or passes on (SECURITY.md B3), under any the
+   * decision sets itself. Today's app sets its static ones in `next.config.ts` instead.
+   */
+  readonly securityHeaders?: Readonly<Record<string, string>> | undefined
 }
 
 export type ProxyWhy =
@@ -33,6 +43,7 @@ export type ProxyWhy =
   | 'alias'
   | 'api'
   | 'not-admin-host'
+  | 'admin-host-only'
   | 'admin'
   | 'site-asset'
   | 'root-file'

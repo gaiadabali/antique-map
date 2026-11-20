@@ -1,34 +1,38 @@
 /**
- * Access helpers every collection uses — `@engine/cms/access`: who may enter the admin and who
- * keeps the catalogue (`./roles`), staff-only fields (`./fields`), published-only reads
- * (`./published`), store staff's scope (`./store-staff`), the arguments of a Local API call made
- * for a request (`./as-user`), the locks collection's access (`./locked-documents`), the origins
- * Payload trusts (`./origins`), and the role vocabulary of the `users` collection, re-exported
- * (`owner`, `editor`, `store`).
+ * Access helpers every collection uses — `@engine/cms/access`: the shared ones are
+ * `@engine/cms-core/access`'s (who may enter the admin and who keeps the catalogue, staff-only
+ * fields, published-only reads, the arguments of a Local API call made for a request, the locks
+ * collection's access, the origins Payload trusts, and the role vocabulary of the `users`
+ * collection: `owner`, `editor`, `store`), re-exported; store staff's scope is this CMS's own
+ * (`./store-staff`).
  */
-export { asUser } from './as-user'
-export { STAFF_ONLY_ACCESS, staffOnly } from './fields'
-export { LOCKED_DOCUMENTS_ACCESS, ownLocks, restrictLockedDocuments } from './locked-documents'
-export { siteOrigin, trustedOrigins } from './origins'
-export { notForStoreStaff, ownStore } from './store-staff'
-export { DRAFTED_ACCESS, PUBLISHED_ONLY, publishedOrStaff } from './published'
 export {
+  asUser,
   CATALOGUE_ROLES,
+  DEFAULT_ROLE,
+  DRAFTED_ACCESS,
+  hasRole,
   isCatalogueStaff,
+  isOwner,
   isStaff,
   isStaffUser,
-  USERS_SLUG,
-  type RequestUser,
-} from './roles'
-export {
-  DEFAULT_ROLE,
-  hasRole,
-  isOwner,
+  LOCKED_DOCUMENTS_ACCESS,
   ownerOnlyField,
+  ownLocks,
+  PUBLISHED_ONLY,
+  publishedOrStaff,
+  restrictLockedDocuments,
   roleOf,
   rolesOnlyField,
+  siteOrigin,
+  STAFF_ONLY_ACCESS,
+  staffOnly,
   staffWithRoles,
   storeOf,
+  trustedOrigins,
   USER_ROLES,
+  USERS_SLUG,
+  type RequestUser,
   type UserRole,
-} from '../collections/users/roles'
+} from '@engine/cms-core/access'
+export { notForStoreStaff, ownStore } from '@engine/cms-core/access/store-staff'

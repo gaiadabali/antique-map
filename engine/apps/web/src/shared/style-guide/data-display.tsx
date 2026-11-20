@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-import { FacetChip, Price, ResponsiveImage, StatusTimeline } from '../ui'
+import { FacetChip, Price, ResponsiveImage, StatusTimeline } from '@engine/ui'
 
 import { samplePlate } from './fixtures'
 import { Section } from './section'

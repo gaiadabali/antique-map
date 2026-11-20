@@ -4,7 +4,7 @@
  * admin edit page. A UI field's server component: Payload gives it the sibling data already in
  * the form (`data`), `payload` and `req` to read further. `.jsx`: see `./shared.jsx`'s header.
  */
-import { L } from './shared'
+import { L } from '@engine/cms-core/admin/shared'
 
 async function loadItems(payload, req, ids) {
   if (!Array.isArray(ids) || ids.length === 0) return []

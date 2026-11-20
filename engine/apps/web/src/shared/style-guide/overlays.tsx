@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-import { Button, Dialog } from '../ui'
+import { Button, Dialog } from '@engine/ui'
 
 import { Section } from './section'
 import styles from './style-guide.module.css'

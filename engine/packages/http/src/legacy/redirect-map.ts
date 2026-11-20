@@ -16,7 +16,8 @@ export type RedirectMap = ReadonlyMap<string, RedirectEntry>
 export type RedirectReader = {
   find(args: {
     collection: 'redirects'
-    where: { site: { equals: SiteKey } }
+    /** The site's rows, where rows carry a `site` (today's one CMS); every row in one site's own. */
+    where?: { site: { equals: SiteKey } }
     select: { from: true; to: true; code: true }
     depth: 0
     sort: 'id'
@@ -37,12 +38,16 @@ function codeOf(raw: string | null | undefined): RedirectCode | null {
   return code === 301 || code === 302 || code === 410 ? code : null
 }
 
-export async function readRedirectMap(reader: RedirectReader, site: SiteKey): Promise<RedirectMap> {
+export async function readRedirectMap(
+  reader: RedirectReader,
+  site: SiteKey,
+  rowsCarrySite = true,
+): Promise<RedirectMap> {
   const map = new Map<string, RedirectEntry>()
   for (let page = 1; ; page += 1) {
     const result = await reader.find({
       collection: 'redirects',
-      where: { site: { equals: site } },
+      ...(rowsCarrySite ? { where: { site: { equals: site } } } : {}),
       select: { from: true, to: true, code: true },
       depth: 0,
       sort: 'id',

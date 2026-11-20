@@ -25,11 +25,18 @@ import { invalidationBatch } from '@engine/cache'
 import type { Payload, PayloadRequest, RequestContext } from 'payload'
 
 import { reqOf } from '../req'
-import { fold } from '../../import/vocabulary'
-import { ensureCategory } from './category'
+import { fold } from '@engine/cms-core/import/vocabulary'
+import {
+  categorySeeds as shopCategorySeeds,
+  ensureCategory,
+  fillKey,
+  publishVocabulary,
+  seedStorefront,
+  type StorefrontReport,
+  type PublishReport,
+} from '@engine/cms-shop/seed'
 import { data, read, VOCABULARY_FILES } from './files'
-import { fillKey, publishVocabulary, type PublishReport } from './publish'
-import { SETTINGS_DEFAULTS } from './settings'
+import { SETTINGS_DEFAULTS, SETTINGS_DEFAULTS_ID } from './settings'
 import { sortNameOf } from './sort-name'
 
 export { sortNameOf } from './sort-name'
@@ -40,6 +47,7 @@ export type VocabularyReport = {
   categories: { created: number; present: number }
   makers: { created: number; present: number }
   siteSettings: 'seeded' | 'present'
+  storefront?: StorefrontReport
   /** With `publish`: the seeded rows this run moved from draft to published (`./publish`). */
   published?: PublishReport
 }
@@ -85,9 +93,9 @@ export function subjectSeeds(): readonly SubjectSeed[] {
   return (data('terms.json') as { subjects: SubjectSeed[] }).subjects
 }
 
-/** The shop's categories (DATA.md §1): the products sheet's `category` column matches them. */
+/** The shop's categories (DATA.md §1): the shop seed's own file (`@engine/cms-shop/seed`). */
 export function categorySeeds(): readonly SubjectSeed[] {
-  return (data('categories.json') as { categories: SubjectSeed[] }).categories
+  return shopCategorySeeds()
 }
 
 export function makerSeeds(): readonly MakerSeed[] {
@@ -168,7 +176,8 @@ export async function seedVocabulary(
   const categoryIds: number[] = []
   const fill = new Map<string, Record<string, string>>()
   for (const grade of gradeSeeds()) {
-    const term = await ensureTerm(payload, req, 'grade', grade.label, gradeFields(grade))
+    const gradeFields = { definition: grade.definition, equivalent: grade.equivalent }
+    const term = await ensureTerm(payload, req, 'grade', grade.label, gradeFields)
     count(report.terms, term.created)
     termIds.push(term.id)
     fill.set(fillKey('terms', term.id), { equivalent: grade.equivalent })
@@ -217,8 +226,15 @@ export async function seedVocabulary(
   } else {
     // The settings hook's tags go to the collector `req` carries (the header says whose).
     await payload.updateGlobal({ slug: 'site-settings', data: SETTINGS_DEFAULTS as never, req })
+    await payload.updateGlobal({
+      slug: 'site-settings',
+      locale: 'id',
+      data: SETTINGS_DEFAULTS_ID as never,
+      req: reqOf(payload, 'id', req.context),
+    })
     report.siteSettings = 'seeded'
   }
+  report.storefront = await seedStorefront(payload, req, options)
 
   if (options.publish) {
     report.published = await publishVocabulary(payload, req, {
@@ -230,10 +246,6 @@ export async function seedVocabulary(
     })
   }
   return report
-}
-
-function gradeFields(grade: GradeSeed): Record<string, unknown> {
-  return { definition: grade.definition, equivalent: grade.equivalent }
 }
 
 /** Creates the term when no term of that kind folds to the label; answers its id, and whether

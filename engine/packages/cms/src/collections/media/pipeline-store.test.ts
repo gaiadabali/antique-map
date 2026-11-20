@@ -1,7 +1,7 @@
 /** The pipeline builds one S3 client per process, not one per run. */
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { storeFromEnv } from './pipeline'
+import { storeFromEnv } from '@engine/cms-core/collections/media/pipeline'
 
 afterEach(() => vi.unstubAllEnvs())
 

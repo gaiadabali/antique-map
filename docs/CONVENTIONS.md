@@ -158,8 +158,11 @@ back to `PGHOST` and then `localhost:5432`, a workstation's own Postgres. What t
 
 ## 13. Schema, migrations and generated files
 
-- **One migration set**, `engine/packages/cms/src/migrations`. **One person generates a wave's migration**, on a
-  clean checkout of `main` after the wave merges (`pnpm --filter @engine/cms migrate:create`). Never commit a
+- **One migration set per CMS** (DR-17): `engine/packages/cms-shop/src/migrations` and
+  `engine/packages/cms-gallery/src/migrations` (today's `engine/packages/cms/src/migrations` until phase 26). A
+  change to a `cms-core` factory is migrated in both in the same wave. **One person generates a wave's migration**, on a
+  clean checkout of `main` after the wave merges (`pnpm --filter @engine/cms-shop migrate:create`, likewise
+  `@engine/cms-gallery`; today `@engine/cms`). Never commit a
   migration a dev server generated: KOI lost days to one that carried another session's schema.
 - **A schema author** sees their work on their own suffixed database through Payload's dev push
   (`PAYLOAD_DEV_PUSH=1`), never on a shared one and never in a production build. What only a migration carries
@@ -177,7 +180,21 @@ back to `PGHOST` and then `localhost:5432`, a workstation's own Postgres. What t
 ## 14. Git and worktrees
 
 - **One worktree per agent**, each on its own branch with its own database suffix (`pnpm db:fresh --suffix
-  <lane>`) and its own `PORT`. Never trust whatever answers on port 3000.
+  <lane>`) and its own `PORT`. Never trust whatever answers on port 3000. Once the two apps land (DR-17), a
+  worktree has two databases (`pnpm db:fresh --app shop|gallery --suffix <lane>`: `indies_shop_<suffix>`,
+  `indies_gallery_<suffix>`), two ports and a `.env.local` per app.
+- **Two apps per worktree, today (TASKS.md 24.2).** `pnpm worktree:env <phase> <lane>` writes the root
+  `.env.local` and one per app: `engine/apps/web/.env.local` (today's app, `indies_<suffix>`, the first port) and
+  `engine/apps/shop/.env.local` (`indies_shop_<suffix>`, a second port from its own range, `SITE_HOSTS`,
+  `GALLERY_ORIGIN`), each with its `DATABASE_URL` and its own generated dev secrets (never copied, never
+  printed, never replaced). `--out <dir>` writes the same files under a scratch folder to look first. Then
+  `pnpm db:fresh` and `pnpm db:fresh --app shop`; `db:drop` and `db:list` take `--app shop|gallery` too
+  (`gallery` is today's app until phase 25; no `--app` keeps today's behaviour).
+- **No Docker?** `docker-compose.dev.yml` is optional. Without it: a native Postgres 18 with `unaccent` and
+  `pg_trgm` available, and `PGHOST` (with `PGPORT`, `PGUSER`, `PGPASSWORD` as needed) in the shell or the root
+  `.env.local` — the db tooling then runs `psql` from your PATH instead of `docker compose exec`, and
+  `worktree:env` builds each app's `DATABASE_URL` on that server. Leave `S3_*` unset and uploads go to local disk
+  (`/api/health` reports `storage: local-disk`); leave `SMTP_HOST` unset and Payload's mail goes to the console.
 - **Commit explicit paths in one step**: `git commit -- <paths>`. Never `git add -A`.
 - Trunk-based off `main`, squash merge, Conventional Commits (`feat:`, `fix:`, `perf:`, `docs:`, `chore:`), and a
   message that says why. `production` is the deploy branch: nothing lands there but a merge from `main`.
@@ -198,6 +215,11 @@ tasks:check`.
 | `check:filesize` | §2 |
 | `check:generated` | `payload-types.ts`, `importMap.js`, and the Payload config against the latest migration snapshot — a collection changed without its migration fails |
 | `tasks:lint`, `tasks:check` | the board's shape and its generated progress table |
+
+**Per app (DR-17).** With two apps, `lint` also fails an app that imports the other app; `check:generated` runs
+for both CMSs; `test`, `test:db`, e2e and Lighthouse run per app, and CI picks jobs by path
+(`apps/shop/**` + `packages/cms-shop/**` → shop; the gallery likewise; the shared packages → both), with one
+build per app per run and the DB tests sharded.
 
 **CI adds** what needs a network or a database: the `*.db.test.ts` suite on Postgres 18; the sentinel build
 (§12); the release smoke booting the tarball; Playwright on both hosts; Lighthouse; `pnpm audit --prod` (high

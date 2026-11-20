@@ -1,0 +1,36 @@
+/* The import screen's additions (TASKS.md 27.4.c): the kind choice and its template line. The
+   rest is the shared `ix-*` panel vocabulary. Tokens only (`@engine/ui` `tokens/admin.css`); 44 px
+   targets on a phone; nothing wider than the screen at 390 px. */
+
+.si-kinds {
+  margin: 0 0 calc(var(--base) * 0.75);
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+
+.si-kinds__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--base) * 0.25) calc(var(--base) * 1);
+  margin-block: calc(var(--base) * 0.3);
+}
+
+.si-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--base) * 0.4);
+  min-block-size: var(--admin-target);
+  font: var(--admin-text-body);
+  color: var(--admin-ink);
+  cursor: pointer;
+}
+
+.si-note {
+  margin-block: calc(var(--base) * 0.25);
+  max-inline-size: 72ch;
+}
+
+.si-columns {
+  overflow-wrap: anywhere;
+}

@@ -69,7 +69,7 @@ process.env.PAYLOAD_SECRET ??= 'e2e-shop-payment-dev-only-never-signs-anything'
 const { cms, cmsPool } = await import('./engine/packages/cms/src/instance')
 const { createOrder, quoteDeliveryFee } = await import('./engine/packages/cms/src/shop/orders')
 const { createBagCookieKey, serialiseBag } = await import('./engine/packages/cms/src/shop/pricing')
-const { makeProduct } = await import('./engine/packages/cms/src/collections/stock-levels/shop.test-support')
+const { makeProduct } = await import('./engine/packages/cms-shop/src/collections/stock-levels/shop.test-support')
 const { invalidationBatch } = await import('./engine/packages/cache/src/index')
 
 const payload = await cms()
@@ -119,7 +119,8 @@ if (op.op === 'seed-order') {
     bagCookie,
     details: {
       contact: { name: 'E2E Buyer', whatsapp: '0812 1111 2222', email: 'e2e-payment@example.test', locale: 'en' },
-      delivery: { address: 'Jl. Raya Ubud 1', notes: '', lat: -8.5193, lng: 115.2633 },
+      // Past the last delivery band (K2, TASKS.md 27.3), so the order waits for the quote below.
+      delivery: { address: 'Jl. Thamrin 1, Jakarta', notes: '', lat: -6.2088, lng: 106.8456 },
     },
     expectedTotalIdr: null,
   }, { bagKey })
@@ -147,9 +148,10 @@ process.exit(0)
 // no-op (`payload run` exits 0, prints nothing, runs nothing) on this workstation. Scratch, deleted
 // below; never committed.
 const seedScript = join(root, `.e2e-shop-payment-seed-${randomBytes(4).toString('hex')}.ts`)
-writeFileSync(seedScript, SEED_SCRIPT)
 const seedOutDir = seedScript.replace(/\.ts$/, '-out')
-mkdirSync(seedOutDir)
+// Written when a seed first runs (`runSeed`), not when the file loads: Playwright also loads it to
+// list the tests, in processes that never run this file's afterAll, which left a script and its
+// folder in the repo root after every run (and failed `format:check`, TASKS.md 27.7).
 
 /**
  * Runs one seed op in its own `payload run` process and answers what it wrote to `SEED_OUT` — a
@@ -157,7 +159,7 @@ mkdirSync(seedOutDir)
  * console's handle rather than through the piped stream a captured `execFileSync` reads back.
  */
 function runSeed(op: Record<string, unknown>): Record<string, unknown> {
-  // A worker restarted after a failure runs this file's afterAll before its next test: write again.
+  // First use, or a worker restarted after a failure (its afterAll ran before its next test).
   if (!existsSync(seedScript)) writeFileSync(seedScript, SEED_SCRIPT)
   mkdirSync(seedOutDir, { recursive: true })
   const seedOut = join(seedOutDir, `out-${randomBytes(6).toString('hex')}.json`)

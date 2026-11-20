@@ -35,6 +35,13 @@ geocoding, Midtrans, Anthropic, Turnstile, mail); the Google Maps script on the 
 | Secret leak                                          | host-only `.env`, scanning, rotation                                   | 2.11      |
 | Data loss                                            | nightly off-box backups, restore drills                                | 2.14      |
 
+**Plan v2 (DR-17).** Two apps mean **two admins and two secrets**: each app's `/admin` and Payload REST answer
+on its own host only (`ADMIN_HOST` per app), with its own users table, `PAYLOAD_SECRET`, database role and
+storage key; Midtrans keys live in the shop only, and the gallery's key never reaches the shop. A leak across
+sites is no longer a forgotten `site` filter but a wrong database, which neither app can reach. The shop reads
+the gallery only through its public, published-only, projected API. Until phase 26 the controls below describe
+today's one admin (X2).
+
 ## 2. Checklists
 
 Test column: **U** unit (Vitest) · **I** integration (Payload Local API and REST against a test database) ·
@@ -117,14 +124,15 @@ on staging. Numbers are defaults; `Open:` marks those an owner or counsel answer
 
 ### 2.6 File uploads
 
-| ID  | Requirement                                                                                                                                                                                | Test |
-| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---- |
-| F1  | The type is sniffed from the bytes, never the extension or `Content-Type`; allowed: JPEG, PNG, WebP (and TIFF for `masters`); SVG and anything else refused                                | U, I |
-| F2  | Size limits: `media` 90 MiB (a map or photograph master is large; the cap still bounds the upload), driver image 10 MB, `masters` through presigned direct upload with a signed length cap | I    |
-| F3  | Public derivatives are re-encoded by `sharp` and carry no EXIF, GPS or maker notes                                                                                                         | U    |
-| F4  | `masters` and uploads live in a private bucket; staff get presigned GET URLs that expire in 15 minutes at most; only derivatives and deep-zoom tiles are public                            | I, O |
-| F5  | Driver images are private, readable only by `owner`, `editor` and the order's store in the admin, and through the tracking page (T6)                                                       | I    |
-| F6  | Payload's paste-from-URL upload is off                                                                                                                                                     | I    |
+| ID  | Requirement                                                                                                                                                                                                                                                                                                                                                                                                          | Test |
+| --- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---- |
+| F1  | The type is sniffed from the bytes, never the extension or `Content-Type`; allowed for `media`: JPEG, PNG, WebP, AVIF, MP4, WebM and PDF, a video or a PDF also held to its declared type by its magic bytes (TIFF for `masters` only); SVG, HTML and anything else refused                                                                                                                                          | U, I |
+| F2  | Size limits: `media` 90 MiB (a map or photograph master is large; the cap still bounds the upload), a PDF 20 MiB, driver image 10 MB, `masters` through presigned direct upload with a signed length cap                                                                                                                                                                                                             | I    |
+| F3  | Public derivatives are re-encoded by `sharp` and carry no EXIF, GPS or maker notes                                                                                                                                                                                                                                                                                                                                   | U    |
+| F4  | `masters` and uploads live in a private bucket; staff get presigned GET URLs that expire in 15 minutes at most; only derivatives and deep-zoom tiles are public                                                                                                                                                                                                                                                      | I, O |
+| F5  | Driver images are private, readable only by `owner`, `editor` and the order's store in the admin, and through the tracking page (T6)                                                                                                                                                                                                                                                                                 | I    |
+| F6  | Payload's paste-from-URL upload is off                                                                                                                                                                                                                                                                                                                                                                               | I    |
+| F7  | A video or a PDF is public only through `/api/x/media/{id}` (same origin), and only while a published shop page places it; never an image's upload. The answer carries the record's allowlisted type and `nosniff`; a PDF `Content-Disposition: inline` and `Content-Security-Policy: sandbox` (script in a PDF runs in an opaque origin); a video byte ranges. Storefront CSP: `media-src 'self'` already covers it | U, I |
 
 ### 2.7 Input validation
 

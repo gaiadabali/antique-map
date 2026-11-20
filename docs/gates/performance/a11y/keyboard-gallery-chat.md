@@ -8,10 +8,11 @@ Focus after opening at 390 px: button "Close chat"
 
 ### chat panel (inside the dialog) at 390 px
 
-Tab stops (2, focus left the page or came round):
+Tab stops (3, focus left the page or came round):
 
 1. button "Close chat" — button
-2. link "Privacy notice" — a
+2. log "Conversation" — div
+3. link "Privacy notice" — a
 
 Problems: none
 
@@ -25,11 +26,13 @@ Focus after opening at 1280 px: button "Close chat"
 
 ### chat panel (inside the dialog) at 1280 px
 
-Tab stops (2, focus left the page or came round):
+Tab stops (3, focus left the page or came round):
 
 1. button "Close chat" — button
-2. link "Privacy notice" — a
+2. log "Conversation" — div
+3. link "Privacy notice" — a
 
 Problems: none
 
 Same name on more than one stop: none
+

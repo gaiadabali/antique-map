@@ -3,10 +3,10 @@
  * anything is read, the kill switch, and what reaches the one write — the database proofs of the
  * same rules are `./draft.db.test.ts`. The stand-in throws on any call a test does not expect.
  */
+import type { RequestUser } from '@engine/cms-core/access'
 import type { Payload } from 'payload'
 import { describe, expect, it } from 'vitest'
 
-import type { RequestUser } from '../access/roles'
 import { draftWork, type DraftDeps } from './draft'
 import { fakeImages, goodReply, ScriptedDraftModel, text } from './draft.test-support'
 import { DraftLimiter } from './limits'

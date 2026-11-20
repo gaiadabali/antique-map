@@ -38,12 +38,14 @@ export function resolveTransport(env) {
  * branch on transport themselves.
  */
 export function buildCommand(binary, binArgs, env) {
-  const user = env.POSTGRES_USER ?? 'postgres'
   if (resolveTransport(env) === 'direct') {
+    // A native server's own user (PGUSER, as psql itself reads it) first, the stack's name else.
+    const user = env.PGUSER || env.POSTGRES_USER || 'postgres'
     const host = env.PGHOST ?? '127.0.0.1'
     const port = env.PGPORT ?? '5432'
     return { bin: binary, args: ['-h', host, '-p', port, '--username', user, ...binArgs] }
   }
+  const user = env.POSTGRES_USER ?? 'postgres'
   const composeFile = env.DOCKER_COMPOSE_FILE ?? COMPOSE_FILE_DEFAULT
   const project = env.COMPOSE_PROJECT_NAME ?? PROJECT_DEFAULT
   return {

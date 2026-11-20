@@ -5,10 +5,10 @@
  * Revenue is the order's own `totals.total`, integer rupiah, as stored. The shop's Sales panel
  * (run 2 of the dashboard) grows from this loader; the gallery has no orders.
  */
-import { compared, type Compared } from '../compare'
-import type { DashboardContext } from '../context'
+import { compared, type Compared } from '@engine/cms-core/admin/dashboard/compare'
+import type { DashboardContext } from '@engine/cms-core/admin/dashboard/context'
 
-import { findAll, periodOfInstant, spanWhere } from './records'
+import { findAll, periodOfInstant, spanWhere } from '@engine/cms-core/admin/dashboard/records'
 
 export type BusinessPanel = {
   readonly hasData: boolean

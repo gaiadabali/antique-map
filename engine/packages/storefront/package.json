@@ -1,0 +1,50 @@
+{
+  "name": "@engine/storefront",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Old East Indies' storefront (PLAN-V2 §4.2, TASKS.md 23.3): the shop's pages, views, blocks, shell, lexicon and the loaders and actions behind them — home, browse, collections, product, bag, checkout, payment, tracking, stores, partnership, the CMS pages and search. Both apps draw it until phase 26: today's app under `app/(shop)/shop/[locale]/…`, the shop app under `app/[locale]/…`, each with thin route files. Payload is reached through `@engine/cms/instance` — today's app resolves it to the one CMS, the shop app aliases it to cms-shop's instance — and the shop's records are found with `@engine/cms-shop/site`'s `shopOnly`, so no `site` filter is written here.",
+  "type": "module",
+  "exports": {
+    "./pages/*": "./src/pages/*.tsx",
+    "./shell": "./src/shell/index.ts",
+    "./originals": "./src/server/shop/home/originals.ts",
+    "./original-link": "./src/sites/shop/product/original-link.tsx",
+    "./server/*": "./src/server/shop/*.ts",
+    "./sites/*": "./src/sites/shop/*.ts",
+    "./lexicon/*": "./src/sites/shop/lexicon/*",
+    "./tokens/*": "./src/sites/shop/tokens/*"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@engine/cache": "workspace:*",
+    "@engine/chat": "workspace:*",
+    "@engine/cms": "workspace:*",
+    "@engine/cms-core": "workspace:*",
+    "@engine/cms-shop": "workspace:*",
+    "@engine/config": "workspace:*",
+    "@engine/http": "workspace:*",
+    "@engine/i18n": "workspace:*",
+    "@engine/media": "workspace:*",
+    "@engine/site": "workspace:*",
+    "@engine/ui": "workspace:*",
+    "@engine/view-models": "workspace:*",
+    "payload": "3.90.2",
+    "server-only": "0.0.1"
+  },
+  "peerDependencies": {
+    "next": "16.3.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "next": "16.3.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "typescript": "5.9.3"
+  }
+}

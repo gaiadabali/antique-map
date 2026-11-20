@@ -1,6 +1,6 @@
 /**
  * The tracking surface's guess budget (TASKS.md 7.3.c: "the tenth wrong guess in a minute is
- * throttled") — counted here, not in the page (`apps/web/src/sites/shop/tracking/rate-limit.ts`'s
+ * throttled") — counted here, not in the page (`packages/storefront/src/sites/shop/tracking/rate-limit.ts`'s
  * own header explains why only the proxy can answer 429 on a page request). A stricter window than
  * SECURITY.md §2.10's general "30 per minute" ceiling: a token guess at `/track/{token}` is a try
  * against the one credential an order has, so it gets its own, tighter budget.

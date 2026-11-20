@@ -185,6 +185,10 @@ test.describe('Shop product page (6.1.c)', () => {
     await expect(first).toBeChecked()
     await expect(second).not.toBeChecked()
 
+    // The options are sizes (TASKS.md 28.2), unless they are the finishes (Mounted, Framed).
+    const finishes = candidates.withVariants.variantLabels.every((l) => /mounted|framed/i.test(l))
+    await expect(page.locator('[id$="-legend"]')).toContainText(finishes ? 'Option:' : 'Size:')
+
     const priceBefore = await page.locator('[class*="__price"]').textContent()
     await second.check()
     await expect(second).toBeChecked()

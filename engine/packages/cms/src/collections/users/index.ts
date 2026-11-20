@@ -1,114 +1,21 @@
 /**
- * `users` — the only people who sign in (SECURITY.md A1; CONTENT-MODEL.md §6). No visitor, buyer
- * or partner has an account.
- *
- * - **Roles** (`./roles`): `owner`, `editor` or `store`, one per person; new accounts are editors.
- *   A store user has exactly one store (`./store-rule`). Only the owner sets a role or a store.
- * - **First user**: Payload's create-first-user screen makes an owner, a losing racer is refused,
- *   and the last owner can neither lose the role nor be deleted — one document or in bulk
- *   (`./guards`, and the migration's constraint trigger on `users`).
- * - **Lockout**: five failed sign-ins lock the account for fifteen minutes; the owner can unlock
- *   it sooner (SECURITY.md A3: the admin sits on a public path).
- * - Editors and store staff see and edit themselves — their name and password, never their email,
- *   role or store (`./self-edit`, `./roles-field`); the owner sees and manages everyone
- *   (CONTENT-MODEL.md §7).
- * - **Role and store changes are recorded** (`./access-changes`, SECURITY.md R7): who, when, from
- *   what to what — read by the owner alone.
+ * `users` — the one CMS's staff (SECURITY.md A1; CONTENT-MODEL.md §6), from the shared factory
+ * (`@engine/cms-core/collections/users`): every role — `owner`, `editor` and `store` — so a store
+ * user works in exactly one store, and role and store changes are recorded. The rules themselves
+ * (the first user, the last owner, the lockout, self-edit, the password policy) are the factory's.
  */
-import type { Access, CollectionConfig } from 'payload'
+import { USER_ROLES } from '@engine/cms-core/access'
+import { usersCollection } from '@engine/cms-core/collections/users'
 
-import { ADMIN_GROUPS } from '../../admin/groups'
-import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
-import { isStaffUser, type USERS_SLUG } from '../../access/roles'
-import { accessChangesField, recordAccessChanges } from './access-changes'
-import {
-  firstUserIsOwner,
-  keepAnOwnerInBulk,
-  keepAnOwnerOnDelete,
-  keepAnOwnerOnUpdate,
-} from './guards'
-import { roleField, storeField } from './roles-field'
-import { hasRole, isOwner } from './roles'
-import { enforcePasswordPolicy } from './password-policy'
-import { ownerChangesEmail } from './self-edit'
-import { oneStoreForStoreStaff } from './store-rule'
+import { ADMIN_GROUPS } from '@engine/cms-core/admin/groups'
 
-export const MAX_LOGIN_ATTEMPTS = 5
-export const LOCK_TIME_MS = 15 * 60 * 1000
+export { LOCK_TIME_MS, MAX_LOGIN_ATTEMPTS } from '@engine/cms-core/collections/users'
 
-/** The owner: everyone. Other staff: their own account. Anyone else: nothing. */
-const selfOrOwner: Access = ({ req }) => {
-  if (hasRole(req.user, 'owner')) return true
-  if (!isStaffUser(req.user) || req.user?.id === undefined) return false
-  return { id: { equals: req.user.id } }
-}
-
-export const Users: CollectionConfig = {
-  // Literal on purpose: `registries/registries.test.ts` reads each slug from its own file;
-  // `satisfies` keeps it equal to USERS_SLUG.
-  slug: 'users' satisfies typeof USERS_SLUG,
-  labels: {
-    singular: { en: 'Staff member', id: 'Anggota staf' },
-    plural: { en: 'Staff', id: 'Staf' },
-  },
-  admin: {
-    group: ADMIN_GROUPS.settings,
-    hidden: hiddenFromAllButCatalogueStaff,
-    useAsTitle: 'email',
-    defaultColumns: ['name', 'email', 'role', 'store'],
-    description: {
-      en: 'Who can sign in to this admin, and what each person may do.',
-      id: 'Siapa yang dapat masuk ke admin ini, dan apa yang boleh dilakukan setiap orang.',
-    },
-  },
-  auth: {
-    maxLoginAttempts: MAX_LOGIN_ATTEMPTS,
-    lockTime: LOCK_TIME_MS,
-    useSessions: true,
-    // The documented 8 hours (SECURITY.md A6); Payload's default is 2.
-    tokenExpiration: 8 * 60 * 60,
-    cookies: {
-      sameSite: 'Lax',
-      // A production build serves https (localhost counts as secure to a browser).
-      secure: process.env.NODE_ENV === 'production',
-    },
-  },
-  access: {
-    admin: ({ req }) => isStaffUser(req.user),
-    create: isOwner,
-    read: selfOrOwner,
-    update: selfOrOwner,
-    delete: isOwner,
-    unlock: isOwner,
-  },
-  fields: [
-    {
-      name: 'name',
-      type: 'text',
-      label: { en: 'Name', id: 'Nama' },
-      required: true,
-      admin: {
-        description: {
-          en: 'As colleagues know you — shown on the records you change.',
-          id: 'Seperti rekan kerja mengenal Anda — ditampilkan pada catatan yang Anda ubah.',
-        },
-      },
-    },
-    roleField,
-    storeField,
-    accessChangesField,
-  ],
-  hooks: {
-    beforeOperation: [keepAnOwnerInBulk],
-    beforeValidate: [enforcePasswordPolicy],
-    beforeChange: [
-      firstUserIsOwner,
-      ownerChangesEmail,
-      oneStoreForStoreStaff,
-      keepAnOwnerOnUpdate,
-      // Last: records the role and store as they will be saved (SECURITY.md R7).
-      recordAccessChanges,
-    ],
-    beforeDelete: [keepAnOwnerOnDelete],
-  },
-}
+// The slug is written here as a literal (`registries/registries.test.ts` reads each slug from its
+// own file); the factory's type keeps it equal to USERS_SLUG.
+export const Users = usersCollection({
+  group: ADMIN_GROUPS.settings,
+  roles: USER_ROLES,
+  // The owner's quick "Add a staff member" above the list (TASKS.md 27.6.c).
+  beforeList: ['@engine/cms/admin/views#AddStaffButton'],
+}) satisfies { slug: 'users' }

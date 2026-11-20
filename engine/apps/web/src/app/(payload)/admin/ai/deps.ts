@@ -9,7 +9,7 @@ import 'server-only'
 
 import type { DraftDeps, DraftModel } from '@engine/cms/ai'
 
-import { chatModels, secretFrom, type Env } from '../../../../server/chat/env'
+import { chatModels, secretFrom, type Env } from '@engine/chat/server/env'
 import { mediaPublicUrl } from '../../../../server/media/public-image'
 
 const MODEL_ID = /^[a-z0-9][a-z0-9.\-_:@]{2,80}$/

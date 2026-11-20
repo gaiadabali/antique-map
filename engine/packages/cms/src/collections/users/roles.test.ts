@@ -1,15 +1,19 @@
 /**
  * The role vocabulary (`./roles`) and the one-store rule (`./store-rule`), without a database.
  */
+import { roleOf, storeOf } from '@engine/cms-core/access'
+import {
+  firstUserIsOwner,
+  keepAnOwnerOnUpdate,
+  oneStoreForStoreStaff,
+  ownerChangesEmail,
+  recordAccessChanges,
+  signOutWhenSwitchedOff,
+} from '@engine/cms-core/collections/users'
 import { ValidationError, type PayloadRequest } from 'payload'
 import { describe, expect, it } from 'vitest'
 
-import { recordAccessChanges } from './access-changes'
-import { firstUserIsOwner, keepAnOwnerOnUpdate } from './guards'
 import { Users } from './index'
-import { roleOf, storeOf } from './roles'
-import { ownerChangesEmail } from './self-edit'
-import { oneStoreForStoreStaff } from './store-rule'
 
 type Hook = (args: never) => unknown
 const call = (hook: Hook, args: Record<string, unknown>) => hook(args as never)
@@ -53,6 +57,7 @@ describe('a store user has exactly one store', () => {
     expect(Users.hooks?.beforeChange).toEqual([
       firstUserIsOwner,
       ownerChangesEmail,
+      signOutWhenSwitchedOff,
       oneStoreForStoreStaff,
       keepAnOwnerOnUpdate,
       recordAccessChanges,

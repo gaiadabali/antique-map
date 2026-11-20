@@ -1,0 +1,57 @@
+{
+  "name": "@engine/site",
+  "version": "0.0.0",
+  "private": true,
+  "description": "What both sites' pages share on the server and in the shell (PLAN-V2 §4.2, TASKS.md 23.3): the public site settings, the lead service, the beacon's collect pipeline, the chat on the app's own CMS (its store, catalogue reader and route handlers), a page's SEO metadata and JSON-LD, a public image's URL, the per-address limits, and the shell's shared parts (brand link, language switcher, announcement, contact helpers, the page frame's stylesheet). Payload is reached through `@engine/cms/instance`: today's app resolves it to the one CMS, the shop app aliases it to cms-shop's instance (next.config `turbopack.resolveAlias`, tsconfig `paths`).",
+  "type": "module",
+  "exports": {
+    "./site-settings": "./src/site-settings.ts",
+    "./seo": "./src/seo/index.ts",
+    "./seo/routes": "./src/seo/routes.ts",
+    "./seo/published": "./src/seo/published.ts",
+    "./media/public-image": "./src/media/public-image.ts",
+    "./originals": "./src/originals/contract.ts",
+    "./originals/route": "./src/originals/route.ts",
+    "./limits": "./src/limits/index.ts",
+    "./leads": "./src/leads/index.ts",
+    "./leads/deps": "./src/leads/deps.ts",
+    "./leads/adapters": "./src/leads/adapters.ts",
+    "./leads/turnstile": "./src/leads/turnstile.ts",
+    "./chat": "./src/chat/index.ts",
+    "./chat/catalogue": "./src/chat/catalogue.ts",
+    "./chat/store": "./src/chat/store.ts",
+    "./analytics/*": "./src/analytics/*.ts",
+    "./shell": "./src/shell/index.ts",
+    "./site.css": "./src/shell/site.css"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@engine/cache": "workspace:*",
+    "@engine/chat": "workspace:*",
+    "@engine/cms": "workspace:*",
+    "@engine/cms-shop": "workspace:*",
+    "@engine/config": "workspace:*",
+    "@engine/http": "workspace:*",
+    "@engine/i18n": "workspace:*",
+    "@engine/media": "workspace:*",
+    "@engine/ui": "workspace:*",
+    "payload": "3.90.2",
+    "server-only": "0.0.1"
+  },
+  "peerDependencies": {
+    "next": "16.3.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "next": "16.3.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "typescript": "5.9.3"
+  }
+}

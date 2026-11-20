@@ -4,7 +4,9 @@
  * ring when one is set, the loader source, and the site allow-list (`../sites/hosts`). A development default such
  * as `dev-only-not-a-secret` (`.env.example`) or MinIO's `minioadmin` is refused on a deployed host.
  */
+import { appHostProblems } from '../sites/app-hosts'
 import { siteHostProblems } from '../sites/hosts'
+import { SITE_KEYS } from '../sites/table'
 import { read, type DeploymentEnvironment, type Findings } from './findings'
 import { parseLinkTokenKeys } from './link-keys'
 
@@ -47,7 +49,7 @@ export function checkPlatform(
     if (read(env, name) === undefined) findings.refuse(name, 'is not set (DEPLOYMENT.md §8)')
   }
   // Wherever it runs: a host the allow-list cannot name picks no site, so every page is a 404.
-  for (const { subject, message } of siteHostProblems(env)) findings.refuse(subject, message)
+  for (const { subject, message } of hostProblems(env)) findings.refuse(subject, message)
   for (const name of DEPLOYED) {
     if (read(env, name) === undefined)
       findings.require(name, 'is not set (DEPLOYMENT.md §8)', environment)
@@ -144,4 +146,17 @@ function loadersSource(
     )
   }
   return source
+}
+
+/**
+ * The allow-list's problems: today's two-site lists (`GALLERY_HOSTS`, `SHOP_HOSTS`), or, in one
+ * app's environment (PLAN-V2 §4.5: `SITE_HOSTS` and neither two-site list, TASKS.md 23.5), that
+ * app's own (`../sites/app-hosts`). With `SITE_HOSTS` set the parse reads that one variable for
+ * either site, so the boot check, which knows no app, needs to name none.
+ */
+function hostProblems(env: Env): readonly { subject: string; message: string }[] {
+  const oneApp =
+    Boolean(env.SITE_HOSTS?.trim()) && !env.GALLERY_HOSTS?.trim() && !env.SHOP_HOSTS?.trim()
+  if (!oneApp) return siteHostProblems(env)
+  return SITE_KEYS.map((site) => appHostProblems(site, env)).find((found) => found.length > 0) ?? []
 }

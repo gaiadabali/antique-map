@@ -22,7 +22,7 @@ import { postCliTags, cliInvalidation } from '@engine/cms/import'
 import type { Payload } from '@engine/cms/instance'
 import { derivePending, renderDerivatives, renderSeedRun, seedLayer } from '@engine/cms/seed'
 
-import { seedShopPages } from '../../../../server/shop/pages/seed/pages'
+import { seedShopPages } from '@engine/storefront/server/pages/seed/pages'
 
 export const SEED_ACTIONS = [
   'everything',

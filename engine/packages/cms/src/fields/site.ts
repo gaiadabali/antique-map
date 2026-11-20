@@ -13,6 +13,21 @@ export const SITE_OPTIONS = [
 export const SITE_VALUES = ['gallery', 'shop'] as const
 export type Site = (typeof SITE_VALUES)[number]
 
+/**
+ * The `site` field the shared collections (pages, redirects, leads, events, chat sessions) are
+ * given while this one CMS keeps both sites' records in one table (`@engine/cms-core` factories'
+ * `site` option, dropped in phase 26): required, in the sidebar, with no note — and indexed only
+ * where the collection asks (events).
+ */
+export const recordSiteField = (options?: { index?: boolean }): SelectField => ({
+  name: 'site',
+  type: 'select',
+  required: true,
+  ...(options?.index ? { index: true } : {}),
+  options: SITE_OPTIONS,
+  admin: { position: 'sidebar' },
+})
+
 export const siteField = (options?: { index?: boolean }): SelectField => ({
   name: 'site',
   type: 'select',

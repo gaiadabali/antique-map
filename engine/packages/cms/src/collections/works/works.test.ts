@@ -3,12 +3,12 @@
  * names, the access each has, and the hooks every save passes — without a database (the database
  * proofs are `./works.db.test.ts`).
  */
+import { DRAFTED_ACCESS, publishedOrStaff } from '@engine/cms-core/access'
 import type { Field } from 'payload'
 import { describe, expect, it } from 'vitest'
 
-import { DRAFTED_ACCESS, publishedOrStaff } from '../../access/published'
 import { stampAiDraft } from '../../ai/audit'
-import { VOCABULARY_ACCESS } from '../terms/vocabulary/access'
+import { VOCABULARY_ACCESS } from '@engine/cms-core/access/vocabulary'
 import { stampCataloguing } from '../../hooks/work-cataloguing'
 import { guardWork } from '../../hooks/work-guard'
 import { invalidateWorkOnChange, invalidateWorkOnDelete } from '../../hooks/work-invalidate'

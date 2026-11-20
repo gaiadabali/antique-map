@@ -4,8 +4,13 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { compared } from './compare'
-import { instantBounds, resolvePeriod, shiftDay, witaDay } from './period'
+import { compared } from '@engine/cms-core/admin/dashboard/compare'
+import {
+  instantBounds,
+  resolvePeriod,
+  shiftDay,
+  witaDay,
+} from '@engine/cms-core/admin/dashboard/period'
 import { replyDeadline } from './loaders/asks'
 
 describe('periods', () => {

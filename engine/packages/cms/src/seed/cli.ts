@@ -5,10 +5,10 @@
  *
  * `--dry-run` applies the layer's files in transactions it then rolls back: the report is the
  * real one, nothing is written. `--publish` is the importer's publish-these-records flag, and it
- * publishes the vocabulary rows the seed names that are still drafts (`./vocabulary/publish`). The
+ * publishes the vocabulary rows the seed names that are still drafts (`@engine/cms-shop/seed`'s `publishVocabulary`). The
  * reports print to stdout; the process exits non-zero when the layer could not even start.
  */
-import { ImportError } from '../import/csv'
+import { ImportError } from '@engine/cms-core/import/csv'
 import { seedEnv } from './env'
 import { renderSeedRun, SEED_LAYERS, seedLayer, type SeedLayer } from './run'
 
@@ -37,7 +37,7 @@ async function main(): Promise<number> {
   // Imported after the environment is filled: the config reads it at load time.
   const { cms } = await import('../instance')
   const payload = await cms()
-  const { cliInvalidation, postCliTags } = await import('../import/cli-cache')
+  const { cliInvalidation, postCliTags } = await import('@engine/cms-core/import/cli-cache')
   const batch = cliInvalidation()
   const run = await seedLayer(parsed.layer, {
     payload,

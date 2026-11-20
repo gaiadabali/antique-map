@@ -1,99 +1,81 @@
 - link "Skip to content":
     - /url: '#main'
 - banner:
+    - button "Open menu"
     - link "Old East Indies, home":
         - /url: /
         - text: Old East Indies
-    - button "Open menu"
+    - button "Search"
+    - link "Bag":
+        - /url: /bag
 - main:
-    - article:
-        - navigation "Breadcrumb":
-            - list:
-                - listitem:
-                    - link "Shop":
-                        - /url: /shop
-                - listitem:
-                    - link "Bali":
-                        - /url: /collections/bali
-                - listitem: Balinese Dancer Photograph, c. 1927
-        - figure "Digital mockup":
-            - 'img "Digital mockup: Balinese Dancer Photograph, c. 1927, close view of the artwork"'
-            - text: Digital mockup
-        - figure "Digital mockup":
-            - 'img "Digital mockup: Balinese Dancer Photograph, c. 1927, close view of the artwork"'
-            - text: Digital mockup
-        - figure "Digital mockup":
-            - 'img "Digital mockup: Balinese Dancer Photograph, c. 1927, close view of the artwork"'
-            - text: Digital mockup
-        - figure "Digital mockup":
-            - 'img "Digital mockup: Balinese Dancer Photograph, c. 1927, print in a wood frame with a cream mat"'
-            - text: Digital mockup
-        - figure "Digital mockup":
-            - 'img "Digital mockup: Balinese Dancer Photograph, c. 1927, print in a cream mat with its story card"'
-            - text: Digital mockup
-        - figure "Digital mockup":
-            - 'img "Digital mockup: Balinese Dancer Photograph, c. 1927, print in a cream mat with its story card"'
-            - text: Digital mockup
-        - heading "Balinese Dancer Photograph, c. 1927" [level=1]
-        - paragraph: Reproduction
-        - paragraph: SKU SEED-IG04
-        - group "Choose an option":
-            - text: Choose an option
-            - radiogroup "Mounted print":
-                - radio "Mounted print" [checked]
-                - text: Mounted print
-                - radio "Framed print"
-                - text: Framed print
-        - paragraph: Rp 450.000
+    - article "Editor print, run MWIYWDUU":
+        - img "Editor print, run MWIYWDUU"
+        - list "Other views":
+            - listitem:
+                - button "View 1" [pressed]:
+                    - img "Editor print, run MWIYWDUU"
+            - listitem:
+                - button "View 2":
+                    - img "Editor print, run MWIYWDUU"
+            - listitem:
+                - button "View 3":
+                    - img "Editor print, run MWIYWDUU"
+            - listitem:
+                - button "View 4":
+                    - img "Editor print, run MWIYWDUU"
+            - listitem:
+                - button "View 5":
+                    - img "Editor print, run MWIYWDUU"
+            - listitem:
+                - button "View 6":
+                    - img "Editor print, run MWIYWDUU"
+        - button "Enlarge"
+        - heading "Editor print, run MWIYWDUU" [level=1]
+        - link "Prints":
+            - /url: /collections/prints
+        - paragraph: Reproduction · SKU E2E-PE-MWIYWDUU
+        - paragraph: Rp 185.000
+        - text: 'Option: A4'
+        - 'radiogroup "Option: A4"':
+            - radio "A4" [checked]
+            - text: A4
+            - radio "A3"
+            - text: A3
         - button "Add to bag"
-        - text: In stock
+        - status: In stock
         - paragraph: Sent from the nearest store by Gojek or Grab. The fee shows at checkout once you drop a pin — free over Rp 500.000.
-        - heading "About this product" [level=2]
-        - paragraph: This autochrome portrait by Franklin Price Knott captures a nine-year-old Balinese dancer in elaborate traditional attire, crowned with an ornate gold-colored headdress and dressed in richly detailed ceremonial clothing. Taken in 1927 during the 73-year-old photographer’s ambitious 40,000-mile journey through Japan, China, the Philippines, Bali, and India for the National Geographic Society, the image is one of the earliest color photographs of Bali. Knott’s autochromes are regarded as milestones in the history of color photography. His Bali pictures helped introduce Western audiences to the island’s culture and beauty in the late 1920s, just before the height of the “Beautiful Indies” (Mooi Indië) promotional era of the 1930s, when shipping lines such as the Java-China-Japan Lijn marketed Bali as “the Isles of Romance and Beauty”.
+        - list:
+            - listitem: 300gsm cotton · archival inks
+            - listitem: Printed in our own workshop
+        - region "About this product":
+            - heading "About this product" [level=2]
+            - paragraph: A print made in the 27.2 editor test.
 - contentinfo:
-    - list:
-        - listitem:
-            - link "Privacy":
-                - /url: /privacy
-        - listitem:
-            - link "Terms":
-                - /url: /terms
-        - listitem:
-            - link "Antique Maps Indonesia — the originals we print from":
-                - /url: http://gallery.localhost:4417/
-    - navigation:
+    - navigation "Shop":
+        - heading "Shop" [level=2]
         - list:
             - listitem:
-                - link "Shop prints":
-                    - /url: /shop
-            - listitem:
-                - link "Gallery walls":
-                    - /url: /collections
-            - listitem:
-                - link "Where to buy":
-                    - /url: /stores
-            - listitem:
-                - link "Partnership":
-                    - /url: /partnership
-            - listitem:
-                - link "Delivery":
-                    - /url: /delivery
-            - listitem:
-                - link "Frequently asked":
-                    - /url: /faq
-            - listitem:
-                - link "About us":
-                    - /url: /about
-            - listitem:
-                - link "Contact":
-                    - /url: /contact
-    - paragraph: Our contact details are being added. Please check back soon.
+                - link "About":
+                    - /url: /
+    - heading "Contact" [level=2]
     - list:
         - listitem:
-            - link "Instagram":
+            - link "Ask on WhatsApp (opens in a new tab)":
+                - /url: https://wa.me/6281299253712
+        - listitem:
+            - link "Instagram (opens in a new tab)":
                 - /url: https://www.instagram.com/oldeastindiesart/
         - listitem:
-            - link "Facebook":
+            - link "Facebook (opens in a new tab)":
                 - /url: https://www.facebook.com/OldEastIndies
+    - list:
+        - listitem:
+            - link "Privacy policy":
+                - /url: /
+    - paragraph: © OEI en
+    - link "Gallery en (opens in a new tab)":
+        - /url: https://antiquemapsindonesia.com/
+        - text: Gallery en
 - button "Chat with us"
 - alert

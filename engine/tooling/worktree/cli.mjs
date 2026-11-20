@@ -6,20 +6,27 @@
 //     feat/p<phase>-<lane> (reusing the branch if it exists), then writes its
 //     .env.local. Re-running on an existing worktree only does the env step.
 //
-//   pnpm worktree:env <phase> <lane> [--force]
+//   pnpm worktree:env <phase> <lane> [--force] [--out <dir>]
 //     Writes .env.local in the worktree you are in (e.g. one the Agent tool
-//     made with isolation: "worktree").
+//     made with isolation: "worktree"). --out writes the same files under
+//     <dir> instead (same layout), to look before writing.
+//
+// Two apps, two ports (PLAN-V2 §4.4, TASKS.md 24.2.a): besides the root file,
+// each app gets its own .env.local (app-env.mjs) — engine/apps/web (today's
+// app, the gallery's port) and engine/apps/shop (the shop's port) — with its
+// PORT, DATABASE_URL, hosts and generated dev secrets.
 //
 // .env.local gets PORT, DB_SUFFIX and — when it has none — a fresh development
 // LINK_TOKEN_KEYS ring (link-keys.mjs, TASKS.md 3.3.b) and
 // LOCAL_PRODUCTION_BUILD=1 (local-build.mjs, 3.5.g). An existing PORT or
 // DB_SUFFIX with a different value is kept unless --force is passed; an existing
 // ring or LOCAL_PRODUCTION_BUILD is always kept; nothing else is touched.
-import { existsSync } from 'node:fs'
-import { basename, dirname, join } from 'node:path'
+import { existsSync, mkdirSync } from 'node:fs'
+import { basename, dirname, join, resolve } from 'node:path'
 
+import { appEnvPlan, postgresEnv, writeAppEnvs } from './app-env.mjs'
 import {
-  allocatePort,
+  allocateAppPorts,
   branchName,
   dbSuffix,
   parseLane,
@@ -38,25 +45,27 @@ import { addWorktree, listWorktrees, otherClaims, pathKey, topLevel } from './gi
 
 const USAGE = `usage:
   pnpm worktree <phase> <lane> [--base <ref>] [--force]
-  pnpm worktree:env <phase> <lane> [--force]
+  pnpm worktree:env <phase> <lane> [--force] [--out <dir>]
 
   <phase>   the TASKS.md phase number (1-60)
   <lane>    a PARALLEL-TRACKS.md §1 lane (HAR, SCH, ...) or a split such as ARC-P
   --base    the ref a new branch starts from (default: main)
-  --force   overwrite PORT / DB_SUFFIX in .env.local when they differ
-            (an existing LINK_TOKEN_KEYS ring or LOCAL_PRODUCTION_BUILD
-            is never overwritten)`
+  --force   overwrite PORT / DB_SUFFIX / DATABASE_URL / hosts when they
+            differ (a generated secret or LOCAL_PRODUCTION_BUILD is never
+            overwritten)
+  --out     worktree:env only: write the files under <dir>, not the worktree`
 
 const HEADER = [
   '# Local settings for this worktree (gitignored). PORT, DB_SUFFIX, a dev',
   '# LINK_TOKEN_KEYS ring and LOCAL_PRODUCTION_BUILD=1 were written by',
   '# `pnpm worktree:env`; add other secrets by hand, never commit them.',
+  '# Each app reads its own engine/apps/<app>/.env.local (written alongside).',
 ]
 
 class UsageError extends Error {}
 
 function parseArgs(argv) {
-  const args = { mode: 'create', positional: [], base: 'main', force: false }
+  const args = { mode: 'create', positional: [], base: 'main', force: false, out: null }
   const rest = [...argv]
   if (rest[0] === 'env') {
     args.mode = 'env'
@@ -68,6 +77,9 @@ function parseArgs(argv) {
     else if (arg === '--base') {
       args.base = rest.shift()
       if (!args.base) throw new UsageError('--base needs a ref')
+    } else if (arg === '--out') {
+      args.out = rest.shift()
+      if (!args.out) throw new UsageError('--out needs a directory')
     } else if (arg === '-h' || arg === '--help') args.help = true
     else if (arg.startsWith('-')) throw new UsageError(`unknown option ${arg}`)
     else args.positional.push(arg)
@@ -77,11 +89,14 @@ function parseArgs(argv) {
   if (args.mode === 'env' && args.base !== 'main') {
     throw new UsageError('--base only applies to `pnpm worktree`')
   }
+  if (args.mode !== 'env' && args.out !== null) {
+    throw new UsageError('--out only applies to `pnpm worktree:env`')
+  }
   return args
 }
 
 /** Writes PORT, DB_SUFFIX and (when absent) a dev link-key ring into `target`'s .env.local. */
-function writeWorktreeEnv({ target, phase, lane, force = false, log = console.log }) {
+function writeWorktreeEnv({ target, out = target, phase, lane, force = false, log = console.log }) {
   const claims = otherClaims(target, target)
   const suffix = dbSuffix(phase, lane)
   const clash = claims.find((claim) => claim.suffix === suffix)
@@ -91,9 +106,12 @@ function writeWorktreeEnv({ target, phase, lane, force = false, log = console.lo
         'would share databases: give this one a distinct lane label (e.g. ARC-P and ARC-D).',
     )
   }
-  const used = new Set(claims.map((claim) => claim.port).filter((port) => port !== null))
-  const port = allocatePort(phase, lane, used)
-  const file = join(target, '.env.local')
+  const used = new Set(claims.flatMap((claim) => claim.ports))
+  const ports = allocateAppPorts(phase, lane, used)
+  const port = ports.gallery
+  const file = join(out, '.env.local')
+  mkdirSync(out, { recursive: true })
+  const rootEnv = readEnvFile(file)
   const wanted = { PORT: String(port), DB_SUFFIX: suffix }
   const outcome = writeEnvFile(file, wanted, { force, header: HEADER })
 
@@ -127,17 +145,26 @@ function writeWorktreeEnv({ target, phase, lane, force = false, log = console.lo
   log(
     `  ${LOCAL_BUILD_VARIABLE}=${currentLocalBuild(file)}  ${outcome[LOCAL_BUILD_VARIABLE]}: ${buildNote}`,
   )
+  const apps = writeAppEnvs({
+    root: out,
+    plan: appEnvPlan({ suffix, ports, pg: postgresEnv(rootEnv) }),
+    force,
+    log,
+  })
   // A kept value was not allocated here, so it may clash; say so rather than guess.
   const final = readEnvFile(file)
   for (const claim of claims) {
-    if (claim.port !== null && String(claim.port) === final.get('PORT')) {
-      console.warn(`warning: PORT ${claim.port} is also used by ${claim.path}`)
+    for (const [app, { file: appFile }] of Object.entries(apps)) {
+      const appPort = Number(readEnvFile(appFile).get('PORT'))
+      if (claim.ports.includes(appPort)) {
+        console.warn(`warning: PORT ${appPort} (${app}) is also used by ${claim.path}`)
+      }
     }
     if (claim.suffix !== null && claim.suffix === final.get('DB_SUFFIX')) {
       console.warn(`warning: DB_SUFFIX ${claim.suffix} is also used by ${claim.path}`)
     }
   }
-  return { file, port, suffix, outcome }
+  return { file, port, ports, suffix, outcome, apps }
 }
 
 /** The value now in the file (not a secret, so it may be logged). */
@@ -162,7 +189,7 @@ function createWorktree({ phase, lane, base, force, cwd }) {
     console.log(`created worktree ${dir} on ${branch}`)
   }
   writeWorktreeEnv({ target: dir, phase, lane, force })
-  console.log(`next: cd "${dir}" && pnpm install`)
+  console.log(`next: cd "${dir}" && pnpm install && pnpm db:fresh && pnpm db:fresh --app shop`)
 }
 
 function main(argv) {
@@ -175,7 +202,9 @@ function main(argv) {
   const lane = parseLane(args.positional[1])
   const cwd = process.cwd()
   if (args.mode === 'env') {
-    writeWorktreeEnv({ target: topLevel(cwd), phase, lane, force: args.force })
+    const target = topLevel(cwd)
+    const out = args.out === null ? target : resolve(args.out)
+    writeWorktreeEnv({ target, out, phase, lane, force: args.force })
   } else {
     createWorktree({ phase, lane, base: args.base, force: args.force, cwd })
   }

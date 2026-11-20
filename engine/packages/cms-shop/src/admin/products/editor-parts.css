@@ -1,0 +1,277 @@
+/* The product editor's parts (TASKS.md 27.2), imported by `./editor.css` before its own rules and its
+   phone rules, which therefore win: the photo wall, the variant and stock tables, the document
+   buttons, the list's thumbnails, chips and bulk move. Tokens only, as `./editor.css`. */
+
+/* ---- tags ---------------------------------------------------------------------------------- */
+
+.pe-tag {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  font: var(--admin-text-label);
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--admin-ink);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+}
+
+.pe-tag--danger {
+  color: var(--admin-danger);
+  background: var(--admin-danger-tint);
+  border-color: var(--admin-danger-tint);
+}
+
+/* ---- photos -------------------------------------------------------------------------------- */
+
+.pe-drop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--base) * 0.75);
+  padding: calc(var(--base) * 1.25) calc(var(--base) * 0.75);
+  background: var(--admin-paper);
+  border: 1px dashed var(--admin-input-border);
+  border-radius: var(--admin-radius-control);
+}
+
+.pe-drop--over {
+  background: var(--admin-accent-tint);
+  border-color: var(--admin-accent);
+}
+
+.pe-drop__text {
+  font: var(--admin-text-body);
+  color: var(--admin-muted);
+}
+
+.pe-drop .pe-btn {
+  position: relative;
+}
+
+.pe-drop .pe-btn:focus-within {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 2px;
+}
+
+.pe-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: calc(var(--base) * 0.75);
+  margin: calc(var(--base) * 0.75) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pe-photo {
+  min-inline-size: 0;
+  padding: calc(var(--base) * 0.5);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+}
+
+.pe-photo--target {
+  border-color: var(--admin-accent);
+  background: var(--admin-accent-tint);
+}
+
+.pe-photo--pending {
+  opacity: 0.6;
+}
+
+.pe-photo__handle {
+  position: relative;
+  cursor: grab;
+}
+
+.pe-photo__img {
+  display: block;
+  inline-size: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  background: var(--admin-mat);
+}
+
+.pe-photo__img--none {
+  border: 1px solid var(--admin-mat-edge);
+}
+
+.pe-photo__cover {
+  position: absolute;
+  inset-block-start: calc(var(--base) * 0.35);
+  inset-inline-start: calc(var(--base) * 0.35);
+}
+
+.pe-photo__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--base) * 0.35);
+  margin-block-start: calc(var(--base) * 0.35);
+}
+
+.pe-photo__actions .pe-btn {
+  margin-inline-start: auto;
+}
+
+/* ---- variants and stock tables ------------------------------------------------------------- */
+
+.pe-options {
+  /* A fieldset is as wide as its content by default; on a phone it must fit the column. */
+  min-inline-size: 0;
+  margin: 0 0 calc(var(--base) * 0.5);
+  padding: calc(var(--base) * 0.75);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+}
+
+.pe-option {
+  display: grid;
+  grid-template-columns: minmax(8rem, 1fr) minmax(12rem, 2fr) auto;
+  align-items: end;
+  gap: calc(var(--base) * 0.5);
+}
+
+.pe-scroll {
+  /* Holds its visually hidden labels: absolutely placed, they would otherwise widen the page. */
+  position: relative;
+  max-inline-size: 100%;
+  overflow-x: auto;
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+}
+
+.pe-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font: var(--admin-text-data);
+}
+
+.pe-table th,
+.pe-table td {
+  padding: calc(var(--base) * 0.35) calc(var(--base) * 0.5);
+  text-align: start;
+  vertical-align: top;
+  border-block-end: 1px solid var(--admin-hairline);
+}
+
+.pe-table thead th {
+  font: var(--admin-text-label);
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--admin-muted);
+  background: var(--admin-wash);
+}
+
+.pe-table tfoot th,
+.pe-table tfoot td {
+  font: var(--admin-text-strong);
+  border-block-end: 0;
+}
+
+.pe-table__center {
+  text-align: center;
+}
+
+.pe-stock__store {
+  position: sticky;
+  inset-inline-start: 0;
+  min-inline-size: 10rem;
+  font: var(--admin-text-strong);
+  background: var(--admin-paper);
+}
+
+.pe-stock__cell .pe-input {
+  inline-size: 7rem;
+}
+
+.pe-stock__find {
+  max-inline-size: 22rem;
+  margin-block-end: calc(var(--base) * 0.5);
+}
+
+/* ---- the document's buttons ---------------------------------------------------------------- */
+
+.pe-doc-actions {
+  display: flex;
+  flex: none;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: calc(var(--base) * 0.5);
+}
+
+/* ---- the list ------------------------------------------------------------------------------ */
+
+.pe-thumb {
+  display: block;
+  inline-size: 3rem;
+  block-size: 3rem;
+  object-fit: contain;
+  background: var(--admin-mat);
+}
+
+.pe-thumb--none {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: var(--admin-text-label);
+  text-align: center;
+  color: var(--admin-muted);
+  border: 1px solid var(--admin-mat-edge);
+}
+
+.pe-listbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--base) * 0.5) calc(var(--base) * 1);
+  margin-block-end: calc(var(--base) * 0.75);
+}
+
+.pe-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--base) * 0.35);
+}
+
+.pe-chip[aria-current='page'] {
+  color: var(--admin-accent-strong);
+  background: var(--admin-accent-tint);
+  border-color: var(--admin-accent);
+}
+
+.pe-chips .pe-chips__select {
+  inline-size: auto;
+  min-inline-size: 11rem;
+}
+
+.pe-bulk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--base) * 0.5);
+}
+
+.pe-bulk .pe-mini-label {
+  margin: 0;
+}
+
+.pe-bulk .pe-select {
+  inline-size: auto;
+  min-inline-size: 11rem;
+}
+
+.pe-table .pe-input:not(.pe-input--num):not(.pe-input--code) {
+  min-inline-size: 8rem;
+}
+
+.pe-table .pe-input--code {
+  min-inline-size: 15rem;
+}
+
+.pe-table .pe-input--num {
+  min-inline-size: 9.5rem;
+}

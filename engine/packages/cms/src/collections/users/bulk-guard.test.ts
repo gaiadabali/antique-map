@@ -2,11 +2,11 @@
  * The bulk last-owner guard without a database (`./guards` `keepAnOwnerInBulk`); its database and
  * REST proof is `./bulk-guard.db.test.ts`.
  */
+import { keepAnOwnerInBulk } from '@engine/cms-core/collections/users'
 import { ValidationError } from 'payload'
 import { describe, expect, it } from 'vitest'
 
 import { anOwner, call, fakeReq } from './fake-req.test-support'
-import { keepAnOwnerInBulk } from './guards'
 import { Users } from './index'
 
 describe('the last owner, in bulk', () => {

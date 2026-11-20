@@ -11,8 +11,15 @@ import type { MediaPipelineStore } from '@engine/media/pipeline'
 import type { Payload, PayloadRequest } from 'payload'
 import { describe, expect, it, vi } from 'vitest'
 
-import { deriveMedia, isUpToDate, PIPELINE_CONTEXT_KEY } from './pipeline'
-import { derivativesAfterUploadWith, serially } from './pipeline-hook'
+import {
+  deriveMedia,
+  isUpToDate,
+  PIPELINE_CONTEXT_KEY,
+} from '@engine/cms-core/collections/media/pipeline'
+import {
+  derivativesAfterUploadWith,
+  serially,
+} from '@engine/cms-core/collections/media/pipeline-hook'
 import { JPEG } from './test-stack.test-support'
 
 const ASSET = 'abcdefabcdefabcdefabcdefabcdef12'

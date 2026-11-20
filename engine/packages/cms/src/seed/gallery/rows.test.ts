@@ -7,7 +7,7 @@
  */
 import { describe, expect, it } from 'vitest'
 
-import { ANTIQUE_COLUMNS } from '../../import/kinds'
+import { ANTIQUE_COLUMNS } from '@engine/cms-core/import/kinds'
 import { sampleRows } from '../run'
 import type { NormalisedGalleryRecord } from './records'
 import {

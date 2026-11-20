@@ -2,12 +2,16 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { ADMINS_LOCK_KEY } from '@engine/cms-core/collections/users'
+import {
+  advisoryLockKey,
+  finishMigrationSource,
+  typeOnlyImports,
+  withLockTimeout,
+} from '@engine/cms-core/db'
 import { describe, expect, it } from 'vitest'
 
-import { ADMINS_LOCK_KEY } from '../collections/users/guards'
 import { migrations } from '../migrations'
-import { advisoryLockKey } from './advisory-lock'
-import { finishMigrationSource, typeOnlyImports, withLockTimeout } from './migration-template'
 
 const migrationDir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../migrations')
 const source = (name: string) => fs.readFileSync(path.join(migrationDir, `${name}.ts`), 'utf8')

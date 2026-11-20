@@ -1,0 +1,74 @@
+/* The shop's contact details (TASKS.md 28.2): a slim warm bar above the header, and a block in the
+   phone's menu. Every value is a token. */
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item a,
+.item span {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-text);
+}
+
+.item a {
+  text-decoration: none;
+}
+
+.item a:hover,
+.item a:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+/* The bar: one centred line of 12 px words, each a 32 px target. */
+.bar {
+  position: relative;
+  z-index: 101;
+  padding-inline: var(--shop-gutter);
+  background: var(--shop-warm);
+  font: var(--shop-text-meta);
+}
+
+.bar .list {
+  justify-content: center;
+  gap: 0 var(--space-5);
+}
+
+.bar .item a,
+.bar .item span {
+  min-block-size: 2rem;
+}
+
+/* The menu: the lines stacked under the links, each a 44 px target. */
+.menu {
+  padding: var(--space-3) var(--shop-gutter);
+  box-shadow: inset 0 var(--rule-hair) 0 var(--color-border);
+  font: var(--shop-text-body);
+}
+
+.menu .list {
+  flex-direction: column;
+}
+
+.menu .item a,
+.menu .item span {
+  min-block-size: 44px;
+}
+
+.menu .item span {
+  white-space: pre-line;
+}
+
+/* On a phone the bar keeps the phone and WhatsApp; the rest is in the menu and the footer. */
+@media (max-width: 56.25rem) {
+  .bar [data-line='email'],
+  .bar [data-line='address'] {
+    display: none;
+  }
+}

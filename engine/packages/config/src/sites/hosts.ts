@@ -52,6 +52,11 @@ const HOSTNAME =
 /** A `Host` header: a hostname, an optional trailing dot (the root), an optional port. */
 const HOST_HEADER = /^([^:]+?)\.?(?::(\d{1,5}))?$/
 
+/** A bare DNS name as the allow-lists take it: lower case, no scheme, port, path or trailing dot. */
+export function isHostname(value: string): boolean {
+  return HOSTNAME.test(value)
+}
+
 const memo = new Map<string, SiteHostsResult>()
 
 /** The allow-list this environment names, or why it cannot be used. */
@@ -196,10 +201,19 @@ export function siteOrigin(site: SiteKey, env: Env = process.env): string | null
   return host === null ? null : originOf(host, env)
 }
 
-/** The admin host's origin (Payload's `serverURL`), or `null` while the allow-list is unusable. */
+/**
+ * The admin host's origin (Payload's `serverURL`), or `null` while the allow-list is unusable. In
+ * one app's environment (`SITE_HOSTS` and no two-site lists, PLAN-V2 §4.5) it is that app's admin
+ * host, judged in full by `./app-hosts`: the shared CMS factories call this without knowing which
+ * app runs them.
+ */
 export function adminOrigin(env: Env = process.env): string | null {
   const result = readSiteHosts(env)
-  return result.ok ? originOf(result.hosts.admin, env) : null
+  if (result.ok) return originOf(result.hosts.admin, env)
+  if (env.GALLERY_HOSTS?.trim() || env.SHOP_HOSTS?.trim()) return null
+  const first = (env.SITE_HOSTS ?? '').split(',')[0]?.trim().toLowerCase() ?? ''
+  const admin = (env.ADMIN_HOST ?? '').trim().toLowerCase() || first
+  return HOSTNAME.test(first) && HOSTNAME.test(admin) ? originOf(admin, env) : null
 }
 
 /** Every site's canonical origin: what Payload's CSRF and CORS lists hold. `[]` when unusable. */

@@ -1,18 +1,21 @@
+import {
+  altInDefaultLocaleFirst,
+  deriveFromFile,
+  freezeAfterCreate,
+  mayCorrectIntake,
+  MEDIA_ACCESS,
+  PROVENANCE_LABELS,
+  refuseOversizedUpload,
+  requiredOfAnImage,
+  ROLE_LABELS,
+  validateAlt,
+} from '@engine/cms-core/collections/media'
 import { MEDIA_PROVENANCES, MEDIA_ROLES } from '@engine/media/contract'
 import { MEDIA_UPLOAD_MAX_BYTES, MEDIA_UPLOAD_MIME_TYPES } from '@engine/media/storage'
 import { describe, expect, it, vi } from 'vitest'
 
-import { MEDIA_ACCESS } from './access'
-import { MEDIA_FIELDS, validateAlt } from './fields'
-import { freezeAfterCreate, mayCorrectIntake } from './frozen'
-import {
-  altInDefaultLocaleFirst,
-  deriveFromFile,
-  matchItsMaster,
-  refuseOversizedUpload,
-} from './hooks'
-import { Media } from './index'
-import { PROVENANCE_LABELS, ROLE_LABELS } from './options'
+import { Media, MEDIA_FIELDS } from './index'
+import { matchItsMaster } from './master'
 
 type Hook = (args: never) => unknown
 const call = (hook: Hook, args: Record<string, unknown>) => hook(args as never)
@@ -23,18 +26,23 @@ const access = (fn: unknown, user: unknown, extra: object = {}) =>
   (fn as (a: unknown) => unknown)({ req: { user }, ...extra })
 
 describe('the media collection (8.3.a, 8.3.d)', () => {
-  it('is an upload collection of web rasters only, with no crop, no pasted URL and no Payload sizes', () => {
+  it('is an upload collection of web rasters, web video and PDF, with no crop, no pasted URL and no Payload sizes', () => {
     expect(Media.slug).toBe('media')
     expect(Media.upload).toMatchObject({ crop: false, focalPoint: true, pasteURL: false })
     expect((Media.upload as { mimeTypes: string[] }).mimeTypes).toEqual([
       ...MEDIA_UPLOAD_MIME_TYPES,
     ])
     expect((Media.upload as { mimeTypes: string[] }).mimeTypes).not.toContain('image/tiff')
+    expect((Media.upload as { mimeTypes: string[] }).mimeTypes).not.toContain('image/svg+xml')
+    expect((Media.upload as { mimeTypes: string[] }).mimeTypes).not.toContain('text/html')
     expect((Media.upload as { imageSizes?: unknown }).imageSizes).toBeUndefined()
   })
 
-  it('requires localised alt text, and refuses whitespace for it', () => {
-    expect(field('alt')).toMatchObject({ type: 'text', localized: true, required: true })
+  it('requires localised alt text of an image, and refuses whitespace for it', () => {
+    expect(field('alt')).toMatchObject({ type: 'text', localized: true, validate: validateAlt })
+    const image = { data: { mimeType: 'image/jpeg' } } as never
+    expect(validateAlt('   ', image)).toMatch(/Describe the image/)
+    expect(validateAlt('', { data: { mimeType: 'application/pdf' } } as never)).toBe(true)
     expect(validateAlt('   ', {} as never)).toMatch(/Describe the image/)
     expect(validateAlt(undefined, {} as never)).toMatch(/Describe the image/)
     expect(validateAlt('x'.repeat(501), {} as never)).toMatch(/500 characters/)
@@ -47,8 +55,8 @@ describe('the media collection (8.3.a, 8.3.d)', () => {
     expect(values(field('role'))).toEqual([...MEDIA_ROLES])
     expect(values(field('role'))).not.toContain('primary')
     expect(values(field('provenance'))).toEqual([...MEDIA_PROVENANCES])
-    expect(field('role')).toMatchObject({ required: true })
-    expect(field('provenance')).toMatchObject({ required: true })
+    expect(field('role')).toMatchObject({ validate: requiredOfAnImage })
+    expect(field('provenance')).toMatchObject({ validate: requiredOfAnImage })
     expect(field('provenance')).not.toHaveProperty('defaultValue')
     expect(MEDIA_FIELDS.some((f) => 'name' in f && f.name === 'aiGenerated')).toBe(false)
     for (const value of [...MEDIA_ROLES, 'reference']) expect(ROLE_LABELS).toHaveProperty(value)
@@ -239,6 +247,7 @@ describe('what intake set stays set (finding 3)', () => {
   })
 
   it('is on the collection, before the file is read', () => {
-    expect(Media.hooks?.beforeChange).toHaveLength(2)
+    // The freeze, then the kind from the file, then the label from the words (TASKS.md 27.7).
+    expect(Media.hooks?.beforeChange).toHaveLength(3)
   })
 })

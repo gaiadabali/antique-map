@@ -4,6 +4,20 @@ The summary agents read first (after `AGENTS.md` and `docs/PLAN.md`). Detail liv
 
 ## What it is
 
+**Target (DR-17, `docs/PLAN-V2.md`): two apps, two Payload configs, two databases, one repo.**
+
+```text
+engine/apps/shop/        Old East Indies — cms-shop    — DB indies_shop    — /admin on the shop's host (owner, editor, store)
+engine/apps/gallery/     Indies Gallery  — cms-gallery — DB indies_gallery — /admin on the gallery's host (owner, editor)
+engine/packages/         cms-core (shared fields, access, roles, collection factories, migration tooling) · cms-shop ·
+                         cms-gallery · ui (tokens, components) · chat · config · http · i18n · cache · media · migrate · view-models
+```
+
+Each app serves one site (an unknown host is a 404), with no `site` field, its own process, release and media
+bucket. An app never imports the other; shared code is moved into a package, never copied. The shop links a
+product to its antique by stock number through the gallery's public read API. Phases 21–26 in `TASKS.md` get
+there; **until phase 26, today's app below serves both sites**:
+
 One Next.js 16 app with Payload 3.90 embedded and one Postgres database, serving two sites chosen by hostname:
 the **gallery** (antiques; catalogue and enquiry; no price, no cart) and the **shop** (merchandise; guest checkout
 with Midtrans; stock per store; the nearest store delivers). One owner. One admin at `/admin` for roles `owner`,
@@ -27,7 +41,7 @@ engine/packages/           cms (collections, access, the shop's writes, jobs, im
 
 | Topic | Rule |
 | --- | --- |
-| Sites | Hostname → site; records carry `site`; unknown host never builds a URL |
+| Sites | One app per site, one database per app (DR-17); today: hostname → site, records carry `site`; unknown host never builds a URL |
 | Money | Integer rupiah, server-priced, rounded once; the gallery shows no price |
 | Stock | Per store; one atomic `UPDATE … WHERE quantity >= n` at order creation; released on expiry, failure, cancel |
 | Nearest store | Haversine from the buyer's pin over active stores holding every line; none → refuse before payment |
@@ -43,7 +57,7 @@ engine/packages/           cms (collections, access, the shop's writes, jobs, im
 
 ## Reading order for a task
 
-1. `AGENTS.md` → this file → your task in `TASKS.md` and its **Read** list.
+1. `AGENTS.md` → `docs/PLAN-V2.md` → this file → your task in `TASKS.md` and its **Read** list.
 2. For data: `docs/CONTENT-MODEL.md`. For the shop: `docs/COMMERCE.md`. For the chat: `docs/AI.md`. For safety: `docs/SECURITY.md`.
 3. For screens: the site's `docs/EXPERIENCE-*.md` and `docs/DESIGN-SYSTEM.md`.
 

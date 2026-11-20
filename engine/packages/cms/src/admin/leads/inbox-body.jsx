@@ -5,15 +5,16 @@
  * data; access still refuses the query itself (`loadInboxLeads` reads with `overrideAccess: false`,
  * so this check is belt and braces, not the only guard). The page frame is `./inbox.jsx`'s, so a test can call this without loading Payload's templates. `.jsx`: see `./shared.jsx`'s header.
  */
+import { roleOf } from '@engine/cms-core/access'
 import {
   LEAD_KIND_LABELS,
   LEAD_KINDS,
   LEAD_STATUS_LABELS,
   LEAD_STATUSES,
-} from '../../collections/leads/kinds'
-import { roleOf } from '../../collections/users/roles'
+} from '@engine/cms-core/collections/leads'
+
 import { firstLine, loadInboxLeads, loadStatusCounts, timeAgo } from './data'
-import { L, Notice, QuietLink, str } from './shared'
+import { L, Notice, QuietLink, str } from '@engine/cms-core/admin/shared'
 
 function FilterBar({ filter, counts, language }) {
   return (

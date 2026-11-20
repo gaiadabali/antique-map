@@ -4,8 +4,8 @@
  * not a count, so "compared with the period before" would need two populations large enough to
  * mean something — left for the owner to read two periods and compare by eye.
  */
-import type { DashboardContext } from '../context'
-import { inPeriod, num, rowsOf, sql } from '../sql'
+import type { DashboardContext } from '@engine/cms-core/admin/dashboard/context'
+import { inPeriod, num, rowsOf, sql } from '@engine/cms-core/admin/dashboard/sql'
 
 export type VitalsRow = {
   readonly pageType: string

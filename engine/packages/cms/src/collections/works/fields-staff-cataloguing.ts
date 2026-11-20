@@ -2,11 +2,12 @@
  * The rest of a work's staff-only record, split out of `./fields-staff` to keep each file under
  * 300 lines: the cataloguing workflow, the migration's legacy ids, and the SEO overrides.
  */
+import { IMAGES_ONLY } from '@engine/cms-core/collections/media/kinds'
+import { STAFF_ONLY_ACCESS } from '@engine/cms-core/access'
+import { translationStatusField } from '@engine/cms-core/fields'
 import type { Field } from 'payload'
 
 import { AI_DRAFT_FIELDS } from '../../ai/fields'
-import { translationStatusField } from '../../fields/translation-status'
-import { STAFF_ONLY_ACCESS } from '../../access/fields'
 import { CATALOGUING_STATUS_OPTIONS } from './vocabulary'
 
 /** A duplicate is another object: its workflow and legacy ids start empty. */
@@ -108,6 +109,7 @@ export const CATALOGUING_FIELDS: Field[] = [
         name: 'image',
         type: 'upload',
         relationTo: 'media',
+        filterOptions: IMAGES_ONLY,
         label: { en: 'Image', id: 'Gambar' },
       },
     ],

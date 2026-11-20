@@ -1,0 +1,7 @@
+/* The sidebar's own pieces (TASKS.md 27.6.b); the rest is Payload's nav, themed by the app's
+   theme-shell.css. Tokens only. */
+
+/* The home link, set apart from the first group as the groups are from each other. */
+.ix-nav-home {
+  margin-block-end: calc(var(--base) * 0.75);
+}
