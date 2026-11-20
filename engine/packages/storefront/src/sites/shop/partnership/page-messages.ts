@@ -12,11 +12,10 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
   'partnership.eyebrow': 'Partnership',
   'partnership.title': 'Buying for a shop, a hotel, or a company.',
   'partnership.lede':
-    'More than 100 shops across Indonesia already stock Old East Indies. Whatever you are buying for, every piece is printed in our own workshop from antique originals we hold.',
+    'More than 100 shops across Indonesia already stock Old East Indies. Whatever you are buying for, every piece is printed from antique originals we hold.',
   'partnership.ctaApply': 'Start an application',
   'partnership.signalShops': '100+ shops supplied',
-  'partnership.signalWorkshop': 'Printed in our own workshop',
-  'partnership.signalPaper': '300gsm cotton · archival inks',
+  'partnership.signalWorkshop': 'Printed in Bali',
   'partnership.signalShipping': 'Shipping across Indonesia & worldwide',
   'partnership.resellerEyebrow': '01 · Resellers',
   'partnership.resellerTitle': 'Stock Old East Indies in your shop.',

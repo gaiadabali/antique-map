@@ -11,7 +11,7 @@ export const HOME_MESSAGES = defineMessages({
   'home.shop.eyebrow': 'Art souvenirs of the East Indies',
   'home.shop.title': 'Old maps, new walls.',
   'home.shop.lede':
-    'Museum-grade prints of antique maps and engravings, made from originals in our own collection. 300gsm cotton, archival inks.',
+    'Museum-grade prints of antique maps and engravings, made from originals in our own collection.',
   'home.shop.ctaShop': 'Shop prints',
   'home.shop.ctaProcess': 'How we make them',
   'home.shop.heroA': 'The lead print — shown here as a placeholder until its photograph loads',
@@ -33,9 +33,8 @@ export const HOME_MESSAGES = defineMessages({
   'home.shop.processStep2Title': 'Restored by hand, scars kept',
   'home.shop.processStep2Body':
     'We correct foxing, tears and fading. The marks that give a map its character stay — they are part of its story.',
-  'home.shop.processStep3Title': 'Printed in our own workshop',
-  'home.shop.processStep3Body':
-    '300gsm cotton and archival pigment inks, printed in Bali. Not outsourced, not print-on-demand.',
+  'home.shop.processStep3Title': 'Printed in Bali',
+  'home.shop.processStep3Body': 'Every print is made in Bali and sent from Bali.',
   'home.shop.posterWorkshop': 'The workshop — press, paper, inks (placeholder)',
   'home.shop.tradeEyebrow': 'Trade & gifting',
   'home.shop.tradeTitle': 'For shops, hotels and companies',
@@ -46,7 +45,7 @@ export const HOME_MESSAGES = defineMessages({
     'We also make custom gifts for hotels and corporate orders — Bali-themed, printed from the antique originals we hold.',
   'home.shop.tradeCta': 'See partnership options',
   'home.shop.tradeFact1': '100+ shops supplied',
-  'home.shop.tradeFact2': 'Printed in our own workshop',
+  'home.shop.tradeFact2': 'Printed in Bali',
   'home.shop.tradeFact3': 'Custom gifts for hotels and companies',
   'home.shop.originalsEyebrow': 'The originals',
   'home.shop.originalsTitle': 'Every print begins with a map we hold',

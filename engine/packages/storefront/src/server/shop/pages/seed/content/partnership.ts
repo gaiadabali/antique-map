@@ -73,7 +73,6 @@ export function defaultPartnershipBlocks(locale: SiteLocale): readonly ShopBlock
       facts: [
         t('partnership.signalShops'),
         t('partnership.signalWorkshop'),
-        t('partnership.signalPaper'),
         t('partnership.signalShipping'),
       ],
     },
