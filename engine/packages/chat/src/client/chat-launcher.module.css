@@ -28,7 +28,7 @@
   color: var(--chat-launcher-ink, var(--color-text));
   background: var(--chat-launcher-bg, var(--color-surface-raised));
   border: var(--chat-launcher-border, var(--rule-hair) solid var(--color-border-strong));
-  border-radius: var(--radius-pill);
+  border-radius: var(--chat-launcher-radius, var(--radius-pill));
   box-shadow: var(--chat-launcher-shadow, none);
   cursor: pointer;
   transition:

@@ -80,8 +80,9 @@ export async function ShopShell({ shell, t, children }: Props) {
       <ChatLauncher
         label={t('shell.chat')}
         dock
-        // The design pass: the chat icon alone at every width, its words its name.
+        // The design pass: the round chat icon alone at every width, its words its name.
         iconOnly
+        icon="round"
         site="shop"
         locale={locale}
         origin={shopOrigin() ?? ''}
