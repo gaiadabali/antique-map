@@ -45,7 +45,6 @@ export const HOME_MESSAGES = defineMessages({
     'We also make custom gifts for hotels and corporate orders — Bali-themed, printed from the antique originals we hold.',
   'home.shop.tradeCta': 'See partnership options',
   'home.shop.tradeFact1': '100+ shops supplied',
-  'home.shop.tradeFact2': 'Printed in Bali',
   'home.shop.tradeFact3': 'Custom gifts for hotels and companies',
   'home.shop.originalsEyebrow': 'The originals',
   'home.shop.originalsTitle': 'Every print begins with a map we hold',

@@ -54,7 +54,7 @@ export function defaultHomeBlocks(
       title: t('home.shop.tradeTitle'),
       lead: t('home.shop.tradeLead'),
       body: t('home.shop.tradeBodyMore'),
-      facts: [t('home.shop.tradeFact1'), t('home.shop.tradeFact2'), t('home.shop.tradeFact3')],
+      facts: [t('home.shop.tradeFact1'), t('home.shop.tradeFact3')],
       link: { label: t('home.shop.tradeCta'), href: href('partnership'), external: false },
     },
     {

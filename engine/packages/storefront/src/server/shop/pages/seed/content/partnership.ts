@@ -70,11 +70,7 @@ export function defaultPartnershipBlocks(locale: SiteLocale): readonly ShopBlock
     {
       type: 'factStrip',
       id: 'partnership-facts',
-      facts: [
-        t('partnership.signalShops'),
-        t('partnership.signalWorkshop'),
-        t('partnership.signalShipping'),
-      ],
+      facts: [t('partnership.signalShops'), t('partnership.signalShipping')],
     },
     ...offers,
     {

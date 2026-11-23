@@ -15,7 +15,6 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
     'More than 100 shops across Indonesia already stock Old East Indies. Whatever you are buying for, every piece is printed from antique originals we hold.',
   'partnership.ctaApply': 'Start an application',
   'partnership.signalShops': '100+ shops supplied',
-  'partnership.signalWorkshop': 'Printed in Bali',
   'partnership.signalShipping': 'Shipping across Indonesia & worldwide',
   'partnership.resellerEyebrow': '01 · Resellers',
   'partnership.resellerTitle': 'Stock Old East Indies in your shop.',
