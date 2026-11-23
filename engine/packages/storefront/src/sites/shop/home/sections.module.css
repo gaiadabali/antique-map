@@ -55,8 +55,9 @@
   --print-tile-ratio: 4 / 5;
 }
 
-/* editorial: a framed print on the left half, the sister gallery's words on the right half, on the
-   page's own ground like the stores band before it (the design pass: no warm panel) */
+/* editorial: a framed print on the left half, the sister gallery's words on the right half, both on
+   the page's own white like the stores band before it, a hairline between them (the design pass:
+   no grey wall, no warm panel) */
 .edit {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -65,11 +66,12 @@
 
 .editPhoto {
   display: grid;
-  background: var(--shop-well);
+  border-inline-end: var(--rule-hair) solid var(--color-border);
 }
 
 .editPhoto .editWall {
   --print-stage-inset: 12% 16%;
+  --print-tile-bg: var(--color-surface);
 
   aspect-ratio: auto;
   block-size: 100%;

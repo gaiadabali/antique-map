@@ -1,8 +1,9 @@
-/* The shop's footer (the third handoff of 2026-10-20, oei.css §footer): a warm band in three
-   columns like the header — the logo at the left, Explore's 13 px links dead centre (24 apart, no
-   title), Contact flush right (a small-capitals title over 16 px icons in 32 px targets, 20 apart),
-   both rows on the logo's foot — then a white bar. On a phone the groups are full-bleed rows on
-   hairlines and the icons grow to 44 px targets. Every value is a token. */
+/* The shop's footer (the third handoff of 2026-10-20, oei.css §footer): a band in three columns
+   like the header — the logo at the left, Explore's 13 px links dead centre (24 apart, no title),
+   Contact flush right (a small-capitals title over 16 px icons in 32 px targets, 20 apart) — then a
+   slim bar. The design pass: the band white under a hairline, the links and Contact centred on the
+   logo's height, the bar in the warm of the contact bar at the top. On a phone the groups are
+   full-bleed rows on hairlines and the icons grow to 44 px targets. Every value is a token. */
 
 .footer {
   margin-block-start: auto;
@@ -11,10 +12,11 @@
 .band {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  align-items: end;
+  align-items: center;
   gap: 2.5rem;
   padding: 2.6875rem var(--shop-gutter) 0.9375rem;
-  background: var(--shop-warm);
+  background: var(--color-surface);
+  box-shadow: inset 0 var(--rule-hair) 0 var(--color-border);
 }
 
 .logo img {
@@ -143,7 +145,7 @@
   gap: var(--space-5);
   min-block-size: 2.375rem;
   padding-inline: var(--shop-gutter);
-  background: var(--color-surface);
+  background: var(--shop-warm);
   box-shadow: inset 0 var(--rule-hair) 0 var(--color-border);
   font: var(--shop-text-caps);
   font-weight: 400;
