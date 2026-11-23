@@ -8,6 +8,7 @@ import { loadSiteSettings } from '@engine/site/site-settings'
 import { productText } from '../sites/shop/product/copy'
 import { productPageCopy } from '../sites/shop/product/page-copy'
 import { ProductView } from '../sites/shop/product/product-view'
+import { PromoBanner } from '../sites/shop/sections/promo'
 import { currentSite, siteHref } from '../shell/site'
 import { siteLocale } from '../shell/messages'
 import type { SlugProps } from './props'
@@ -86,6 +87,7 @@ export default async function ShopProduct({
         pageCopy={productPageCopy(productText(locale), settings.productPage, settings.freeOverIdr)}
         shopHref={href('browse', {}, locale)}
         original={original?.(found, locale) ?? null}
+        banner={<PromoBanner locale={locale} />}
         categoryHref={
           found.category === null ? null : href('collection', { slug: found.category.slug }, locale)
         }

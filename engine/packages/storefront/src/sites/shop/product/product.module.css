@@ -9,6 +9,16 @@
   margin-block-start: calc(var(--space-8) - var(--space-7));
 }
 
+/* The same-day promise, the page's full width above the layout, as on the shop's listing: the page
+   then starts where the listing does, the promise just under the header. */
+.page:has(> .banner) {
+  margin-block-start: calc(1.625rem - var(--space-7));
+}
+
+.banner {
+  margin-block-end: var(--space-6);
+}
+
 .layout {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));

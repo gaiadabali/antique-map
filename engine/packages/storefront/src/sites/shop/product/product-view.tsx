@@ -6,6 +6,8 @@
  * to bag, the stock, the delivery note and the original it was made from — the two proof points
  * are gone (the owner's feedback of 2026-11-19, TASKS.md 28.2). "About this product" follows in columns
  * 2–6. The words come from the lexicon, the fixed ones from the settings (`./page-copy`); the prices are whole rupiah the server formats.
+ * Above it all, the same-day promise, as on the shop's listing: the owner asked for it "on landing
+ * page and shop pages", and "Shop pages" is the feedback's own heading for this page's points.
  */
 import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
 
@@ -37,6 +39,7 @@ export function ProductView({
   categoryHref,
   pageCopy,
   original = null,
+  banner = null,
 }: {
   readonly product: ProductVM
   readonly locale: SiteLocale
@@ -51,6 +54,8 @@ export function ProductView({
    * gallery from the product's stock number (TASKS.md 23.5); `null` draws nothing of its own.
    */
   readonly original?: React.ReactNode
+  /** The same-day promise across the top (`../sections/promo`); `null` draws none. */
+  readonly banner?: React.ReactNode
 }): React.ReactElement {
   const text = productText(locale)
   const copy = pageCopy ?? productPageCopy(text, null, null)
@@ -78,6 +83,7 @@ export function ProductView({
   const finishes = variants.length > 0 && variants.every((variant) => FINISH.test(variant.label))
   return (
     <article className={styles.page} aria-labelledby="product-title">
+      {banner ? <div className={styles.banner}>{banner}</div> : null}
       <ChatPageContext title={product.name} />
       <div className={styles.layout}>
         <div className={styles.gallery}>

@@ -1,8 +1,9 @@
 /**
  * The same-day delivery promise (TASKS.md 28.2; the owner's feedback of 2026-11-19, F9): "Free
- * Same Day Delivery in Bali*" with its small print, on the home and the shop pages while the owner
- * has it on (`site-settings.shop.promo`). It promises; it changes no price — the free delivery above
- * an amount is the delivery's own setting, applied by checkout on the server.
+ * Same Day Delivery in Bali*" with its small print, on the home, the shop pages and each product's
+ * page (the feedback's "Shop pages" are the product page's points) while the owner has it on
+ * (`site-settings.shop.promo`). It promises; it changes no price — the free delivery above an
+ * amount is the delivery's own setting, applied by checkout on the server.
  *
  * Whether an order placed now still makes today's delivery — a weekday (when the owner says so)
  * before the cut-off, in the shop's time zone — is judged per request, here, never inside a cache
