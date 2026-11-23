@@ -65,7 +65,11 @@
   text-decoration: none;
 }
 
+/* The cover hangs whole as a print on this 4 : 3 well (the shared print tile, as a product card's),
+   so a tall cover and a wide one sit alike: nothing cropped, no band left under it. */
 .articleCover {
+  --print-tile-ratio: 4 / 3;
+
   display: block;
   position: relative;
   aspect-ratio: 4 / 3;

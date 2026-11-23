@@ -1,29 +1,27 @@
 /**
- * The shop's articles (TASKS.md 28.2; the owner's feedback of 2026-11-19): each its cover picture,
- * its title and date, one link that opens its PDF in a new tab — the accessible name says so. The
- * home's "Our latest articles" shows the newest two with "See all articles"; the articles page
- * (`pages/articles`) lists them all. The read is published-only (`server/shop/articles`), streamed
- * inside `<Suspense>`; with no article, or a failed read, the home leaves the section out.
+ * The shop's articles (TASKS.md 28.2; the owner's feedback of 2026-11-19): each its cover picture —
+ * hung whole on its well as a print, like a product card's (`PrintTile`), so a tall cover and a wide
+ * one sit alike — its title and date, one link that opens its PDF in a new tab (the accessible name
+ * says so). The home's "Our latest articles" shows the newest two with "See all articles"; the
+ * articles page (`pages/articles`) lists them all. The read is published-only
+ * (`server/shop/articles`), streamed inside `<Suspense>`; with no article, or a failed read, the
+ * home leaves the section out.
  */
 import { Suspense } from 'react'
 
-import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
-import { ResponsiveImage, printAspectOf, printRatioOf } from '@engine/ui'
+import type { SiteLocale } from '@engine/config/sites'
+import { PrintTile, ResponsiveImage, printAspectOf, printRatioOf } from '@engine/ui'
 
 import { publishedArticles, type ArticleVM } from '../../../server/shop/articles/articles'
 import { productText } from '../product/copy'
 import { imageAlt } from '../product/synthetic'
 import { CapsLink } from '../ui/caps-link'
 import { RailSkeleton } from '../ui/rail-skeleton'
+import { articlesHref } from './articles-address'
 import { sectionsText } from './copy'
 import styles from './sections.module.css'
 
-/** The articles list's own address: a page of the shop at `/{locale}/articles`. */
-export const ARTICLES_SLUG = 'articles'
-
-export function articlesHref(locale: SiteLocale): string {
-  return createHref(SITES.shop)('page', { slug: ARTICLES_SLUG }, locale)
-}
+export { ARTICLES_SLUG, articlesHref } from './articles-address'
 
 function dateText(date: string, locale: SiteLocale): string {
   const at = new Date(`${date}T00:00:00Z`)
@@ -68,16 +66,18 @@ export function ArticleCards({
             >
               <span className={styles.articleCover}>
                 {cover ? (
-                  <ResponsiveImage
-                    variant="fill"
-                    aspectRatio={printAspectOf(printRatioOf(cover))}
-                    src={cover.url}
-                    srcSet={cover.srcSet}
-                    alt={imageAlt(words, cover)}
-                    sizes="(max-width: 56.25rem) 90vw, 45vw"
-                    priority={lead && index < 2}
-                    unoptimized
-                  />
+                  <PrintTile ratio={printRatioOf(cover)}>
+                    <ResponsiveImage
+                      variant="fill"
+                      aspectRatio={printAspectOf(printRatioOf(cover))}
+                      src={cover.url}
+                      srcSet={cover.srcSet}
+                      alt={imageAlt(words, cover)}
+                      sizes="(max-width: 56.25rem) 90vw, 45vw"
+                      priority={lead && index < 2}
+                      unoptimized
+                    />
+                  </PrintTile>
                 ) : null}
               </span>
               <Title className={styles.articleTitle}>{article.title}</Title>

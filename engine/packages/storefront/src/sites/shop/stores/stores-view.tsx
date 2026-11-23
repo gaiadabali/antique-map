@@ -3,10 +3,11 @@
  * owner's feedback of 2026-11-19): the listing's breadcrumb and head, a hairline sub-nav that
  * sticks under the header (each link to its section's title, and the page glides there), then the
  * two flagship stores, then Lombok, Ubud, Amed and Canggu — each its first stores and "See all",
- * every one of them within a 30-minute drive — then every other store. A section with no store is
- * left out (no flagship set: no flagship section). Each store: the name in the serif, its area,
- * address and hours muted, a map link built from name and address only. The title, lede and empty
- * note are the page's `storeDirectory` block when it sets them, else the lexicon's.
+ * every one of them within a 30-minute drive — then the other stores, also their first and "See
+ * all", so a long remainder never stretches the page, above all on a phone. A section with no
+ * store is left out (no flagship set: no flagship section). Each store: the name in the serif, its
+ * area, address and hours muted, a map link built from name and address only. The title, lede and
+ * empty note are the page's `storeDirectory` block when it sets them, else the lexicon's.
  */
 import type { SiteLocale } from '@engine/config/sites'
 import { createHref, SITES } from '@engine/config/sites'
@@ -100,8 +101,10 @@ type Section = {
   readonly anchor: string
   readonly label: string
   readonly stores: readonly Store[]
-  /** A region of the four: its preview, "See all" and the drive note. */
+  /** A region of the four: the drive note. */
   readonly region: boolean
+  /** Its first stores, the rest behind "See all": the four regions and the other stores. */
+  readonly folds: boolean
 }
 
 export function StoresView({ data, locale, block }: Props): React.ReactElement {
@@ -114,12 +117,13 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
   const anchors = areaAnchors(labels)
   const sections: Section[] = [
     ...(data.flagships.length > 0
-      ? [{ label: t('stores.flagships'), stores: data.flagships, region: false }]
+      ? [{ label: t('stores.flagships'), stores: data.flagships, region: false, folds: false }]
       : []),
     ...data.regions.map((group) => ({
       label: t(`stores.region.${group.region}`),
       stores: group.stores,
       region: group.region !== 'other',
+      folds: true,
     })),
   ].map((section, index) => ({ ...section, anchor: anchors[index] ?? `area-${index}` }))
   return (
@@ -149,8 +153,8 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
             areas={sections.map(({ anchor, label }) => ({ anchor, label }))}
           />
           {sections.map((section) => {
-            const shown = section.region ? section.stores.slice(0, REGION_PREVIEW) : section.stores
-            const rest = section.region ? section.stores.slice(REGION_PREVIEW) : []
+            const shown = section.folds ? section.stores.slice(0, REGION_PREVIEW) : section.stores
+            const rest = section.folds ? section.stores.slice(REGION_PREVIEW) : []
             return (
               <section
                 key={section.anchor}
@@ -170,7 +174,12 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
                 {rest.length > 0 ? (
                   <details className={styles.more}>
                     <summary className={styles.seeAll}>
-                      {t('stores.seeAll', { region: section.label, count: section.stores.length })}
+                      {section.region
+                        ? t('stores.seeAll', {
+                            region: section.label,
+                            count: section.stores.length,
+                          })
+                        : t('stores.seeAllOther', { count: section.stores.length })}
                     </summary>
                     <Cards stores={rest} t={t} />
                   </details>

@@ -22,6 +22,7 @@ export const STORES_KEYS = defineMessages({
   'stores.region.other': 'Other',
   'stores.drive': 'All reachable within a 30-minute drive.',
   'stores.seeAll': 'See all in {region} ({count})',
+  'stores.seeAllOther': 'See all other stores ({count})',
   'stores.count.other': '{count} stores',
   'stores.count.one': '{count} store',
   'stores.hours': 'Opening hours',

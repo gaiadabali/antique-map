@@ -37,6 +37,7 @@ export const SHELL_MESSAGES = defineMessages({
   'nav.shop': 'Shop',
   'nav.collections': 'Collections',
   'nav.stores': 'Stores',
+  'nav.articles': 'Articles',
   'nav.partnership': 'Partnership',
   'footer.collection': 'The collection',
   'footer.makers': 'Makers',

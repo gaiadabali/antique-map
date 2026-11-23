@@ -18,8 +18,11 @@ export const NEWSLETTER_CONSENT_VERSION = 'newsletter-2026-11-19'
 /** Where the pop-up remembers, per browser, that this visitor has seen it. */
 export const NEWSLETTER_SEEN_KEY = 'oei:newsletter-seen'
 
-/** How long after the home has loaded the pop-up opens: never in the way of the first look. */
-export const NEWSLETTER_DELAY_MS = 8000
+/**
+ * How long after the home has loaded the pop-up opens: "upon entering the landing page" (the
+ * owner's feedback of 2026-11-19), a beat after the page has drawn so it never opens on a blank one.
+ */
+export const NEWSLETTER_DELAY_MS = 1500
 
 /** The words the island needs, resolved on the server. */
 export type NewsletterText = {
