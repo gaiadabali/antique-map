@@ -1,6 +1,7 @@
 /* The shop's header (the handoff's oei.css §header): 3 equal columns, sticky, a hairline under it;
    white on every page, the home's hero included (the design pass). The current link and language
-   in bold, the line under them the pointer's alone. Every value is a token. */
+   in bold and still under the pointer; the others take a line under the pointer. Every value is a
+   token. */
 
 .header {
   position: sticky;
@@ -58,7 +59,7 @@
   transition: transform var(--dur-in) var(--ease);
 }
 
-.navLink:hover::after {
+.navLink:not([aria-current='page']):hover::after {
   transform: scaleX(1);
   transform-origin: left;
 }
@@ -113,8 +114,8 @@
   font-weight: 700;
 }
 
-.locales :global(.site-locales) a:hover,
-.drawerLocales :global(.site-locales) a:hover {
+.locales :global(.site-locales) a:not([aria-current='true']):hover,
+.drawerLocales :global(.site-locales) a:not([aria-current='true']):hover {
   text-decoration: underline;
   text-underline-offset: 0.45em;
 }
@@ -264,7 +265,7 @@
   font-weight: 600;
 }
 
-.drawerNav a:hover > span {
+.drawerNav a:not([aria-current='page']):hover > span {
   text-decoration: underline;
   text-underline-offset: 0.2em;
   text-decoration-thickness: var(--rule-hair);

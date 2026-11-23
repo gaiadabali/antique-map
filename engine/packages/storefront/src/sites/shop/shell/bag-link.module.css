@@ -42,7 +42,7 @@
   transition: transform var(--dur-in) var(--ease);
 }
 
-.bag:hover::after {
+.bag:not([aria-current='page']):hover::after {
   transform: scaleX(1);
   transform-origin: left;
 }

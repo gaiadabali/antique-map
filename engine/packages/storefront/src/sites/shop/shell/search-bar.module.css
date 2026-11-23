@@ -30,7 +30,7 @@
   transition: transform var(--dur-in) var(--ease);
 }
 
-.icon:hover::after {
+.icon:not([data-current]):not([aria-expanded='true']):hover::after {
   transform: scaleX(1);
   transform-origin: left;
 }
