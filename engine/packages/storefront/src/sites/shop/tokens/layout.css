@@ -43,7 +43,6 @@
   --shop-rule-mid: var(--primitive-oei-rule-mid);
   --shop-mount: var(--primitive-oei-mount);
   --shop-on-umber: var(--primitive-oei-white);
-  --shop-overlay-rule: #2b2b2b24;
   --shop-sheet-shadow: 0 -2px 8px #00000014;
 
   /* a print framed in code: a soft-black frame, a 7 % mount, over a grey well */

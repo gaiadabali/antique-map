@@ -3,8 +3,8 @@
 /**
  * The shop's header (the redesign of 2026-10-20, the handoff's Poster Club skeleton): three equal
  * columns — the links in small capitals at the left, the stacked logo dead centre, the languages,
- * search and the bag at the right — sticky, with a hairline under it. On the home it lies clear
- * over the hero until the page has scrolled 30 px, then turns white. On a phone the links and
+ * search and the bag at the right — sticky, with a hairline under it, white on every page, the
+ * home's hero included (the design pass: one header, no clear variant). On a phone the links and
  * languages move into a full-screen drawer behind the menu button, which slides in from the left
  * and back out when closed (it stays mounted until its exit has played). Every word arrives as a prop.
  */
@@ -36,15 +36,11 @@ type Props = {
   /** The search toggle (`./search-bar`). */
   readonly search: ReactNode
   readonly bag: ReactNode
-  /** Clear over the hero until the page scrolls (the home). */
-  readonly overlay?: boolean
   readonly navLabel: string
   readonly openLabel: string
   readonly closeLabel: string
   readonly menuLabel: string
 }
-
-const SCROLLED_AT = 30
 
 export function ShopHeader({
   logo,
@@ -53,7 +49,6 @@ export function ShopHeader({
   contact,
   search,
   bag,
-  overlay = false,
   navLabel,
   openLabel,
   closeLabel,
@@ -62,19 +57,10 @@ export function ShopHeader({
   const [open, setOpen] = useState(false)
   // mounted: the drawer stays in the page while its exit plays, then leaves
   const [mounted, setMounted] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
   const menuId = useId()
   useRailSteps() // the home's rails (Server Components) step through this one listener
   const closeRef = useRef<HTMLButtonElement>(null)
   const openRef = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => {
-    if (!overlay) return
-    const onScroll = () => setScrolled(window.scrollY > SCROLLED_AT)
-    onScroll()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [overlay])
 
   const close = useCallback(() => {
     setOpen(false)
@@ -96,10 +82,8 @@ export function ShopHeader({
     }
   }, [open, close])
 
-  const clear = overlay && !scrolled && !open
-
   return (
-    <header className={styles.header} data-clear={clear || undefined}>
+    <header className={styles.header}>
       <div className={styles.left}>
         <button
           ref={openRef}

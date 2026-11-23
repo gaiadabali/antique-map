@@ -1,8 +1,8 @@
 /**
  * The shop header's server half: the links with the current page marked (from the public path the
- * proxy hands the request, as `PrimaryNav` reads it), the search and bag addresses, the bag's count
- * and whether this is the home (whose hero the header lies clear over). The links are the owner's
- * main menu (`shop-header`; TASKS.md 27.5.c), or the shop's own four while the menu is empty.
+ * proxy hands the request, as `PrimaryNav` reads it), the search and bag addresses, each marked
+ * current on its own page (the design pass: shown in bold), and the bag's count. The links are the
+ * owner's main menu (`shop-header`; TASKS.md 27.5.c), or the shop's own four while the menu is empty.
  * The client half is `./shop-header`.
  */
 import type { LocaleCode } from '@engine/config/constants'
@@ -21,7 +21,6 @@ import { shopShellText } from './shell-messages'
 
 type Props = {
   readonly locale: LocaleCode
-  readonly homeHref: string
   readonly logo: ReactNode
   readonly locales: ReactNode
   /** The owner's main menu, resolved; empty draws the shop's own four links. */
@@ -31,7 +30,7 @@ type Props = {
   readonly t: ShellText
 }
 
-export async function ShopHeaderSlot({ locale, homeHref, logo, locales, menu, contact, t }: Props) {
+export async function ShopHeaderSlot({ locale, logo, locales, menu, contact, t }: Props) {
   const path = (await headers()).get(PROXY_REQUEST_HEADERS.publicPath)
   const href = siteHref('shop')
   const words = shopShellText(locale as SiteLocale)
@@ -47,8 +46,8 @@ export async function ShopHeaderSlot({ locale, homeHref, logo, locales, menu, co
           const target = item.href(locale)
           return { href: target, label: t(item.label), current: isCurrent(path, target) }
         })
-  const here = path?.split(/[?#]/)[0]?.replace(/\/+$/, '') || '/'
-  const home = homeHref.replace(/\/+$/, '') || '/'
+  const searchAction = href('search', { q: '' }, locale)
+  const cartHref = href('cart', {}, locale)
   return (
     <ShopHeader
       logo={logo}
@@ -57,15 +56,15 @@ export async function ShopHeaderSlot({ locale, homeHref, logo, locales, menu, co
       contact={contact}
       search={
         <SearchBar
-          action={href('search', { q: '' }, locale)}
+          action={searchAction}
+          current={isCurrent(path, searchAction.split('?')[0] ?? searchAction)}
           openLabel={words('shell.shop.search')}
           fieldLabel={words('shell.shop.searchField')}
           submitLabel={words('shell.shop.searchSubmit')}
           closeLabel={words('shell.shop.searchClose')}
         />
       }
-      bag={<BagLink href={href('cart', {}, locale)} t={words} />}
-      overlay={here === home}
+      bag={<BagLink href={cartHref} current={isCurrent(path, cartHref)} t={words} />}
       navLabel={t('shell.menu')}
       openLabel={t('shell.menu.open')}
       closeLabel={t('shell.menu.close')}

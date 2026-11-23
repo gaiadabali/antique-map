@@ -1,4 +1,5 @@
 .icon {
+  position: relative;
   display: inline-grid;
   place-items: center;
   inline-size: 44px;
@@ -13,6 +14,36 @@
 .icon svg {
   inline-size: 1rem;
   block-size: 1rem;
+}
+
+/* The design pass: a line under the magnifier for the pointer alone, as under the header's links;
+   open, or on the search page, the magnifier is drawn in bold instead. */
+.icon::after {
+  content: '';
+  position: absolute;
+  inset-inline: calc(50% - 0.5rem);
+  inset-block-end: 0.5rem;
+  block-size: var(--rule-hair);
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-in) var(--ease);
+}
+
+.icon:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.icon[data-current] svg,
+.icon[aria-expanded='true'] svg {
+  stroke-width: 2.25;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon::after {
+    transition: none;
+  }
 }
 
 /* the bar hangs under the header, full width, white over whatever is below */

@@ -62,17 +62,20 @@ export function Originals({ locale, block }: Locale & { readonly block: Original
         <OriginalPrint locale={locale} index={0} sizes="50vw" className={styles.editWall} />
       </div>
       <div className={styles.editPanel}>
-        {block.label ? <Caps className={styles.label}>{block.label}</Caps> : null}
-        <h2 id={titleId} className={styles.editTitle}>
-          {block.title}
-        </h2>
-        <div className={styles.editArt}>
-          <OriginalPrint locale={locale} index={1} sizes="20rem" className={styles.editTile} />
+        {/* One stack, so the hairline between the halves runs from its first line to its last. */}
+        <div className={styles.editStack}>
+          {block.label ? <Caps className={styles.label}>{block.label}</Caps> : null}
+          <h2 id={titleId} className={styles.editTitle}>
+            {block.title}
+          </h2>
+          <div className={styles.editArt}>
+            <OriginalPrint locale={locale} index={1} sizes="20rem" className={styles.editTile} />
+          </div>
+          {block.body ? <p className={styles.editBody}>{block.body}</p> : null}
+          {/* For now the owner's live gallery site, in a new tab (`../gallery-live`); the new
+              gallery's home again once it launches. */}
+          {block.linkLabel ? <CapsLink {...GALLERY_LIVE_LINK}>{block.linkLabel}</CapsLink> : null}
         </div>
-        {block.body ? <p className={styles.editBody}>{block.body}</p> : null}
-        {/* For now the owner's live gallery site, in a new tab (`../gallery-live`); the new
-            gallery's home again once it launches. */}
-        {block.linkLabel ? <CapsLink {...GALLERY_LIVE_LINK}>{block.linkLabel}</CapsLink> : null}
       </div>
     </section>
   )

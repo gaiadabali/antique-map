@@ -56,8 +56,8 @@
 }
 
 /* editorial: a framed print on the left half, the sister gallery's words on the right half, both on
-   the page's own white like the stores band before it, a hairline between them (the design pass:
-   no grey wall, no warm panel) */
+   the page's own white like the stores band before it, a hairline between them only as tall as the
+   words, from the eyebrow to the link (the design pass: no grey wall, no warm panel) */
 .edit {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -66,7 +66,6 @@
 
 .editPhoto {
   display: grid;
-  border-inline-end: var(--rule-hair) solid var(--color-border);
 }
 
 .editPhoto .editWall {
@@ -83,6 +82,23 @@
   align-items: center;
   padding: var(--shop-section) var(--shop-gutter);
   text-align: center;
+}
+
+.editStack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  inline-size: 100%;
+}
+
+/* the hairline on the halves' seam, the stack's height: from the eyebrow to the link */
+.editStack::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: calc(-1 * var(--shop-gutter));
+  border-inline-start: var(--rule-hair) solid var(--color-border);
 }
 
 .label {
@@ -171,6 +187,11 @@
   }
 
   .editPhoto {
+    display: none;
+  }
+
+  /* one column on a phone: no seam to draw */
+  .editStack::before {
     display: none;
   }
 

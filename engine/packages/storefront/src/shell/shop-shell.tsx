@@ -67,7 +67,6 @@ export async function ShopShell({ shell, t, children }: Props) {
       />
       <ShopHeaderSlot
         locale={shell.locale}
-        homeHref={shell.homeHref}
         logo={<BrandLink shell={shell} t={t} src={nav.logo.light} />}
         locales={<LocaleSwitcher shell={shell} t={t} />}
         menu={nav.menu}
