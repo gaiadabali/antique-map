@@ -26,18 +26,55 @@
   text-underline-offset: 0.2em;
 }
 
-/* The bar: one centred line of 12 px words, each a 32 px target. */
+/* The bar: one centred line of 12 px words, each a 32 px target, with the footer's icons at the
+   right (the design pass). It stays at the top of the screen, the header sticking under it. */
 .bar {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 101;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
   padding-inline: var(--shop-gutter);
   background: var(--shop-warm);
   font: var(--shop-text-meta);
 }
 
 .bar .list {
+  grid-column: 2;
   justify-content: center;
   gap: 0 var(--space-5);
+}
+
+/* The icons: a 16 px glyph centred in a 32 px target, pulled 8 px into its neighbours, as in the
+   footer, so the last glyph lines up with the gutter. */
+.icons {
+  display: flex;
+  grid-column: 3;
+  justify-self: end;
+  column-gap: 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.iconLink {
+  display: inline-grid;
+  place-items: center;
+  inline-size: var(--shop-strip);
+  block-size: var(--shop-strip);
+  margin-inline: -0.5rem;
+  color: var(--color-text);
+  transition: opacity var(--dur-out) var(--ease);
+}
+
+.iconLink:hover {
+  opacity: 0.6;
+}
+
+.iconLink svg {
+  inline-size: 1rem;
+  block-size: 1rem;
 }
 
 .bar .item a,
@@ -65,8 +102,22 @@
   white-space: pre-line;
 }
 
-/* On a phone the bar keeps the phone and WhatsApp; the rest is in the menu and the footer. */
+/* On a phone the bar keeps the phone and WhatsApp, at the left with the icons at the right; the
+   rest is in the menu and the footer. */
 @media (max-width: 56.25rem) {
+  .bar {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .bar .list {
+    grid-column: 1;
+    justify-content: flex-start;
+  }
+
+  .icons {
+    grid-column: 2;
+  }
+
   .bar [data-line='email'],
   .bar [data-line='address'] {
     display: none;

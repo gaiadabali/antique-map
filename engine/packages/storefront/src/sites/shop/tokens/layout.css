@@ -14,6 +14,8 @@
   --shop-section: 3.125rem;
   --shop-header: 5rem;
   --shop-strip: 2rem; /* the contact bar above the header: one line of 32 px targets */
+  /* what sticks at the top of the screen: the contact bar and the header under it */
+  --shop-chrome: calc(var(--shop-strip) + var(--shop-header));
   --shop-logo: 3.5rem;
   --shop-footer-logo: 5.25rem;
   --shop-content: 87rem; /* 1392 px: the widest a band's content runs */
@@ -83,6 +85,8 @@
   --chat-launcher-bg-hover: var(--shop-umber);
   --chat-launcher-border: 0;
   --chat-launcher-radius: 50%;
+  --chat-launcher-size: 3.3rem; /* 10% over the shared 48 px */
+  --chat-launcher-icon: 1.375rem; /* the glyph scaled with it, 20 → 22 px */
   --chat-launcher-shadow: 0 1px 2px #0000001f, 0 12px 28px -12px #00000059;
   --chat-launcher-pad: 0 1.375rem;
 }
@@ -107,4 +111,10 @@
     --shop-title-about: 500 2.25rem / 1.17 var(--font-display);
     --shop-text-read: 400 1rem / 1.75 var(--font-body);
   }
+}
+
+/* No contact bar (no contact detail and no account set): nothing above the header, so the header
+   sticks at the very top and the hero fills the screen under it alone. */
+[data-site='shop']:not(:has([data-contact='bar'])) {
+  --shop-strip: 0rem;
 }

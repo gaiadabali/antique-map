@@ -84,7 +84,7 @@
 /* the sort bar sticks under the header while the grid scrolls */
 .toolbar {
   position: sticky;
-  inset-block-start: var(--shop-header);
+  inset-block-start: var(--shop-chrome);
   z-index: 20;
   display: flex;
   align-items: center;

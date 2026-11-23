@@ -37,7 +37,7 @@
 :global(html[data-site]):has(.page) {
   --stores-nav: 3.1875rem;
 
-  scroll-padding-block-start: calc(var(--shop-header) + var(--stores-nav) + var(--space-4));
+  scroll-padding-block-start: calc(var(--shop-chrome) + var(--stores-nav) + var(--space-4));
   scroll-behavior: smooth;
 }
 
@@ -50,7 +50,7 @@
 /* the areas: one row on hairlines, sticking under the header, scrolling inside itself */
 .areas {
   position: sticky;
-  inset-block-start: var(--shop-header);
+  inset-block-start: var(--shop-chrome);
   z-index: 20;
   display: flex;
   flex-wrap: nowrap;

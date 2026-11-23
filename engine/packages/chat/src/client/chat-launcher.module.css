@@ -18,8 +18,8 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  inline-size: 3rem;
-  block-size: 3rem;
+  inline-size: var(--chat-launcher-size, 3rem);
+  block-size: var(--chat-launcher-size, 3rem);
   padding: 0;
   font: var(--text-label);
   /* The gallery: a quiet paper button with a hairline, floating over any print or footer without
@@ -48,6 +48,12 @@
 
 .icon {
   display: inline-flex;
+}
+
+/* A site may scale the square and its glyph together (the shop's design pass: 10% larger). */
+.icon svg {
+  inline-size: var(--chat-launcher-icon, 1.25rem);
+  block-size: var(--chat-launcher-icon, 1.25rem);
 }
 
 /* The words as the accessible name: out of sight on a phone, never display:none. */

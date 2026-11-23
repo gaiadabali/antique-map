@@ -17,12 +17,11 @@ import { headers } from 'next/headers'
 
 import type { NavLink, ShopNavigationVM } from '../../../server/shop/pages/navigation/load'
 import type { PublicSiteSettings } from '@engine/site/site-settings'
-import { socialLinks } from '@engine/site/shell'
 import { isCurrent, navItems } from '../../../shell/primary-nav'
 import type { ShellText } from '../../../shell/site'
 import { GALLERY_LIVE_LINK } from '../gallery-live'
+import { ContactIcons, contactIconLinks } from './contact-icons'
 import { contactLinesOf } from './contact-strip'
-import { FooterIcon, socialIcon, type FooterIconName } from './footer-icons'
 import { shopShellText } from './shell-messages'
 import styles from './shop-footer.module.css'
 
@@ -39,8 +38,8 @@ export async function ShopFooter({ locale, logo, settings, nav, t }: Props) {
   const words = shopShellText(locale as SiteLocale)
   const all = contactLines(settings, t, locale as SiteLocale)
   // WhatsApp is an icon after the social accounts; the other lines stay words.
-  const icons = contactLinks(
-    settings,
+  const icons = contactIconLinks(
+    settings.social,
     all.find((line) => line.key === 'whatsapp'),
   )
   const lines = all.filter((line) => line.key !== 'whatsapp')
@@ -102,23 +101,12 @@ export async function ShopFooter({ locale, logo, settings, nav, t }: Props) {
             {icons.length === 0 && lines.length === 0 ? (
               <p className={styles.line}>{t('shell.contactPlaceholder')}</p>
             ) : null}
-            {icons.length > 0 ? (
-              <ul className={`${styles.links} ${styles.social}`}>
-                {icons.map((item) => (
-                  <li key={item.href}>
-                    <a
-                      className={styles.icon}
-                      href={item.href}
-                      target="_blank"
-                      rel={item.rel}
-                      aria-label={t('shell.newTab', { label: item.label })}
-                    >
-                      <FooterIcon name={item.icon} />
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            ) : null}
+            <ContactIcons
+              links={icons}
+              newTab={(label) => t('shell.newTab', { label })}
+              className={`${styles.links} ${styles.social}`}
+              linkClassName={styles.icon}
+            />
             {lines.length > 0 ? (
               <ul className={styles.lines}>
                 {lines.map((line) => (
@@ -167,39 +155,6 @@ export async function ShopFooter({ locale, logo, settings, nav, t }: Props) {
       </div>
     </footer>
   )
-}
-
-type ContactLink = {
-  readonly href: string
-  readonly label: string
-  readonly icon: FooterIconName
-  readonly rel: string
-}
-
-/** The owner's social accounts, then WhatsApp, as icons; each opens in a new tab. */
-function contactLinks(
-  settings: PublicSiteSettings,
-  whatsapp: ContactLine | undefined,
-): readonly ContactLink[] {
-  const links: ContactLink[] = []
-  for (const link of socialLinks(settings.social)) {
-    links.push({
-      href: link.url,
-      label: link.platform,
-      icon: socialIcon(link.platform),
-      rel: 'me noopener noreferrer',
-    })
-  }
-  if (whatsapp?.href) {
-    // Its words ("WhatsApp +62…") are the icon's name, with "opens in a new tab".
-    links.push({
-      href: whatsapp.href,
-      label: whatsapp.text,
-      icon: 'whatsapp',
-      rel: 'noopener noreferrer',
-    })
-  }
-  return links
 }
 
 type ContactLine = {

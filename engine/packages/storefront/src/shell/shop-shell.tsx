@@ -56,8 +56,15 @@ export async function ShopShell({ shell, t, children }: Props) {
       </a>
       {reader !== null ? <PreviewBar locale={locale} /> : null}
       <Announcement text={announcement?.text ?? null} link={announcement?.link} t={t} />
-      {/* The contact at the top of every page, in the menu and in the footer (TASKS.md 28.2). */}
-      <ContactStrip contact={settings.contact} locale={locale} variant="bar" />
+      {/* The contact at the top of every page, in the menu and in the footer (TASKS.md 28.2); the
+          bar also carries the footer's icons and stays at the top (the design pass). */}
+      <ContactStrip
+        contact={settings.contact}
+        locale={locale}
+        variant="bar"
+        social={settings.social}
+        newTab={(label) => t('shell.newTab', { label })}
+      />
       <ShopHeaderSlot
         locale={shell.locale}
         homeHref={shell.homeHref}
