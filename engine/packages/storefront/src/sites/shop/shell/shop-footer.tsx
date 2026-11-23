@@ -3,9 +3,10 @@
  * band in three columns like the header — the logo at the left; at the centre the owner's footer
  * columns from `shop-footer` (a small-capitals title over its links), or, while there are none,
  * the header's links untitled; Contact flush right (the owner's social accounts from
- * `site-settings` as 16 px icons, then the phone, WhatsApp, email and address — the same lines as
- * the bar at the top and the menu, TASKS.md 28.2 — and the hours, or the lexicon's placeholder
- * while it answers none) — then a white bar with the legal links (CMS pages), the line at the
+ * `site-settings` as 16 px icons with WhatsApp's after them, then the phone, email and address —
+ * the bar at the top and the menu keep WhatsApp's number in words, TASKS.md 28.2 — and the hours,
+ * or the lexicon's placeholder while it answers none) — then a white bar with the legal links (CMS
+ * pages), the line at the
  * bottom and the bridge to the gallery of originals. A link to anything unpublished is already
  * dropped (`server/shop/pages/navigation`); every other word is the shell's lexicon.
  */
@@ -36,8 +37,13 @@ type Props = {
 export async function ShopFooter({ locale, logo, settings, nav, t }: Props) {
   const path = (await headers()).get(PROXY_REQUEST_HEADERS.publicPath)
   const words = shopShellText(locale as SiteLocale)
-  const icons = contactLinks(settings)
-  const lines = contactLines(settings, t, locale as SiteLocale)
+  const all = contactLines(settings, t, locale as SiteLocale)
+  // WhatsApp is an icon after the social accounts; the other lines stay words.
+  const icons = contactLinks(
+    settings,
+    all.find((line) => line.key === 'whatsapp'),
+  )
+  const lines = all.filter((line) => line.key !== 'whatsapp')
   // The header's links stand in for columns the owner has not made yet.
   const explore: readonly NavLink[] =
     nav.menu.length > 0
@@ -170,8 +176,11 @@ type ContactLink = {
   readonly rel: string
 }
 
-/** The owner's social accounts, as icons; each opens in a new tab (WhatsApp is a line below). */
-function contactLinks(settings: PublicSiteSettings): readonly ContactLink[] {
+/** The owner's social accounts, then WhatsApp, as icons; each opens in a new tab. */
+function contactLinks(
+  settings: PublicSiteSettings,
+  whatsapp: ContactLine | undefined,
+): readonly ContactLink[] {
   const links: ContactLink[] = []
   for (const link of socialLinks(settings.social)) {
     links.push({
@@ -179,6 +188,15 @@ function contactLinks(settings: PublicSiteSettings): readonly ContactLink[] {
       label: link.platform,
       icon: socialIcon(link.platform),
       rel: 'me noopener noreferrer',
+    })
+  }
+  if (whatsapp?.href) {
+    // Its words ("WhatsApp +62…") are the icon's name, with "opens in a new tab".
+    links.push({
+      href: whatsapp.href,
+      label: whatsapp.text,
+      icon: 'whatsapp',
+      rel: 'noopener noreferrer',
     })
   }
   return links

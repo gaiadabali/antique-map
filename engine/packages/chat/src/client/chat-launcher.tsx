@@ -8,6 +8,7 @@
  * `sites/gallery/item/zoom-lazy.tsx`. Open, the panel is fixed to the viewport: a full-height sheet
  * on a phone, a side panel from tablet up (DESIGN-SYSTEM.md §5). Every word arrives as a prop,
  * resolved server-side (`lexicon.chatPanelText`), so no lexicon ships before the visitor asks.
+ * A site may keep the icon square at every width (`iconOnly`, the shop); its words stay the name.
  */
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
@@ -24,11 +25,14 @@ export type ChatLauncherProps = Omit<ChatPanelProps, 'onClose'> & {
   readonly label: string
   /** Stop above the site footer once it scrolls into view, keeping the usual gap (the shop). */
   readonly dock?: boolean
+  /** The icon square at every width, its words only the accessible name (the shop). */
+  readonly iconOnly?: boolean
 }
 
 export function ChatLauncher({
   label,
   dock = false,
+  iconOnly = false,
   ...panelProps
 }: ChatLauncherProps): React.ReactElement {
   const [open, setOpen] = useState(false)
@@ -48,6 +52,7 @@ export function ChatLauncher({
         type="button"
         className={styles.launcher}
         data-dock={dock || undefined}
+        data-icon-only={iconOnly || undefined}
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
       >

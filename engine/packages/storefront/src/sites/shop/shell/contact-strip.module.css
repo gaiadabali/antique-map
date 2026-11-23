@@ -42,7 +42,7 @@
 
 .bar .item a,
 .bar .item span {
-  min-block-size: 2rem;
+  min-block-size: var(--shop-strip);
 }
 
 /* The menu: the lines stacked under the links, each a 44 px target. */

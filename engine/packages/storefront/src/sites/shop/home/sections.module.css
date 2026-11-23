@@ -55,7 +55,8 @@
   --print-tile-ratio: 4 / 5;
 }
 
-/* editorial: a framed print on the left half, the sister gallery's words on a warm right half */
+/* editorial: a framed print on the left half, the sister gallery's words on the right half, on the
+   page's own ground like the stores band before it (the design pass: no warm panel) */
 .edit {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -79,7 +80,6 @@
   flex-direction: column;
   align-items: center;
   padding: var(--shop-section) var(--shop-gutter);
-  background: var(--shop-warm);
   text-align: center;
 }
 
