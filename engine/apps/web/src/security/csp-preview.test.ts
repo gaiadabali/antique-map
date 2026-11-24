@@ -37,7 +37,7 @@ describe('the shop page preview frame (TASKS.md 27.5.a)', () => {
   })
 
   it('lets a shop page be framed by the admin’s origin alone', () => {
-    const page = build({ site: 'shop', pathname: '/partnership' })
+    const page = build({ site: 'shop', pathname: '/collaboration' })
     expect(directive(page, 'frame-ancestors')).toEqual([SHOP])
   })
 

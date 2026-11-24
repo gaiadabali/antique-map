@@ -124,7 +124,7 @@ const shop = {
       checkout: 'checkout',
       tracking: 'track',
       order: 'order',
-      partnership: 'partnership',
+      partnership: 'collaboration',
       stores: 'stores',
     },
     id: {
@@ -136,7 +136,7 @@ const shop = {
       checkout: 'checkout',
       tracking: 'lacak',
       order: 'pesanan',
-      partnership: 'kemitraan',
+      partnership: 'kolaborasi',
       stores: 'toko',
     },
     facets: { path: [], vocabularies: {} },
@@ -144,6 +144,8 @@ const shop = {
     // The old shop's account pages: the new shop has no accounts, so the builder marks them gone (410).
     legacyPrefixes: ['/our-collection/', '/account/'],
     legacyPaths: ['/account'],
+    // Partnership became Collaboration (the owner, 2026-11-24): the old addresses redirect.
+    movedPaths: { '/partnership': '/collaboration', '/id/kemitraan': '/id/kolaborasi' },
   },
 } as const satisfies SiteDefinition
 

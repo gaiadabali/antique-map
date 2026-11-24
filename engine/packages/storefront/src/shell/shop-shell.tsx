@@ -70,7 +70,15 @@ export async function ShopShell({ shell, t, children }: Props) {
         logo={<BrandLink shell={shell} t={t} src={nav.logo.light} />}
         locales={<LocaleSwitcher shell={shell} t={t} />}
         menu={nav.menu}
-        contact={<ContactStrip contact={settings.contact} locale={locale} variant="menu" />}
+        contact={
+          <ContactStrip
+            contact={settings.contact}
+            locale={locale}
+            variant="menu"
+            social={settings.social}
+            newTab={(label) => t('shell.newTab', { label })}
+          />
+        }
         t={t}
       />
       <main id="main" className="site-main">

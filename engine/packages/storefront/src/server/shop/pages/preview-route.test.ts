@@ -54,9 +54,9 @@ describe('GET /api/x/preview', () => {
     for (const role of ['owner', 'editor']) {
       state.enabled = false
       state.user = { collection: 'users', role }
-      const response = await ask('?path=%2Fpartnership')
+      const response = await ask('?path=%2Fcollaboration')
       expect(response.status, role).toBe(307)
-      expect(response.headers.get('location')).toBe('/partnership')
+      expect(response.headers.get('location')).toBe('/collaboration')
       expect(response.headers.get('cache-control')).toBe('no-store')
       expect(state.enabled, role).toBe(true)
     }
@@ -91,7 +91,7 @@ describe('GET /api/x/preview', () => {
 
 describe('the addresses a preview may open', () => {
   it('are the shop’s pages in either language', () => {
-    for (const path of ['/', '/partnership', '/stores', '/about-us', '/id', '/id/kemitraan']) {
+    for (const path of ['/', '/collaboration', '/stores', '/about-us', '/id', '/id/kolaborasi']) {
       expect(previewPath(path), path).toBe(path)
     }
   })

@@ -37,6 +37,8 @@ export type RouteMap = Readonly<Partial<Record<LocaleCode, LocaleSegments>>> & {
   readonly legacyPrefixes: readonly string[]
   /** Exact old-site paths — a static page that moved (`/about-us`) — rewritten like a prefix. */
   readonly legacyPaths: readonly string[]
+  /** This site's own pages whose address changed: old path -> new path, a permanent redirect. */
+  readonly movedPaths?: Readonly<Record<string, string>>
 }
 
 /** What routing reads from a site: its route map and its locales, the default unprefixed. */
