@@ -13,15 +13,13 @@ import { Suspense, type ReactNode } from 'react'
 import type { SiteLocale } from '@engine/config/sites'
 
 import { EMPTY_STATE, listing, type WorkCardVM } from '../../../server/gallery/catalogue'
-import {
-  Button,
-  Crossing,
-  MatNote,
-  ProofPoints,
-  ResponsiveImage,
-  Skeleton,
-  StockTag,
-} from '../../../shared/ui'
+import { Button } from '@engine/ui/button'
+import { Crossing } from '@engine/ui/crossing'
+import { MatNote } from '@engine/ui/mat'
+import { ProofPoints } from '@engine/ui/proof-points'
+import { ResponsiveImage } from '@engine/ui/responsive-image'
+import { Skeleton } from '@engine/ui/skeleton'
+import { StockTag } from '@engine/ui/stock-tag'
 import { statusLineOf } from '../browse/work-card'
 import { browseText } from '../browse/copy'
 import { itemHref } from '../browse/state-links'

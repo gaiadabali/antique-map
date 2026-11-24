@@ -2,14 +2,15 @@
 
 ## Introduction
 
-The Indies Platform is two websites and one CMS for one owner (the client):
+The Indies Platform is two websites, each with its own app and CMS, for one owner (the client):
 
 - **Indies Gallery** (`antiquemapsindonesia.com`) shows the owner's antique maps, prints and photographs, held in
   Singapore. It is a catalogue with deep zoom and a fast way to contact the owner. It sells nothing online.
 - **Old East Indies** (`oldeastindies.com`) is an online store for the owner's merchandise, stocked in 100+ shops in
   Bali. A buyer pays on the site and the nearest shop that has the goods delivers them.
-- **One CMS** (Payload) is the admin and the system of record for both: catalogue, stock per store, orders,
-  partners, leads and analytics.
+- **One CMS per site** (Payload; DR-17, `docs/PLAN-V2.md`): each app has its own admin and database as that
+  site's system of record — the shop's catalogue, stock per store, orders and partners; the gallery's works;
+  each site's pages, leads and analytics. Until phase 26, today's one CMS serves both.
 
 Sellers of antiques and partners (hotels and shops that resell the owner's goods) deal with the owner on
 WhatsApp or email; the site and its AI chat only help them get there. The requirements below are the contract
@@ -18,16 +19,17 @@ every task in the root `TASKS.md` traces to. Reasoning lives in `docs/` (start w
 
 ## Requirements
 
-### Requirement 1 — One app, two sites, one CMS
+### Requirement 1 — Two apps, two sites, two CMSs, one repo
 
-**User Story:** As the owner, I want both websites run from one admin and one database, so that I manage all my
-stock, orders and contacts in one place.
+**User Story:** As the owner, I want each website run from its own app, admin and database, so that a change or
+a fault in one never reaches the other, while both share one codebase and one design.
+(Rewritten 2026-11-03 for DR-17; until phase 26 the one app of DR-1 meets these through its `site` field.)
 
 #### Acceptance Criteria
 
-1. The system SHALL be one Next.js app with Payload embedded and one Postgres database, serving both sites.
-2. WHEN a request arrives THEN the system SHALL choose the gallery or the shop site from the hostname, and an unknown hostname SHALL receive a plain 404.
-3. The system SHALL serve one admin at `/admin` for both sites, and records that belong to one site SHALL carry a `site` value so each site reads only its own.
+1. The system SHALL be two Next.js apps in one repository (`engine/apps/shop`, `engine/apps/gallery`), each with Payload embedded and its own Postgres database, sharing code only through `engine/packages/*`; an app SHALL NOT import the other app.
+2. WHEN a request arrives THEN each app SHALL serve only its own site's hostnames, and an unknown hostname SHALL receive a plain 404.
+3. Each app SHALL serve its own admin at `/admin` on its own host, and SHALL read and write only its own database, so neither site can read the other's records.
 4. The build SHALL NOT connect to a database, and every page SHALL render in full per request or from a tagged cache that is invalidated after a change commits.
 5. WHEN `pnpm verify` runs THEN it SHALL fail on a lint, type, test, file-size (300 lines), client-safe-import or route-parity error.
 

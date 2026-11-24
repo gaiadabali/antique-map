@@ -129,6 +129,7 @@ describe.skipIf(!stackAvailable)(
         '<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>',
       )
       expect((await as(svg, 'map.svg', 'image/svg+xml')).status).toBe(400)
+      // A PDF is taken (`media-files.db.test.ts`), but not a broken one: no xref, no %%EOF.
       expect(
         (await as(Buffer.from('%PDF-1.7\n%âãÏÓ\n1 0 obj\n'), 'map.pdf', 'application/pdf')).status,
       ).toBe(400)

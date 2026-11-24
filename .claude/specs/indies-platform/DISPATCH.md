@@ -24,7 +24,7 @@ You are implementing task {ID} — "{TITLE}" — of the Indies Platform plan.
 
 Read first, in this order:
 1. AGENTS.md
-2. docs/PLAN.md and .claude/specs/indies-platform/design.md
+2. docs/PLAN-V2.md, docs/PLAN.md and .claude/specs/indies-platform/design.md
 3. TASKS.md (repo root) — your task {ID}, its subtasks and its **Check**
 4. docs/WORKFLOW.md and docs/CONVENTIONS.md
 5. {READ LIST FROM THE TASK}

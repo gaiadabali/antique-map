@@ -9,12 +9,30 @@
  * end of Monday. The calendar of working days is the dashboard's assumption until the owner's
  * hours (a localised text in the site settings) become something a machine can read.
  */
-import { compared, median, type Compared, type Counted } from '../compare'
-import type { DashboardContext } from '../context'
-import { instantBounds, shiftDay, witaDay } from '../period'
-import { eventsFilter, inPeriod, inPrevious, num, rowsOf, sql, topCounts } from '../sql'
+import {
+  compared,
+  median,
+  type Compared,
+  type Counted,
+} from '@engine/cms-core/admin/dashboard/compare'
+import type { DashboardContext } from '@engine/cms-core/admin/dashboard/context'
+import { instantBounds, shiftDay, witaDay } from '@engine/cms-core/admin/dashboard/period'
+import {
+  eventsFilter,
+  inPeriod,
+  inPrevious,
+  num,
+  rowsOf,
+  sql,
+  topCounts,
+} from '@engine/cms-core/admin/dashboard/sql'
 
-import { findAll, periodOfInstant, spanWhere, type Row } from './records'
+import {
+  findAll,
+  periodOfInstant,
+  spanWhere,
+  type Row,
+} from '@engine/cms-core/admin/dashboard/records'
 
 export const LEAD_KINDS = ['ask', 'sell', 'partnership', 'contact', 'chat'] as const
 

@@ -119,6 +119,8 @@ export const ENGINE_ROUTES: readonly EngineRoute[] = [
   route('/api/x/cron/reconcile', 'PAY', 'cron', POST),
   // the tracking page's driver photo, from the shop's own origin (the proxy counts its token as it does `/track/{token}`'s)
   route('/api/x/track/[token]/driver-image', 'WEB', 'token', GET),
+  // a video or a PDF a published shop page places, from the site's own origin (`@engine/cms` `collections/media/public-file`)
+  route('/api/x/media/[id]', 'WEB', 'public', GET),
   // Root files (`ROOT_REWRITES`), each on its placeholder until its handler is built.
   // staging disallows all; until its handler is built, `UNBUILT_HANDLER.byPath` does everywhere
   route('/api/x/robots', 'SEO', 'public', GET),

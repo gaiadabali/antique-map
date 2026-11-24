@@ -17,7 +17,7 @@
  */
 import type { Payload, Where } from 'payload'
 
-import { purgeDriverImages, type DriverImageDeps } from '../../shop/fulfilment'
+import { purgeDriverImages, type DriverImageDeps } from '@engine/cms-shop/fulfilment'
 
 import { deleteWhere, RETENTION_MAX_ROUNDS } from './delete-batches'
 import { daysBefore, monthsBefore, RETENTION_DEFAULTS, type RetentionPolicy } from './policy'

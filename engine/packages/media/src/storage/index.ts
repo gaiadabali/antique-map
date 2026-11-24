@@ -10,14 +10,23 @@
 export { isSha256Hex, sha256HexOf, sha256HexToBase64, storedChecksumToHex } from './checksum'
 export { mastersStorageTarget, mediaStorageTarget, s3ClientConfig, type S3Target } from './env'
 export {
+  bytesMatchType,
   formatBytes,
   MASTER_TYPES,
   MASTER_UPLOAD_MAX_BYTES,
   masterContentType,
   masterUploadProblems,
+  MEDIA_DOCUMENT_MIME_TYPES,
+  MEDIA_IMAGE_MIME_TYPES,
+  MEDIA_KINDS,
+  MEDIA_PDF_MAX_BYTES,
   MEDIA_UPLOAD_MAX_BYTES,
   MEDIA_UPLOAD_MIME_TYPES,
+  MEDIA_VIDEO_MIME_TYPES,
+  mediaKindOf,
+  type MediaKind,
 } from './limits'
+export { readUploadRange, type ByteRange, type UploadRange } from './read-range'
 export {
   CAPTURES_PREFIX,
   isIntakeKey,

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 
-import { checkoutWait, withRateLimits } from './guard'
+import { checkoutWait, deliveryQuoteWait, withRateLimits } from './guard'
 import { limiters } from './rate-limit'
 
 const passed = new Response(null, { status: 200, headers: { 'x-middleware-next': '1' } })
@@ -87,5 +87,17 @@ describe('the checkout action gate (F-02)', () => {
     )
     expect(waits[10]).toBeGreaterThan(0)
     for (let i = 0; i < 30; i += 1) expect(checkoutWait(new Headers())).toBe(0)
+  })
+})
+
+describe('the delivery preview gate (TASKS.md 27.3)', () => {
+  const headers = (forwarded: string) => new Headers({ 'x-forwarded-for': forwarded })
+
+  it('lets thirty pins a minute through, refuses the next, and counts apart from checkout', () => {
+    const waits = Array.from({ length: 31 }, () => deliveryQuoteWait(headers('203.0.113.9')))
+    expect(waits.slice(0, 30)).toEqual(Array(30).fill(0))
+    expect(waits[30]).toBeGreaterThan(0)
+    expect(checkoutWait(headers('203.0.113.9'))).toBe(0)
+    expect(deliveryQuoteWait(new Headers())).toBe(0)
   })
 })

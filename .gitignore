@@ -27,6 +27,8 @@ coverage/
 # Payload renames an upload whose name is already on that disk (MP.901.jpg -> MP.901-4.jpg), so a
 # committed file breaks every db test that looks a seeded picture up by its name.
 engine/packages/cms/media/
+engine/packages/cms-shop/media/
+engine/apps/shop/media/
 /media/
 
 # Environment files: secrets never go into the repo (CONVENTIONS.md §13).
@@ -83,9 +85,6 @@ Implementations.md
 # The design handoffs (Claude Design exports), kept local as delivered. Of the three of
 # 2026-10-20, "Indies Platform-handoff (2)" is the newest: footer in three columns, docked chat
 design-files/
-
-# The v2 plan (two apps, two CMSs, two databases): a working document, kept local until phase A.
-PLANV2.md
 
 # Payload's local-disk uploads when no S3 is set (tests before 2026-10-22 wrote here): never committed.
 /media/

@@ -2,6 +2,7 @@
  * A volume's collation, split out of `./fields-record` to keep each file under 300 lines: shows
  * for books and atlases only (`BOUND_OBJECT_TYPES`).
  */
+import { IMAGES_ONLY } from '@engine/cms-core/collections/media/kinds'
 import type { Field } from 'payload'
 
 import { RECORD_NOTES } from './record-copy'
@@ -55,6 +56,7 @@ export const bookField: Field = {
       name: 'openings',
       type: 'upload',
       relationTo: 'media',
+      filterOptions: IMAGES_ONLY,
       label: { en: 'Openings', id: 'Bukaan' },
       hasMany: true,
       admin: described(RECORD_NOTES.bookOpenings),
@@ -66,12 +68,14 @@ export const bookField: Field = {
           name: 'spine',
           type: 'upload',
           relationTo: 'media',
+          filterOptions: IMAGES_ONLY,
           label: { en: 'Spine', id: 'Punggung buku' },
         },
         {
           name: 'cover',
           type: 'upload',
           relationTo: 'media',
+          filterOptions: IMAGES_ONLY,
           label: { en: 'Cover', id: 'Sampul' },
         },
       ],

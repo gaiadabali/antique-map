@@ -11,7 +11,7 @@ import { DERIVATIVE_VERSION } from '@engine/media/contract'
 import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { deriveMedia } from './pipeline'
+import { deriveMedia } from '@engine/cms-core/collections/media/pipeline'
 import {
   asRoot,
   form,

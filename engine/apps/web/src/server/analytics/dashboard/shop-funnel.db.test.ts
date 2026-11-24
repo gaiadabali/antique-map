@@ -5,7 +5,7 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { loadDashboard } from '../../../../../../packages/cms/src/admin/dashboard/loaders'
-import { resolvePeriod } from '../../../../../../packages/cms/src/admin/dashboard/period'
+import { resolvePeriod } from '../../../../../../packages/cms-core/src/admin/dashboard/period'
 
 import { server, startDashboardStack, type Dashboardish } from './dashboard.test-support'
 

@@ -17,7 +17,15 @@ import '../../../../styles/site.css'
 import { SITE_LOCALES } from '@engine/config/sites'
 import type { Metadata } from 'next'
 
+import { registerOriginals } from '@engine/storefront/originals'
+import { ShopShell } from '@engine/storefront/shell'
+
+import { loadOriginals } from '../../../../server/shop/home/load-originals'
 import { SiteRoot, siteMetadata } from '../../../../shell/site-root'
+
+// The home's bridge to the originals reads this database's `works` (`@engine/storefront/originals`):
+// registered here, in the module every shop page loads before it renders.
+registerOriginals(loadOriginals)
 
 export const instant = false
 
@@ -35,7 +43,7 @@ export function generateMetadata({ params }: LayoutProps<'/shop/[locale]'>): Pro
 
 export default function ShopLayout({ children, params }: LayoutProps<'/shop/[locale]'>) {
   return (
-    <SiteRoot site="shop" params={params}>
+    <SiteRoot site="shop" Shell={ShopShell} params={params}>
       {children}
     </SiteRoot>
   )

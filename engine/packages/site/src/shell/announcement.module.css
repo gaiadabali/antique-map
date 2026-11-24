@@ -1,0 +1,20 @@
+/* The owner's announcement (`site-settings.announcement`), shown above the header on every page
+   of a site that has one set (qa 4.qa, finding F4). */
+.announcement {
+  background: var(--color-surface-dark);
+  color: var(--color-text-on-dark);
+  text-align: center;
+  padding: var(--space-2) var(--gutter);
+}
+
+.announcementText {
+  margin: 0;
+  font: var(--text-announcement);
+}
+
+/* A linked announcement: the words themselves, underlined, in the bar's own colour. */
+.announcementLink {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}

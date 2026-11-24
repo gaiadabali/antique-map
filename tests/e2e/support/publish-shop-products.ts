@@ -1,5 +1,6 @@
 /**
- * CI only: publishes the shop layer's mock products so the shop specs have a live catalogue.
+ * CI only: publishes the shop layer's mock products so the shop specs have a live catalogue, and
+ * seeds and publishes the shop's home, partnership and stores pages (TASKS.md 27.5.b).
  *
  * `pnpm data:seed --layer shop` loads 80 mock products as drafts and refuses `--publish`, because a
  * product needs a picture to publish ("Add at least one image before publishing") and the mock
@@ -22,7 +23,7 @@ type Api = {
 async function main(): Promise<void> {
   process.env.PAYLOAD_SECRET ??= 'e2e-publish-shop-dev-only-never-signs-anything'
   const { cms } = await import('../../../engine/packages/cms/src/instance')
-  const { cliInvalidation } = await import('../../../engine/packages/cms/src/import/cli-cache')
+  const { cliInvalidation } = await import('../../../engine/packages/cms-core/src/import/cli-cache')
   const payload = (await cms()) as unknown as Api
   const batch = cliInvalidation()
 
@@ -69,6 +70,47 @@ async function main(): Promise<void> {
     published += 1
   }
   console.log(`E2E_PUBLISHED_PRODUCTS ${published}`)
+
+  // The shop's home, partnership and stores pages (TASKS.md 27.5.b): the site draws only what the
+  // CMS publishes, so the shop specs need them seeded and published. Seeded once (an existing page
+  // is left as it is); a page still only in draft is published.
+  const { seedShopPages } =
+    await import('../../../engine/packages/storefront/src/server/shop/pages/seed/pages')
+  for (const line of await seedShopPages(payload as never, {
+    publish: true,
+    context: batch.context(),
+  })) {
+    console.log(`E2E_SHOP_PAGE ${line}`)
+  }
+  for (const slug of ['home', 'partnership', 'stores']) {
+    const live = await payload.find({
+      collection: 'pages',
+      where: { and: [{ site: { equals: 'shop' } }, { slug: { equals: slug } }] },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+    if (live.docs[0]?._status === 'published') continue
+    const draft = (
+      await payload.find({
+        collection: 'pages',
+        where: { and: [{ site: { equals: 'shop' } }, { slug: { equals: slug } }] },
+        draft: true,
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      })
+    ).docs[0]
+    if (!draft) continue
+    await payload.update({
+      collection: 'pages',
+      id: draft.id,
+      data: { _status: 'published' },
+      overrideAccess: true,
+      context: batch.context(),
+    })
+    console.log(`E2E_SHOP_PAGE ${slug}: published`)
+  }
   await payload.destroy()
 }
 

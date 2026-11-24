@@ -1,146 +1,155 @@
 - link "Skip to content":
     - /url: '#main'
 - banner:
+    - button "Open menu"
     - link "Old East Indies, home":
         - /url: /
         - text: Old East Indies
-    - button "Open menu"
+    - button "Search"
+    - link "Bag":
+        - /url: /bag
 - main:
-    - text: Art souvenirs of the East Indies
-    - heading "Old maps, new walls." [level=1]
-    - paragraph: Museum-grade prints of antique maps and engravings, made from originals in our own collection. 300gsm cotton, archival inks.
-    - link "Shop prints":
-        - /url: /shop
-    - link "How we make them":
-        - /url: '#process'
-    - text: The lead print — shown here as a placeholder until its photograph loads
-    - heading "Shop by" [level=2]
-    - link "Bali":
-        - /url: /shop
-    - link "Java":
-        - /url: /shop
-    - link "Sumatra":
-        - /url: /shop
-    - link "Lombok":
-        - /url: /shop
-    - link "Living room":
-        - /url: /shop
-    - link "Bedroom":
-        - /url: /shop
-    - link "Office":
-        - /url: /shop
-    - link "Entryway":
-        - /url: /shop
-    - heading "Best sellers" [level=2]
-    - 'link "Digital mockup: Balinese Dancer Photograph, c. 1927, close view of the artwork 01/ Balinese Dancer Photograph, c. 1927 Digital mockup From Rp 450.000"':
-        - /url: /product/balinese-dancer-photograph-c-1927
-        - 'img "Digital mockup: Balinese Dancer Photograph, c. 1927, close view of the artwork"'
-        - text: 01/
-        - heading "Balinese Dancer Photograph, c. 1927" [level=3]
-        - paragraph: Digital mockup
-        - paragraph: From Rp 450.000
-    - 'link "Digital mockup: Exotic Bali, 1930s, close view of the artwork 02/ Exotic Bali, 1930s Digital mockup From Rp 450.000"':
-        - /url: /product/exotic-bali-1930s
-        - 'img "Digital mockup: Exotic Bali, 1930s, close view of the artwork"'
-        - text: 02/
-        - heading "Exotic Bali, 1930s" [level=3]
-        - paragraph: Digital mockup
-        - paragraph: From Rp 450.000
-    - 'link "Digital mockup: Balinese Legong Dancer, 1925, close view of the artwork 03/ Balinese Legong Dancer, 1925 Digital mockup From Rp 450.000"':
-        - /url: /product/balinese-legong-dancer-1925
-        - 'img "Digital mockup: Balinese Legong Dancer, 1925, close view of the artwork"'
-        - text: 03/
-        - heading "Balinese Legong Dancer, 1925" [level=3]
-        - paragraph: Digital mockup
-        - paragraph: From Rp 450.000
-    - link "Lombok Turtle Snorkelling 04/ Lombok Turtle Snorkelling From Rp 450.000":
-        - /url: /product/lombok-turtle-snorkelling
-        - img "Lombok Turtle Snorkelling"
-        - text: 04/
-        - heading "Lombok Turtle Snorkelling" [level=3]
-        - paragraph: From Rp 450.000
-    - link "Shop all prints":
-        - /url: /shop
-    - text: Gallery walls
-    - heading "Sets that hang together" [level=2]
-    - paragraph: Prints we have paired so the sizes and subjects sit well on one wall — framed and hung as shown, or chosen apart.
-    - text: The spice route
-    - paragraph: The spice route
-    - paragraph: Three sea charts of the Moluccas and the Banda Islands.
-    - text: Batavia, three views
-    - paragraph: Batavia, three views
-    - paragraph: The old city from the roadstead, the castle and the canal.
-    - text: Java, north coast
-    - paragraph: Java, north coast
-    - paragraph: Three coastal charts, from Batavia to Surabaya.
-    - link "See the gallery walls":
-        - /url: /collections
-    - text: The workshop — press, paper, inks (placeholder) How we make them
-    - heading "From an original in our hands to a print on your wall" [level=2]
-    - text: 01/
-    - paragraph: It starts with an original
-    - paragraph: Not a file from the internet — an antique map or engraving we physically hold, the same ones our curator certifies.
-    - text: 02/
-    - paragraph: Restored by hand, scars kept
-    - paragraph: We correct foxing, tears and fading. The marks that give a map its character stay — they are part of its story.
-    - text: 03/
-    - paragraph: Printed in our own workshop
-    - paragraph: 300gsm cotton and archival pigment inks, printed in Bali. Not outsourced, not print-on-demand.
-    - text: Trade & gifting
-    - heading "For shops, hotels and companies" [level=2]
-    - paragraph: More than 100 shops across Indonesia already stock Old East Indies. We also make custom gifts for hotels and corporate orders — Bali-themed, printed from the antique originals we hold.
-    - link "See partnership options":
-        - /url: /partnership
-    - text: The originals
-    - heading "Every print begins with a map we hold" [level=2]
-    - paragraph: Those originals are examined and certified by our curator, and offered to collectors at Antique Maps Indonesia — our sister gallery.
-    - link "See the originals":
-        - /url: http://gallery.localhost:4417/
-    - text: An original, beside its print (placeholder)
-- contentinfo:
-    - list:
-        - listitem:
-            - link "Privacy":
-                - /url: /privacy
-        - listitem:
-            - link "Terms":
-                - /url: /terms
-        - listitem:
-            - link "Antique Maps Indonesia — the originals we print from":
-                - /url: http://gallery.localhost:4417/
-    - navigation:
+    - region "Old maps, new walls.":
+        - heading "Old maps, new walls." [level=1]
+        - paragraph: Museum-grade prints of antique maps and engravings, made from originals in our own collection. 300gsm cotton, archival inks.
+        - link "Shop prints":
+            - /url: /shop
+        - link "How we make them":
+            - /url: '#process'
+        - list:
+            - listitem: Restored by hand
+            - listitem: Printed in Bali
+            - listitem: Stocked in 100+ shops
+        - paragraph:
+            - link "Editor print, run MWIYWDUU":
+                - /url: /product/editor-print-run-mwiywduu
+            - text: From Rp 185.000
+    - region "Shop by":
+        - heading "Shop by" [level=2]
         - list:
             - listitem:
-                - link "Shop prints":
-                    - /url: /shop
+                - link "Editor print, run MWIQ4T8A Antique prints 9 prints":
+                    - /url: /collections/antique-prints
+                    - img "Editor print, run MWIQ4T8A"
+                    - text: Antique prints 9 prints
             - listitem:
-                - link "Gallery walls":
-                    - /url: /collections
+                - link "Editor print, run MWIYWDUU Prints 5 prints":
+                    - /url: /collections/prints
+                    - img "Editor print, run MWIYWDUU"
+                    - text: Prints 5 prints
             - listitem:
-                - link "Where to buy":
-                    - /url: /stores
+                - link "Bali Island Road Map, 1937 Maps 16 prints":
+                    - /url: /collections/maps
+                    - img "Bali Island Road Map, 1937"
+                    - text: Maps 16 prints
             - listitem:
-                - link "Partnership":
-                    - /url: /partnership
+                - 'link "Digital mockup: Exotic Bali, 1930s, close view of the artwork Travel posters 13 prints"':
+                    - /url: /collections/travel-posters
+                    - 'img "Digital mockup: Exotic Bali, 1930s, close view of the artwork"'
+                    - text: Travel posters 13 prints
             - listitem:
-                - link "Delivery":
-                    - /url: /delivery
+                - 'link "Digital mockup: Balinese Dancer Photograph, c. 1927, close view of the artwork Bali 46 prints"':
+                    - /url: /collections/bali
+                    - 'img "Digital mockup: Balinese Dancer Photograph, c. 1927, close view of the artwork"'
+                    - text: Bali 46 prints
             - listitem:
-                - link "Frequently asked":
-                    - /url: /faq
+                - link "Forest Fire by Raden Saleh, c. 1850 Animals 21 prints":
+                    - /url: /collections/animals
+                    - img "Forest Fire by Raden Saleh, c. 1850"
+                    - text: Animals 21 prints
             - listitem:
-                - link "About us":
-                    - /url: /about
+                - link "Bali Jepun Flower Bowl by Lou Lauwerys Botanicals 27 prints":
+                    - /url: /collections/botanicals
+                    - img "Bali Jepun Flower Bowl by Lou Lauwerys"
+                    - text: Botanicals 27 prints
             - listitem:
-                - link "Contact":
-                    - /url: /contact
-    - paragraph: Our contact details are being added. Please check back soon.
+                - link "Mount Batur Bali Photograph, 1925 Landscapes 33 prints":
+                    - /url: /collections/landscapes
+                    - img "Mount Batur Bali Photograph, 1925"
+                    - text: Landscapes 33 prints
+        - link "See the gallery walls":
+            - /url: /collections
+    - region "Begin with these":
+        - heading "Begin with these" [level=2]
+        - list:
+            - listitem:
+                - link "Editor print, run MWIYWDUU Editor print, run MWIYWDUU From Rp 185.000 Reproduction":
+                    - /url: /product/editor-print-run-mwiywduu
+                    - img "Editor print, run MWIYWDUU"
+                    - text: Editor print, run MWIYWDUU From Rp 185.000 Reproduction
+            - listitem:
+                - link "Product E2E-PAY-1794815541862-t3t1ehjwu9r Product E2E-PAY-1794815541862-t3t1ehjwu9r From Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794815541862-t3t1ehjwu9r
+            - listitem:
+                - link "Product E2E-PAY-1794815531876-h82nkushyhr Product E2E-PAY-1794815531876-h82nkushyhr From Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794815531876-h82nkushyhr
+            - listitem:
+                - link "Product E2E-PAY-1794815528089-krnmpgkwvvg Product E2E-PAY-1794815528089-krnmpgkwvvg From Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794815528089-krnmpgkwvvg
+            - listitem:
+                - link "Product E2E-PAY-1794815523871-mn52vx2x96o Product E2E-PAY-1794815523871-mn52vx2x96o From Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794815523871-mn52vx2x96o
+            - listitem:
+                - link "Product E2E-PAY-1794815519667-wn8bk4k5l3 Product E2E-PAY-1794815519667-wn8bk4k5l3 From Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794815519667-wn8bk4k5l3
+        - link "Shop all prints":
+            - /url: /shop
+    - region "From an original in our hands to a print on your wall":
+        - heading "From an original in our hands to a print on your wall" [level=2]
+        - list:
+            - listitem:
+                - heading "It starts with an original" [level=3]
+                - paragraph: Not a file from the internet — an antique map or engraving we physically hold, the same ones our curator certifies.
+            - listitem:
+                - heading "Restored by hand, scars kept" [level=3]
+                - paragraph: We correct foxing, tears and fading. The marks that give a map its character stay — they are part of its story.
+            - listitem:
+                - heading "Printed in our own workshop" [level=3]
+                - paragraph: 300gsm cotton and archival pigment inks, printed in Bali. Not outsourced, not print-on-demand.
+    - region "For shops, hotels and companies":
+        - heading "For shops, hotels and companies" [level=2]
+        - paragraph: More than 100 shops across Indonesia already stock Old East Indies.
+        - paragraph: We also make custom gifts for hotels and corporate orders — Bali-themed, printed from the antique originals we hold.
+        - list:
+            - listitem: 100+ shops supplied
+            - listitem: Printed in our own workshop
+            - listitem: Custom gifts for hotels and companies
+        - link "See partnership options":
+            - /url: /partnership
+        - group "For shops, hotels and companies"
+    - region "Every print begins with a map we hold":
+        - text: Antique Maps Indonesia
+        - heading "Every print begins with a map we hold" [level=2]
+        - figure:
+            - img "A hand-coloured map of Bali, run MWIVSLAG"
+        - paragraph: Those originals are examined and certified by our curator, and offered to collectors at Antique Maps Indonesia — our sister gallery.
+        - link "See the originals":
+            - /url: https://antiquemapsindonesia.com/
+- contentinfo:
+    - navigation "Shop":
+        - heading "Shop" [level=2]
+        - list:
+            - listitem:
+                - link "About":
+                    - /url: /
+    - heading "Contact" [level=2]
     - list:
         - listitem:
-            - link "Instagram":
+            - link "Ask on WhatsApp (opens in a new tab)":
+                - /url: https://wa.me/6281299253712
+        - listitem:
+            - link "Instagram (opens in a new tab)":
                 - /url: https://www.instagram.com/oldeastindiesart/
         - listitem:
-            - link "Facebook":
+            - link "Facebook (opens in a new tab)":
                 - /url: https://www.facebook.com/OldEastIndies
+    - list:
+        - listitem:
+            - link "Privacy policy":
+                - /url: /
+    - paragraph: © OEI en
+    - link "Gallery en (opens in a new tab)":
+        - /url: https://antiquemapsindonesia.com/
+        - text: Gallery en
 - button "Chat with us"
 - alert

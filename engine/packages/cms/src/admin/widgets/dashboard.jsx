@@ -11,8 +11,9 @@
  * the barrel's exports typed; when the schema lead makes the package JSX-capable this file
  * becomes `.tsx` and the shim goes away.
  */
-import { hasRole } from '../../collections/users/roles'
-import { ORDER_STATUSES } from '../../collections/orders/statuses'
+import { hasRole } from '@engine/cms-core/access'
+
+import { ORDER_STATUSES } from '@engine/cms-shop/collections/orders/statuses'
 
 const COPY = {
   ordersToActOn: {

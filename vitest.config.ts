@@ -41,9 +41,10 @@ export default defineConfig({
         test: {
           name: 'db',
           include: ['engine/**/*.db.test.{ts,tsx}'],
+          // The shop CMS's own run, on its own schema and templates (`engine/packages/cms-shop/vitest.config.ts`).
+          exclude: [...EXCLUDE, 'engine/packages/cms-shop/**'],
           // One migrated and one pushed template database, built once; each file clones one.
           globalSetup: ['engine/packages/cms/src/db/test-templates.global-setup.test-support.ts'],
-          exclude: EXCLUDE,
         },
       },
     ],

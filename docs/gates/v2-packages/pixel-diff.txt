@@ -1,0 +1,111 @@
+# RGBA-exact, no threshold; pass 1 on fresh CI seeds; 110 pairs. name | status | size | px | rows | attribution
+admin-dashboard-1280 | different | 1280x2311 -> 1280x1630 | 899728 | 12-1629 | a: phase 27 admin rebuild (sign-in with OEI logo, Today home, nav, product list and editor) — engine/packages/cms/src/admin/**
+admin-dashboard-390 | different | 1073x10819 -> 1073x9361 | 7483516 | 23-9360 | a: phase 27 admin rebuild (sign-in with OEI logo, Today home, nav, product list and editor) — engine/packages/cms/src/admin/**
+admin-login-1280 | different | 1280x800 | 925730 | 0-799 | a: phase 27 admin rebuild (sign-in with OEI logo, Today home, nav, product list and editor) — engine/packages/cms/src/admin/**
+admin-login-390 | different | 1073x2321 | 1789957 | 0-2320 | a: phase 27 admin rebuild (sign-in with OEI logo, Today home, nav, product list and editor) — engine/packages/cms/src/admin/**
+admin-product-edit-1280 | different | 1280x967 -> 1280x2917 | 337504 | 12-966 | a: phase 27 admin rebuild (sign-in with OEI logo, Today home, nav, product list and editor) — engine/packages/cms/src/admin/**
+admin-product-edit-390 | different | 1073x4659 -> 1073x10973 | 2332820 | 23-4658 | a: phase 27 admin rebuild (sign-in with OEI logo, Today home, nav, product list and editor) — engine/packages/cms/src/admin/**
+admin-products-list-1280 | different | 1280x1003 -> 1280x1101 | 308596 | 12-987 | a: phase 27 admin rebuild (sign-in with OEI logo, Today home, nav, product list and editor) — engine/packages/cms/src/admin/**
+admin-products-list-390 | different | 1073x3311 -> 1073x3916 | 1319615 | 23-3310 | a: phase 27 admin rebuild (sign-in with OEI logo, Today home, nav, product list and editor) — engine/packages/cms/src/admin/**
+gallery-about-en-1280 | identical | 1280x1285 | 0 |  | 
+gallery-about-en-390 | identical | 1073x4579 | 0 |  | 
+gallery-browse-en-1280 | identical | 1280x5337 | 0 |  | 
+gallery-browse-en-390 | identical | 1073x18593 | 0 |  | 
+gallery-browse-id-1280 | identical | 1280x5271 | 0 |  | 
+gallery-browse-id-390 | identical | 1073x19195 | 0 |  | 
+gallery-category-en-1280 | identical | 1280x3027 | 0 |  | 
+gallery-category-en-390 | identical | 1073x8597 | 0 |  | 
+gallery-category-id-1280 | identical | 1280x3027 | 0 |  | 
+gallery-category-id-390 | identical | 1073x8883 | 0 |  | 
+gallery-chat-open-1280 | different | 1280x800 | 10080 | 776-799 | c: flake — bottom 24 rows under the open panel vary between shots on both sides; AFTER re-shots 1 and 3 are 0 px from a BEFORE re-shot
+gallery-chat-open-390 | identical | 1073x2321 | 0 |  | 
+gallery-contact-en-1280 | identical | 1280x2192 | 0 |  | 
+gallery-contact-en-390 | identical | 1073x7362 | 0 |  | 
+gallery-contact-id-1280 | identical | 1280x2222 | 0 |  | 
+gallery-contact-id-390 | identical | 1073x7579 | 0 |  | 
+gallery-home-en-1280 | identical | 1280x4756 | 0 |  | 
+gallery-home-en-390 | identical | 1073x16407 | 0 |  | 
+gallery-home-id-1280 | identical | 1280x4924 | 0 |  | 
+gallery-home-id-390 | identical | 1073x17476 | 0 |  | 
+gallery-item-en-1280 | identical | 1280x2157 | 0 |  | 
+gallery-item-en-390 | identical | 1073x8473 | 0 |  | 
+gallery-item-id-1280 | identical | 1280x2157 | 0 |  | 
+gallery-item-id-390 | identical | 1073x8531 | 0 |  | 
+gallery-maker-en-1280 | identical | 1280x1722 | 0 |  | 
+gallery-maker-en-390 | identical | 1073x5074 | 0 |  | 
+gallery-maker-id-1280 | identical | 1280x1722 | 0 |  | 
+gallery-maker-id-390 | identical | 1073x5074 | 0 |  | 
+gallery-makers-en-1280 | identical | 1280x3855 | 0 |  | 
+gallery-makers-en-390 | identical | 1073x24673 | 0 |  | 
+gallery-makers-id-1280 | identical | 1280x3855 | 0 |  | 
+gallery-makers-id-390 | identical | 1073x24673 | 0 |  | 
+gallery-notfound-en-1280 | identical | 1280x1285 | 0 |  | 
+gallery-notfound-en-390 | identical | 1073x4579 | 0 |  | 
+gallery-place-en-1280 | identical | 1280x1390 | 0 |  | 
+gallery-place-en-390 | identical | 1073x4243 | 0 |  | 
+gallery-place-id-1280 | identical | 1280x1390 | 0 |  | 
+gallery-place-id-390 | identical | 1073x4243 | 0 |  | 
+gallery-places-en-1280 | identical | 1280x2401 | 0 |  | 
+gallery-places-en-390 | identical | 1073x12075 | 0 |  | 
+gallery-places-id-1280 | identical | 1280x2274 | 0 |  | 
+gallery-places-id-390 | identical | 1073x12158 | 0 |  | 
+gallery-privacy-en-1280 | identical | 1280x1285 | 0 |  | 
+gallery-privacy-en-390 | identical | 1073x4579 | 0 |  | 
+gallery-search-en-1280 | identical | 1280x1652 | 0 |  | 
+gallery-search-en-390 | identical | 1073x5398 | 0 |  | 
+gallery-search-id-1280 | identical | 1280x1586 | 0 |  | 
+gallery-search-id-390 | identical | 1073x5354 | 0 |  | 
+gallery-sell-en-1280 | identical | 1280x2753 | 0 |  | 
+gallery-sell-en-390 | identical | 1073x9697 | 0 |  | 
+gallery-sell-id-1280 | identical | 1280x2783 | 0 |  | 
+gallery-sell-id-390 | identical | 1073x9983 | 0 |  | 
+gallery-stories-en-1280 | identical | 1280x1285 | 0 |  | 
+gallery-stories-en-390 | identical | 1073x4579 | 0 |  | 
+gallery-styleguide-en-1280 | identical | 1280x14050 | 0 |  | 
+gallery-styleguide-en-390 | identical | 1073x44847 | 0 |  | 
+shop-bag-en-1280 | different | 1280x800 | 770 | 776-787 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-bag-en-390 | different | 1073x2321 | 3986 | 2174-2205 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-bag-line-en-1280 | different | 1280x800 | 770 | 776-787 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-bag-line-en-390 | different | 1073x3124 | 3986 | 2977-3008 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-chat-open-1280 | identical | 1280x800 | 0 |  | 
+shop-chat-open-390 | identical | 1073x2321 | 0 |  | 
+shop-checkout-en-1280 | different | 1280x1867 -> 1280x2032 | 220301 | 430-1866 | a: phase 27 delivery priced by distance bands — Delivery and Total-to-pay lines, new summary note (shop/checkout/*) + footer line
+shop-checkout-en-390 | different | 1073x7051 -> 1073x7455 | 1165598 | 1195-7050 | a: phase 27 delivery priced by distance bands — Delivery and Total-to-pay lines, new summary note (shop/checkout/*) + footer line
+shop-collection-en-1280 | different | 1280x2950 | 770 | 2926-2937 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-collection-en-390 | different | 1073x10170 | 3986 | 10023-10054 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-collection-id-1280 | different | 1280x2950 | 829 | 2926-2935 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-collection-id-390 | different | 1073x10170 | 4200 | 10023-10046 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-collections-en-1280 | different | 1280x1403 | 770 | 1379-1390 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-collections-en-390 | different | 1073x4331 | 3986 | 4185-4216 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-collections-id-1280 | different | 1280x1425 | 829 | 1401-1410 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-collections-id-390 | different | 1073x4389 | 4200 | 4242-4265 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-home-en-1280 | different | 1280x3821 | 770 | 3797-3808 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-home-en-390 | different | 1073x12040 | 3986 | 11615-11646 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-home-id-1280 | different | 1280x3843 | 829 | 3819-3828 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-home-id-390 | different | 1073x11965 | 13877 | 9813-11842 | c: flake — broken lazy image alt text drawn or not (BEFORE varies 0/9677 px between its own shots); residual vs a matching BEFORE shot = 4200 px footer line only
+shop-notfound-en-1280 | different | 1280x852 | 770 | 828-839 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-notfound-en-390 | different | 1073x2877 | 3986 | 2730-2761 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-partnership-en-1280 | different | 1280x4025 | 770 | 4001-4012 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-partnership-en-390 | different | 1073x16442 | 3986 | 16296-16327 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-partnership-id-1280 | different | 1280x4130 | 829 | 4106-4115 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-partnership-id-390 | different | 1073x17012 | 4200 | 16865-16888 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-product-en-1280 | different | 1280x1416 | 770 | 1392-1403 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-product-en-390 | different | 1073x5233 | 3986 | 5087-5118 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-product-id-1280 | different | 1280x1446 -> 1280x1416 | 117921 | 689-1408 | a/b: phase 27 product-page fixed copy now from site-settings.shop.productPage (shop/product/page-copy); the CI seed has English values only, so the Indonesian page shows English delivery/signal lines + footer line
+shop-product-id-390 | different | 1073x5233 | 63145 | 2645-5110 | a/b: phase 27 product-page fixed copy now from site-settings.shop.productPage (shop/product/page-copy); the CI seed has English values only, so the Indonesian page shows English delivery/signal lines + footer line
+shop-search-en-1280 | different | 1280x2353 | 770 | 2329-2340 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-search-en-390 | different | 1073x9083 | 3986 | 8937-8968 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-search-id-1280 | different | 1280x2353 | 829 | 2329-2338 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-search-id-390 | different | 1073x9083 | 4200 | 8937-8960 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-shop-en-1280 | different | 1280x3569 | 770 | 3545-3556 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-shop-en-390 | different | 1073x13508 | 3986 | 13361-13392 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-shop-id-1280 | different | 1280x3569 | 829 | 3545-3554 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-shop-id-390 | different | 1073x13508 | 4200 | 13361-13384 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-stores-en-1280 | different | 1280x7664 | 770 | 7640-7651 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-stores-en-390 | different | 1073x46571 | 3986 | 46425-46456 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-stores-id-1280 | different | 1280x7664 | 829 | 7640-7649 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-stores-id-390 | different | 1073x46571 | 4200 | 46425-46448 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-styleguide-en-1280 | different | 1280x13701 | 770 | 13677-13688 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-styleguide-en-390 | different | 1073x42947 | 3986 | 42800-42831 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-track-en-1280 | different | 1280x800 | 770 | 776-787 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx
+shop-track-en-390 | different | 1073x2395 | 3986 | 2249-2280 | a: phase 27 shop footer (27.5.c) — bottom bar shows the CMS legal links or the copyright; CI seed has no legal links, so "© 2026 Old East Indies" replaces "Privacy · Terms" — shop/shell/shop-footer.tsx

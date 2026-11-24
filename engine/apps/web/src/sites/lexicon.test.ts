@@ -23,7 +23,24 @@ const walk = (dir: string): void => {
     else if (entry.name.endsWith('.json') && !path.includes('lexicon')) corpusFiles.push(path)
   }
 }
-walk(dirname(SITES_ROOT)) // the web app's src, the lexicon value files excluded
+// The web app's src and the code that moved out of it — the shop's storefront and the shell's
+// shared parts, and the shared keys (`@engine/i18n`) — and the shop app (TASKS.md 23.3), the
+// lexicon value files excluded.
+const PACKAGES = join(dirname(SITES_ROOT), '..', '..', '..', 'packages')
+for (const dir of [
+  dirname(SITES_ROOT),
+  join(PACKAGES, 'storefront', 'src'),
+  join(PACKAGES, 'site', 'src'),
+  join(PACKAGES, 'i18n', 'src'),
+  join(dirname(SITES_ROOT), '..', '..', 'shop', 'src'),
+])
+  walk(dir)
+
+/** Each site's lexicon folder: the gallery's here, the shop's in the storefront. */
+const LEXICON_DIRS = {
+  gallery: join(SITES_ROOT, 'gallery', 'lexicon'),
+  shop: join(PACKAGES, 'storefront', 'src', 'sites', 'shop', 'lexicon'),
+} as const
 
 const CORPUS = corpusFiles.map((file) => readFileSync(file, 'utf8')).join('\n')
 
@@ -50,9 +67,10 @@ for (const site of ['gallery', 'shop'] as const) {
     const values = Object.fromEntries(
       LOCALES.map((locale) => [
         locale,
-        JSON.parse(
-          readFileSync(join(SITES_ROOT, site, 'lexicon', `${locale}.json`), 'utf8'),
-        ) as Record<string, string>,
+        JSON.parse(readFileSync(join(LEXICON_DIRS[site], `${locale}.json`), 'utf8')) as Record<
+          string,
+          string
+        >,
       ]),
     ) as LexiconValues
     const categories = Object.fromEntries(

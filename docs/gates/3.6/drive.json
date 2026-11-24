@@ -1,75 +1,77 @@
 {
   "dashboard.editor.en": {
-    "orders": 4,
-    "ordersSql": 4,
+    "needs": 3,
+    "needsSql": 3,
+    "packing": 1,
+    "packingSql": 1,
     "leads": null,
     "leadsSql": 2,
     "groups": {
-      "Antiques": ["Antiques", "Makers", "Places", "Terms", "Images", "Masters"],
-      "Shop": ["Products"],
-      "Stores and stock": ["Stores", "Stock"],
+      "Content": ["Pages", "Header", "Footer", "Media"],
       "Orders": ["Orders"],
-      "Content": ["Pages", "Redirects"],
-      "Settings": ["Staff"]
+      "Catalogue": ["Products", "Categories"],
+      "Stores": ["Stores", "Stock by store"],
+      "Settings": ["Staff"],
+      "Indies Gallery — antiques": []
     }
   },
   "dashboard.editor.id": {
-    "orders": 4,
-    "ordersSql": 4,
+    "needs": 3,
+    "needsSql": 3,
+    "packing": 1,
+    "packingSql": 1,
     "leads": null,
     "leadsSql": 2,
     "groups": {
-      "Antik": ["Antik", "Pembuat", "Tempat", "Istilah", "Gambar", "Master"],
-      "Toko daring": ["Produk"],
-      "Toko dan stok": ["Toko", "Stok"],
+      "Konten": ["Halaman", "Header", "Footer", "Media"],
       "Pesanan": ["Pesanan"],
-      "Konten": ["Halaman", "Pengalihan"],
-      "Pengaturan": ["Staf"]
+      "Katalog": ["Produk", "Kategori"],
+      "Toko dan stok": ["Toko", "Stok per toko"],
+      "Pengaturan": ["Staf"],
+      "Indies Gallery — antik": []
     }
   },
   "dashboard.owner.en": {
-    "orders": 4,
-    "ordersSql": 4,
+    "needs": 3,
+    "needsSql": 3,
+    "packing": 1,
+    "packingSql": 1,
     "leads": 2,
     "leadsSql": 2,
     "groups": {
-      "Antiques": ["Antiques", "Makers", "Places", "Terms", "Images", "Masters"],
-      "Shop": ["Discount codes", "Products"],
-      "Stores and stock": ["Stores", "Stock"],
-      "Orders": ["Orders", "Payment events"],
-      "Leads and partners": ["Leads", "Partners", "Chat sessions"],
-      "Content": ["Pages", "Redirects"],
-      "Settings": ["Staff", "Events", "Site settings"]
+      "Content": ["Pages", "Header", "Footer", "Media"],
+      "Orders": ["Orders", "Leads inbox", "Partners"],
+      "Catalogue": ["Products", "Categories", "Discount codes"],
+      "Stores": ["Stores", "Stock by store", "Import from a spreadsheet"],
+      "Settings": ["Site settings", "Staff", "Chat sessions"],
+      "Technical records": [],
+      "Indies Gallery — antiques": []
     }
   },
   "dashboard.owner.id": {
-    "orders": 4,
-    "ordersSql": 4,
+    "needs": 3,
+    "needsSql": 3,
+    "packing": 1,
+    "packingSql": 1,
     "leads": 2,
     "leadsSql": 2,
     "groups": {
-      "Antik": ["Antik", "Pembuat", "Tempat", "Istilah", "Gambar", "Master"],
-      "Toko daring": ["Kode diskon", "Produk"],
-      "Toko dan stok": ["Toko", "Stok"],
-      "Pesanan": ["Pesanan", "Peristiwa pembayaran"],
-      "Calon pembeli dan mitra": ["Calon pembeli", "Mitra", "Sesi chat"],
-      "Konten": ["Halaman", "Pengalihan"],
-      "Pengaturan": ["Staf", "Peristiwa", "Pengaturan situs"]
+      "Konten": ["Halaman", "Header", "Footer", "Media"],
+      "Pesanan": ["Pesanan", "Kotak masuk calon pembeli", "Mitra"],
+      "Katalog": ["Produk", "Kategori", "Kode diskon"],
+      "Toko dan stok": ["Toko", "Stok per toko", "Impor dari lembar kerja"],
+      "Pengaturan": ["Pengaturan situs", "Staf", "Sesi chat"],
+      "Catatan teknis": [],
+      "Indies Gallery — antik": []
     }
   },
   "dashboard.storeA.en": {
-    "orders": 2,
-    "ordersSql": 2,
-    "leads": null,
-    "leadsSql": 2,
-    "groups": { "Stores and stock": ["Stores", "Stock"], "Orders": ["Orders"] }
+    "landing": "/admin/orders",
+    "groups": { "Orders": ["Orders"], "Stores": ["Stock by store"] }
   },
   "dashboard.storeA.id": {
-    "orders": 2,
-    "ordersSql": 2,
-    "leads": null,
-    "leadsSql": 2,
-    "groups": { "Toko dan stok": ["Toko", "Stok"], "Pesanan": ["Pesanan"] }
+    "landing": "/admin/orders",
+    "groups": { "Pesanan": ["Pesanan"], "Toko dan stok": ["Stok per toko"] }
   },
   "galleryAdmin": 404,
   "invalid.editor.en": {
@@ -101,14 +103,14 @@
     "storeB": { "store": "AMD-002", "listed": 2, "fixtureOrders": 2 }
   },
   "ownerFlow": {
-    "run": "MUUVXY8J",
+    "run": "MWIZWCMN",
     "secondsPerStep": {
-      "the owner uploads a photograph of the antique": 1.5,
-      "the owner catalogues the antique with its photo and publishes it": 6.5,
-      "the owner adds a store": 0.8,
+      "the owner uploads a photograph of the antique": 1.1,
+      "the owner catalogues the antique with its photo and publishes it": 5.5,
+      "the owner adds a store": 0.6,
       "the owner adds a product": 0.9,
-      "the owner gives the product stock in two stores": 6.7
+      "the owner gives the product stock in two stores": 4.8
     },
-    "totalSeconds": 16.4
+    "totalSeconds": 12.9
   }
 }

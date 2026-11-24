@@ -3,9 +3,9 @@
  * Leads, replies and chats are counted from their records, so a panel here shows them apart from
  * the beacon's taps, never added to them.
  */
-import { text, word } from './copy'
-import { formatNumber } from './format'
-import { Empty, Panel, Ranked, Stat } from './ui'
+import { text, word } from '@engine/cms-core/admin/dashboard/copy'
+import { formatNumber } from '@engine/cms-core/admin/dashboard/format'
+import { Empty, Panel, Ranked, Stat } from '@engine/cms-core/admin/dashboard/ui'
 
 export function AsksPanel({ data, language, title }) {
   const t = (key) => text(language, key)

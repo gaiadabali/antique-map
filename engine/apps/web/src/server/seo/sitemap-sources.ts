@@ -9,42 +9,22 @@
  * picks it up with no cache of its own to invalidate.
  */
 import { cacheLife } from 'next/cache'
-import type { Payload, SelectType, Where } from 'payload'
+import type { Payload } from 'payload'
 
 import { cacheTags, catalogueTag } from '@engine/cache'
 import { cms } from '@engine/cms/instance'
 import { createHref, SITES } from '@engine/config/sites'
+import type { SitemapEntry } from '@engine/site/seo'
+import { entryOf, findPublished } from '@engine/site/seo/published'
 
 import { slugOf } from '../gallery/item/view-model'
-import type { SitemapEntry } from './sitemap'
+
+// The shop's sources moved with its pages (`@engine/storefront`, TASKS.md 23.5): both apps' sitemaps.
+export { queryShopSitemap, shopSitemapEntries } from '@engine/storefront/server/seo/sitemap-sources'
 
 const galleryHref = createHref(SITES.gallery)
-const shopHref = createHref(SITES.shop)
-
-function entryOf(paths: SitemapEntry['paths'], updatedAt?: unknown): SitemapEntry {
-  return typeof updatedAt === 'string' ? { paths, lastModified: new Date(updatedAt) } : { paths }
-}
 
 const str = (value: unknown): string => (typeof value === 'string' ? value : '')
-
-async function findPublished(
-  payload: Payload,
-  collection: 'works' | 'makers' | 'places' | 'pages' | 'products',
-  where: Where,
-  select: SelectType,
-  depth = 0,
-): Promise<readonly Record<string, unknown>[]> {
-  const found = await payload.find({
-    collection,
-    overrideAccess: false,
-    where: { and: [{ _status: { equals: 'published' } }, where] },
-    select,
-    depth,
-    limit: 0,
-    pagination: false,
-  })
-  return found.docs as readonly Record<string, unknown>[]
-}
 
 /** The gazetteer's published places, each as its full ancestor-first path (`java/batavia`) — the
  * same tree `server/gallery/catalogue/places` builds, re-read here so the sitemap also gets each
@@ -149,59 +129,4 @@ export async function gallerySitemapEntries(): Promise<readonly SitemapEntry[]> 
   cacheLife('hours')
   cacheTags([catalogueTag('gallery')])
   return queryGallerySitemap(await cms())
-}
-
-/** The shop's sitemap entries: static surfaces plus every published product and category —
- * `/contact` is not among them, the shop has no such route (the crawl's 404). Published CMS pages
- * are not listed either: the shop has no generic page route yet to carry one (never list a path
- * that does not route). */
-export async function queryShopSitemap(payload: Payload): Promise<readonly SitemapEntry[]> {
-  const [products, categoryDocs] = await Promise.all([
-    findPublished(
-      payload,
-      'products',
-      { site: { equals: 'shop' } },
-      { slug: true, updatedAt: true },
-    ),
-    findPublished(payload, 'products', { site: { equals: 'shop' } }, { category: true }, 1),
-  ])
-
-  const staticEntries: SitemapEntry[] = (['home', 'browse', 'partnership'] as const).map(
-    (surface) => entryOf({ en: shopHref(surface, {}, 'en'), id: shopHref(surface, {}, 'id') }),
-  )
-
-  const productEntries = products.map((doc) =>
-    entryOf(
-      {
-        en: shopHref('product', { slug: str(doc.slug) }, 'en'),
-        id: shopHref('product', { slug: str(doc.slug) }, 'id'),
-      },
-      doc.updatedAt,
-    ),
-  )
-
-  const categories = new Map<string, unknown>()
-  for (const doc of categoryDocs) {
-    const category = doc.category
-    if (typeof category !== 'object' || category === null) continue
-    const term = category as { slug?: unknown; updatedAt?: unknown }
-    if (typeof term.slug === 'string' && !categories.has(term.slug)) {
-      categories.set(term.slug, term.updatedAt)
-    }
-  }
-  const categoryEntries = [...categories.entries()].map(([slug, updatedAt]) =>
-    entryOf(
-      { en: shopHref('collection', { slug }, 'en'), id: shopHref('collection', { slug }, 'id') },
-      updatedAt,
-    ),
-  )
-
-  return [...staticEntries, ...productEntries, ...categoryEntries]
-}
-
-export async function shopSitemapEntries(): Promise<readonly SitemapEntry[]> {
-  'use cache'
-  cacheLife('hours')
-  cacheTags([catalogueTag('shop')])
-  return queryShopSitemap(await cms())
 }

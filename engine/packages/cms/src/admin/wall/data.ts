@@ -8,9 +8,9 @@ import { sql } from '@payloadcms/db-postgres/drizzle'
 import type { Payload, Where } from 'payload'
 
 import { AI_DRAFTABLE_FIELDS, unverifiedAiDraft } from '../../collections/works/vocabulary'
-import { rowsOf } from '../dashboard/sql'
+import { rowsOf } from '@engine/cms-core/admin/dashboard/sql'
 import { PAGE_SIZE, type WallFilter } from './filter'
-import { thumbnailUrl } from './image'
+import { THUMBNAIL_SELECT, thumbnailUrl } from '@engine/cms-core/admin/image'
 import { deriveProductState, deriveWorkState, type WallStateTag } from './state'
 
 export type WallCard = {
@@ -143,7 +143,7 @@ async function readWorks(ctx: Ctx, where: Where, page: number, limit: number) {
       cataloguing: { aiDraft: true },
     } as never,
     populate: {
-      media: { url: true, thumbnailURL: true, width: true, assetId: true, derivatives: true },
+      media: THUMBNAIL_SELECT,
     } as never,
   })
   const cards: WallCard[] = (result.docs as Doc[]).map((doc) => {
@@ -183,7 +183,7 @@ async function readProducts(ctx: Ctx, where: Where, page: number, limit: number)
     where,
     select: { name: true, sku: true, _status: true, updatedAt: true, images: true } as never,
     populate: {
-      media: { url: true, thumbnailURL: true, width: true, assetId: true, derivatives: true },
+      media: THUMBNAIL_SELECT,
     } as never,
   })
   const docs = result.docs as Doc[]

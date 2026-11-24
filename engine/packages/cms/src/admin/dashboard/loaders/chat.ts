@@ -5,11 +5,17 @@
  * transaction; the session record does not keep the channel). A lead flagged spam is not a lead
  * captured.
  */
-import { compared, type Compared, type Counted } from '../compare'
-import type { DashboardContext } from '../context'
-import { sql, topCounts } from '../sql'
+import { compared, type Compared, type Counted } from '@engine/cms-core/admin/dashboard/compare'
+import type { DashboardContext } from '@engine/cms-core/admin/dashboard/context'
+import { sql, topCounts } from '@engine/cms-core/admin/dashboard/sql'
 
-import { findAll, idOf, periodOfInstant, spanWhere, type Row } from './records'
+import {
+  findAll,
+  idOf,
+  periodOfInstant,
+  spanWhere,
+  type Row,
+} from '@engine/cms-core/admin/dashboard/records'
 
 export type ChatPanel = {
   readonly hasData: boolean

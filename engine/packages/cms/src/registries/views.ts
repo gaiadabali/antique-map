@@ -14,27 +14,30 @@ import type { AdminViewConfig } from 'payload'
 import { dashboardViewEntries } from '../admin/dashboard/entry'
 import { leadsViewEntries } from '../admin/leads/entry'
 import { seedsViewEntries } from '../admin/seeds/entry'
-import { stockImportViewEntries } from '../admin/stock-import/entry'
+import { wallViewEntries } from '../admin/wall/entry'
+import {
+  ordersViewEntries,
+  staffViewEntries,
+  stockImportViewEntries,
+  stockMatrixViewEntries,
+  todayViewEntries,
+} from '@engine/cms-shop/admin/registry'
 
-import { uniqueEntries, type RegistryEntry } from './entries'
+import { uniqueEntries, type RegistryEntry } from '@engine/cms-core/registries/entries'
 
 // One line per view, its entry kept beside its code (an entry holds no React: the config never
 // loads a view). The components are exported from the barrel `@engine/cms/admin/views`, which the
 // import map resolves.
 export const ADMIN_VIEWS: readonly RegistryEntry<AdminViewConfig>[] = [
   ...dashboardViewEntries, // ADM, the owner's dashboard (TASKS.md 9.2.b)
-  {
-    name: 'orders-panel',
-    owner: 'ADM',
-    value: {
-      path: '/orders/:id?',
-      Component: '@engine/cms/admin/orders#OrdersPanelView',
-      exact: true,
-    },
-  },
+  ...ordersViewEntries, // ADM, the orders inbox and page (TASKS.md 27.3; `@engine/cms-shop`)
   ...leadsViewEntries, // ADM, the leads inbox (TASKS.md 9.1.a)
   ...stockImportViewEntries, // ADM, the owner's stock import screen (TASKS.md 10.8.a)
+  ...stockMatrixViewEntries, // ADM, the stock matrix (TASKS.md 27.4.b)
   ...seedsViewEntries, // ADM, the owner's seed screen (staging and local only)
+  ...wallViewEntries, // ADM, the Catalogue Wall, off the home since TASKS.md 27.6.a
+  ...staffViewEntries, // ADM, the owner's quick add-staff screen (TASKS.md 27.6.c)
+  ...todayViewEntries, // ADM, the shop's Today numbers, off the home since 2026-11-16
 ]
 
 /** `admin.components.views`, keyed by each entry's name. */

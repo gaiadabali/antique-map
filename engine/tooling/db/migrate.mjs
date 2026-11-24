@@ -60,22 +60,24 @@ export function migrateEnv({ database, env }) {
 }
 
 /**
- * Runs `pnpm --filter @engine/cms migrate` against `database`. Resolves once
- * every pending migration is applied; throws `MigrateError` with Payload's
- * (redacted) last words otherwise, so `db:fresh` never reports a half-made
- * database ready. `run` is injectable for tests.
+ * Runs `pnpm --filter <cmsPackage> migrate` against `database` — `@engine/cms`
+ * for today's app, `@engine/cms-shop` for the shop's (naming.mjs `APPS`), each
+ * with its own migrations. Resolves once every pending migration is applied;
+ * throws `MigrateError` with Payload's (redacted) last words otherwise, so
+ * `db:fresh` never reports a half-made database ready. `run` is injectable for tests.
  */
 export async function runMigrations({
   database,
   repoRoot,
+  cmsPackage = CMS_PACKAGE,
   env = process.env,
   log = console.log,
   run = runPnpm,
 }) {
   const childEnv = migrateEnv({ database, env })
   const url = childEnv.DATABASE_URL
-  log(`[db] migrate ${database}: pnpm --filter ${CMS_PACKAGE} migrate`)
-  const { code, stdout, stderr } = await run(['--silent', '--filter', CMS_PACKAGE, 'migrate'], {
+  log(`[db] migrate ${database}: pnpm --filter ${cmsPackage} migrate`)
+  const { code, stdout, stderr } = await run(['--silent', '--filter', cmsPackage, 'migrate'], {
     cwd: repoRoot,
     env: childEnv,
   })

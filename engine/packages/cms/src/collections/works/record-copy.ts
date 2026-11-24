@@ -3,7 +3,7 @@
  * for, in both of the admin's languages. Kept beside `fields-record.ts` so the field shapes stay
  * readable there and the file holds to the 300-line rule.
  */
-import { IN_DEFAULT_LOCALE_NOTE } from '../../fields/validate'
+import { IN_DEFAULT_LOCALE_NOTE } from '@engine/cms-core/fields'
 
 export const RECORD_NOTES = {
   publicId: {

@@ -6,11 +6,11 @@
  * `../collections/orders/status-moves.test.ts`; the store's scoping is 3.5.e
  * (`./role-scoping.db.test.ts`).
  */
+import { asUser } from '@engine/cms-core/access'
 import { getPayload, ValidationError } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { asUser } from '../access/as-user'
-import { makeOrder, makeProduct } from '../collections/stock-levels/shop.test-support'
+import { makeOrder, makeProduct } from '@engine/cms-shop/collections/stock-levels/shop.test-support'
 import {
   fieldError,
   server,

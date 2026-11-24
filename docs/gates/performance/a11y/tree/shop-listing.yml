@@ -1,30 +1,46 @@
 - link "Skip to content":
     - /url: '#main'
 - banner:
+    - button "Open menu"
     - link "Old East Indies, home":
         - /url: /
         - text: Old East Indies
-    - button "Open menu"
+    - button "Search"
+    - link "Bag":
+        - /url: /bag
 - main:
-    - region "Shop all":
-        - heading "Shop all" [level=1]
+    - region "Shop all (182)":
+        - navigation "Breadcrumb":
+            - list:
+                - listitem:
+                    - link "Home":
+                        - /url: /
+                - listitem: Shop all
+        - heading "Shop all (182)" [level=1]:
+            - text: Shop all
+            - superscript: (182)
+        - paragraph: Reproductions of the archive’s maps, prints and photographs, sent from Bali.
         - navigation "Category":
             - link "Shop all":
                 - /url: /shop
-            - link "Animals":
-                - /url: /collections/animals
-            - link "Bali":
-                - /url: /collections/bali
-            - link "Botanicals":
-                - /url: /collections/botanicals
-            - link "Landscapes":
-                - /url: /collections/landscapes
+            - link "Antique prints":
+                - /url: /collections/antique-prints
+            - link "Prints":
+                - /url: /collections/prints
             - link "Maps":
                 - /url: /collections/maps
             - link "Travel posters":
                 - /url: /collections/travel-posters
+            - link "Bali":
+                - /url: /collections/bali
+            - link "Animals":
+                - /url: /collections/animals
+            - link "Botanicals":
+                - /url: /collections/botanicals
+            - link "Landscapes":
+                - /url: /collections/landscapes
         - text: Sort by
-        - list:
+        - list "Sort by":
             - listitem:
                 - link "Featured":
                     - /url: /shop
@@ -39,125 +55,101 @@
                     - /url: /shop?sort=priceDesc
         - list:
             - listitem:
-                - 'link "Digital mockup: Balinese Dancer Photograph, c. 1927, close view of the artwork Balinese Dancer Photograph, c. 1927 Reproduction Digital mockup Rp 450.000"':
-                    - /url: /product/balinese-dancer-photograph-c-1927
-                    - 'img "Digital mockup: Balinese Dancer Photograph, c. 1927, close view of the artwork"'
-                    - text: Balinese Dancer Photograph, c. 1927 Reproduction Digital mockup Rp 450.000
+                - link "Editor print, run MWIYWDUU Editor print, run MWIYWDUU Rp 185.000 Reproduction":
+                    - /url: /product/editor-print-run-mwiywduu
+                    - img "Editor print, run MWIYWDUU"
+                    - text: Editor print, run MWIYWDUU Rp 185.000 Reproduction
             - listitem:
-                - 'link "Digital mockup: Exotic Bali, 1930s, close view of the artwork Exotic Bali, 1930s Reproduction Digital mockup Rp 450.000"':
-                    - /url: /product/exotic-bali-1930s
-                    - 'img "Digital mockup: Exotic Bali, 1930s, close view of the artwork"'
-                    - text: Exotic Bali, 1930s Reproduction Digital mockup Rp 450.000
+                - link "Product E2E-PAY-1794815541862-t3t1ehjwu9r Product E2E-PAY-1794815541862-t3t1ehjwu9r Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794815541862-t3t1ehjwu9r
             - listitem:
-                - 'link "Digital mockup: Balinese Legong Dancer, 1925, close view of the artwork Balinese Legong Dancer, 1925 Reproduction Digital mockup Rp 450.000"':
-                    - /url: /product/balinese-legong-dancer-1925
-                    - 'img "Digital mockup: Balinese Legong Dancer, 1925, close view of the artwork"'
-                    - text: Balinese Legong Dancer, 1925 Reproduction Digital mockup Rp 450.000
+                - link "Product E2E-PAY-1794815531876-h82nkushyhr Product E2E-PAY-1794815531876-h82nkushyhr Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794815531876-h82nkushyhr
             - listitem:
-                - link "Lombok Turtle Snorkelling Lombok Turtle Snorkelling Reproduction Rp 450.000":
-                    - /url: /product/lombok-turtle-snorkelling
-                    - img "Lombok Turtle Snorkelling"
-                    - text: Lombok Turtle Snorkelling Reproduction Rp 450.000
+                - link "Product E2E-PAY-1794815528089-krnmpgkwvvg Product E2E-PAY-1794815528089-krnmpgkwvvg Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794815528089-krnmpgkwvvg
             - listitem:
-                - link "Bali Banten Tegeh Offerings, 1939 Bali Banten Tegeh Offerings, 1939 Reproduction Rp 450.000":
-                    - /url: /product/bali-banten-tegeh-offerings-1939
-                    - img "Bali Banten Tegeh Offerings, 1939"
-                    - text: Bali Banten Tegeh Offerings, 1939 Reproduction Rp 450.000
+                - link "Product E2E-PAY-1794815523871-mn52vx2x96o Product E2E-PAY-1794815523871-mn52vx2x96o Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794815523871-mn52vx2x96o
             - listitem:
-                - link "Bali Food Offerings, 1939 Bali Food Offerings, 1939 Reproduction Rp 450.000":
-                    - /url: /product/bali-food-offerings-1939
-                    - img "Bali Food Offerings, 1939"
-                    - text: Bali Food Offerings, 1939 Reproduction Rp 450.000
+                - link "Product E2E-PAY-1794815519667-wn8bk4k5l3 Product E2E-PAY-1794815519667-wn8bk4k5l3 Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794815519667-wn8bk4k5l3
             - listitem:
-                - link "Bali Street Seller, 1939 Bali Street Seller, 1939 Reproduction Rp 450.000":
-                    - /url: /product/bali-street-seller-1939
-                    - img "Bali Street Seller, 1939"
-                    - text: Bali Street Seller, 1939 Reproduction Rp 450.000
+                - link "Product E2E-PAY-1794815516166-pi0brzkyg1p Product E2E-PAY-1794815516166-pi0brzkyg1p Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794815516166-pi0brzkyg1p
             - listitem:
-                - link "Bali Jepun Flower Bowl by Lou Lauwerys Bali Jepun Flower Bowl by Lou Lauwerys Reproduction Rp 450.000":
-                    - /url: /product/bali-jepun-flower-bowl-by-lou-lauwerys-2
-                    - img "Bali Jepun Flower Bowl by Lou Lauwerys"
-                    - text: Bali Jepun Flower Bowl by Lou Lauwerys Reproduction Rp 450.000
+                - link "Editor print, run MWIVSLBC Editor print, run MWIVSLBC Rp 185.000 Reproduction":
+                    - /url: /product/editor-print-run-mwivslbc
+                    - img "Editor print, run MWIVSLBC"
+                    - text: Editor print, run MWIVSLBC Rp 185.000 Reproduction
             - listitem:
-                - link "Bali Jepun Flower Bowl by Lou Lauwerys Bali Jepun Flower Bowl by Lou Lauwerys Reproduction Rp 450.000":
-                    - /url: /product/bali-jepun-flower-bowl-by-lou-lauwerys
-                    - img "Bali Jepun Flower Bowl by Lou Lauwerys"
-                    - text: Bali Jepun Flower Bowl by Lou Lauwerys Reproduction Rp 450.000
+                - link "Product E2E-PAY-1794810410861-bfarxvlr8zg Product E2E-PAY-1794810410861-bfarxvlr8zg Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794810410861-bfarxvlr8zg
             - listitem:
-                - link "Balinese Jepun Flower by Lou Lauwerys Balinese Jepun Flower by Lou Lauwerys Reproduction Rp 450.000":
-                    - /url: /product/balinese-jepun-flower-by-lou-lauwerys-3
-                    - img "Balinese Jepun Flower by Lou Lauwerys"
-                    - text: Balinese Jepun Flower by Lou Lauwerys Reproduction Rp 450.000
+                - link "Product E2E-PAY-1794810348802-6imd1q7uid Product E2E-PAY-1794810348802-6imd1q7uid Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794810348802-6imd1q7uid
             - listitem:
-                - link "Balinese Jepun Flower by Lou Lauwerys Balinese Jepun Flower by Lou Lauwerys Reproduction Rp 450.000":
-                    - /url: /product/balinese-jepun-flower-by-lou-lauwerys-2
-                    - img "Balinese Jepun Flower by Lou Lauwerys"
-                    - text: Balinese Jepun Flower by Lou Lauwerys Reproduction Rp 450.000
+                - link "Product E2E-PAY-1794810348098-1ucz6p93ordi Product E2E-PAY-1794810348098-1ucz6p93ordi Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794810348098-1ucz6p93ordi
             - listitem:
-                - link "Balinese Jepun Flower by Lou Lauwerys Balinese Jepun Flower by Lou Lauwerys Reproduction Rp 450.000":
-                    - /url: /product/balinese-jepun-flower-by-lou-lauwerys
-                    - img "Balinese Jepun Flower by Lou Lauwerys"
-                    - text: Balinese Jepun Flower by Lou Lauwerys Reproduction Rp 450.000
+                - link "Product E2E-PAY-1794810347119-8b2zwimi9ug Product E2E-PAY-1794810347119-8b2zwimi9ug Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794810347119-8b2zwimi9ug
             - listitem:
-                - link "Balinese Temples Photograph, 1925 Balinese Temples Photograph, 1925 Reproduction Rp 450.000":
-                    - /url: /product/balinese-temples-photograph-1925
-                    - img "Balinese Temples Photograph, 1925"
-                    - text: Balinese Temples Photograph, 1925 Reproduction Rp 450.000
+                - link "Product E2E-PAY-1794810340873-frmfc2w3vfn Product E2E-PAY-1794810340873-frmfc2w3vfn Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794810340873-frmfc2w3vfn
             - listitem:
-                - link "Mount Batur Bali Photograph, 1925 Mount Batur Bali Photograph, 1925 Reproduction Rp 450.000":
-                    - /url: /product/mount-batur-bali-photograph-1925
-                    - img "Mount Batur Bali Photograph, 1925"
-                    - text: Mount Batur Bali Photograph, 1925 Reproduction Rp 450.000
+                - link "Product E2E-PAY-1794810340697-8pb67wik9t9 Product E2E-PAY-1794810340697-8pb67wik9t9 Rp 95.000 Reproduction":
+                    - /url: /product/product-e2e-pay-1794810340697-8pb67wik9t9
             - listitem:
-                - link "Balinese Ngaben Ceremony, 1937 Balinese Ngaben Ceremony, 1937 Reproduction Rp 450.000":
-                    - /url: /product/balinese-ngaben-ceremony-1937
-                    - img "Balinese Ngaben Ceremony, 1937"
-                    - text: Balinese Ngaben Ceremony, 1937 Reproduction Rp 450.000
+                - link "Editor print, run MWIQN2CF Editor print, run MWIQN2CF Rp 185.000 Reproduction":
+                    - /url: /product/editor-print-run-mwiqn2cf
+                    - img "Editor print, run MWIQN2CF"
+                    - text: Editor print, run MWIQN2CF Rp 185.000 Reproduction
             - listitem:
-                - link "Bali Travel Brochure Temple, 1939 Bali Travel Brochure Temple, 1939 Reproduction Rp 450.000":
-                    - /url: /product/bali-travel-brochure-temple-1939
-                    - img "Bali Travel Brochure Temple, 1939"
-                    - text: Bali Travel Brochure Temple, 1939 Reproduction Rp 450.000
+                - link "Editor print, run MWIQ4T8A Editor print, run MWIQ4T8A Rp 185.000 Reproduction":
+                    - /url: /product/editor-print-run-mwiq4t8a
+                    - img "Editor print, run MWIQ4T8A"
+                    - text: Editor print, run MWIQ4T8A Rp 185.000 Reproduction
             - listitem:
-                - link "Bali Travel Brochure Rice Fields, 1939 Bali Travel Brochure Rice Fields, 1939 Reproduction Rp 450.000":
-                    - /url: /product/bali-travel-brochure-rice-fields-1939
-                    - img "Bali Travel Brochure Rice Fields, 1939"
-                    - text: Bali Travel Brochure Rice Fields, 1939 Reproduction Rp 450.000
+                - link "Editor print, run MW32S2E6 Editor print, run MW32S2E6 Rp 185.000 Reproduction":
+                    - /url: /product/editor-print-run-mw32s2e6
+                    - img "Editor print, run MW32S2E6"
+                    - text: Editor print, run MW32S2E6 Rp 185.000 Reproduction
             - listitem:
-                - link "Bali Offerings Travel Poster, 1939 Bali Offerings Travel Poster, 1939 Reproduction Rp 450.000":
-                    - /url: /product/bali-offerings-travel-poster-1939
-                    - img "Bali Offerings Travel Poster, 1939"
-                    - text: Bali Offerings Travel Poster, 1939 Reproduction Rp 450.000
+                - link "Editor print, run MW30TVE4 Editor print, run MW30TVE4 Rp 185.000 Reproduction":
+                    - /url: /product/editor-print-run-mw30tve4
+                    - img "Editor print, run MW30TVE4"
+                    - text: Editor print, run MW30TVE4 Rp 185.000 Reproduction
             - listitem:
-                - link "Balinese Dancers Travel Poster, 1939 Balinese Dancers Travel Poster, 1939 Reproduction Rp 450.000":
-                    - /url: /product/balinese-dancers-travel-poster-1939
-                    - img "Balinese Dancers Travel Poster, 1939"
-                    - text: Balinese Dancers Travel Poster, 1939 Reproduction Rp 450.000
+                - link "Editor print, run MW30T0XX Editor print, run MW30T0XX Rp 185.000 Reproduction":
+                    - /url: /product/editor-print-run-mw30t0xx
+                    - img "Editor print, run MW30T0XX"
+                    - text: Editor print, run MW30T0XX Rp 185.000 Reproduction
             - listitem:
-                - link "Bali Island Road Map, 1937 Bali Island Road Map, 1937 Reproduction Rp 450.000":
-                    - /url: /product/bali-island-road-map-1937
-                    - img "Bali Island Road Map, 1937"
-                    - text: Bali Island Road Map, 1937 Reproduction Rp 450.000
+                - link "Editor print, run MW30SCIF Editor print, run MW30SCIF Rp 185.000 Reproduction":
+                    - /url: /product/editor-print-run-mw30scif
+                    - img "Editor print, run MW30SCIF"
+                    - text: Editor print, run MW30SCIF Rp 185.000 Reproduction
             - listitem:
-                - link "Bali Island Tourist Map, 1930 Bali Island Tourist Map, 1930 Reproduction Rp 450.000":
-                    - /url: /product/bali-island-tourist-map-1930
-                    - img "Bali Island Tourist Map, 1930"
-                    - text: Bali Island Tourist Map, 1930 Reproduction Rp 450.000
+                - link "Editor print, run MW30RFJE Editor print, run MW30RFJE Rp 185.000 Reproduction":
+                    - /url: /product/editor-print-run-mw30rfje
+                    - img "Editor print, run MW30RFJE"
+                    - text: Editor print, run MW30RFJE Rp 185.000 Reproduction
             - listitem:
-                - link "Forest Fire by Raden Saleh, c. 1850 Forest Fire by Raden Saleh, c. 1850 Reproduction Rp 450.000":
-                    - /url: /product/forest-fire-by-raden-saleh-c-1850
-                    - img "Forest Fire by Raden Saleh, c. 1850"
-                    - text: Forest Fire by Raden Saleh, c. 1850 Reproduction Rp 450.000
+                - link "Editor print, run MW30P6R8 Editor print, run MW30P6R8 Rp 185.000 Reproduction":
+                    - /url: /product/editor-print-run-mw30p6r8
+                    - img "Editor print, run MW30P6R8"
+                    - text: Editor print, run MW30P6R8 Rp 185.000 Reproduction
             - listitem:
-                - link "Southeast Asia Map, 1630 Southeast Asia Map, 1630 Reproduction Rp 450.000":
-                    - /url: /product/southeast-asia-map-1630
-                    - img "Southeast Asia Map, 1630"
-                    - text: Southeast Asia Map, 1630 Reproduction Rp 450.000
+                - link "Editor print, run MW30DPIT Editor print, run MW30DPIT Rp 185.000 Reproduction":
+                    - /url: /product/editor-print-run-mw30dpit
+                    - img "Editor print, run MW30DPIT"
+                    - text: Editor print, run MW30DPIT Rp 185.000 Reproduction
             - listitem:
-                - link "Balinese Girl Scattering Flowers, 1952 Balinese Girl Scattering Flowers, 1952 Reproduction Rp 450.000":
-                    - /url: /product/balinese-girl-scattering-flowers-1952
-                    - img "Balinese Girl Scattering Flowers, 1952"
-                    - text: Balinese Girl Scattering Flowers, 1952 Reproduction Rp 450.000
+                - link "Editor print, run MW309BHS Editor print, run MW309BHS Rp 185.000 Reproduction":
+                    - /url: /product/editor-print-run-mw309bhs
+                    - img "Editor print, run MW309BHS"
+                    - text: Editor print, run MW309BHS Rp 185.000 Reproduction
         - navigation "Pages":
             - link "Previous" [disabled]:
                 - /url: /shop
@@ -171,65 +163,38 @@
                 - listitem:
                     - link "3":
                         - /url: /shop?page=3
+                - listitem
                 - listitem:
-                    - link "4":
-                        - /url: /shop?page=4
-                - listitem:
-                    - link "5":
-                        - /url: /shop?page=5
-                - listitem:
-                    - link "6":
-                        - /url: /shop?page=6
-                - listitem:
-                    - link "7":
-                        - /url: /shop?page=7
+                    - link "8":
+                        - /url: /shop?page=8
             - link "Next":
                 - /url: /shop?page=2
-        - paragraph: Show 155 products
+        - paragraph: Show 182 products
 - contentinfo:
-    - list:
-        - listitem:
-            - link "Privacy":
-                - /url: /privacy
-        - listitem:
-            - link "Terms":
-                - /url: /terms
-        - listitem:
-            - link "Antique Maps Indonesia — the originals we print from":
-                - /url: http://gallery.localhost:4417/
-    - navigation:
+    - navigation "Shop":
+        - heading "Shop" [level=2]
         - list:
             - listitem:
-                - link "Shop prints":
-                    - /url: /shop
-            - listitem:
-                - link "Gallery walls":
-                    - /url: /collections
-            - listitem:
-                - link "Where to buy":
-                    - /url: /stores
-            - listitem:
-                - link "Partnership":
-                    - /url: /partnership
-            - listitem:
-                - link "Delivery":
-                    - /url: /delivery
-            - listitem:
-                - link "Frequently asked":
-                    - /url: /faq
-            - listitem:
-                - link "About us":
-                    - /url: /about
-            - listitem:
-                - link "Contact":
-                    - /url: /contact
-    - paragraph: Our contact details are being added. Please check back soon.
+                - link "About":
+                    - /url: /
+    - heading "Contact" [level=2]
     - list:
         - listitem:
-            - link "Instagram":
+            - link "Ask on WhatsApp (opens in a new tab)":
+                - /url: https://wa.me/6281299253712
+        - listitem:
+            - link "Instagram (opens in a new tab)":
                 - /url: https://www.instagram.com/oldeastindiesart/
         - listitem:
-            - link "Facebook":
+            - link "Facebook (opens in a new tab)":
                 - /url: https://www.facebook.com/OldEastIndies
+    - list:
+        - listitem:
+            - link "Privacy policy":
+                - /url: /
+    - paragraph: © OEI en
+    - link "Gallery en (opens in a new tab)":
+        - /url: https://antiquemapsindonesia.com/
+        - text: Gallery en
 - button "Chat with us"
 - alert

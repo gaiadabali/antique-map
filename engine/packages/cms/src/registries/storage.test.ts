@@ -4,7 +4,11 @@ import { describe, expect, it } from 'vitest'
 
 import { Masters } from '../collections/masters'
 import { Media } from '../collections/media'
-import { mediaStoragePlugin, storageConfigured, uploadCollectionSlugs } from './storage'
+import {
+  mediaStoragePlugin,
+  storageConfigured,
+  uploadCollectionSlugs,
+} from '@engine/cms-core/registries/storage'
 
 const BUCKET_ENV = {
   S3_ENDPOINT: 'http://localhost:9000',

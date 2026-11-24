@@ -33,6 +33,11 @@ describe('the rate limits of §2.10 that nothing enforced', () => {
     expect(LIMITS.checkout).toMatchObject({ max: 10, windowMs: 60 * 60_000 })
   })
 
+  it('caps the checkout’s delivery preview at 30 a minute per address (TASKS.md 27.3)', () => {
+    expect(LIMITS.deliveryQuote).toMatchObject({ max: 30, windowMs: 60_000 })
+    expect(limiters.deliveryQuote.limit).toBe(LIMITS.deliveryQuote)
+  })
+
   it('lets the limit through and answers the next with the seconds left', () => {
     const limiter = new RateLimiter({ name: 'x', max: 3, windowMs: 60_000 })
     const t0 = 1_000_000

@@ -7,7 +7,7 @@
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
-import { COPY } from '../../../../../../../packages/cms/src/admin/dashboard/copy'
+import { COPY } from '../../../../../../../packages/cms-core/src/admin/dashboard/copy'
 import { DashboardViewBody } from '../../../../../../../packages/cms/src/admin/dashboard/view-body'
 
 const view = async (user: object | null, language = 'en') => {

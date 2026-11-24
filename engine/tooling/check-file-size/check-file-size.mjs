@@ -9,11 +9,24 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative, sep } from 'node:path'
 
-/** Every regular file under `root`, recursively (Node's built-in recursive readdir). */
+/**
+ * Every regular file under `root`, recursively, never descending into an excluded folder
+ * (`node_modules`, `.next`…): a workspace package's `node_modules` links to other packages with
+ * their own, and walking those first and filtering after took minutes (TASKS.md 23.3).
+ */
 function walk(root) {
-  return readdirSync(root, { recursive: true, withFileTypes: true })
-    .filter((entry) => entry.isFile())
-    .map((entry) => join(entry.parentPath ?? entry.path, entry.name))
+  const files = []
+  const pending = [root]
+  while (pending.length > 0) {
+    const dir = pending.pop()
+    for (const entry of readdirSync(dir, { withFileTypes: true })) {
+      const path = join(dir, entry.name)
+      if (entry.isDirectory()) {
+        if (!EXCLUDED_SEGMENTS.has(entry.name)) pending.push(path)
+      } else if (entry.isFile()) files.push(path)
+    }
+  }
+  return files
 }
 
 export const LIMIT = 300

@@ -72,6 +72,7 @@ export interface Config {
     places: Place
     products: Product
     categories: Category
+    themes: Theme
     discounts: Discount
     stores: Store
     'stock-levels': StockLevel
@@ -84,6 +85,7 @@ export interface Config {
     media: Media
     masters: Master
     pages: Page
+    articles: Article
     redirects: Redirect
     users: User
     events: Event
@@ -104,6 +106,7 @@ export interface Config {
     places: PlacesSelect<false> | PlacesSelect<true>
     products: ProductsSelect<false> | ProductsSelect<true>
     categories: CategoriesSelect<false> | CategoriesSelect<true>
+    themes: ThemesSelect<false> | ThemesSelect<true>
     discounts: DiscountsSelect<false> | DiscountsSelect<true>
     stores: StoresSelect<false> | StoresSelect<true>
     'stock-levels': StockLevelsSelect<false> | StockLevelsSelect<true>
@@ -116,6 +119,7 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>
     masters: MastersSelect<false> | MastersSelect<true>
     pages: PagesSelect<false> | PagesSelect<true>
+    articles: ArticlesSelect<false> | ArticlesSelect<true>
     redirects: RedirectsSelect<false> | RedirectsSelect<true>
     users: UsersSelect<false> | UsersSelect<true>
     events: EventsSelect<false> | EventsSelect<true>
@@ -132,9 +136,13 @@ export interface Config {
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('en' | 'id') | ('en' | 'id')[]
   globals: {
     'site-settings': SiteSetting
+    'shop-header': ShopHeader
+    'shop-footer': ShopFooter
   }
   globalsSelect: {
     'site-settings': SiteSettingsSelect<false> | SiteSettingsSelect<true>
+    'shop-header': ShopHeaderSelect<false> | ShopHeaderSelect<true>
+    'shop-footer': ShopFooterSelect<false> | ShopFooterSelect<true>
   }
   locale: 'en' | 'id'
   widgets: {
@@ -674,7 +682,7 @@ export interface Maker {
   _status?: ('draft' | 'published') | null
 }
 /**
- * Images shown on the site. Each is processed from a capture in Masters; the site shows resized copies of it, never this file itself.
+ * Images, videos (MP4, WebM) and PDFs for the site. The site shows resized copies of an image, never the file itself; a video or a PDF is shown only once a published page places it. A PDF may be at most 20 MB.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
@@ -682,9 +690,13 @@ export interface Maker {
 export interface Media {
   id: number
   /**
+   * Set from the file when it is saved: an image, a video or a PDF.
+   */
+  kind?: ('image' | 'video' | 'pdf') | null
+  /**
    * What the image shows, for someone who cannot see it. For a product: what it is, its colour and material, e.g. "Black batik tote bag, front view". For a map or a print: the region, the cartouche, the colouring, anything notable. For a digital mockup or an AI-generated image, start with what it is.
    */
-  alt: string
+  alt?: string | null
   /**
    * Baseline: built from the record. AI draft: stays flagged until a person has checked it.
    */
@@ -696,32 +708,45 @@ export interface Media {
   /**
    * What it is an image of. Choose Product for a shop product photo, Work for an antique (store staff cannot read those), Store for a shop front. Set at intake, with the role. No default: a wrong subject changes who can read the image.
    */
-  subject: 'work' | 'product' | 'store' | 'other'
+  subject?: ('work' | 'product' | 'store' | 'other') | null
   /**
    * What the image is — set at intake, the same as its master’s. For a product photo on a plain background choose "Flat (a product)"; a product being used, "In use (a product)".
    */
-  role:
-    | 'recto'
-    | 'verso'
-    | 'detail'
-    | 'raking'
-    | 'transmitted'
-    | 'framed'
-    | 'in-room'
-    | 'scale'
-    | 'flat'
-    | 'lifestyle'
-    | 'packaging'
-    | 'showroom'
-    | 'editorial'
+  role?:
+    | (
+        | 'recto'
+        | 'verso'
+        | 'detail'
+        | 'raking'
+        | 'transmitted'
+        | 'framed'
+        | 'in-room'
+        | 'scale'
+        | 'flat'
+        | 'lifestyle'
+        | 'packaging'
+        | 'showroom'
+        | 'editorial'
+      )
+    | null
   /**
    * How it was made. For a picture you took of the real thing, choose "Photograph of the real thing". Anything else is labelled wherever it is shown. There is no default on purpose: a mockup or AI image must be declared, never assumed to be a photograph.
    */
-  provenance: 'photograph' | 'composite' | 'rendered' | 'ai-generated'
+  provenance?: ('photograph' | 'composite' | 'rendered' | 'ai-generated') | null
   /**
    * The capture this image was processed from.
    */
   master?: (number | null) | Master
+  forProduct?: (number | null) | Product
+  /**
+   * For a video or a PDF only. A PDF’s title names the link that opens it, e.g. "Wholesale price list 2027".
+   */
+  title?: string | null
+  /**
+   * For a video: what happens in it, for someone who cannot watch it (required). For a PDF: what is inside (optional).
+   */
+  description?: string | null
+  label?: string | null
   /**
    * Derived from the file: the address its derivatives and tiles are stored under.
    */
@@ -837,6 +862,150 @@ export interface Master {
   }
   updatedAt: string
   createdAt: string
+}
+/**
+ * Shown on Old East Indies only. What the shop sells. Stock is entered per store under Stock.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: number
+  /**
+   * The code the product and stock spreadsheets match on. Also the SKU of a product without variants.
+   */
+  sku: string
+  /**
+   * Required in English, the default language; another language left blank shows the English.
+   */
+  name?: string | null
+  description?: string | null
+  /**
+   * The antique this is made from, if any — linked only while that antique is published.
+   */
+  relatedWork?: (number | null) | Work
+  images?:
+    | {
+        /**
+         * Pick a picture, or Create New to upload one. A new picture asks for four things: alt text (what it shows), Subject = Product, Role = Flat (a product), and Provenance = Photograph of the real thing.
+         */
+        image: number | Media
+        caption?: string | null
+        id?: string | null
+      }[]
+    | null
+  /**
+   * Whole rupiah: 95000 for Rp 95.000. The checkout always prices from here, never from the page.
+   */
+  price?: number | null
+  /**
+   * Optional: sizes or colours sold under this product, each with its own SKU. A variant without a price takes the product’s.
+   */
+  variants?:
+    | {
+        sku: string
+        label?: string | null
+        price?: number | null
+        active?: boolean | null
+        id?: string | null
+      }[]
+    | null
+  /**
+   * Optional. Left empty, the product’s name and description are used.
+   */
+  seo?: {
+    title?: string | null
+    description?: string | null
+  }
+  /**
+   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
+   */
+  slug: string
+  /**
+   * The shop category this product belongs to.
+   */
+  category?: (number | null) | Category
+  /**
+   * What it shows, such as Bali or Botanicals. Themes are kept under Catalogue → Themes.
+   */
+  themes?: (number | Theme)[] | null
+  /**
+   * Shown under Best sellers on the shop page.
+   */
+  bestSeller?: boolean | null
+  site: 'shop'
+  translationStatus: 'entered' | 'machine' | 'reviewed'
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
+}
+/**
+ * Shown on Old East Indies only. The shop’s collections — each product belongs to one. Unpublish a category to hide it from the shop.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: number
+  _order?: string | null
+  /**
+   * Required in English, the default language; another language left blank shows the English.
+   */
+  label?: string | null
+  /**
+   * A sentence or two under the title of the category’s page.
+   */
+  description?: string | null
+  /**
+   * Shown on the collections index. Left empty, the first product’s picture is used.
+   */
+  image?: (number | null) | Media
+  /**
+   * Optional. Left empty, the name and description are used.
+   */
+  seo?: {
+    title?: string | null
+    description?: string | null
+  }
+  /**
+   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
+   */
+  slug: string
+  position?: number | null
+  /**
+   * Listed under Wall Decor on the shop page, e.g. mounted art prints and framed prints.
+   */
+  wallDecor?: boolean | null
+  translationStatus: 'entered' | 'machine' | 'reviewed'
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
+}
+/**
+ * Shown on Old East Indies only. What a print shows — Bali, Java, Botanicals… A product may have several. Drag to set the order on the shop page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "themes".
+ */
+export interface Theme {
+  id: number
+  _order?: string | null
+  /**
+   * Required in English, the default language; another language left blank shows the English.
+   */
+  label?: string | null
+  /**
+   * Shown on the shop page. Left empty, the first product’s picture is used.
+   */
+  image?: (number | null) | Media
+  /**
+   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
+   */
+  slug: string
+  translationStatus: 'entered' | 'machine' | 'reviewed'
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -975,6 +1144,10 @@ export interface User {
    */
   store?: (number | null) | Store
   /**
+   * Untick to switch the account off: the person is signed out and cannot sign in. Their name stays on what they changed.
+   */
+  active?: boolean | null
+  /**
    * Recorded automatically whenever this person’s role or store changes.
    */
   accessChanges?:
@@ -1054,116 +1227,16 @@ export interface Store {
    * Shown on the shop’s Stores page while it is active.
    */
   listed?: boolean | null
+  /**
+   * Shown first on the Stores page, among the flagships.
+   */
+  flagship?: boolean | null
+  /**
+   * The group the Stores page lists it under. Empty: under Other.
+   */
+  region?: ('lombok' | 'ubud' | 'amed' | 'canggu' | 'other') | null
   updatedAt: string
   createdAt: string
-}
-/**
- * Shown on Old East Indies only. What the shop sells. Stock is entered per store under Stock.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "products".
- */
-export interface Product {
-  id: number
-  /**
-   * The code the product and stock spreadsheets match on. Also the SKU of a product without variants.
-   */
-  sku: string
-  /**
-   * Required in English, the default language; another language left blank shows the English.
-   */
-  name?: string | null
-  description?: string | null
-  /**
-   * The antique this is made from, if any — linked only while that antique is published.
-   */
-  relatedWork?: (number | null) | Work
-  images?:
-    | {
-        /**
-         * Pick a picture, or Create New to upload one. A new picture asks for four things: alt text (what it shows), Subject = Product, Role = Flat (a product), and Provenance = Photograph of the real thing.
-         */
-        image: number | Media
-        caption?: string | null
-        id?: string | null
-      }[]
-    | null
-  /**
-   * Whole rupiah: 95000 for Rp 95.000. The checkout always prices from here, never from the page.
-   */
-  price?: number | null
-  /**
-   * Optional: sizes or colours sold under this product, each with its own SKU. A variant without a price takes the product’s.
-   */
-  variants?:
-    | {
-        sku: string
-        label?: string | null
-        price?: number | null
-        active?: boolean | null
-        id?: string | null
-      }[]
-    | null
-  /**
-   * Optional. Left empty, the product’s name and description are used.
-   */
-  seo?: {
-    title?: string | null
-    description?: string | null
-  }
-  /**
-   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
-   */
-  slug: string
-  /**
-   * The shop category this product belongs to.
-   */
-  category?: (number | null) | Category
-  site: 'shop'
-  translationStatus: 'entered' | 'machine' | 'reviewed'
-  updatedAt: string
-  createdAt: string
-  _status?: ('draft' | 'published') | null
-}
-/**
- * Shown on Old East Indies only. The shop’s collections — each product belongs to one. Unpublish a category to hide it from the shop.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
- */
-export interface Category {
-  id: number
-  /**
-   * Required in English, the default language; another language left blank shows the English.
-   */
-  label?: string | null
-  /**
-   * A sentence or two under the title of the category’s page.
-   */
-  description?: string | null
-  /**
-   * Shown on the collections index. Left empty, the first product’s picture is used.
-   */
-  image?: (number | null) | Media
-  /**
-   * Optional. Left empty, the name and description are used.
-   */
-  seo?: {
-    title?: string | null
-    description?: string | null
-  }
-  /**
-   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
-   */
-  slug: string
-  /**
-   * Lower comes first on the collections index and the home page.
-   */
-  position?: number | null
-  translationStatus: 'entered' | 'machine' | 'reviewed'
-  updatedAt: string
-  createdAt: string
-  _status?: ('draft' | 'published') | null
 }
 /**
  * Codes buyers type at checkout. A discount applies to the items, never the delivery fee.
@@ -1179,10 +1252,10 @@ export interface Discount {
    * For a percent code, 1 to 100. For a rupiah code, whole rupiah: 50000 for Rp 50.000.
    */
   value: number
-  minSpend?: number | null
-  oncePerBuyer?: boolean | null
   startsAt?: string | null
   endsAt?: string | null
+  minSpend?: number | null
+  oncePerBuyer?: boolean | null
   usageLimit?: number | null
   usedCount: number
   active?: boolean | null
@@ -1203,6 +1276,8 @@ export interface StockLevel {
    * For a product with variants, the variant this row counts. Empty for a product without.
    */
   variantSku?: string | null
+  productName?: string | null
+  productSku?: string | null
   /**
    * The shelf count less the units held by orders not yet collected by a driver.
    */
@@ -1378,7 +1453,7 @@ export interface Lead {
   /**
    * What the person wants.
    */
-  kind: 'ask' | 'sell' | 'partnership' | 'contact' | 'chat'
+  kind: 'ask' | 'sell' | 'partnership' | 'contact' | 'chat' | 'newsletter'
   site: 'gallery' | 'shop'
   source: 'chat' | 'form' | 'page'
   payload?: {
@@ -1396,6 +1471,10 @@ export interface Lead {
    */
   items?: (number | Work)[] | null
   chatSession?: (number | null) | ChatSession
+  /**
+   * Which of the two partnership enquiries the person sent.
+   */
+  partnershipType?: ('retailer' | 'wholesale') | null
   /**
    * The partner created from this lead.
    */
@@ -1517,7 +1596,7 @@ export interface Page {
   id: number
   title: string
   /**
-   * The page from top to bottom. Add, drag to reorder, or remove sections; each section’s words are entered per language.
+   * The page from top to bottom. Add, drag to reorder, or remove sections; each section’s words are entered per language. The home and the partnership page offer their own sections as well as the general ones.
    */
   layout?:
     | (
@@ -1572,6 +1651,10 @@ export interface Page {
                   id?: string | null
                 }[]
               | null
+            /**
+             * Optional: the picture on the right half. Empty: the first featured product’s print, with its name and price.
+             */
+            image?: (number | null) | Media
             id?: string | null
             blockName?: string | null
             blockType: 'homeHero'
@@ -1589,10 +1672,12 @@ export interface Page {
         | {
             title?: string | null
             linkLabel?: string | null
-            /**
-             * Optional. Empty: the newest products of the whole shop.
-             */
+            source?: ('newest' | 'category' | 'picked') | null
             category?: (number | null) | Category
+            /**
+             * Shown in this order; drag to reorder. A product that is not published is left out.
+             */
+            products?: (number | Product)[] | null
             emptyTitle?: string | null
             emptyBody?: string | null
             id?: string | null
@@ -1889,6 +1974,42 @@ export interface Page {
             blockName?: string | null
             blockType: 'storeDirectory'
           }
+        | {
+            /**
+             * Upload it to Media first, with its title and a description of what happens in it. It plays with its controls showing, never on its own.
+             */
+            video: number | Media
+            /**
+             * Shown before the video plays. Without one, the browser shows the video’s first frame.
+             */
+            poster?: (number | null) | Media
+            caption?: string | null
+            /**
+             * Optional. A link to “a section on this page” uses this name.
+             */
+            anchor?: string | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'video'
+          }
+        | {
+            /**
+             * Upload it to Media first, with its title. At most 20 MB.
+             */
+            document: number | Media
+            /**
+             * Optional: the PDF’s title is used when empty, e.g. “Download the wholesale price list”.
+             */
+            label?: string | null
+            note?: string | null
+            /**
+             * Optional. A link to “a section on this page” uses this name.
+             */
+            anchor?: string | null
+            id?: string | null
+            blockName?: string | null
+            blockType: 'documentLink'
+          }
       )[]
     | null
   intro?: string | null
@@ -1918,6 +2039,43 @@ export interface Page {
    * The page address, such as "about-us" or "delivery". A shop’s home is "home".
    */
   slug: string
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
+}
+/**
+ * Shown on Old East Indies only. Articles as PDFs, each with a cover picture: the newest two on the home page, all of them on the articles page.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles".
+ */
+export interface Article {
+  id: number
+  /**
+   * Required in English, the default language; another language left blank shows the English.
+   */
+  title?: string | null
+  /**
+   * Optional. A sentence under the title in the list of articles.
+   */
+  summary?: string | null
+  /**
+   * The picture visitors click to open the article.
+   */
+  cover?: (number | null) | Media
+  /**
+   * The PDF that opens when the article is clicked.
+   */
+  pdf?: (number | null) | Media
+  /**
+   * The newest date comes first.
+   */
+  date?: string | null
+  /**
+   * The address of its page. Made once from the name; renaming the record never changes it, so links keep working.
+   */
+  slug: string
+  translationStatus: 'entered' | 'machine' | 'reviewed'
   updatedAt: string
   createdAt: string
   _status?: ('draft' | 'published') | null
@@ -2076,6 +2234,10 @@ export interface PayloadLockedDocument {
         value: number | Category
       } | null)
     | ({
+        relationTo: 'themes'
+        value: number | Theme
+      } | null)
+    | ({
         relationTo: 'discounts'
         value: number | Discount
       } | null)
@@ -2122,6 +2284,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages'
         value: number | Page
+      } | null)
+    | ({
+        relationTo: 'articles'
+        value: number | Article
       } | null)
     | ({
         relationTo: 'redirects'
@@ -2559,6 +2725,8 @@ export interface ProductsSelect<T extends boolean = true> {
       }
   slug?: T
   category?: T
+  themes?: T
+  bestSeller?: T
   site?: T
   translationStatus?: T
   updatedAt?: T
@@ -2570,6 +2738,7 @@ export interface ProductsSelect<T extends boolean = true> {
  * via the `definition` "categories_select".
  */
 export interface CategoriesSelect<T extends boolean = true> {
+  _order?: T
   label?: T
   description?: T
   image?: T
@@ -2581,6 +2750,21 @@ export interface CategoriesSelect<T extends boolean = true> {
       }
   slug?: T
   position?: T
+  wallDecor?: T
+  translationStatus?: T
+  updatedAt?: T
+  createdAt?: T
+  _status?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "themes_select".
+ */
+export interface ThemesSelect<T extends boolean = true> {
+  _order?: T
+  label?: T
+  image?: T
+  slug?: T
   translationStatus?: T
   updatedAt?: T
   createdAt?: T
@@ -2594,10 +2778,10 @@ export interface DiscountsSelect<T extends boolean = true> {
   code?: T
   kind?: T
   value?: T
-  minSpend?: T
-  oncePerBuyer?: T
   startsAt?: T
   endsAt?: T
+  minSpend?: T
+  oncePerBuyer?: T
   usageLimit?: T
   usedCount?: T
   active?: T
@@ -2626,6 +2810,8 @@ export interface StoresSelect<T extends boolean = true> {
       }
   active?: T
   listed?: T
+  flagship?: T
+  region?: T
   updatedAt?: T
   createdAt?: T
 }
@@ -2637,6 +2823,8 @@ export interface StockLevelsSelect<T extends boolean = true> {
   store?: T
   product?: T
   variantSku?: T
+  productName?: T
+  productSku?: T
   quantity?: T
   physicalCount?: T
   updatedAt?: T
@@ -2789,6 +2977,7 @@ export interface LeadsSelect<T extends boolean = true> {
       }
   items?: T
   chatSession?: T
+  partnershipType?: T
   partner?: T
   status?: T
   closedAt?: T
@@ -2894,6 +3083,7 @@ export interface TermsSelect<T extends boolean = true> {
  * via the `definition` "media_select".
  */
 export interface MediaSelect<T extends boolean = true> {
+  kind?: T
   alt?: T
   altSource?: T
   translationStatus?: T
@@ -2904,6 +3094,10 @@ export interface MediaSelect<T extends boolean = true> {
   role?: T
   provenance?: T
   master?: T
+  forProduct?: T
+  title?: T
+  description?: T
+  label?: T
   assetId?: T
   derivatives?:
     | T
@@ -3011,6 +3205,7 @@ export interface PagesSelect<T extends boolean = true> {
                     text?: T
                     id?: T
                   }
+              image?: T
               id?: T
               blockName?: T
             }
@@ -3027,7 +3222,9 @@ export interface PagesSelect<T extends boolean = true> {
           | {
               title?: T
               linkLabel?: T
+              source?: T
               category?: T
+              products?: T
               emptyTitle?: T
               emptyBody?: T
               id?: T
@@ -3234,6 +3431,26 @@ export interface PagesSelect<T extends boolean = true> {
               id?: T
               blockName?: T
             }
+        video?:
+          | T
+          | {
+              video?: T
+              poster?: T
+              caption?: T
+              anchor?: T
+              id?: T
+              blockName?: T
+            }
+        documentLink?:
+          | T
+          | {
+              document?: T
+              label?: T
+              note?: T
+              anchor?: T
+              id?: T
+              blockName?: T
+            }
       }
   intro?: T
   hero?: T
@@ -3249,6 +3466,22 @@ export interface PagesSelect<T extends boolean = true> {
   site?: T
   kind?: T
   slug?: T
+  updatedAt?: T
+  createdAt?: T
+  _status?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "articles_select".
+ */
+export interface ArticlesSelect<T extends boolean = true> {
+  title?: T
+  summary?: T
+  cover?: T
+  pdf?: T
+  date?: T
+  slug?: T
+  translationStatus?: T
   updatedAt?: T
   createdAt?: T
   _status?: T
@@ -3275,6 +3508,7 @@ export interface UsersSelect<T extends boolean = true> {
   name?: T
   role?: T
   store?: T
+  active?: T
   accessChanges?:
     | T
     | {
@@ -3414,8 +3648,20 @@ export interface SiteSetting {
     announcement?: string | null
     social?:
       | {
-          platform: string
+          network?:
+            | (
+                | 'instagram'
+                | 'facebook'
+                | 'tiktok'
+                | 'youtube'
+                | 'pinterest'
+                | 'x'
+                | 'linkedin'
+                | 'threads'
+              )
+            | null
           url: string
+          platform: string
           id?: string | null
         }[]
       | null
@@ -3453,14 +3699,22 @@ export interface SiteSetting {
      */
     replyPromise?: string | null
     hours?: string | null
-    /**
-     * A notice shown to visitors of this site, such as a holiday closure. Leave empty for none.
-     */
-    announcement?: string | null
     social?:
       | {
-          platform: string
+          network?:
+            | (
+                | 'instagram'
+                | 'facebook'
+                | 'tiktok'
+                | 'youtube'
+                | 'pinterest'
+                | 'x'
+                | 'linkedin'
+                | 'threads'
+              )
+            | null
           url: string
+          platform: string
           id?: string | null
         }[]
       | null
@@ -3468,6 +3722,161 @@ export interface SiteSetting {
      * These addresses get an email when a new enquiry arrives.
      */
     leadNotifyEmails?: string[] | null
+    /**
+     * Turn off to stop new orders, for example while stock is being counted.
+     */
+    checkoutEnabled?: boolean | null
+    delivery?: {
+      /**
+       * The delivery fee by distance from the sending store. Checkout prices delivery from these, and the chat helper quotes them. Only an address beyond the last band waits for staff to set its fee by hand.
+       */
+      bands?:
+        | {
+            upToKm: number
+            feeIdr: number
+            id?: string | null
+          }[]
+        | null
+      /**
+       * Orders above this amount ship free. Leave it at 0 for no free delivery.
+       */
+      freeOverIdr?: number | null
+    }
+    /**
+     * The discount new buyers are offered. Pick one of your discount codes; empty offers none.
+     */
+    welcomeOffer?: (number | null) | Discount
+    welcomeDiscount?: string | null
+    /**
+     * How long a buyer has to pay once the delivery fee is known. After that the order is cancelled and the stock goes back on sale.
+     */
+    orderExpiryMinutes?: number | null
+    /**
+     * For an order whose address is beyond the last distance band: how long staff have to enter its delivery fee before it is cancelled and its stock returned.
+     */
+    quoteWindowMinutes?: number | null
+    /**
+     * Alert store staff when an order needs them.
+     */
+    storeAlerts?: boolean | null
+    /**
+     * Each email’s subject and opening, per language. The order’s details and links follow automatically. Write {number} for the order number and {store} for the store’s name.
+     */
+    emails?: {
+      /**
+       * To the buyer, when an order priced at checkout is placed.
+       */
+      orderReceived?: {
+        subject?: string | null
+        opening?: string | null
+      }
+      /**
+       * To the buyer, when an order needs staff to set its delivery fee.
+       */
+      awaitingQuote?: {
+        subject?: string | null
+        opening?: string | null
+      }
+      /**
+       * To the buyer, when staff have set the delivery fee.
+       */
+      priceReady?: {
+        subject?: string | null
+        opening?: string | null
+      }
+      /**
+       * To the buyer, once the payment arrives.
+       */
+      paid?: {
+        subject?: string | null
+        opening?: string | null
+      }
+      /**
+       * To the buyer, when the store starts packing.
+       */
+      processing?: {
+        subject?: string | null
+        opening?: string | null
+      }
+      /**
+       * To the buyer, when the parcel is ready.
+       */
+      waitingDriver?: {
+        subject?: string | null
+        opening?: string | null
+      }
+      /**
+       * To the buyer, when a driver collects it.
+       */
+      onTheWay?: {
+        subject?: string | null
+        opening?: string | null
+      }
+      /**
+       * To the buyer, once it is delivered.
+       */
+      delivered?: {
+        subject?: string | null
+        opening?: string | null
+      }
+      /**
+       * To the buyer, when an order is cancelled.
+       */
+      cancelled?: {
+        subject?: string | null
+        opening?: string | null
+      }
+      /**
+       * To the buyer, when the time to pay runs out.
+       */
+      expired?: {
+        subject?: string | null
+        opening?: string | null
+      }
+      /**
+       * To a buyer who asks for their link again (“Find my order”).
+       */
+      trackingLink?: {
+        subject?: string | null
+        opening?: string | null
+      }
+      /**
+       * To the staff of the sending store, once an order is paid. Staff get both languages.
+       */
+      storeNewOrder?: {
+        subject?: string | null
+        opening?: string | null
+      }
+      /**
+       * To the staff of a store an order is moved to. Staff get both languages.
+       */
+      storeReassigned?: {
+        subject?: string | null
+        opening?: string | null
+      }
+    }
+    /**
+     * The banner on the home and shop pages. It promises; it does not change a price — free delivery above an amount is set under Checkout and delivery.
+     */
+    promo?: {
+      enabled?: boolean | null
+      text?: string | null
+      condition?: string | null
+      /**
+       * Ordered after this, it is delivered the next day.
+       */
+      cutoff?: string | null
+      timeZone?: ('Asia/Makassar' | 'Asia/Jakarta' | 'Asia/Jayapura') | null
+      weekdaysOnly?: boolean | null
+    }
+    /**
+     * Asks a first-time visitor of the home page for their email. Sign-ups arrive as leads of kind Newsletter sign-up.
+     */
+    newsletter?: {
+      enabled?: boolean | null
+      title?: string | null
+      text?: string | null
+    }
     ai?: {
       /**
        * Turns the chat helper on for this site. Off means visitors do not see it.
@@ -3487,42 +3896,139 @@ export interface SiteSetting {
       sessionTokenCap?: number | null
     }
     /**
-     * Turn off to stop new orders, for example while stock is being counted.
+     * The words every product page shows beside the product’s own.
      */
-    checkoutEnabled?: boolean | null
-    delivery?: {
+    productPage?: {
       /**
-       * Delivery fee by distance. The chat helper quotes these when a visitor asks; staff still enter the real fee on each order.
+       * Under the button. {freeOver} becomes the free-delivery amount set under Checkout and delivery.
        */
-      bands?:
-        | {
-            upToKm: number
-            feeIdr: number
-            id?: string | null
-          }[]
-        | null
+      deliveryLine?: string | null
       /**
-       * Orders above this amount ship free. Leave it at 0 for no free delivery.
+       * Shown beside the options when a product comes mounted or framed.
        */
-      freeOverIdr?: number | null
+      finishHelpLabel?: string | null
+      finishHelp?: string | null
     }
     /**
-     * The code new buyers see. Create the code itself under Discount codes first.
+     * A store’s count at or below this number is shown as low stock.
      */
-    welcomeDiscount?: string | null
-    /**
-     * How long a buyer has to pay once the delivery fee is set. After that the order is cancelled and the stock goes back on sale.
-     */
-    orderExpiryMinutes?: number | null
-    /**
-     * How long staff have to enter the delivery fee on a new order before it is cancelled and its stock returned.
-     */
-    quoteWindowMinutes?: number | null
-    /**
-     * Alert store staff when an order needs them.
-     */
-    storeAlerts?: boolean | null
+    lowStockThreshold?: number | null
   }
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * Old East Indies. The announcement and the menu at the top of every shop page. A save is live at once.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shop-header".
+ */
+export interface ShopHeader {
+  id: number
+  /**
+   * A short notice above the header on every shop page, such as a sale or a holiday closure.
+   */
+  announcement?: {
+    enabled?: boolean | null
+    text?: string | null
+    link?: {
+      target?: ('page' | 'category' | 'product' | 'url') | null
+      page?: (number | null) | Page
+      category?: (number | null) | Category
+      product?: (number | null) | Product
+      url?: string | null
+    }
+    /**
+     * Empty: from now.
+     */
+    startsAt?: string | null
+    /**
+     * Empty: until switched off.
+     */
+    endsAt?: string | null
+  }
+  /**
+   * The links in the header, in this order. Drag to reorder.
+   */
+  mainMenu?:
+    | {
+        /**
+         * Required in English, the default language; another language left blank shows the English.
+         */
+        label?: string | null
+        target: 'page' | 'category' | 'product' | 'url'
+        page?: (number | null) | Page
+        category?: (number | null) | Category
+        product?: (number | null) | Product
+        url?: string | null
+        id?: string | null
+      }[]
+    | null
+  /**
+   * Optional. Empty: the built-in Old East Indies logo.
+   */
+  logo?: {
+    light?: (number | null) | Media
+    dark?: (number | null) | Media
+  }
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * Old East Indies. The columns of links and the legal links at the foot of every shop page. A save is live at once.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shop-footer".
+ */
+export interface ShopFooter {
+  id: number
+  /**
+   * Each column has a title and its links. Contact details come from the settings’ Contact and social.
+   */
+  footerColumns?:
+    | {
+        /**
+         * Required in English, the default language; another language left blank shows the English.
+         */
+        label?: string | null
+        links?:
+          | {
+              /**
+               * Required in English, the default language; another language left blank shows the English.
+               */
+              label?: string | null
+              target: 'page' | 'category' | 'product' | 'url'
+              page?: (number | null) | Page
+              category?: (number | null) | Category
+              product?: (number | null) | Product
+              url?: string | null
+              id?: string | null
+            }[]
+          | null
+        id?: string | null
+      }[]
+    | null
+  /**
+   * Privacy, terms, delivery and returns: shop pages, shown at the foot of every page.
+   */
+  legalLinks?:
+    | {
+        page?: (number | null) | Page
+        /**
+         * Empty: the page’s title.
+         */
+        label?: string | null
+        id?: string | null
+      }[]
+    | null
+  /**
+   * Such as “© Old East Indies”. Empty: the site’s own line.
+   */
+  copyright?: string | null
+  /**
+   * The words of the link to the antiques site; its address is the gallery’s own. Empty: the site’s own words.
+   */
+  galleryLinkLabel?: string | null
   updatedAt?: string | null
   createdAt?: string | null
 }
@@ -3547,8 +4053,9 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         social?:
           | T
           | {
-              platform?: T
+              network?: T
               url?: T
+              platform?: T
               id?: T
             }
         leadNotifyEmails?: T
@@ -3573,23 +4080,15 @@ export interface SiteSettingsSelect<T extends boolean = true> {
             }
         replyPromise?: T
         hours?: T
-        announcement?: T
         social?:
           | T
           | {
-              platform?: T
+              network?: T
               url?: T
+              platform?: T
               id?: T
             }
         leadNotifyEmails?: T
-        ai?:
-          | T
-          | {
-              chatEnabled?: T
-              draftingEnabled?: T
-              dailyBudgetUsd?: T
-              sessionTokenCap?: T
-            }
         checkoutEnabled?: T
         delivery?:
           | T
@@ -3603,11 +4102,205 @@ export interface SiteSettingsSelect<T extends boolean = true> {
                   }
               freeOverIdr?: T
             }
+        welcomeOffer?: T
         welcomeDiscount?: T
         orderExpiryMinutes?: T
         quoteWindowMinutes?: T
         storeAlerts?: T
+        emails?:
+          | T
+          | {
+              orderReceived?:
+                | T
+                | {
+                    subject?: T
+                    opening?: T
+                  }
+              awaitingQuote?:
+                | T
+                | {
+                    subject?: T
+                    opening?: T
+                  }
+              priceReady?:
+                | T
+                | {
+                    subject?: T
+                    opening?: T
+                  }
+              paid?:
+                | T
+                | {
+                    subject?: T
+                    opening?: T
+                  }
+              processing?:
+                | T
+                | {
+                    subject?: T
+                    opening?: T
+                  }
+              waitingDriver?:
+                | T
+                | {
+                    subject?: T
+                    opening?: T
+                  }
+              onTheWay?:
+                | T
+                | {
+                    subject?: T
+                    opening?: T
+                  }
+              delivered?:
+                | T
+                | {
+                    subject?: T
+                    opening?: T
+                  }
+              cancelled?:
+                | T
+                | {
+                    subject?: T
+                    opening?: T
+                  }
+              expired?:
+                | T
+                | {
+                    subject?: T
+                    opening?: T
+                  }
+              trackingLink?:
+                | T
+                | {
+                    subject?: T
+                    opening?: T
+                  }
+              storeNewOrder?:
+                | T
+                | {
+                    subject?: T
+                    opening?: T
+                  }
+              storeReassigned?:
+                | T
+                | {
+                    subject?: T
+                    opening?: T
+                  }
+            }
+        promo?:
+          | T
+          | {
+              enabled?: T
+              text?: T
+              condition?: T
+              cutoff?: T
+              timeZone?: T
+              weekdaysOnly?: T
+            }
+        newsletter?:
+          | T
+          | {
+              enabled?: T
+              title?: T
+              text?: T
+            }
+        ai?:
+          | T
+          | {
+              chatEnabled?: T
+              draftingEnabled?: T
+              dailyBudgetUsd?: T
+              sessionTokenCap?: T
+            }
+        productPage?:
+          | T
+          | {
+              deliveryLine?: T
+              finishHelpLabel?: T
+              finishHelp?: T
+            }
+        lowStockThreshold?: T
       }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shop-header_select".
+ */
+export interface ShopHeaderSelect<T extends boolean = true> {
+  announcement?:
+    | T
+    | {
+        enabled?: T
+        text?: T
+        link?:
+          | T
+          | {
+              target?: T
+              page?: T
+              category?: T
+              product?: T
+              url?: T
+            }
+        startsAt?: T
+        endsAt?: T
+      }
+  mainMenu?:
+    | T
+    | {
+        label?: T
+        target?: T
+        page?: T
+        category?: T
+        product?: T
+        url?: T
+        id?: T
+      }
+  logo?:
+    | T
+    | {
+        light?: T
+        dark?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "shop-footer_select".
+ */
+export interface ShopFooterSelect<T extends boolean = true> {
+  footerColumns?:
+    | T
+    | {
+        label?: T
+        links?:
+          | T
+          | {
+              label?: T
+              target?: T
+              page?: T
+              category?: T
+              product?: T
+              url?: T
+              id?: T
+            }
+        id?: T
+      }
+  legalLinks?:
+    | T
+    | {
+        page?: T
+        label?: T
+        id?: T
+      }
+  copyright?: T
+  galleryLinkLabel?: T
   updatedAt?: T
   createdAt?: T
   globalType?: T

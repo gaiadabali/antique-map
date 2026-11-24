@@ -5,7 +5,7 @@
  * asked about when there is one, and never mentions a price or a deal (AGENTS.md: the AI and the
  * site quote no antique's price; the owner does that, in the chat she opens from here).
  */
-import type { Language } from './copy'
+import type { Language } from '@engine/cms-core/admin/leads-copy'
 
 export type ReplyLead = {
   readonly site?: string | null

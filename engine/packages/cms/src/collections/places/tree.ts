@@ -10,9 +10,9 @@
  * commits, then reads the tree as the first left it. A write with no transaction to hold the lock
  * (a Local API call with `disableTransaction`) is refused rather than guarded half-way.
  */
+import { advisoryLockKey } from '@engine/cms-core/db'
 import { APIError, type PayloadRequest, type Where } from 'payload'
 
-import { advisoryLockKey } from '../../db/advisory-lock'
 import { MAX_PLACE_DEPTH, type PlaceId } from '../../validators/place-ancestry'
 
 const PLACES = 'places'

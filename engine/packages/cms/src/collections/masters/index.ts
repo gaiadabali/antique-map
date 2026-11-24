@@ -20,11 +20,11 @@
  *
  * An intake batch's manifest becomes records through `./intake-import`, idempotently by checksum.
  */
+import { hiddenFromAllButCatalogueStaff } from '@engine/cms-core/access'
+import { freezeAfterCreate, mayCorrectIntake } from '@engine/cms-core/collections/media'
 import type { CollectionConfig } from 'payload'
 
-import { ADMIN_GROUPS } from '../../admin/groups'
-import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
-import { freezeAfterCreate, mayCorrectIntake } from '../media/frozen'
+import { ADMIN_GROUPS } from '@engine/cms-core/admin/groups'
 import { MASTERS_ACCESS } from './access'
 import { MASTER_FIELDS } from './fields'
 import {
@@ -43,7 +43,7 @@ export const Masters: CollectionConfig = {
     plural: { en: 'Original photo files (private)', id: 'File foto asli (privat)' },
   },
   admin: {
-    group: ADMIN_GROUPS.photosAndTags,
+    group: ADMIN_GROUPS.gallery,
     hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'storageKey',
     defaultColumns: ['storageKey', 'kind', 'role', 'work', 'updatedAt'],

@@ -9,7 +9,7 @@
  * This file stays free of `'use server'` and of the process's real dependencies (`./route` mounts
  * it with `leadDeps()`), so a test runs it on a fake `LeadDeps`.
  */
-import { clientAddress } from '../../../../server/chat/identity'
+import { clientAddress } from '@engine/chat/server/identity'
 import {
   createLead,
   LEAD_ERROR_KEYS,

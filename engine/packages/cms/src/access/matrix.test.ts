@@ -41,6 +41,8 @@ const MATRIX: Record<string, Row> = {
   places: CATALOGUE,
   terms: CATALOGUE,
   categories: CATALOGUE,
+  themes: CATALOGUE,
+  articles: CATALOGUE,
   pages: CATALOGUE,
   products: {
     read: ['all', 'all', 'all', 'where'],

@@ -2,15 +2,19 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { DRAFTED_ACCESS } from '@engine/cms-core/access'
 import type { AdminViewConfig, Plugin, TaskConfig } from 'payload'
 import { describe, expect, it } from 'vitest'
 
-import { DRAFTED_ACCESS } from '../access/published'
 import { registeredCollections, registeredGlobals } from './collections'
-import { DuplicateRegistryEntry, uniqueEntries, type RegistryEntry } from './entries'
+import {
+  DuplicateRegistryEntry,
+  uniqueEntries,
+  type RegistryEntry,
+} from '@engine/cms-core/registries/entries'
 import { jobTasks } from './jobs'
 import { registeredPlugins } from './plugins'
-import { uploadCollectionSlugs } from './storage'
+import { uploadCollectionSlugs } from '@engine/cms-core/registries/storage'
 import { ADMIN_VIEWS, adminViews } from './views'
 
 const task = (slug: string) => ({ slug, handler: async () => ({ output: {} }) }) as TaskConfig
@@ -74,6 +78,7 @@ const SLUGS = [
   'places',
   'products',
   'categories',
+  'themes',
   'discounts',
   'stores',
   'stock-levels',
@@ -86,6 +91,7 @@ const SLUGS = [
   'media',
   'masters',
   'pages',
+  'articles',
   'redirects',
   'users',
   'events',
@@ -97,17 +103,21 @@ describe('the registered collections', () => {
     expect(registeredCollections().map((c) => c.slug)).toEqual(SLUGS)
   })
 
-  it('lists the site-settings global', () => {
-    expect(registeredGlobals().map((g) => g.slug)).toEqual(['site-settings'])
+  it('lists the site-settings, shop-header and shop-footer globals', () => {
+    expect(registeredGlobals().map((g) => g.slug)).toEqual([
+      'site-settings',
+      'shop-header',
+      'shop-footer',
+    ])
   })
 
   it('give every collection its own collections/<slug>/index.ts, its slug written literally', () => {
-    const collectionsDir = path.resolve(
-      path.dirname(fileURLToPath(import.meta.url)),
-      '../collections',
-    )
+    const here = path.dirname(fileURLToPath(import.meta.url))
+    // The shop's collections live in `@engine/cms-shop` (PLAN-V2 §4.1), this CMS's own here.
+    const shopDir = path.resolve(here, '../../../cms-shop/src/collections')
     for (const slug of SLUGS) {
-      const file = path.join(collectionsDir, slug, 'index.ts')
+      const own = path.resolve(here, '../collections', slug, 'index.ts')
+      const file = fs.existsSync(own) ? own : path.join(shopDir, slug, 'index.ts')
       expect(fs.existsSync(file), file).toBe(true)
       expect(fs.readFileSync(file, 'utf8')).toMatch(new RegExp(`slug: '${slug}'`))
     }

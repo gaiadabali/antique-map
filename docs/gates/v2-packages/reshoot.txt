@@ -1,0 +1,14 @@
+Re-shots of the first-pass suspects (shoot.mjs, ONLY filter), each side on a FRESH CI seed, 3 shots each.
+b1..b3 = BEFORE (9d9d30e5, port 4311), a1..a3 = AFTER (working tree, port 4312). Pixel counts, RGBA exact.
+
+gallery-chat-open-1280
+  BEFORE pass1 vs b1/b2/b3        10080 / 8332 / 2115   <- BEFORE differs from itself
+  BEFORE b1    vs a1/a2/a3            0 / 2208 / 0      <- AFTER matches BEFORE to the pixel
+  AFTER  pass1 vs a1/a2/a3           24 / 2184 / 2208   <- AFTER differs from itself
+  => (c) flake: the 24 rows under the open chat panel at the viewport's foot paint differently shot to shot.
+
+shop-home-id-390
+  BEFORE pass1 vs b1/b2/b3            0 / 9677 / 9677   <- BEFORE differs from itself (broken lazy image: alt text drawn or not)
+  BEFORE b2    vs a1/a2               4200 / 4200       <- residual = the footer line only (phase 27, 27.5.c)
+shop-home-en-390
+  BEFORE b1    vs a1/a2/a3         3986 / 3986 / 13663  <- 3986 = footer line; a3 adds the same 9677 alt flicker

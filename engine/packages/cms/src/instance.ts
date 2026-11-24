@@ -11,9 +11,9 @@
  * with `RUN_MIGRATIONS=1`, applies pending migrations under the advisory lock (`db/adapter`).
  * It imports the config and nothing an admin component needs, since http's type-check covers it.
  */
+import type { LockPool } from '@engine/cms-core/db'
 import { getPayload, type Payload } from 'payload'
 
-import type { LockPool } from './db/advisory-lock'
 import config from './payload.config'
 
 export type { Payload }

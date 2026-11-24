@@ -51,21 +51,31 @@ export function addWorktree({ dir, branch, base, cwd }) {
   return git(args, cwd)
 }
 
+/** Where a worktree's env files live: its root, then each app's own (PLAN-V2 §4.4). */
+export const ENV_FILES = Object.freeze([
+  '.env.local',
+  'engine/apps/web/.env.local',
+  'engine/apps/shop/.env.local',
+])
+
+function portOf(env) {
+  const port = Number.parseInt(env.get('PORT') ?? '', 10)
+  return Number.isInteger(port) ? port : null
+}
+
 /**
- * PORT and DB_SUFFIX claimed by every worktree except `target`, read from
- * each one's .env.local: [{ path, port, suffix }].
+ * PORT and DB_SUFFIX claimed by every worktree except `target`, read from each one's
+ * .env.local files: [{ path, port, ports, suffix }] — `port` the root file's, `ports` every
+ * port any of its files names (the root's and each app's).
  */
 export function otherClaims(target, cwd) {
   const self = pathKey(target)
   return listWorktrees(cwd)
     .filter((entry) => pathKey(entry.path) !== self)
     .map((entry) => {
-      const env = readEnvFile(join(entry.path, '.env.local'))
-      const port = Number.parseInt(env.get('PORT') ?? '', 10)
-      return {
-        path: entry.path,
-        port: Number.isInteger(port) ? port : null,
-        suffix: env.get('DB_SUFFIX') ?? null,
-      }
+      const files = ENV_FILES.map((file) => readEnvFile(join(entry.path, file)))
+      const ports = [...new Set(files.map(portOf).filter((port) => port !== null))]
+      const suffix = files.map((env) => env.get('DB_SUFFIX')).find((value) => value) ?? null
+      return { path: entry.path, port: portOf(files[0]), ports, suffix }
     })
 }

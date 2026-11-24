@@ -8,7 +8,7 @@
  */
 import { useEffect } from 'react'
 
-import { track } from '../../../shared/beacon/beacon'
+import { track } from '@engine/ui/beacon'
 
 export function SearchBeacon({
   query,

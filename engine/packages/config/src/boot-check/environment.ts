@@ -29,7 +29,7 @@ type Kind = DeploymentEnvironment
  */
 function namedEnvironment(env: Env): Kind | null {
   const result = readSiteHosts(env)
-  if (!result.ok) return null
+  if (!result.ok) return oneAppEnvironment(env)
   const kinds = SITE_KEYS.map((site): Kind | undefined => {
     const canonical = result.hosts[site][0]
     const { production, staging }: { production: readonly string[]; staging: readonly string[] } =
@@ -40,6 +40,24 @@ function namedEnvironment(env: Env): Kind | null {
   })
   const [first] = kinds
   return first !== undefined && kinds.every((kind) => kind === first) ? first : null
+}
+
+/**
+ * One app's environment (PLAN-V2 §4.5, `../sites/app-hosts`): with no two-site lists, the canonical
+ * host of `SITE_HOSTS` names it — a site's committed production or staging hostname, or a local
+ * one — and anything else is `null`, judged as two-site lists that do not agree are (TASKS.md 23.3).
+ */
+function oneAppEnvironment(env: Env): Kind | null {
+  if (env.GALLERY_HOSTS?.trim() || env.SHOP_HOSTS?.trim()) return null
+  const canonical = (env.SITE_HOSTS ?? '').split(',')[0]?.trim().toLowerCase() ?? ''
+  if (canonical === '') return null
+  const named = SITE_KEYS.map((site) => SITES[site].hostnames)
+  if (named.some(({ production }) => (production as readonly string[]).includes(canonical))) {
+    return 'production'
+  }
+  if (named.some(({ staging }) => (staging as readonly string[]).includes(canonical)))
+    return 'staging'
+  return isLocalHostname(canonical) ? 'local' : null
 }
 
 export function deploymentEnvironment(env: Env, findings: Findings): DeploymentEnvironment {

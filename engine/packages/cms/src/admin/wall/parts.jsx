@@ -5,7 +5,7 @@
  * package does not type-check React (see `../leads/shared.jsx`'s header).
  */
 import { STATE_TAG_WORDS, fill, t } from './copy'
-import { isFiltered, wallHref } from './filter'
+import { isFiltered, WALL_PATH, wallHref } from './filter'
 
 const SITE_CHIPS = [
   ['all', 'siteAll'],
@@ -94,7 +94,7 @@ export function Filters({ filter, language }) {
 /** The search, beside the title: a filter row of chips alone fits beside the open sidebar. */
 export function Search({ filter, language }) {
   return (
-    <form className="wall-search" method="get" action="/admin" role="search">
+    <form className="wall-search" method="get" action={WALL_PATH} role="search">
       {filter.site !== 'all' ? <input type="hidden" name="site" value={filter.site} /> : null}
       {filter.state !== 'all' ? <input type="hidden" name="state" value={filter.state} /> : null}
       <label className="wall-search__label" htmlFor="wall-q">

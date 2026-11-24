@@ -16,7 +16,11 @@ import {
 
 const brand = { locales: { default: 'en', supported: ['en', 'id'] } } as const
 /** Each site's committed copy (2.3 moved it into the app). */
-const SITES_DIR = fileURLToPath(new URL('../../../apps/web/src/sites/', import.meta.url))
+// Each site's lexicon: the gallery's in today's app, the shop's in its storefront (TASKS.md 23.3).
+const SITES_DIRS = [
+  fileURLToPath(new URL('../../../apps/web/src/sites/', import.meta.url)),
+  fileURLToPath(new URL('../../storefront/src/sites/', import.meta.url)),
+]
 
 describe('locales — the default unprefixed, never negotiated', () => {
   it('resolves, prefixes and reads locales from paths', () => {
@@ -101,8 +105,10 @@ describe('messages — keys from the app, values from the brand’s copy', () =>
 
   it('serves the app’s default for a key a site’s committed copy lacks', () => {
     let checked = 0
-    for (const site of readdirSync(SITES_DIR)) {
-      const dir = join(SITES_DIR, site, 'lexicon')
+    for (const [root, site] of SITES_DIRS.flatMap((root) =>
+      readdirSync(root).map((site) => [root, site] as const),
+    )) {
+      const dir = join(root, site, 'lexicon')
       if (!existsSync(dir)) continue
       checked += 1
       const messages = loadMessages({

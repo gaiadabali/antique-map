@@ -9,7 +9,7 @@ import {
   loadDashboard,
   type Dashboard,
 } from '../../../../../../packages/cms/src/admin/dashboard/loaders'
-import { resolvePeriod } from '../../../../../../packages/cms/src/admin/dashboard/period'
+import { resolvePeriod } from '../../../../../../packages/cms-core/src/admin/dashboard/period'
 
 import {
   makeOrder,

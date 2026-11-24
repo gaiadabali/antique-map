@@ -62,12 +62,21 @@ describe('the public part of a media bucket (8.3.g)', () => {
 })
 
 describe('upload limits and types (8.3.d)', () => {
-  it('keeps a media upload under the CDN limit in front of /admin, and to web rasters', () => {
+  it('keeps a media upload under the CDN limit in front of /admin, to web rasters, web video and PDF', () => {
     expect(MEDIA_UPLOAD_MAX_BYTES).toBeLessThan(100_000_000 - 4_000_000)
     expect([...MEDIA_UPLOAD_MIME_TYPES].sort()).toEqual(
-      ['image/avif', 'image/jpeg', 'image/png', 'image/webp'].sort(),
+      [
+        'image/avif',
+        'image/jpeg',
+        'image/png',
+        'image/webp',
+        'video/mp4',
+        'video/webm',
+        'application/pdf',
+      ].sort(),
     )
     expect(MEDIA_UPLOAD_MIME_TYPES).not.toContain('image/svg+xml')
+    expect(MEDIA_UPLOAD_MIME_TYPES).not.toContain('text/html')
     // TIFF is a capture's (DNG and most RAW sniff as TIFF): masters, never media.
     expect(MEDIA_UPLOAD_MIME_TYPES).not.toContain('image/tiff')
   })

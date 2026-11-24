@@ -15,6 +15,8 @@ function settings(social: PublicSiteSettings['social']): PublicSiteSettings {
     hours: null,
     announcement: null,
     social,
+    productPage: null,
+    freeOverIdr: null,
   }
 }
 

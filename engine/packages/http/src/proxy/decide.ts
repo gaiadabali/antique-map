@@ -5,8 +5,10 @@
  *
  * 1. Next's own `/_next/…`, and the machine routes (`HOST_FREE_PATHS`: health, cron, revalidate,
  *    called on loopback by the host itself) pass on, whatever the `Host`.
- * 2. The `Host` header — never `X-Forwarded-Host` — picks the site (`siteFromHost()`). A host on
- *    no list is a plain 404 from the proxy: it picks no site, reaches no page and builds no URL.
+ * 2. The `Host` header — never `X-Forwarded-Host` — picks the site (`./host`): today's app reads
+ *    both sites' lists (`siteFromHost()`); a site's own app (`app`, PLAN-V2 §3) knows only its own
+ *    `SITE_HOSTS` and `ADMIN_HOST` and picks nothing. A host on no list is a plain 404 from the
+ *    proxy: it picks no site, reaches no page and builds no URL.
  * 3. A site's other hosts (an alias) answer a permanent redirect to its canonical host, the
  *    `Location` built from the allow-list alone.
  * 4. `/api/…`: an engine route (`/api/x/…`, `/api/health`) passes on; Payload's REST passes on
@@ -16,46 +18,26 @@
  *    photo's route (`/api/x/track/{token}/driver-image`) counts its token against the tracking
  *    guess budget, as the page does.
  * 5. The site's own files (`/<site>/logo.svg`, …) pass on; its root files (robots, sitemaps,
- *    `.well-known`, favicon, touch icon, manifest) are rewritten to their routes and files.
+ *    `.well-known`, favicon, touch icon, manifest) are rewritten to their routes and files. An
+ *    admin host of its own (`ADMIN_HOST` off the site's list) serves nothing more: any page there
+ *    is a plain 404.
  * 6. The site's route map (`parsePublicPath()`): an old site's URL goes to `/api/x/legacy/…` with
- *    its query, a surface to `/<site>/<locale>/…` in the site's tree, and anything else — an
- *    internal path asked for directly included — to the site's not-found route with
- *    `PROXY_NOT_FOUND_STATUS` on the rewrite. Every public page path is rewritten, so nothing under
- *    `/gallery/` or `/shop/` is ever served at its internal address.
+ *    its query, a surface to the site's tree (`/<site>/<locale>/…` today, `/<locale>/…` in the
+ *    site's own app), and anything else — an internal path asked for directly included — to the
+ *    tree's not-found route with `PROXY_NOT_FOUND_STATUS` on the rewrite. Every public page path is
+ *    rewritten, so nothing in a tree is ever served at its internal address.
  *
  * On every request it passes on it sets `PROXY_REQUEST_HEADERS`, overwriting whatever a client
  * sent, `PROXY_USER_AGENT` when the request has no `User-Agent` (Next renders in full per request
  * only for an agent `htmlLimitedBots` matches), drops any CSP header a client sent, and — once a
  * CSP builder is passed in — sets the per-request policy on the answer and the request. A surface
  * marked `sensitive` (a tracking token) answers with `Referrer-Policy: no-referrer` and
- * `X-Robots-Tag: noindex`.
+ * `X-Robots-Tag: noindex`. Given `securityHeaders`, every answer carries them (SECURITY.md B3).
  */
-import type { LocaleCode } from '@engine/config/constants'
-import {
-  isSensitive,
-  parsePublicPath,
-  siteFromHost,
-  siteOrigin,
-  SITES,
-  type HostMatch,
-  type SiteKey,
-} from '@engine/config/sites'
-
-import { PROXY_NOT_FOUND_STATUS, PROXY_REQUEST_HEADERS, PROXY_USER_AGENT } from '../manifest'
-import {
-  clientAddress,
-  hasCookie,
-  hasUserAgent,
-  isAdminPath,
-  isApiPath,
-  isEngineRoute,
-  isHostFree,
-  isSiteAsset,
-  namesNotFoundRoute,
-  notFoundPath,
-  rootRewrite,
-  trackingImageToken,
-} from './gates'
+import { PROXY_REQUEST_HEADERS, PROXY_USER_AGENT } from '../manifest'
+import { clientAddress, hasUserAgent, isApiPath, isEngineRoute, isHostFree } from './gates'
+import { resolveHost, type ResolvedHost } from './host'
+import { route, type Routed } from './routing'
 import { trackingGuessAllowed } from './tracking-rate-limit'
 import type { DecideOptions, ProxyDecision, ProxyRequest, ProxyWhy } from './types'
 
@@ -68,131 +50,48 @@ export type {
   ProxyWhy,
 } from './types'
 
-const SENSITIVE_HEADERS = { 'Referrer-Policy': 'no-referrer', 'X-Robots-Tag': 'noindex' } as const
 /** Both headers Next reads a nonce from: a client's never reaches the page. */
 const CSP_REQUEST_HEADERS = [
   PROXY_REQUEST_HEADERS.contentSecurityPolicy,
   'content-security-policy-report-only',
 ] as const
 
-type Routed = {
-  readonly kind: 'rewrite' | 'next'
-  readonly to: string | null
-  readonly why: ProxyWhy
-  readonly locale: LocaleCode
-  readonly status?: number
-  readonly setRequest?: Record<string, string>
-  readonly setResponse?: Record<string, string>
-  /** The item route's own query, for its permanent redirect to carry on. */
-  readonly publicSearch?: string
-  /**
-   * The token a tracking or order URL presents: a guess against the order's one credential,
-   * budgeted per address by distinct tokens (`./tracking-rate-limit`).
-   */
-  readonly guessedToken?: string
-}
-
 export function decideProxy(request: ProxyRequest, options: DecideOptions = {}): ProxyDecision {
   const { pathname } = request.url
   const env = options.env ?? process.env
-  if (pathname.startsWith('/_next/')) return passOn(request, 'next-internal')
-  if (isHostFree(pathname)) return passOn(request, 'machine')
-  const host = siteFromHost(request.headers.get('host'), env)
-  if (host === null) return respond('unknown-host', 404, null)
-  if (!host.canonical) {
-    // Built from the allow-list, never the request: `siteOrigin()` is the canonical host's.
-    const location = `${siteOrigin(host.site, env)}${pathname}${request.url.search}`
+  const secure = options.securityHeaders ?? {}
+  if (pathname.startsWith('/_next/')) return passOn(request, 'next-internal', secure)
+  if (isHostFree(pathname)) return passOn(request, 'machine', secure)
+  const host = resolveHost(request.headers, options, env)
+  if (host === null) return respond('unknown-host', 404, null, secure)
+  if (!host.canonical && !host.adminOnly) {
+    // Built from the allow-list, never the request: the canonical host's origin.
+    const location = `${host.origin}${pathname}${request.url.search}`
     const method = (request.method ?? 'GET').toUpperCase()
-    return respond('alias', method === 'GET' || method === 'HEAD' ? 301 : 308, location)
+    return respond('alias', method === 'GET' || method === 'HEAD' ? 301 : 308, location, secure)
   }
   if (isApiPath(pathname) && !isEngineRoute(pathname) && !host.admin) {
-    return respond('not-admin-host', 404, null)
+    return respond('not-admin-host', 404, null, secure)
   }
   const routed = route(request, options, host)
+  if (routed === null) return respond('admin-host-only', 404, null, secure)
   if (routed.guessedToken !== undefined) {
     const wait = trackingGuessAllowed(
       clientAddress(request.headers) ?? 'unknown',
       routed.guessedToken,
     )
     if (wait > 0) {
-      return respond('rate-limited', 429, null, { 'Retry-After': String(wait) })
+      return respond('rate-limited', 429, null, { ...secure, 'Retry-After': String(wait) })
     }
   }
   return finish(request, options, host, routed)
-}
-
-/** Where a request for a site goes, once its host is known to be the site's canonical one. */
-function route(request: ProxyRequest, options: DecideOptions, host: HostMatch): Routed {
-  const { pathname, search, searchParams } = request.url
-  const site = SITES[host.site]
-  const locale = site.locales.default
-  const notFound = (): Routed => {
-    const asked = localeOfPrefix(host.site, pathname)
-    return {
-      kind: 'rewrite',
-      to: notFoundPath(host.site, asked),
-      why: 'not-found',
-      locale: asked,
-      status: PROXY_NOT_FOUND_STATUS,
-    }
-  }
-  if (isApiPath(pathname)) {
-    // The tracking photo's route takes the same token as the page: one shared guess budget.
-    const imageToken = trackingImageToken(pathname)
-    return {
-      kind: 'next',
-      to: null,
-      why: 'api',
-      locale,
-      ...(imageToken === null ? {} : { guessedToken: imageToken }),
-    }
-  }
-  if (isAdminPath(pathname)) {
-    if (!host.admin) return notFound()
-    // The admin starts in English unless its user chose otherwise (KOI): Payload reads the
-    // browser's Accept-Language, which on an Indonesian laptop is Indonesian.
-    const chosen = hasCookie(request.headers, `${options.cookiePrefix ?? 'payload'}-lng`)
-    return {
-      kind: 'next',
-      to: null,
-      why: 'admin',
-      locale,
-      ...(chosen ? {} : { setRequest: { 'accept-language': 'en' } }),
-    }
-  }
-  if (isSiteAsset(host.site, pathname)) return { kind: 'next', to: null, why: 'site-asset', locale }
-  const root = rootRewrite(host.site, pathname)
-  if (root !== null) return { kind: 'rewrite', to: `${root}${search}`, why: 'root-file', locale }
-  if (namesNotFoundRoute(pathname)) return notFound()
-  const parsed = parsePublicPath(site, pathname, searchParams)
-  switch (parsed.kind) {
-    case 'legacy':
-      // The old site's query is part of the mapping (`?s=sold`, DATA.md §6): keep it.
-      return { kind: 'rewrite', to: `${parsed.internal}${search}`, why: 'legacy', locale }
-    case 'surface':
-      return {
-        kind: 'rewrite',
-        to: `/${host.site}${parsed.internal}`,
-        why: 'surface',
-        locale: parsed.locale,
-        ...(isSensitive(parsed.surface) ? { setResponse: { ...SENSITIVE_HEADERS } } : {}),
-        ...(parsed.surface === 'item' ? { publicSearch: search } : {}),
-        // The order page's token is the same kind of credential as tracking's: one shared budget.
-        ...((parsed.surface === 'tracking' || parsed.surface === 'order') &&
-        typeof parsed.params.token === 'string'
-          ? { guessedToken: parsed.params.token }
-          : {}),
-      }
-    case 'notFound':
-      return notFound()
-  }
 }
 
 /** A decision for a known site: the headers every page and engine route is handed. */
 function finish(
   request: ProxyRequest,
   options: DecideOptions,
-  host: HostMatch,
+  host: ResolvedHost,
   routed: Routed,
 ): ProxyDecision {
   const { pathname } = request.url
@@ -216,6 +115,7 @@ function finish(
     },
     removeRequest: [...CSP_REQUEST_HEADERS],
     setResponse: {
+      ...options.securityHeaders,
       ...routed.setResponse,
       ...(csp === null ? {} : { 'Content-Security-Policy': csp }),
     },
@@ -223,7 +123,11 @@ function finish(
 }
 
 /** A request passed on with no site: Next's own, or a machine route. */
-function passOn(request: ProxyRequest, why: ProxyWhy): ProxyDecision {
+function passOn(
+  request: ProxyRequest,
+  why: ProxyWhy,
+  setResponse: Readonly<Record<string, string>>,
+): ProxyDecision {
   return {
     kind: 'next',
     to: null,
@@ -238,7 +142,7 @@ function passOn(request: ProxyRequest, why: ProxyWhy): ProxyDecision {
       [PROXY_REQUEST_HEADERS.locale]: '',
     },
     removeRequest: [...CSP_REQUEST_HEADERS],
-    setResponse: {},
+    setResponse: { ...setResponse },
   }
 }
 
@@ -247,7 +151,7 @@ function respond(
   why: ProxyWhy,
   status: number,
   location: string | null,
-  setResponse: Record<string, string> = {},
+  setResponse: Readonly<Record<string, string>> = {},
 ): ProxyDecision {
   return {
     kind: 'respond',
@@ -258,7 +162,7 @@ function respond(
     status,
     setRequest: {},
     removeRequest: [],
-    setResponse,
+    setResponse: { ...setResponse },
   }
 }
 
@@ -271,11 +175,4 @@ function baseHeaders(request: ProxyRequest): Record<string, string> {
     // The `Host` the site was picked by, so Next's own origin checks see it, not a client's claim.
     [PROXY_REQUEST_HEADERS.forwardedHost]: request.headers.get('host') ?? '',
   }
-}
-
-/** A not-found page speaks the locale its prefix asked for, when the site serves it. */
-function localeOfPrefix(site: SiteKey, pathname: string): LocaleCode {
-  const { locales } = SITES[site]
-  const first = pathname.split('/')[1]
-  return locales.supported.find((locale) => locale === first) ?? locales.default
 }

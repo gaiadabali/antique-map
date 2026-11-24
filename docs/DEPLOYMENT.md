@@ -5,6 +5,17 @@ release artifact, migrations, scheduled jobs, storage, mail, environment variabl
 production outline. The design is [ARCHITECTURE.md](ARCHITECTURE.md); the controls are [SECURITY.md](SECURITY.md);
 the record and runbook of staging is [ops/helios-staging.md](ops/helios-staging.md).
 
+> **Plan v2 (DR-17, [PLAN-V2.md](PLAN-V2.md) §4.5).** Each app deploys on its own: **two** CloudPanel Node sites
+> (one per host), two pm2 processes on two ports, databases `indies_shop` and `indies_gallery` (a backup job
+> each), one release tarball per app (`scripts/ops/pack.sh --app shop|gallery`), per-app `SITE_HOSTS` and
+> `ADMIN_HOST` in place of `GALLERY_HOSTS`/`SHOP_HOSTS`, a `PAYLOAD_SECRET` per app (Midtrans keys in the shop
+> only), and **two media buckets** with their own scoped keys and public URLs; the private `archive-masters`
+> stays (the shop's key writes only under `print-files/`). Locally: `indies_shop_<suffix>` and
+> `indies_gallery_<suffix>`, two ports per worktree, a `.env.local` per app; Docker stays optional (native
+> Postgres 18 via `PGHOST`, uploads to disk, mail to console). The shop's staging site
+> (`old-east-indies.gaiada.com`) comes in phase 24, the gallery's in phase 25; **the sections below describe
+> today's one site, process and database, removed in phase 26.**
+
 ## 1. Environments
 
 | | Where | Hostnames | Data | Payments | Mail |
@@ -181,7 +192,7 @@ the page at request time, in server-rendered props or from a runtime-config endp
 | --- | --- |
 | `GALLERY_HOSTS`, `SHOP_HOSTS` | each site's hostnames, comma-separated, the first canonical (§1) |
 | `ADMIN_HOST` | the one host serving `/admin` and Payload's REST (Payload's `serverURL`); default the shop's canonical host, the first of `SHOP_HOSTS` (`old-east-indies.gaiada.com` on staging); both answer 404 on the other host |
-| `DATABASE_URL`, `PAYLOAD_SECRET` | the one database; a secret per environment |
+| `DATABASE_URL`, `PAYLOAD_SECRET` | the one database (one per app under DR-17); a secret per environment (and per app) |
 | `RUN_MIGRATIONS` · `PAYLOAD_DEV_PUSH` | `1` in the web process on a host · `1` for a schema author's own database only |
 | `HOSTNAME`, `PORT` | `localhost` and the app port on a host (§3); `0.0.0.0` in CI; never a loopback IP |
 | `LOCAL_PRODUCTION_BUILD` | `1` in a worktree's `.env.local` and CI only (§7) |

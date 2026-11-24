@@ -43,8 +43,8 @@ The user's design handoff (Claude Design export, `oei.css` of 17 Oct) rebuilt th
 Club's measured skeleton (home, listings, bag, track, partnership) and King & McGaw's product page,
 in the shop's own copy, type (Cormorant Garamond + Karla) and assets. The gallery is unchanged.
 
-**Palette (`--primitive-oei-*` in `shared/styles/tokens/primitives.css`, mapped in
-`sites/shop/tokens/brand.css`; contrast checked 2026-10-20).** White page; ink `#2b2b2b` (14.2:1)
+**Palette (`--primitive-oei-*` in `packages/ui/src/styles/tokens/primitives.css`, mapped in
+`packages/ui/src/styles/tokens/shop.css`; contrast checked 2026-10-20).** White page; ink `#2b2b2b` (14.2:1)
 and muted `#5f5f5f` (6.4:1 on white, 5.7:1 on warm, 5.4:1 on the well); hairlines `#eaeaea`, a
 mid rule `#c9c9c9` for decorative outlines, `#858585` (3.7:1) for a control's boundary; the grey
 well `#ebebeb` (hover `#e3e3e3`) every print hangs on; one warm band `#f5f2ec` (the hero's text half,
@@ -77,7 +77,7 @@ Cobalt kept) the user, as the owner's proxy, chose **Heritage**. It replaces Cob
 stays, and the gallery keeps Ivory and ink. The direction contract is the surface brief
 `engine/apps/web/.impeccable/surfaces/engine-apps-web-src-sites.md` (version 4).
 
-**Palette (`shared/styles/tokens/primitives.css`, the `--primitive-heritage-*` ramp; contrast checked 2026-10-14,
+**Palette (`packages/ui/src/styles/tokens/primitives.css`, the `--primitive-heritage-*` ramp; contrast checked 2026-10-14,
 every text pair AA).** Sampled from the logo (ink `#5d3c1d`, paper `#f1e6d3`) and the catalogues (walnut
 `#1d1311`–`#301e1c`, mats `#f0e8dd`).
 
@@ -121,7 +121,7 @@ phases 17–18 stays (full width, the `Crossing` opening, prints on even tiles, 
 direction contract is the surface brief `engine/apps/web/.impeccable/surfaces/engine-apps-web-src-sites.md`
 (version 3).
 
-**Palette (`shared/styles/tokens/primitives.css`, the `--primitive-cobalt-*` ramp; contrast checked 2026-10-13, every
+**Palette (`packages/ui/src/styles/tokens/primitives.css`, the `--primitive-cobalt-*` ramp; contrast checked 2026-10-13, every
 text pair AA).**
 
 | Role                                 | Old East Indies (Cobalt)                         |
@@ -142,7 +142,7 @@ cobalt is only the **one action** a view asks for (Add to bag, Checkout). Ink fo
 a chosen option and the pager's current number stay ink. Prints hang on pale cool tiles with the one soft shadow.
 The footer closes each page in navy.
 
-**The roles (`sites/shop/tokens/brand.css`).** Pigment 1 is the shop's everyday ground (paper, the tile as its tint,
+**The roles (`packages/ui/src/styles/tokens/shop.css`).** Pigment 1 is the shop's everyday ground (paper, the tile as its tint,
 navy as its full). Pigment 2 is the hero: its `full` is cobalt with white type (`-on-full` white, `-on-full-muted`
 pale cobalt), its `wash` a pale cobalt mist. Pigment 3 is the gallery's cool stone, for the bridge to the originals.
 The old shell ramp (`--primitive-shell-*`) stays only because the gallery's bridge band to the shop still wears its
@@ -152,7 +152,7 @@ warm panel, which keeps the gallery unchanged.
 field and re-points every ink role on the copy to the field's own type, the action included: a white button with the
 field's colour as its words, a white focus ring, hairlines mixed from white. Only the shop's home hero uses it.
 
-**Fonts (phase 19).** Cormorant Garamond and Karla are served from the repository (`shared/styles/fonts/`, Google's Latin variable woff2, OFL), so no build fetches Google. The display italic is its own family, never preloaded (10.2): italic display type uses `--font-display-italic` (`--text-h3-italic` for the antique's original title), never `font-style: italic` on the roman.
+**Fonts (phase 19).** Cormorant Garamond and Karla are served from the repository (`packages/ui/src/styles/fonts/`, Google's Latin variable woff2, OFL), so no build fetches Google. The display italic is its own family, never preloaded (10.2): italic display type uses `--font-display-italic` (`--text-h3-italic` for the antique's original title), never `font-style: italic` on the roman.
 
 **Brand files (`public/shop/`).** The placeholder logo, the favicon (32 and 16 px), the 180 px home-screen icon and the
 manifest's theme colour are cobalt; the 1200 × 630 social image is cobalt with "Old East Indies" in Cormorant and
@@ -191,7 +191,7 @@ stayed; its colour world, Outline Colour, was replaced. The direction contract i
 `engine/apps/web/.impeccable/surfaces/engine-apps-web-src-sites.md` (version 2). Recorded here from the shipped CSS
 and components (worktree `feat/p18-dsg`).
 
-**Palette (`shared/styles/tokens/primitives.css`; contrast checked 2026-10-12, every text pair AA, input boundaries
+**Palette (`packages/ui/src/styles/tokens/primitives.css`; contrast checked 2026-10-12, every text pair AA, input boundaries
 3.6:1).**
 
 | Role                      | Indies Gallery                | Old East Indies                         |
@@ -214,12 +214,12 @@ hero panel and its tiles. The band that bridges to the sister site wears the sis
 bridge on the shop's warm panel, the shop's on the gallery's cool stone). The footer closes each page in its dark
 ground. Square and flat everywhere; the one shadow is a print's on its tile.
 
-**The roles behind it (`sites/{gallery,shop}/tokens/brand.css`).** The phase 17 pigment roles stay as names:
+**The roles behind it (`packages/ui/src/styles/tokens/{gallery,shop}.css`).** The phase 17 pigment roles stay as names:
 `--pigment-1-wash` is each site's paper (so a `Band pigment={1}` head is simply on the paper), `-tint` its stone,
 `-full` its footer; the shop's `--pigment-2-wash` is the warm panel its hero asks for; the bridges use the sister's
 role (gallery `2`, shop `3`). The Outline Colour ramps remain in the primitives only as the semantic fallbacks.
 
-**The print tile (`shared/ui/print-tile`, the shop).** An even 4 : 5 tile (or `tile="square"`) of the site's stone;
+**The print tile (`packages/ui/src/components/print-tile`, the shop).** An even 4 : 5 tile (or `tile="square"`) of the site's stone;
 the print laid in it whole **at its own shape** (`printRatioOf()` from the image's pixels, 0.4–2.5), set a little
 above centre, with one soft, low shadow (`--shadow-print`) that falls from the print's own edges. Inside a link the
 print lifts a few pixels and its shadow deepens; reduced motion: no lift. `size="large"` (a product's lead: a
@@ -271,11 +271,11 @@ The owner's later look-and-feel pass changes only these:
 
 | What to change                    | File(s)                                                                                                                                                                                   |
 | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Final colours (Q16)               | the ivory and oei ramps in `shared/styles/tokens/primitives.css`; their use per site in `sites/{gallery,shop}/tokens/brand.css` (the shop's layout knobs: `sites/shop/tokens/layout.css`) |
-| Font family                       | `engine/apps/web/src/shared/styles/fonts.ts`                                                                                                                                              |
+| Final colours (Q16)               | the ivory and oei ramps in `packages/ui/src/styles/tokens/primitives.css`; their use per site in `packages/ui/src/styles/tokens/{gallery,shop}.css` (the shop's layout knobs: `sites/shop/tokens/layout.css`) |
+| Font family                       | `engine/packages/ui/src/styles/fonts.ts`                                                                                                                                              |
 | Hero media (film, poster, images) | CMS `pages` and `media` (not code)                                                                                                                                                        |
 | Logo lock-up                      | `site-settings` assets + the logo component in 4.3                                                                                                                                        |
-| Motion per site                   | `shared/styles/tokens/primitives.css` motion section + component CSS Modules in 4.2                                                                                                       |
+| Motion per site                   | `packages/ui/src/styles/tokens/primitives.css` motion section + component CSS Modules in 4.2                                                                                                       |
 
 No dark mode. No raw colour or `font-family` is allowed outside the token files.
 
@@ -283,7 +283,7 @@ No dark mode. No raw colour or `font-family` is allowed outside the token files.
 
 The Payload admin at `/admin` wears the Indies world built for work: light only (`admin.theme: 'light'`, DR-14), linen ground, white paper panels with one hairline, ink type, bronze for the one primary action, the current selection and focus. Recorded from the shipped CSS and components, not the brief.
 
-**Where it lives.** Tokens: `engine/apps/web/src/shared/styles/tokens/admin.css` (raw values live here alone; the token lint covers it). Mount order in `app/(payload)/layout.tsx`: `@payloadcms/next/css`, `primitives.css`, `admin.css`, then `app/(payload)/admin/` `theme-base`, `theme-shell`, `theme-signin`, `theme-forms`, `theme-record`, `theme-lists`, `wall` (imports `wall-cards`), `panels` (imports `panels-controls`, `panels-analytics`). The brand faces come from `fontVariables` on `<html>`. **Rule: admin feature CSS reads only `--admin-*` tokens (and `--primitive-space-*`, `--base`); no raw colour or `font-family` outside the token files; a lint enforces it.**
+**Where it lives.** Tokens: `engine/packages/ui/src/styles/tokens/admin.css` (raw values live here alone; the token lint covers it). Mount order in `app/(payload)/layout.tsx`: `@payloadcms/next/css`, `primitives.css`, `admin.css`, then `app/(payload)/admin/` `theme-base`, `theme-shell`, `theme-signin`, `theme-forms`, `theme-record`, `theme-lists`, `wall` (imports `wall-cards`), `panels` (imports `panels-controls`, `panels-analytics`). The brand faces come from `fontVariables` on `<html>`. **Rule: admin feature CSS reads only `--admin-*` tokens (and `--primitive-space-*`, `--base`); no raw colour or `font-family` outside the token files; a lint enforces it.**
 
 **How it is themed.** Payload's CSS sits in `@layer payload-default`; the admin's CSS is unlayered, so it wins without `!important`. Theming retunes Payload's own scales in `admin.css` (`--color-base-*`, `-success-*`, `-warning-*`, `-error-*`, and `-blue-*`, its accent, now bronze-brown) and its `--theme-*`, `--font-*`, `--style-radius-*` and `--accessibility-outline` variables, so unstyled Payload screens still speak the palette. Buttons are driven through Payload's own `--bg-color`, `--color`, `--hover-bg`, `--hover-color`, `--btn-border`, `--hover-btn-border` per `.btn--style-*`; do not restyle `.btn` per screen.
 
@@ -319,4 +319,4 @@ Contrast as the file records it (checked 2026-10-11): ink on linen 13.9:1; muted
 
 **Long forms.** A record opens on what is filled every time: rarely-filled sections fold into closed unnamed collapsibles (`packages/cms/src/fields/fold.ts`, no data-path change): the antique's First edition, Date on the plate, Publication, Physical record (staff only), Rights, From the old site and SEO (Condition and Cataloguing stay open: a grade and the AI-draft checks are read on every work); the order's History, Payment, Driver, Handed back and Store as sold. An array's rows inside a paper panel are ruled, not boxed.
 
-**How to change it.** The owner's later UI/UX pass edits `engine/apps/web/src/shared/styles/tokens/admin.css` (roles, type shorthands, radii, control height, durations, and the Payload scales), and the shared pieces (`wall-*`, `ix-*`, the marks). Do not add colours, faces or one-off values to feature CSS or to a single view.
+**How to change it.** The owner's later UI/UX pass edits `engine/packages/ui/src/styles/tokens/admin.css` (roles, type shorthands, radii, control height, durations, and the Payload scales), and the shared pieces (`wall-*`, `ix-*`, the marks). Do not add colours, faces or one-off values to feature CSS or to a single view.

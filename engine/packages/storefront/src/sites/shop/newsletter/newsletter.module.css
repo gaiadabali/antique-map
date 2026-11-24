@@ -1,0 +1,27 @@
+/* The newsletter pop-up's form (TASKS.md 28.2), inside the shared dialog. Every value is a token. */
+
+.form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.text {
+  margin: 0;
+  font: var(--shop-text-body);
+  color: var(--color-text-muted);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+}
+
+.privacy {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 44px;
+  font: var(--shop-text-meta);
+  color: var(--color-text);
+}

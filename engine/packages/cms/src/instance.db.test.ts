@@ -12,12 +12,13 @@
  *   update, a rollback, `disableTransaction` and a hook's nested write each keep exactly the right
  *   tags, and a `req` goes in through `operation(write, { req })` alone.
  */
-import { createTestDatabase } from './db/test-database.test-support'
 import { realpathSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { POOL_CONNECT_TIMEOUT_MS } from '@engine/cms-core/db'
+import { createTestDatabase } from '@engine/cms-core/db/test-database'
 import {
   buildConfig,
   createLocalReq,
@@ -32,7 +33,6 @@ import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 
 // cms depends on @engine/cache from 8.2's hooks on; until then its source is reached directly.
 import { invalidate, invalidationBatch, productTag } from '../../cache/src/index'
-import { POOL_CONNECT_TIMEOUT_MS } from './db/adapter'
 import { databaseProbe } from './db/probe'
 import { migrations } from './migrations'
 import { engineConfig } from './payload.config'

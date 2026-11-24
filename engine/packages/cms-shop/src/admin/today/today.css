@@ -1,0 +1,85 @@
+/* The shop's "Today" home (TASKS.md 27.6.a), in the admin's own look: the wall strip's paper
+   tiles, one hairline, ink type, square corners; a count that waits for someone edged in bronze.
+   Tokens only (`@engine/ui` tokens/admin.css). Phone first: two columns at 390 px, every tile a
+   44 px target at least. */
+
+.today-section {
+  margin-block-start: calc(var(--base) * 1.25);
+}
+
+.today-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 9.5rem), 1fr));
+  gap: calc(var(--base) * 0.5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.today .today-grid a.today-card:not(.ix-btn):not(.ix-item):not(.ix-tab) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--primitive-space-1);
+  box-sizing: border-box;
+  block-size: 100%;
+  min-block-size: var(--admin-target);
+  padding: var(--primitive-space-3) var(--primitive-space-4);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius);
+  color: var(--admin-ink);
+  text-decoration: none;
+  transition:
+    background-color var(--admin-dur) var(--admin-ease),
+    border-color var(--admin-dur) var(--admin-ease);
+}
+
+.today .today-grid a.today-card:not(.ix-btn):not(.ix-item):not(.ix-tab):hover {
+  background: var(--admin-wash);
+  border-color: var(--admin-ink);
+}
+
+.today .today-grid a.today-card:not(.ix-btn):not(.ix-item):not(.ix-tab):focus-visible {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 2px;
+}
+
+.today .today-grid a.today-card--act:not(.ix-btn):not(.ix-item):not(.ix-tab) {
+  border-inline-start: 3px solid var(--admin-accent);
+}
+
+.today-card__count {
+  font: var(--admin-text-figure);
+  font-variant-numeric: lining-nums tabular-nums;
+  color: var(--admin-ink-strong);
+}
+
+.today-card__label {
+  font: var(--admin-text-strong);
+  color: var(--admin-ink-strong);
+}
+
+.today-card__note {
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+}
+
+.today-more {
+  margin-block-start: calc(var(--base) * 1.5);
+  font: var(--admin-text-small);
+}
+
+/* The admin home (`../home/view.jsx`): its one heading, for screen readers only — the owner asked
+   for no "Dashboard" title (2026-11-16) — and Today's cards above the menu's cards. */
+.today-visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.home-today {
+  margin-block-end: calc(var(--base) * 1.5);
+}

@@ -31,7 +31,7 @@ async function main(): Promise<void> {
   // Outside a request the cache hooks' `after()` throws (a created term or maker invalidates the
   // vocabulary's tags): every write hands its tags to the CLI's collector, the way the seed's do
   // (`import/cli-cache`), and the tags are not posted — nothing here serves from the cache.
-  const { cliInvalidation } = await import('../../../engine/packages/cms/src/import/cli-cache')
+  const { cliInvalidation } = await import('../../../engine/packages/cms-core/src/import/cli-cache')
   const batch = cliInvalidation()
   const payload: Api = {
     find: (args) => instance.find(args),

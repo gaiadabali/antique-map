@@ -1,1 +1,1 @@
-export { ordersReassignPost as POST } from '../../../../../../server/orders/reassign'
+export { ordersReassignPost as POST } from '../../../../../../server/orders/routes'

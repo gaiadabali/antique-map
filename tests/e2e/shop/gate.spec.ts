@@ -1,7 +1,8 @@
 /**
  * The shop payment gate (TASKS.md 6.5.c, 6.6.c; EXPERIENCE-SHOP.md §5-§8; COMMERCE.md §3-§6): one
  * buyer journey at 390 px, in a browser, on a production build with `MIDTRANS_MODE=simulate` — two
- * products, a pin, checkout with no fee shown, the order page's "confirming your delivery price"
+ * products, a pin past the last distance band (K2: a pin inside the bands is priced at checkout and
+ * never waits for a quote — `checkout-delivery.spec.ts`), checkout with no fee shown, the order page's "confirming your delivery price"
  * state, a staff quote (Local API `quoteDeliveryFee`, `GATE_DB=local` only), the page switching
  * itself to Pay with the fee and the final total, simulator Settle, confirmation, email, then a
  * second guest's order abandoned in each of the two windows (`awaiting_quote`'s quote window and
@@ -75,6 +76,13 @@ const SHOTS = process.env.GATE_SHOTS ?? 'docs/gates/shop-payment'
 
 /** Denpasar, the pin picker's own default centre (`pin-picker.tsx`). */
 const DEFAULT_CENTRE = { lat: -8.6705, lng: 115.2126 }
+/**
+ * Jakarta: past the last distance band from every Bali store. Since K2 (the plan's
+ * `old-east-indies-cms.md` §7; TASKS.md 27.3) the bands price an order at checkout and a staff quote
+ * is only the exception for a pin they cannot price — this one — so the quote journey, the probes
+ * and the abandoned orders below all pin here (`checkout-delivery.spec.ts` holds the in-band case).
+ */
+const PAST_LAST_BAND = { lat: -6.2088, lng: 106.8456 }
 
 async function shoot(page: Page, name: string): Promise<void> {
   mkdirSync(SHOTS, { recursive: true })
@@ -111,7 +119,7 @@ function rupiahToNumber(text: string): number {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Discovery: two in-stock, unvarianted products, and a pin a single store can send them both to
+// Discovery: two products one click adds, and a pin a single store can send them both to
 // (never hard-coded — `product.spec.ts`'s own "a missing candidate is a failure" rule applies).
 // ---------------------------------------------------------------------------------------------
 
@@ -127,7 +135,12 @@ async function listProducts(request: APIRequestContext): Promise<ProductSummary[
   return body.docs.filter((product) => !(product.sku ?? '').startsWith('E2E-'))
 }
 
-/** Sellable (add button enabled) and unvarianted (one click adds it, no picker involved). */
+/**
+ * Sellable in one click: the add button enabled as the page opens — an unvarianted product, or one
+ * whose preselected variant (the picker opens on the first, checked) is in stock. The seeded
+ * catalogue's prints all come in sizes since the 2026-10-20 redesign, so a variant product counts
+ * here too; each bag line is still one product, one quantity.
+ */
 async function sellableUnvariantedProducts(
   request: APIRequestContext,
   candidates: ProductSummary[],
@@ -137,9 +150,8 @@ async function sellableUnvariantedProducts(
     const res = await request.get(`${API_BASE}/product/${product.slug}`, { headers: HOST_HEADER })
     if (res.status() !== 200) continue
     const html = await res.text()
-    const hasVariant = /type="radio"[^>]*value="/.test(html)
     const addDisabled = /__addButton"\s+disabled/.test(html)
-    if (!hasVariant && !addDisabled) found.push(product)
+    if (!addDisabled) found.push(product)
     if (found.length >= 8) break
   }
   return found
@@ -197,9 +209,7 @@ async function findSellablePair(
   const products = await listProducts(request)
   expect(products.length, 'seeded, published products').toBeGreaterThan(0)
   const sellable = await sellableUnvariantedProducts(request, products)
-  expect(sellable.length, 'in-stock, unvarianted products to pick two from').toBeGreaterThanOrEqual(
-    2,
-  )
+  expect(sellable.length, 'products one click adds, to pick two from').toBeGreaterThanOrEqual(2)
 
   const browser = page.context().browser()
   if (browser === null) throw new Error('finding a sellable pair needs a real browser')
@@ -218,7 +228,7 @@ async function findSellablePair(
         whatsapp: '0812 0000 0000',
         email: 'e2e-shop-gate-probe@example.test',
       })
-      await typePin(probe, DEFAULT_CENTRE)
+      await typePin(probe, PAST_LAST_BAND)
       await probe.getByRole('button', { name: 'Continue to payment' }).click()
       const ok = await probe
         .waitForURL(/\/order\//, { timeout: 5000 })
@@ -446,10 +456,10 @@ test.describe('the shop payment gate (6.5.c, 6.6.c)', () => {
     const halfPinAlerts = (await page.getByRole('alert').allTextContents()).filter((t) => t.trim())
     expect(halfPinAlerts, 'no refusal for a half-typed pin').toEqual([])
 
-    await typePin(page, DEFAULT_CENTRE)
+    await typePin(page, PAST_LAST_BAND)
 
-    // Step 3 (6.6.c): no fee preview any more — the review holds at an items total, with the
-    // "confirmed by our team" note; total = subtotal - discount, exactly.
+    // Step 3 (6.6.c, K2): past the last band there is no fee to show — the review holds at an items
+    // total, with the team's promise in the delivery line; total = subtotal - discount, exactly.
     const subtotalIdr = rupiahToNumber(
       await page
         .locator('dt', { hasText: 'Subtotal' })
@@ -468,7 +478,9 @@ test.describe('the shop payment gate (6.5.c, 6.6.c)', () => {
         .innerText(),
     )
     expect(itemsTotalIdr, 'items total = subtotal - discount').toBe(subtotalIdr - discountIdr)
-    await expect(page.getByText('Delivery price confirmed by our team')).toBeVisible()
+    await expect(page.getByText(/^Our team confirms it/)).toBeVisible()
+    // The total to pay is the items total: there is no fee yet.
+    expect(rupiahToNumber(await page.getByTestId('total-to-pay').innerText())).toBe(itemsTotalIdr)
     await shoot(page, 'checkout-filled-390')
     await axeBothWidths(page, 'checkout with no fee')
 
@@ -587,7 +599,7 @@ test.describe('the shop payment gate (6.5.c, 6.6.c)', () => {
     await addFromProductPage(page, product!.slug)
     await page.goto(`${SHOP_ORIGIN}/checkout`)
     await fillContact(page, contact)
-    await typePin(page, DEFAULT_CENTRE)
+    await typePin(page, PAST_LAST_BAND)
     await page.getByRole('button', { name: 'Continue to payment' }).click()
     await expect(page).toHaveURL(/\/order\//)
     return decodeURIComponent(new URL(page.url()).pathname.split('/').pop() ?? '')

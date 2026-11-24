@@ -6,97 +6,91 @@
         - text: Indies Gallery
     - button "Open menu"
 - main:
-    - text: A still from the gallery film — shown here as a poster until the film loads Est. 2001 · Singapore
-    - heading "The islands, first drawn." [level=1]
-    - paragraph: Original maps and engravings of the East Indies, 1550–1900, held in Singapore and offered with the curator’s certificate.
-    - link "Explore":
+    - region "The islands, first drawn.":
+        - heading "The islands, first drawn." [level=1]
+        - paragraph: Original maps and engravings of the East Indies, 1550–1900, held in Singapore and offered with the curator’s certificate.
+        - link "Explore the collection":
+            - /url: /browse
+        - link "Sell to us":
+            - /url: /sell-to-us
+        - list:
+            - listitem: Since 2001
+            - listitem: Over 9,500 antiques
+            - listitem: A certificate with every original
+        - figure "Bali, by Valentijn — run MWIYW3PY E2E Valentijn, 1726 Price on request":
+            - link "Bali, by Valentijn — run MWIYW3PY":
+                - /url: /product/100006
+            - text: E2E Valentijn, 1726 Price on request
+    - heading "Newly catalogued" [level=2]
+    - link "See the whole collection":
         - /url: /browse
-    - link "Sell to us":
-        - /url: /sell-to-us
-    - paragraph: Curator-certified
-    - paragraph: Every piece signed by Dr David E. Parry
-    - paragraph: Originals only
-    - paragraph: Not one reproduction in the gallery
-    - paragraph: Museum-collected
-    - paragraph: Singapore, Leiden and Louvre Abu Dhabi
-    - heading "About" [level=2]
-    - paragraph: Indies Gallery has bought and sold antique maps, prints, books and photographs of the East Indies for over twenty-five years. Our inventory runs past 9,500 authentic pieces, from the fifteenth century to the twentieth; 2,090 of them are listed online at any time.
-    - paragraph: Every object is offered with a certificate of authenticity from our curator, Dr David E. Parry, author of The Cartography of The East Indian Islands. Our clients include the National Museum of Singapore, the National Library of Australia, the Louvre Abu Dhabi and the University of Leiden — alongside collectors buying their first map.
-    - text: In the trade since
-    - paragraph: 25 years
-    - text: Objects handled
-    - paragraph: 9,500 authentic pieces
-    - text: Held by
-    - paragraph: 4 national collections
-    - article:
-        - text: 01/
-        - heading "Bird of Paradise by Conrad Gesner, Antique print" [level=3]
-        - img "Bird of Paradise by Conrad Gesner, Antique print — the whole sheet"
-        - paragraph: print
-        - paragraph:
-            - link "Explore":
-                - /url: /product/2050
-    - article:
-        - text: 02/
-        - heading "Batavia City View, Prospect von der Bastion Gelderland ausserhalb der Stadt Batavia by Francois Xavier Habermann" [level=3]
-        - img "Batavia City View, Prospect von der Bastion Gelderland ausserhalb der Stadt Batavia by Francois Xavier Habermann — the whole sheet"
-        - paragraph: print
-        - paragraph:
-            - link "Explore":
-                - /url: /product/2013
-    - article:
-        - text: 03/
-        - heading "Aquatic snails, Bulime de Mender by Charles d'Orbigny" [level=3]
-        - img "Aquatic snails, Bulime de Mender by Charles d'Orbigny — the whole sheet"
-        - paragraph: print
-        - paragraph:
-            - link "Explore":
-                - /url: /product/1973
-    - text: The curator at work The curator
-    - heading "Dr David E. Parry" [level=2]
-    - paragraph: He wrote the reference work on East Indies cartography. Every piece we sell passes his desk first — the plate identified, the state established, the condition recorded in plain words rather than a code.
-    - paragraph: His signed certificate travels with the object, and stays with it through every owner that follows.
-    - text: Archive
-    - heading "Recently placed" [level=2]
-    - paragraph: Pieces that have found a home with collectors and institutions. We keep the record of where a piece went — never its price.
-    - paragraph: A chart of the Sunda Strait
-    - paragraph: Placed with a private collector, Singapore
-    - paragraph: View of Batavia from the roadstead
-    - paragraph: Placed with an institutional collection
-    - paragraph: Map of the Moluccas, first state
-    - paragraph: Placed with a private collector, the Netherlands
-    - text: Old East Indies
-    - heading "Live with the collection" [level=2]
-    - paragraph: 'Prints, for everyday walls: our sister shop makes museum-grade reproductions from works like these — framed and ready for a wall that an original cannot hang on.'
-    - link "Shop the prints":
-        - /url: http://shop.localhost:4417/
-    - heading "Makers and places" [level=2]
-    - paragraph: Follow the engravers, cartographers and photographers — or the places they drew.
-    - link "Browse makers":
-        - /url: /makers
-        - heading "Browse makers" [level=3]
-    - link "Browse places":
-        - /url: /places
-        - heading "Browse places" [level=3]
-    - text: Enquire
-    - heading "Nothing here is sold online" [level=2]
-    - paragraph: Tell us which map interests you. We reply within two working days with its condition report, provenance and price — and, if you wish, arrange a private viewing.
-    - link "Enquire":
-        - /url: /browse
-    - link "Sell to us":
-        - /url: /sell-to-us
-- contentinfo:
     - list:
         - listitem:
-            - link "Privacy":
-                - /url: /privacy
+            - link "A hand-coloured map of Bali, run MWIVSLAG Bali, by Valentijn — run MWIVSLAG E2E Valentijn, 1726 Price on request":
+                - /url: /product/100005
+                - img "A hand-coloured map of Bali, run MWIVSLAG"
+                - text: Bali, by Valentijn — run MWIVSLAG E2E Valentijn, 1726 Price on request
         - listitem:
-            - link "Terms":
-                - /url: /terms
+            - link "E2E 5.4 recto E2E chart of Java E2E François Valentijn, c. 1726 28 × 36 cm (11 × 14.2 in) Price on request Stock no. M.E2E0541":
+                - /url: /product/100003
+                - img "E2E 5.4 recto"
+                - text: E2E chart of Java E2E François Valentijn, c. 1726 28 × 36 cm (11 × 14.2 in) Price on request Stock no. M.E2E0541
         - listitem:
-            - link "Old East Indies — printed editions from our collection":
-                - /url: http://shop.localhost:4417/
+            - link "A hand-coloured map of Bali, run MWIQ45JS Bali, by Valentijn — run MWIQ45JS E2E Valentijn, 1726 Price on request":
+                - /url: /product/100002
+                - img "A hand-coloured map of Bali, run MWIQ45JS"
+                - text: Bali, by Valentijn — run MWIQ45JS E2E Valentijn, 1726 Price on request
+        - listitem:
+            - link "Bird of Paradise by Conrad Gesner, Antique print — the whole sheet Bird of Paradise by Conrad Gesner, Antique print c. 1558 35 × 25 cm (13.8 × 9.8 in) Price on request Stock no. P.2863":
+                - /url: /product/2050
+                - img "Bird of Paradise by Conrad Gesner, Antique print — the whole sheet"
+                - text: Bird of Paradise by Conrad Gesner, Antique print c. 1558 35 × 25 cm (13.8 × 9.8 in) Price on request Stock no. P.2863
+    - region "Twenty-five years among the islands’ maps":
+        - heading "Twenty-five years among the islands’ maps" [level=2]
+        - paragraph: Maps, prints, books and photographs of the East Indies, bought and sold in Singapore.
+        - paragraph: Every original is offered with a certificate of authenticity from our curator, Dr David E. Parry, author of The Cartography of The East Indian Islands. Collectors come to us for a first map, and return for the rarer sheets.
+        - heading "Dr David E. Parry" [level=3]
+        - paragraph: The curator
+        - paragraph: He wrote the reference work on East Indies cartography. Every piece we sell passes his desk first — the plate identified, the state established, the condition recorded in plain words rather than a code.
+        - paragraph: His signed certificate travels with the object, and stays with it through every owner that follows.
+    - heading "Recently placed" [level=2]
+    - paragraph: A few of the works that have left the gallery. We mark a work sold — never to whom, never for how much.
+    - list:
+        - listitem:
+            - link "E2E 5.4 recto E2E sold chart E2E François Valentijn, c. 1726 28 × 36 cm (11 × 14.2 in) Sold Stock no. M.E2E0542":
+                - /url: /product/100004
+                - img "E2E 5.4 recto"
+                - text: E2E sold chart E2E François Valentijn, c. 1726 28 × 36 cm (11 × 14.2 in) Sold Stock no. M.E2E0542
+        - listitem:
+            - link "Antique Print of Bedhaya dance with Gamelan on Java by P.A Van Der Lith — the whole sheet Antique Print of Bedhaya dance with Gamelan on Java by P.A Van Der Lith P.A. van der Lith, 1875 17.5 × 23.5 cm (6.9 × 9.3 in) Sold Stock no. P.2386":
+                - /url: /product/1782
+                - img "Antique Print of Bedhaya dance with Gamelan on Java by P.A Van Der Lith — the whole sheet"
+                - text: Antique Print of Bedhaya dance with Gamelan on Java by P.A Van Der Lith P.A. van der Lith, 1875 17.5 × 23.5 cm (6.9 × 9.3 in) Sold Stock no. P.2386
+    - region "Live with the collection":
+        - heading "Live with the collection" [level=2]
+        - paragraph: Museum-grade reproductions of works like these, framed for a wall an original cannot hang on, at our sister shop.
+        - link "Shop the prints":
+            - /url: http://shop.localhost:4861/
+    - region "Makers and places":
+        - heading "Makers and places" [level=2]
+        - paragraph: Follow the engravers, cartographers and photographers — or the places they drew.
+        - list:
+            - listitem:
+                - link "Browse makers The engravers, cartographers and photographers, one by one.":
+                    - /url: /makers
+            - listitem:
+                - link "Browse places The islands, ports and coasts they drew.":
+                    - /url: /places
+    - region "Nothing here is sold online":
+        - heading "Nothing here is sold online" [level=2]
+        - paragraph: Tell us which work interests you. We reply the same working day, Singapore time, with its condition report and provenance — and, if you wish, arrange a private viewing.
+        - link "Enquire":
+            - /url: /browse
+        - link "Sell to us":
+            - /url: /sell-to-us
+- contentinfo:
     - navigation:
+        - heading "Explore" [level=2]
         - list:
             - listitem:
                 - link "The collection":
@@ -110,6 +104,8 @@
             - listitem:
                 - link "Stories":
                     - /url: /stories
+        - heading "About" [level=2]
+        - list:
             - listitem:
                 - link "Sell to us":
                     - /url: /sell-to-us
@@ -119,6 +115,7 @@
             - listitem:
                 - link "Contact":
                     - /url: /contact
+    - heading "Contact" [level=2]
     - paragraph: Our contact details are being added. Please check back soon.
     - list:
         - listitem:
@@ -127,5 +124,15 @@
         - listitem:
             - link "Facebook":
                 - /url: https://www.facebook.com/IndiesGallery/
+    - list:
+        - listitem:
+            - link "Privacy":
+                - /url: /privacy
+        - listitem:
+            - link "Terms":
+                - /url: /terms
+        - listitem:
+            - link "Old East Indies — printed editions from our collection":
+                - /url: http://shop.localhost:4861/
 - button "Chat with us"
 - alert

@@ -10,7 +10,9 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { ItemView } from '../../../server/gallery/item/view-model'
-import { Button, ProofPoints, TextLink } from '../../../shared/ui'
+import { Button } from '@engine/ui/button'
+import { ProofPoints } from '@engine/ui/proof-points'
+import { TextLink } from '@engine/ui/text-link'
 import { contactText } from '../contact/messages'
 import { itemText } from './copy'
 import styles from './item.module.css'

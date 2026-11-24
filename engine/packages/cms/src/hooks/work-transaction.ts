@@ -16,9 +16,8 @@
  * A write with no transaction to hold a lock (a Local API call with `disableTransaction`) is
  * refused rather than guarded half-way.
  */
+import { advisoryLockKey } from '@engine/cms-core/db'
 import { APIError, type PayloadRequest } from 'payload'
-
-import { advisoryLockKey } from '../db/advisory-lock'
 
 export const WORK_UID_LOCK_KEY = advisoryLockKey('engine/works/uid')
 export const WORK_REFERENCES_LOCK_KEY = advisoryLockKey('engine/works/references')

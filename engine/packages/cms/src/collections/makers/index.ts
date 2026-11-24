@@ -15,19 +15,18 @@
  * - The slug and translation status are the shared `fields/`; drafts, access and versions the
  *   vocabulary's own (`../terms/vocabulary/access`).
  */
+import { IMAGES_ONLY } from '@engine/cms-core/collections/media/kinds'
+import { hiddenFromAllButCatalogueStaff } from '@engine/cms-core/access'
+import { isBlank, slugField, translationStatusField, webUrl } from '@engine/cms-core/fields'
 import type { CollectionConfig, Validate } from 'payload'
 
-import { ADMIN_GROUPS } from '../../admin/groups'
-import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
+import { ADMIN_GROUPS } from '@engine/cms-core/admin/groups'
 import {
   invalidateVocabularyOnChange,
   invalidateVocabularyOnDelete,
 } from '../../hooks/vocabulary-invalidate'
 import { aliasErrors, sameAsErrors } from '../../validators/maker-names'
-import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from '../terms/vocabulary/access'
-import { slugField } from '../../fields/slug'
-import { translationStatusField } from '../../fields/translation-status'
-import { isBlank, webUrl } from '../../fields/validate'
+import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from '@engine/cms-core/access/vocabulary'
 import { lifeDateGroup } from './life-dates'
 import { MAKER_ROLE_LABELS, MAKER_ROLES } from './roles'
 import { refuseDeleteWhileUsed } from './still-used'
@@ -67,7 +66,7 @@ export const Makers: CollectionConfig = {
     plural: { en: 'Makers', id: 'Pembuat' },
   },
   admin: {
-    group: ADMIN_GROUPS.antiques,
+    group: ADMIN_GROUPS.gallery,
     hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'name',
     defaultColumns: ['name', 'sortName', 'roles', '_status', 'updatedAt'],
@@ -160,6 +159,7 @@ export const Makers: CollectionConfig = {
       name: 'portrait',
       type: 'upload',
       relationTo: 'media',
+      filterOptions: IMAGES_ONLY,
       admin: {
         description: {
           en: 'A portrait, if one exists.',

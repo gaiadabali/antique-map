@@ -30,7 +30,7 @@ test('T2 mark an antique sold', async ({ page }, info) => {
   const creds = need('E2E_OWNER_EMAIL', 'E2E_OWNER_PASSWORD')
   await signIn(page, creds.E2E_OWNER_EMAIL!, creds.E2E_OWNER_PASSWORD!)
   const work = await publishedAvailable(page)
-  await page.goto(`${SHOP}/admin?locale=en`)
+  await page.goto(`${SHOP}/admin/wall?locale=en`)
   await page.waitForLoadState('networkidle')
 
   const h = new Human(page, info, 'T2', 'Mark an antique sold', 30)

@@ -7,16 +7,19 @@
  * `process.argv` from positional arguments only and drops every `--flag` (`db/cli.ts`'s
  * `argument()` note) — the same reason those scripts take `database`/`print` bare.
  *
+ * The file is a `.csv` (UTF-8) or an Excel workbook (`.xlsx`, its first sheet; `./xlsx`).
+ *
  * `dry-run` applies the file in a transaction it then rolls back: the report is the real one,
  * nothing is written. `publish` is DATA.md's publish-these-records, which runs the publish
  * checks. The report prints to stdout; the process exits non-zero when the file was refused
  * before any row was read (the header wrong, the file not UTF-8) so a pipeline notices.
  */
 import { runImportFile } from './apply'
-import { ImportError, parseCsv } from './csv'
-import { template } from './kinds'
-import { render } from './report'
+import { ImportError } from '@engine/cms-core/import/csv'
+import { template } from '@engine/cms-core/import/kinds'
+import { render } from '@engine/cms-core/import/report'
 import { seedEnv } from '../seed/env'
+import { parseSpreadsheet } from '@engine/cms-core/import/xlsx'
 
 const USAGE =
   'Usage: pnpm --filter @engine/cms import -- <path> <antiques|products|stores|stock|discounts> [dry-run] [publish]'
@@ -54,13 +57,13 @@ async function main(): Promise<number> {
     throw new ImportError(`Could not read ${parsed.file}.`, 'Check the path.')
   }
   // The header is checked before the database is touched (DATA.md: refuse the file whole).
-  parseCsv(name, bytes, parsed.kind as never, template(parsed.kind as never))
+  await parseSpreadsheet(name, bytes, parsed.kind as never, template(parsed.kind as never))
 
   // cms() is the process's one instance (instance.ts); the CLI connects to the dev database.
   // Imported after the environment is filled: the config reads it at load time.
   const { cms } = await import('../instance')
   const payload = await cms()
-  const { cliInvalidation, postCliTags } = await import('./cli-cache')
+  const { cliInvalidation, postCliTags } = await import('@engine/cms-core/import/cli-cache')
   const batch = cliInvalidation()
   const report = await runImportFile(parsed.kind as never, name, bytes, {
     payload,

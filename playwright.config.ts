@@ -173,6 +173,29 @@ const admin: Project[] = [
   adminProject('admin', '**/roles.spec.ts'),
   adminProject('admin-owner-flow', '**/owner-flow.spec.ts', ['admin']),
   adminProject('admin-store-panel', '**/store-panel.spec.ts', ['admin-owner-flow']),
+  adminProject('admin-product-editor', '**/product-editor.spec.ts', ['admin']),
+  // The orders door (TASKS.md 27.3): after store-panel, whose fresh orders it does not share.
+  adminProject('admin-orders-door', '**/orders-door.spec.ts', ['admin-store-panel']),
+  // Stores and stock (TASKS.md 27.4): counts and an import it puts back; after roles.spec's logins.
+  adminProject('admin-stores-stock', '**/stores-stock.spec.ts', ['admin']),
+  // The shop's menu and announcement at a person's pace (TASKS.md 27.5.e): saves the navigation
+  // and puts it back; after roles.spec's logins.
+  adminProject('admin-site-navigation', '**/site-navigation-timed.spec.ts', ['admin']),
+  // The home, the menu and staff (TASKS.md 27.6): every screen at 390 and 1280, axe clean, and a
+  // store user added by the owner and signed in at a person's pace; after roles.spec's logins.
+  adminProject('admin-home-menu', '**/admin-home-menu.spec.ts', ['admin']),
+  adminProject('admin-staff', '**/staff-timed.spec.ts', ['admin-home-menu']),
+  // The gate's screens (TASKS.md 27.7.c): every screen phase 27 touches, three roles, both widths,
+  // axe; after roles.spec's logins.
+  adminProject('admin-gate', '**/shop-admin-gate.spec.ts', ['admin']),
+  // The plan's §6 targets at a person's pace (TASKS.md 27.7.b): after the screens' own specs, whose
+  // orders, counts and navigation it does not share, so the clock runs on a quiet server.
+  adminProject('admin-timed', '**/shop-admin-timed.spec.ts', [
+    'admin-orders-door',
+    'admin-stores-stock',
+    'admin-site-navigation',
+    'admin-staff',
+  ]),
 ]
 
 export default defineConfig({

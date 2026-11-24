@@ -1,8 +1,8 @@
 # Indies Platform — Build Plan and Progress
 
-**Finish line:** two websites on one app and one CMS, live on their own domains — **Old East Indies** on `oldeastindies.com` first, then **Indies Gallery** on `antiquemapsindonesia.com` (phase 11).
+**Finish line:** two websites on two apps and two CMSs in one repo (Plan v2, DR-17, phases 21–26), live on their own domains — **Old East Indies** on `oldeastindies.com` first, then **Indies Gallery** on `antiquemapsindonesia.com` (phase 11).
 
-- **What it is.** The gallery shows the owner's antiques and sends interested people to him on WhatsApp or email; the shop sells his merchandise online, and the nearest of 100+ Bali stores delivers. One owner, one admin, one database. The plan is [docs/PLAN.md](docs/PLAN.md); the requirements are [`.claude/specs/indies-platform/requirements.md`](.claude/specs/indies-platform/requirements.md); what already exists in the code is judged in [docs/CARRY-OVER.md](docs/CARRY-OVER.md).
+- **What it is.** The gallery shows the owner's antiques and sends interested people to him on WhatsApp or email; the shop sells his merchandise online, and the nearest of 100+ Bali stores delivers. One owner; an app, an admin and a database per site (until phase 26, today's one app serves both). The plan is [docs/PLAN-V2.md](docs/PLAN-V2.md), on top of [docs/PLAN.md](docs/PLAN.md); the requirements are [`.claude/specs/indies-platform/requirements.md`](.claude/specs/indies-platform/requirements.md); what already exists in the code is judged in [docs/CARRY-OVER.md](docs/CARRY-OVER.md).
 - **New builds, not changes to what exists.** The current sites stay exactly as they are: this plan never logs in to, fixes, changes, freezes or switches them off. What the new sites take from them is a copy.
 - **11 small phases, waves inside each.** A phase has at most eight tasks in at most three waves and ends in something you can open. A phase opens when the phases it needs are ✅; at most **three phases are open at once**; inside a phase each wave's tasks run in parallel, one agent each, in its own worktree, on paths nobody else in that wave owns ([docs/WORKFLOW.md](docs/WORKFLOW.md)).
 - **Every task ends in a Check** — the evidence that it works — and the progress table counts ticked subtasks.
@@ -36,7 +36,15 @@ Rebuilt from the checkboxes **automatically** — by the git pre-commit hook on 
 | **18** The client's palette, and the shop tidied | UI | 17 | ✅ done | 5/5 | 11/11 | 0 | `██████████` 100% |
 | **19** The shop in Cobalt | UI | 18 | ✅ done | 3/3 | 8/8 | 0 | `██████████` 100% |
 | **20** The shop in its own brand: the real logo, in Heritage | UI | 19 | ✅ done | 2/2 | 6/6 | 0 | `██████████` 100% |
-| **All** | 20 phases | | | **94/99** | **310/327** | **8** | `██████████`  95% |
+| **21** Plan v2: decide and write down | Split | — | 🔄 in progress | 0/1 | 3/4 | 0 | `████████░░`  75% |
+| **22** Plan v2: shared packages first | Split | 21 | 🔄 in progress | 0/5 | 9/14 | 0 | `██████░░░░`  64% |
+| **23** Plan v2: the shop app | Split | 22 | 🔄 in progress | 0/6 | 15/21 | 0 | `███████░░░`  71% |
+| **24** Plan v2: shop data, CI and staging | Split | 23 | 🔄 in progress | 0/5 | 5/14 | 0 | `████░░░░░░`  36% |
+| **25** Plan v2: the gallery app | Split | 24 | · not started | 0/7 | 0/18 | 0 | `░░░░░░░░░░`   0% |
+| **26** Plan v2: retire the one app | Split | 25 | · not started | 0/4 | 0/9 | 1 | `░░░░░░░░░░`   0% |
+| **27** The shop's admin, rebuilt for the owner | UI | 22 | 🔄 in progress | 0/7 | 25/32 | 0 | `████████░░`  78% |
+| **28** The owner's storefront feedback (2026-11-19) | UI | 23 | 🔄 in progress | 0/2 | 2/4 | 0 | `█████░░░░░`  50% |
+| **All** | 28 phases | | | **94/136** | **369/443** | **9** | `████████░░`  83% |
 <!-- progress:end -->
 
 ## Stages and milestones
@@ -52,6 +60,7 @@ A **stage** is a run of phases on one subject.
 | **AI** | 8 | **M3** (8) |
 | **Growth** | 9 | — |
 | **Launch** | 10–11 | **M4** (11.3) |
+| **Split** | 21–26 | — |
 
 | Milestone | What the owner can open | Phase |
 | --- | --- | --- |
@@ -88,6 +97,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | Wave | Task | Agent | Worktree / branch | Since | Note |
 | ---- | ---- | ----- | ----------------- | ----- | ---- |
 | 10·W3 | 10.4 Timed admin tests with the owner's team | orchestrator | `main` | 2026-10-11 | |
+| 21·W1 | 21.1 PLAN-V2, DR-17 and the docs | orchestrator | `plan-v2/phase-a` | 2026-11-03 | |
 
 ## Decisions for the owner
 
@@ -140,6 +150,7 @@ One row per agent in flight. The orchestrator adds a row when it dispatches a ta
 | **Fonts** | **Cormorant Garamond + Karla**, the pair from the client's deck slide 7, loaded from Google Fonts at build (self-hosted at runtime). Cormorant: H1 Regular 40–80 px fluid, −0.015em; H2 Regular 38 px; product card title Medium 25 px; decorative numbers Regular 40 px; logo name SemiBold, 0.04em. Karla: body 14–15 px; price Bold 15 px; logo tagline Medium capitals, 0.14em; announcement bar 13 px. The design system's Inter is not used (`docs/DESIGN-SYSTEM.md` §2) | 2026-10-02 |
 | **Colours** | A different palette per site now; the client's final colours later (Q16) | 2026-10-02 |
 | **Review content** | (the user, as the owner's proxy) For the live client review: all crawled antiques published on staging, photos optimised first; the old site's USD prices load into the owner-only `askingPrice` (reverses DATA.md §2 "not loaded"); the shop shows the designs from the owner's six catalogue PDFs with marked placeholder prices, replacing the mock products; we read @oldeastindiesart ourselves for pictures, captions and prices; both sites link their Instagram | 2026-10-08 |
+| **Plan v2** | Two apps, two CMSs, two databases in one repo (DR-17, `docs/PLAN-V2.md`), retiring DR-1. Q1 two admin addresses with two logins: yes. Q2 the same person runs both, an account in each. Q3 media: two buckets, one per site. Q4 "See the original" kept, by stock number through the gallery. Q5 the shop first (phases 23–24), the gallery after (25). Q6 a second CloudPanel site on Helios staging under the standing go-ahead: yes. Approved to implement 2026-11-03 (phase 21) | 2026-10-22 |
 | **Replan** | One app, one CMS, one database, two hostnames; the gallery is enquiry-only and shows no price; deals with antique sellers and partners happen on WhatsApp or email; the shop is a real store with per-store stock, a nearest-store rule and simple status tracking; the AI chat guides, hands off and captures leads (DR-1 … DR-15) | 2026-10-01 |
 | **Roles** | `owner` and `editor` both manage and reassign orders (the owner's team acts as editors); leads, partners, discounts and site settings are owner-only; `store` users see only their own store's orders; a store can hand an order back to the owner or an editor with a reason. `docs/SECURITY.md` and `docs/COMMERCE.md` follow this | 2026-10-01 |
 | **Delivery** | Only a pin inside the last delivery band can check out; there is no split order; no online pickup at launch; no wishlists on either site | 2026-10-01 |
@@ -1277,6 +1288,392 @@ Paste this into a Claude Code session opened at the repo root:
   - _Requirements: 12.1_
   - [x] 20.2.a released to staging; every shop page captured and axe-checked there; the gallery compared with its before-shots
   - [x] 20.2.b **Check:** `docs/gates/heritage.md` — the screens, axe clean; DESIGN.md records Heritage.
+
+## Phase 21 — Plan v2: decide and write down · Split · needs — · ~1d
+
+**Goal:** the split into two apps, two CMSs and two databases in one repo ([docs/PLAN-V2.md](docs/PLAN-V2.md), phase A) is the written plan: DR-17 retires DR-1, every doc that names "one app, one CMS, one database" names two apps and says what today's app still does until phase 26, and phases 21–26 are on this board. No code changes.
+**Done when:** the owner's go-ahead on PLAN-V2 §9 is recorded under **Answered**; DR-17 is in `docs/PLAN.md`; every doc in PLAN-V2 §4.6 names two apps; `pnpm tasks:lint` green.
+**Waves:** W1 — 21.1
+
+- [ ] **21.1 PLAN-V2, DR-17 and the docs** · needs: — — 🔄 21·W1
+  - **Lane** DOC · **Agent** orchestrator · **Wave** W1
+  - **Owns** `docs/PLAN-V2.md`, `docs/PLAN.md`, `AGENTS.md`, `README.md`, `.gitignore`, `docs/{ARCHITECTURE,CONTENT-MODEL,DEPLOYMENT,WORKFLOW,CONVENTIONS,DATA,SECURITY,CONTENT-OPERATIONS}.md`, `.claude/specs/indies-platform/**`
+  - **Read** `docs/PLAN-V2.md`
+  - _Requirements: 1.1, 1.2, 1.3_
+  - [x] 21.1.a PLAN-V2 moved into the repo (`docs/PLAN-V2.md`, no longer ignored); DR-17 in `docs/PLAN.md` retires DR-1
+  - [x] 21.1.b AGENTS.md, README.md and the docs of PLAN-V2 §4.6 name two apps, with today's app marked as serving both until phase 26; requirement 1 rewritten for two apps
+  - [x] 21.1.c phases 21–26 on this board; the owner's answers of 2026-10-22 under **Answered**
+  - [ ] 21.1.d **Check:** `pnpm tasks:lint` and `pnpm format:check` green; a grep of the §4.6 docs finds no "one app, one CMS, one database" left unqualified.
+
+## Phase 22 — Plan v2: shared packages first · Split · needs 21 · ~3d
+
+**Goal:** the code both apps will share moves once into packages while everything still runs as one app (PLAN-V2 phase B): `cms-core` (fields, access helpers, roles, the users/media/pages/redirects/leads/events/chat-sessions collection factories, the site-settings factory, hooks, migration tooling), `ui` (tokens, the shared components, the beacon) and `chat` (the engine, configured per site). Today's `engine/apps/web` and `engine/packages/cms` import them and behave exactly as before.
+**Done when:** `pnpm verify` green; the current e2e and Lighthouse pass unchanged on a production build; the schema is unchanged (`check:generated` clean, no migration); a lint fails an app that imports another app.
+**Waves:** W1 — 22.1, 22.2 · W2 — 22.3, 22.4 · W3 — 22.5
+
+- [ ] **22.1 `@engine/cms-core`** · needs: phase 21
+  - **Lane** CMS · **Agent** senior-be · **Wave** W1
+  - **Owns** `engine/packages/cms-core/**`, `engine/packages/cms/**`
+  - **Read** `docs/PLAN-V2.md` §3, §4.1; `docs/CONTENT-MODEL.md`; `docs/SECURITY.md` §2
+  - _Requirements: 1.1, 1.4_
+  - [x] 22.1.a the package: shared fields, access helpers and roles, hooks, validators, the migration tooling
+  - [x] 22.1.b collection factories for `users`, `media`, `pages`, `redirects`, `leads`, `events`, `chat-sessions` and a `site-settings` factory, taking the site's roles and options; today's config builds its collections from them
+  - [x] 22.1.c no schema change: `pnpm check:generated` clean with no new migration; the cms unit and db tests pass unchanged
+  - [ ] 22.1.d **Check:** `pnpm verify` and `pnpm test:db` green; `payload-types.ts` byte-identical.
+
+- [ ] **22.2 `@engine/ui`** · needs: phase 21
+  - **Lane** DSG · **Agent** senior-fe · **Wave** W1
+  - **Owns** `engine/packages/ui/**`, `engine/apps/web/src/shared/{ui,styles,beacon}/**`, `engine/apps/web/package.json`, `engine/tooling/token-lint/**`
+  - **Read** `docs/PLAN-V2.md` §4.2; `docs/DESIGN-SYSTEM.md`
+  - _Requirements: 12.1_
+  - [x] 22.2.a base tokens, both palettes and the fonts in the package; the shared components and the beacon client moved, each site's own components left in place
+  - [x] 22.2.b the app imports them; `check:tokens` scans the package
+  - [ ] 22.2.c **Check:** `pnpm verify` green; every page of both sites 0 px different from its before-shot at 390 and 1280.
+
+- [ ] **22.3 `@engine/chat`** · needs: 22.1, 22.2
+  - **Lane** AIX · **Agent** senior-integrator · **Wave** W2
+  - **Owns** `engine/packages/chat/**`, `engine/apps/web/src/{shared/chat,server/chat}/**`, `engine/apps/web/package.json`
+  - **Read** `docs/AI.md`; `docs/PLAN-V2.md` §4.3
+  - _Requirements: 9.1_
+  - [x] 22.3.a the engine, the prompt builder, the tool runner, caps and the kill switch in the package, configured per site (prompt, tools, projection); the client panel parts with them
+  - [x] 22.3.b the app wires one configuration per site; the mocked AI evaluation and the adversarial set pass unchanged
+  - [ ] 22.3.c **Check:** `pnpm verify` and `pnpm ai:eval` (mocked) green; the chat opens and answers on both sites on a production build.
+
+- [ ] **22.4 The boundary lint** · needs: 22.1, 22.2
+  - **Lane** PLT · **Agent** senior-be · **Wave** W2
+  - **Owns** `eslint.config.mjs`, `engine/tooling/check-file-size/**`
+  - **Read** `docs/CONVENTIONS.md` §15; `docs/PLAN-V2.md` §7
+  - _Requirements: 1.1, 1.5_
+  - [x] 22.4.a a rule that fails an import from one `engine/apps/*` into another, and a package importing any app; a planted violation fails it
+  - [ ] 22.4.b **Check:** `pnpm lint` green on `main`; the planted violation fails it, shown in the report.
+
+- [ ] **22.5 No behaviour change** · needs: 22.3, 22.4
+  - **Lane** QA · **Agent** qa · **Wave** W3
+  - **Owns** `docs/gates/v2-packages.md`, `docs/gates/v2-packages/**`
+  - **Read** this phase's **Done when**
+  - _Requirements: 1.5, 12.1_
+  - [x] 22.5.a the full e2e and Lighthouse run on merged `main`, compared with the last green run before phase 22
+  - [ ] 22.5.b **Check:** `docs/gates/v2-packages.md` — e2e and Lighthouse pass unchanged, CI green, no migration since phase 21.
+
+## Phase 23 — Plan v2: the shop app · Split · needs 22 · ~4d
+
+**Goal:** Old East Indies runs as its own app (PLAN-V2 phase C): `engine/apps/shop` with `engine/packages/cms-shop` (products, categories, stores, stock-levels, orders, order-notifications, discounts, partners, payment-events, the shop's pages blocks and jobs, the shared collections from `cms-core`, no `site` field) on its own database `indies_shop` with its own initial migration; routes without the internal `/shop/<locale>` prefix; its own proxy (its hosts only), admin, webhook, cron and chat; `products.relatedWork` becomes a stock number resolved through the gallery's public read API. Today's app keeps serving both sites, untouched by this phase except the gallery's read API.
+**Done when:** the shop runs on `shop.localhost` from `indies_shop` on a production build: checkout to payment (simulator and sandbox) to tracking, the admin with owner/editor/store roles (a store user sees only its store), partner sign-in; "See the original" links when the gallery answers and is absent, never failing, when it does not; 390 and 1280, axe clean.
+**Waves:** W1 — 23.1, 23.2 · W2 — 23.3, 23.4, 23.5 · W3 — 23.6
+
+- [ ] **23.1 `cms-shop` and its database** · needs: phase 22
+  - **Lane** CMS · **Agent** senior-db · **Wave** W1
+  - **Owns** `engine/packages/cms-shop/**`, `engine/apps/shop/{package.json,tsconfig.json,next.config.ts,src/payload.config.ts,src/app/(payload)/**}`
+  - **Read** `docs/PLAN-V2.md` §4.1; `docs/CONTENT-MODEL.md`; `docs/COMMERCE.md`; `docs/WORKFLOW.md` §2
+  - _Requirements: 1.1, 1.3, 7.1, 10.1_
+  - [x] 23.1.a the shop's collections, jobs and writes (orders, stock, payments, notifications) moved from `cms` into `cms-shop`, with `site` dropped; the shared collections from `cms-core` with the shop's roles `owner`, `editor`, `store`
+  - [x] 23.1.b `products.relatedWork` becomes `originalStockNumber`, a text field
+  - [x] 23.1.c its own initial migration (extensions, the last-owner trigger, the stock constraints), `payload-types.ts` and `importMap.js`; `check:generated` covers it
+  - [x] 23.1.d its db tests (the atomic decrement, webhook idempotency, store access) on `indies_shop_<suffix>`
+  - [ ] 23.1.e **Check:** `pnpm --filter @engine/cms-shop test:db` green; `/admin` on the shop app signs in owner, editor and store; the store user lists only its store's orders.
+
+- [ ] **23.2 The shop's proxy and shell** · needs: phase 22
+  - **Lane** PLT · **Agent** senior-be · **Wave** W1
+  - **Owns** `engine/apps/shop/src/{proxy.ts,shell/**}`, `engine/packages/{config,http}/**`
+  - **Read** `docs/ARCHITECTURE.md` §2; `docs/SECURITY.md` B2–B3, X1–X2
+  - _Requirements: 1.2, 11.1_
+  - [x] 23.2.a `SITE_HOSTS` and `ADMIN_HOST` per app in `config`; the proxy allows the shop's hosts only (canonical 301, unknown 404), sets locale, headers and the CSP, and picks no site
+  - [x] 23.2.b the shop's root layout, header and footer from `ui`; the sister-site link an absolute URL from config
+  - [ ] 23.2.c **Check:** the proxy's unit tests (known host, alias 301, unknown 404, `/admin` on its own host only) pass; the shell renders at 390 and 1280.
+
+- [ ] **23.3 The shop's pages** · needs: 23.1, 23.2
+  - **Lane** SHP · **Agent** senior-fe · **Wave** W2
+  - **Owns** `engine/apps/shop/src/{app/[locale]/**,sites/**,server/**,lexicon/**}`
+  - **Read** `docs/EXPERIENCE-SHOP.md`; `docs/COMMERCE.md`; `docs/PLAN-V2.md` §4.2
+  - _Requirements: 5.1, 6.1, 8.1, 12.1_
+  - [x] 23.3.a home, browse, collections, product, bag, checkout, payment, tracking, stores and partnership moved, the routes without the `/shop/<locale>` prefix
+  - [x] 23.3.b the loaders read `indies_shop` (`overrideAccess: false`, published, `select`); no `site` filter remains
+  - [x] 23.3.c the shop's lexicon and its shared keys from `i18n`; `checkCopy()` covers it
+  - [ ] 23.3.d **Check:** every shop page on a production build at 390 and 1280 in en and id, axe clean, matching its before-shot from today's app.
+
+- [ ] **23.4 The shop's engine routes and chat** · needs: 23.1, 23.2
+  - **Lane** AIX · **Agent** senior-integrator · **Wave** W2
+  - **Owns** `engine/apps/shop/src/app/api/**`
+  - **Read** `docs/COMMERCE.md` §6; `docs/AI.md`; `docs/ARCHITECTURE.md` §5
+  - _Requirements: 6.3, 8.2, 9.1_
+  - [x] 23.4.a the Midtrans webhook (verified, idempotent, one transaction), the stock cron, beacon, revalidate and health under the shop app
+  - [x] 23.4.b the shop's chat from `@engine/chat`: its own catalogue, links to the gallery for antiques
+  - [ ] 23.4.c **Check:** the webhook's planted forged and replayed notifications are refused and applied once; the chat's mocked evaluation passes for the shop.
+
+- [ ] **23.5 "See the original" by stock number** · needs: 23.1, 23.2
+  - **Lane** PLT · **Agent** senior-be · **Wave** W2
+  - **Owns** `engine/apps/web/src/app/api/x/originals/**`, `engine/apps/shop/src/originals/**`
+  - **Read** `docs/PLAN-V2.md` §4.3, §7; `docs/SECURITY.md`
+  - _Requirements: 2.1, 5.1_
+  - [x] 23.5.a the gallery's public read API: one published work by stock number, projected (title, picture, URL), cached, rate-limited — served by today's app until phase 25 moves it
+  - [x] 23.5.b the shop's client: a short timeout and a cache; no answer means no link, and the product page never fails
+  - [x] 23.5.c the shop home's "bridge to the originals" reads two featured works the same way, or the block's CMS-chosen pictures
+  - [ ] 23.5.d **Check:** unit tests for found, not found, draft and timeout; a product page with the gallery stopped renders without the link.
+
+- [ ] **23.6 The shop on its own** · needs: 23.3, 23.4, 23.5
+  - **Lane** QA · **Agent** qa · **Wave** W3
+  - **Owns** `tests/e2e/shop-app/**`, `playwright.shop.config.ts`, `docs/gates/v2-shop.md`, `docs/gates/v2-shop/**`
+  - **Read** this phase's **Done when**
+  - _Requirements: 1.2, 6.1, 8.1, 10.1_
+  - [x] 23.6.a the shop's e2e against the shop app on one host: the purchase on the simulator, tracking, the admin roles, partner sign-in
+  - [ ] 23.6.b **Check:** `docs/gates/v2-shop.md` — the phase's **Done when** on a production build on `shop.localhost`, screens at 390 and 1280, axe clean.
+
+## Phase 24 — Plan v2: shop data, CI and staging · Split · needs 23 · ~2d
+
+**Goal:** the shop app has its own data, pipeline and staging site (PLAN-V2 phase D): its seed layers against `indies_shop`; tooling for two databases and two ports per worktree; CI jobs picked by path, one build per run, sharded database tests; a second CloudPanel site on Helios staging for `old-east-indies.gaiada.com` with its own process, database, bucket and secrets (the standing go-ahead, Q6 of 2026-10-22). The shared staging site keeps the gallery.
+**Done when:** CI's shop jobs green and faster than today's 5–6 minutes; the staging shop healthy (`/api/health` 200) with seeded data at 390 and 1280; the staging gallery still served by the shared site.
+**Waves:** W1 — 24.1, 24.2, 24.3 · W2 — 24.4 · W3 — 24.5
+
+- [ ] **24.1 The shop's seed** · needs: phase 23
+  - **Lane** CMS · **Agent** senior-db · **Wave** W1
+  - **Owns** `engine/packages/cms-shop/src/seed/**`
+  - **Read** `docs/DATA.md` §2–§3
+  - _Requirements: 10.3_
+  - [x] 24.1.a the layers against `indies_shop`: vocabulary and categories, stores, the 156 designs (from `LEGACY_DATA_DIR`), the CMS pages; media uploaded to the shop's bucket
+  - [ ] 24.1.b **Check:** `pnpm data:seed --app shop` on a fresh database loads every layer and is idempotent on a second run.
+
+- [ ] **24.2 Two databases and two ports per worktree** · needs: phase 23
+  - **Lane** OPS · **Agent** devops · **Wave** W1
+  - **Owns** `engine/tooling/{db,worktree}/**`, `package.json`, `docker-compose.dev.yml`
+  - **Read** `docs/CONVENTIONS.md` §14; `docs/PLAN-V2.md` §4.4
+  - _Requirements: 15.1_
+  - [x] 24.2.a `pnpm db:fresh|drop|list --app shop|gallery`; the worktree tool gives two ports and an `.env.local` per app
+  - [x] 24.2.b the no-Docker path: native Postgres 18 via `PGHOST`, uploads to local disk, mail to console
+  - [ ] 24.2.c **Check:** a fresh worktree boots the shop app and today's app side by side on their own ports and databases.
+
+- [ ] **24.3 CI per app** · needs: phase 23
+  - **Lane** OPS · **Agent** devops · **Wave** W1
+  - **Owns** `.github/**`, `lighthouserc.shop.json`
+  - **Read** `docs/CONVENTIONS.md` §15; `docs/PLAN-V2.md` §4.4
+  - _Requirements: 1.5, 15.1_
+  - [x] 24.3.a path filters: `apps/shop/**` + `packages/cms-shop/**` → shop jobs; the shared packages → both; today's app keeps its jobs
+  - [x] 24.3.b one shop build per run shared by e2e and Lighthouse; the shop's DB tests sharded over 2–3 runners
+  - [ ] 24.3.c **Check:** a shop-only push runs only the shop's jobs and finishes under today's 5–6 minutes; a shared-package push runs both.
+
+- [ ] **24.4 The shop's staging site** · needs: 24.1, 24.2, 24.3
+  - **Lane** OPS · **Agent** devops · **Wave** W2
+  - **Owns** `scripts/ops/**`, `.gaiadeploy.yml`, `docs/ops/**`, `docs/DEPLOYMENT.md`
+  - **Read** `docs/DEPLOYMENT.md`; `docs/ops/helios-staging.md`; `docs/PLAN-V2.md` §4.5
+  - _Requirements: 15.1, 15.2_
+  - [ ] 24.4.a `pack.sh --app shop`: one tarball for the shop
+  - [ ] 24.4.b on Helios staging: a second CloudPanel Node site for `old-east-indies.gaiada.com`, its pm2 process and port, database `indies_shop` with its backup job, a shop media bucket with its scoped key, its `.env` (own `PAYLOAD_SECRET`, Midtrans sandbox or simulator)
+  - [ ] 24.4.c the shared site drops the shop's hostname and keeps the gallery's; the runbook records both
+  - [ ] 24.4.d **Check:** a release reaches the shop's site from the pipeline; `/api/health` 200; the gallery's staging host unaffected.
+
+- [ ] **24.5 The shop on staging** · needs: 24.4
+  - **Lane** QA · **Agent** qa · **Wave** W3
+  - **Owns** `docs/gates/v2-shop-staging.md`, `docs/gates/v2-shop-staging/**`
+  - **Read** this phase's **Done when**
+  - _Requirements: 15.2_
+  - [ ] 24.5.a the seeded shop on staging: home, product, a simulator purchase to tracking, the admin, at 390 and 1280
+  - [ ] 24.5.b **Check:** `docs/gates/v2-shop-staging.md` — health 200, the screens, CI timings against today's.
+
+## Phase 25 — Plan v2: the gallery app · Split · needs 24 · ~3d
+
+**Goal:** Indies Gallery runs as its own app (PLAN-V2 phase E), the same way as the shop: `engine/apps/gallery` with `engine/packages/cms-gallery` (works, makers, places, masters, terms and the shared collections, roles `owner`, `editor`) on `indies_gallery` with its own migration; its routes without the `/gallery/<locale>` prefix; its proxy, admin, chat, sell-to-us and the public read API the shop uses; its seed, CI jobs and staging site.
+**Done when:** the gallery runs on its own database and admin; deep zoom, enquiry and sell-to-us work on a production build at 390 and 1280, axe clean; the shop's "See the original" resolves through the gallery app; the staging gallery healthy on its own site.
+**Waves:** W1 — 25.1, 25.2 · W2 — 25.3, 25.4, 25.5, 25.6 · W3 — 25.7
+
+- [ ] **25.1 `cms-gallery` and its database** · needs: phase 24
+  - **Lane** CMS · **Agent** senior-db · **Wave** W1
+  - **Owns** `engine/packages/cms-gallery/**`, `engine/apps/gallery/{package.json,tsconfig.json,next.config.ts,src/payload.config.ts,src/app/(payload)/**}`
+  - **Read** `docs/PLAN-V2.md` §4.1; `docs/CONTENT-MODEL.md`
+  - _Requirements: 1.1, 1.3, 2.1, 10.1_
+  - [ ] 25.1.a works, makers, places, masters, terms and the gallery's pages (intro, hero, body, works) moved, `site` dropped; the shared collections with roles `owner`, `editor`
+  - [ ] 25.1.b its own initial migration (`unaccent`, `pg_trgm`, the search indexes, the last-owner trigger), types and import map
+  - [ ] 25.1.c **Check:** its db tests green on `indies_gallery_<suffix>`; `/admin` on the gallery app signs in owner and editor; the owner-only asking price hidden from an editor.
+
+- [ ] **25.2 The gallery's proxy and shell** · needs: phase 24
+  - **Lane** PLT · **Agent** senior-be · **Wave** W1
+  - **Owns** `engine/apps/gallery/src/{proxy.ts,shell/**}`
+  - **Read** `docs/ARCHITECTURE.md` §2; `docs/SECURITY.md` B2–B3, X1–X2
+  - _Requirements: 1.2, 11.1_
+  - [ ] 25.2.a the proxy allows the gallery's hosts only, locale, headers and the CSP (the viewer's tile origin)
+  - [ ] 25.2.b **Check:** the proxy's unit tests pass; the shell renders at 390 and 1280.
+
+- [ ] **25.3 The gallery's pages** · needs: 25.1, 25.2
+  - **Lane** GAL · **Agent** senior-fe · **Wave** W2
+  - **Owns** `engine/apps/gallery/src/{app/[locale]/**,sites/**,server/**,lexicon/**}`
+  - **Read** `docs/EXPERIENCE-GALLERY.md`; `docs/PLAN-V2.md` §4.2
+  - _Requirements: 3.1, 3.2, 4.1, 12.1_
+  - [ ] 25.3.a home, browse, search, the item with deep zoom, makers, places, stories, Ask and sell-to-us moved, without the `/gallery/<locale>` prefix; no price anywhere
+  - [ ] 25.3.b the loaders read `indies_gallery`, published and projected; the old addresses' redirects
+  - [ ] 25.3.c **Check:** every gallery page on a production build at 390 and 1280 in en and id, axe clean, matching its before-shot.
+
+- [ ] **25.4 The gallery's engine routes, chat and read API** · needs: 25.1, 25.2
+  - **Lane** AIX · **Agent** senior-integrator · **Wave** W2
+  - **Owns** `engine/apps/gallery/src/app/api/**`
+  - **Read** `docs/AI.md`; `docs/PLAN-V2.md` §4.3
+  - _Requirements: 4.1, 9.1, 9.2_
+  - [ ] 25.4.a the gallery's chat (no price in its projection), sell-to-us and enquiry leads, beacon, revalidate, health
+  - [ ] 25.4.b the originals read API moved from today's app (23.5), same contract; the shop's client pointed at it
+  - [ ] 25.4.c **Check:** the adversarial set passes for the gallery; the shop's "See the original" resolves through the gallery app.
+
+- [ ] **25.5 The gallery's seed and CI** · needs: 25.1, 25.2
+  - **Lane** OPS · **Agent** devops · **Wave** W2
+  - **Owns** `engine/packages/cms-gallery/src/seed/**`, `.github/**`, `lighthouserc.gallery.json`
+  - **Read** `docs/DATA.md` §2, §5; `docs/PLAN-V2.md` §4.4
+  - _Requirements: 10.3, 15.1_
+  - [ ] 25.5.a the gallery's layers (places, terms, the crawl; sample or full) against `indies_gallery`, its media into its bucket, masters into `archive-masters`
+  - [ ] 25.5.b the gallery's CI jobs by path, one build per run, sharded DB tests
+  - [ ] 25.5.c **Check:** `pnpm data:seed --app gallery` idempotent; a gallery-only push runs only the gallery's jobs.
+
+- [ ] **25.6 The gallery's staging site** · needs: 25.1, 25.2
+  - **Lane** OPS · **Agent** devops · **Wave** W2
+  - **Owns** `scripts/ops/**`, `.gaiadeploy.yml`, `docs/ops/**`, `docs/DEPLOYMENT.md`
+  - **Read** `docs/ops/helios-staging.md`; `docs/PLAN-V2.md` §4.5
+  - _Requirements: 15.1, 15.2_
+  - [ ] 25.6.a `pack.sh --app gallery`; a CloudPanel Node site for `indies-gallery.gaiada.com` with its process, `indies_gallery`, its backup job, the gallery's media bucket and key, its `.env`
+  - [ ] 25.6.b **Check:** a release reaches the gallery's site; `/api/health` 200 with seeded data.
+
+- [ ] **25.7 The gallery on its own** · needs: 25.3, 25.4, 25.5, 25.6
+  - **Lane** QA · **Agent** qa · **Wave** W3
+  - **Owns** `tests/e2e/gallery-app/**`, `playwright.gallery.config.ts`, `docs/gates/v2-gallery.md`, `docs/gates/v2-gallery/**`
+  - **Read** this phase's **Done when**
+  - _Requirements: 3.1, 4.1, 15.2_
+  - [ ] 25.7.a the gallery's e2e against the gallery app: browse, deep zoom, enquiry, sell-to-us sending a lead, the admin
+  - [ ] 25.7.b **Check:** `docs/gates/v2-gallery.md` — the phase's **Done when**, locally and on staging, at 390 and 1280, axe clean.
+
+## Phase 26 — Plan v2: retire the one app · Split · needs 25 · ~1d
+
+**Goal:** the one app is gone (PLAN-V2 phase F): `engine/apps/web` and the merged `engine/packages/cms` deleted; `site` fields and `siteFromHost` gone; the shared staging site and `indies_db` removed once both new databases pass; the docs lose their "until phase 26" notes.
+**Done when:** nothing imports `engine/apps/web` or `@engine/cms`; `grep` finds no `site: 'shop'` or `site: 'gallery'` filter; both sites pass their full checks locally and on staging; every doc describes two apps without a transition note.
+**Waves:** W1 — 26.1, 26.2 · W2 — 26.3, 26.4
+
+- [ ] **26.1 Delete the one app** · needs: phase 25
+  - **Lane** PLT · **Agent** senior-be · **Wave** W1
+  - **Owns** `engine/apps/web/**`, `engine/packages/cms/**`, `package.json`, `lighthouserc.web.json`, `playwright.config.ts`, `tests/e2e/**`
+  - **Read** `docs/PLAN-V2.md` §5 (F), §6
+  - _Requirements: 1.1, 1.5_
+  - [ ] 26.1.a `engine/apps/web` and `engine/packages/cms` deleted; root scripts per app; the e2e of today's app retired in favour of each app's
+  - [ ] 26.1.b `site` and `siteFromHost` gone from the packages; the local `indies_<suffix>` databases dropped by the tooling
+  - [ ] 26.1.c **Check:** `pnpm verify` green; a grep of `engine/` finds no `@engine/cms` import, `apps/web` path, `siteFromHost` or `site: 'shop'`/`site: 'gallery'` filter.
+
+- [ ] **26.2 👤 The shared staging site removed** · needs: phase 25
+  - **Lane** OPS · **Agent** devops · **Wave** W1
+  - **Owns** `scripts/ops/**`, `docs/ops/**`
+  - **Read** `docs/ops/helios-staging.md`
+  - _Requirements: 15.1_
+  - [ ] 26.2.a 👤 the owner's OK to delete the shared CloudPanel site, its pm2 process and `indies_db` (after a final backup), once both new staging sites pass
+  - [ ] 26.2.b **Check:** the runbook records the removal and the backup's location; both staging sites still healthy.
+
+- [ ] **26.3 The docs without the transition** · needs: 26.1
+  - **Lane** DOC · **Agent** orchestrator · **Wave** W2
+  - **Owns** `AGENTS.md`, `README.md`, `docs/{PLAN-V2,ARCHITECTURE,CONTENT-MODEL,DEPLOYMENT,WORKFLOW,CONVENTIONS,DATA,SECURITY,CONTENT-OPERATIONS}.md`, `.claude/specs/indies-platform/**`
+  - **Read** every doc in PLAN-V2 §4.6
+  - _Requirements: 1.1_
+  - [ ] 26.3.a every "until phase 26" note removed and its section rewritten for two apps; the layout, lanes, commands and environment variables as built
+  - [ ] 26.3.b **Check:** a grep of the docs finds no "until phase 26" and no `engine/apps/web` outside the archive and the log.
+
+- [ ] **26.4 Both sites, full checks** · needs: 26.1, 26.2
+  - **Lane** QA · **Agent** qa · **Wave** W2
+  - **Owns** `docs/gates/v2-retire.md`, `docs/gates/v2-retire/**`
+  - **Read** this phase's **Done when**
+  - _Requirements: 1.2, 15.2_
+  - [ ] 26.4.a both apps' e2e, Lighthouse and DB tests on merged `main`; both staging sites opened
+  - [ ] 26.4.b **Check:** `docs/gates/v2-retire.md` — CI green per app, both staging sites healthy, screens at 390 and 1280.
+
+## Phase 27 — The shop's admin, rebuilt for the owner · UI · needs 22 · ~7d
+
+**Goal:** the owner's team runs Old East Indies from an admin that is easy: one screen per daily job, few required fields, what the admin shows is what the site shows, and the shop's content (menu, footer, announcement, product-page copy, legal pages, email openings) is edited without a developer. The plan and its reasons are [`old-east-indies-cms.md`](old-east-indies-cms.md). The user chose (2026-11-05) to rebuild it **now, in today's CMS** (`engine/packages/cms`, `engine/apps/web`), ahead of the split; phase 23 then carries it into `cms-shop`. K2–K8 take the plan's defaults until answered: delivery priced from the distance bands (a staff quote only as an exception), the admin in English by default (K3, answered 2026-11-05), editable email subject and opening, `wa.me` buttons, an optional packing slip, Excel as well as CSV imports, one global low-stock threshold. Money, the atomic stock decrement, webhooks and store scoping do not change (AGENTS.md). The gallery's admin does not change beyond what the shared building blocks give it.
+**Done when:** the timed recipes of the plan's §6 are met on a production build at 390 and 1280 (a person's run where the owner's team is available, OA9), axe clean on every screen the phase touches; the shop's pages render only CMS content (no hidden fallbacks) and match their preview; `pnpm verify` and `pnpm test:db` green; e2e updated with the screens.
+**Waves:** W1 — 27.1 · W2 — 27.2, 27.3, 27.4, 27.5, 27.6 · W3 — 27.7
+
+- [ ] **27.1 The data model** · needs: phase 22
+  - **Lane** CMS · **Agent** senior-db · **Wave** W1
+  - **Owns** `engine/packages/cms/src/{collections,globals,migrations}/**`, `engine/packages/cms/payload-types.ts`, `engine/packages/cms-core/src/{collections,globals}/**`
+  - **Read** `old-east-indies-cms.md` §3, §5; `docs/CONTENT-MODEL.md`; `docs/COMMERCE.md`; `docs/WORKFLOW.md` §2
+  - _Requirements: 10.1, 10.2, 12.1_
+  - [x] 27.1.a a `shop-navigation` global: the announcement (en/id, link, on/off, dates), the main menu and the footer's columns (label en/id; a page, a category, a product or a web address; ordered), legal links, the logo (light and dark, optional)
+  - [x] 27.1.b the shop's settings split into clear groups (contact and social with the platform a select; checkout and delivery with the welcome code a relationship to a discount and one delivery model; notifications with each email's subject and opening per locale; the product page's fixed copy); the low-stock threshold
+  - [x] 27.1.c pages: blocks offered per kind of page; product rails curated (hand-picked, newest or a category) and a chosen hero picture; categories ordered by drag (Payload's `orderable`); stock levels searchable by SKU and product (`useAsTitle`, `listSearchableFields`)
+  - [x] 27.1.d media: a product image's subject, role and provenance default; alt text from the product's name, editable
+  - [x] 27.1.e one migration from a clean tree, `payload-types.ts` and the import map regenerated; db tests for the new globals' access (owner and editor write, store reads nothing)
+  - [ ] 27.1.f **Check:** `pnpm verify` and `pnpm test:db` green; `check:generated` clean against the new migration.
+
+- [ ] **27.2 The product editor** · needs: 27.1
+  - **Lane** CMS · **Agent** senior-fe · **Wave** W2
+  - **Owns** `engine/packages/cms/src/admin/products/**`, `engine/packages/cms/src/collections/products/admin/**`
+  - **Read** `old-east-indies-cms.md` §3.2; `docs/COMMERCE.md` (stock)
+  - _Requirements: 10.4, 7.1_
+  - [x] 27.2.a one screen: name, category, a visible Draft/Published control, description, photos, price and variants, stock per store, search engines folded
+  - [x] 27.2.b photos dropped several at once, ordered by drag, the first the cover, with 27.1.d's defaults
+  - [x] 27.2.c a variant builder (options → combinations as a table, SKUs generated and editable, price optional)
+  - [x] 27.2.d a stores × variants stock table on the product writing `stock-levels` (the decrement at checkout untouched); duplicate; view on the site; the list with thumbnails, total stock, quick filters and bulk publish/unpublish/move
+  - [ ] 27.2.e **Check:** a new product with 6 photos, 2 variants and stock at 3 stores published in ≤ 2:30 at a person's pace; the stock db tests green; 390 and 1280, axe clean.
+
+- [ ] **27.3 One door for orders** · needs: 27.1
+  - **Lane** CMS · **Agent** senior-fe · **Wave** W2
+  - **Owns** `engine/packages/cms/src/admin/orders/**`, `engine/packages/cms/src/shop/notify/**`
+  - **Read** `old-east-indies-cms.md` §3.7; `docs/COMMERCE.md` §7–§8
+  - _Requirements: 8.1, 8.2, 10.4_
+  - [x] 27.3.a an inbox in tabs by status with counts and search (buyer, number, phone); the raw Orders collection out of the sidebar
+  - [x] 27.3.b an order page: buyer, items, total, the pin on a map, the store, the timeline, one large next-step button, the driver photo, `wa.me` buttons to the buyer and the store
+  - [x] 27.3.c reassign lists stores marked "holds every item" with their distance, and asks a reason; an optional packing slip
+  - [x] 27.3.d emails take their subject and opening from 27.1.b's settings, per locale
+  - [ ] 27.3.e **Check:** a store user takes an order to Delivered in ≤ 0:45 and sees only their store (db test); reassign in ≤ 0:30; 390 and 1280, axe clean.
+
+- [ ] **27.4 Stores and stock** · needs: 27.1
+  - **Lane** CMS · **Agent** senior-fe · **Wave** W2
+  - **Owns** `engine/packages/cms/src/admin/{stock-import,stock-matrix,store-map}/**`, `engine/packages/cms/src/import/**`
+  - **Read** `old-east-indies-cms.md` §3.8; `docs/DATA.md` §3
+  - _Requirements: 7.1, 10.2_
+  - [x] 27.4.a a store's location from an address search or a dragged pin
+  - [x] 27.4.b a stock matrix (products × stores), searched by name or SKU, edited in place, a low-stock filter; a store user sees only their column
+  - [x] 27.4.c imports of stock, products and stores in the admin from CSV or Excel, previewed, rejected rows first with the reason
+  - [ ] 27.4.d **Check:** one count updated in ≤ 0:20; an Excel stock file imported; the import db tests green; 390 and 1280, axe clean.
+
+- [ ] **27.5 Pages, menu and footer on the site** · needs: 27.1
+  - **Lane** SHP · **Agent** senior-fe · **Wave** W2
+  - **Owns** `engine/apps/web/src/sites/shop/{blocks,shell,home,product}/**`, `engine/apps/web/src/server/shop/pages/**`, `engine/apps/web/src/shell/**`, `engine/packages/cms/src/admin/preview/**`
+  - **Read** `old-east-indies-cms.md` §3.4–§3.5; `docs/EXPERIENCE-SHOP.md`
+  - _Requirements: 12.1, 5.1_
+  - [x] 27.5.a live preview of a shop page at phone and desktop width in the admin
+  - [x] 27.5.b the home, partnership and stores pages seeded once as real pages; the site renders the CMS only (the hidden fallbacks retired)
+  - [x] 27.5.c the header, the announcement and the footer from `shop-navigation`; legal links to CMS pages; the product page's fixed copy and free-delivery figure from the settings
+  - [x] 27.5.d curated rails and the chosen hero picture rendered
+  - [ ] 27.5.e **Check:** every shop page at 390 and 1280 in en and id matches its preview, axe clean; a menu item added in ≤ 0:30 and a dated announcement in ≤ 0:45.
+
+- [ ] **27.6 The admin's home, menu and staff** · needs: 27.1
+  - **Lane** CMS · **Agent** senior-fe · **Wave** W2
+  - **Owns** `engine/packages/cms/src/admin/{wall,groups.ts,today}/**`, `engine/packages/cms/src/registries/**`, `engine/packages/cms-core/src/collections/users/**`
+  - **Read** `old-east-indies-cms.md` §3.1, §3.9–§3.10
+  - _Requirements: 10.1, 10.5_
+  - [x] 27.6.a a shop "Today" home: orders to act on by status, low stock, drafts, new leads, seven days' sales
+  - [x] 27.6.b the shop's sidebar in the plan's order; a store user sees Orders and their stock only
+  - [x] 27.6.c staff invited by email to set their own password; the owner resets and switches off accounts; English stays the default admin language (K3, 2026-11-05), each person may switch to Indonesian
+  - [ ] 27.6.d **Check:** a store user invited and signed in in ≤ 1:00; every admin screen of this task at 390 and 1280, axe clean.
+
+- [ ] **27.7 The admin with a person** · needs: 27.2, 27.3, 27.4, 27.5, 27.6
+  - **Lane** QA · **Agent** qa · **Wave** W3
+  - **Owns** `tests/e2e/**`, `docs/gates/shop-admin.md`, `docs/gates/shop-admin/**`, `docs/CONTENT-OPERATIONS.md`
+  - **Read** this phase's **Done when**; `old-east-indies-cms.md` §6
+  - _Requirements: 10.4_
+  - [x] 27.7.a e2e updated for every changed screen; the recipes of `docs/CONTENT-OPERATIONS.md` rewritten for the new admin
+  - [x] 27.7.b 👤 the timed recipes with two or three of the owner's people (OA9), or at a person's pace where they are not available, recorded as such
+  - [ ] 27.7.c **Check:** `docs/gates/shop-admin.md` — every §6 target met, axe clean, `pnpm verify`, `test:db` and e2e green.
+
+---
+
+## Phase 28 — The owner's storefront feedback (2026-11-19) · UI · needs 23 · ~2d
+
+**Goal:** the shop's storefront follows the owner's notes of 2026-11-19 ([`old-east-indies-feedback-2026-11-19.md`](old-east-indies-feedback-2026-11-19.md)): contact details at the top, the bottom and in the menu; the landing page reordered (Shop, Shop by, Wall Decor, How We Make Them, Our Latest Articles, Partnerships, Stores, Antiques); a shop page that starts with Shop by best sellers, themes, product types and wall decor; articles as PDFs; partnerships as two enquiry categories with no retailer sign-up; stores grouped as two flagships and four areas; a newsletter pop-up; the same-day delivery promise; sizes with their own prices on the product page; the two fixed signal lines removed. The pages live once in `@engine/storefront`, so both apps show the change; a schema change is migrated in both CMSes. F1–F9 of that file take their defaults until the owner answers. Money, stock and webhooks do not change.
+**Done when:** the changed pages render in en and id on both apps; `pnpm verify`, both `test:db` green; the e2e specs of the changed pages updated and passing on a production build.
+**Waves:** W1 — 28.1 · W2 — 28.2
+
+- [ ] **28.1 The data for the feedback** · needs: phase 23
+  - **Lane** CMS · **Agent** senior-db · **Wave** W1
+  - **Owns** `engine/packages/{cms,cms-shop,cms-core}/src/{collections,globals,migrations,seed}/**`, both `payload-types.ts`, both `importMap.js`
+  - **Read** `old-east-indies-feedback-2026-11-19.md`; `docs/CONTENT-MODEL.md`; `docs/COMMERCE.md`
+  - [x] 28.1.a an `articles` collection (title en/id, cover picture, PDF, date, published), a product's best-seller switch and theme, a store's flagship switch and area, a `newsletter` lead kind, the contact and promo settings; one migration per CMS, generated files regenerated
+  - [ ] 28.1.b **Check:** both `test:db` green with access tests for articles (public reads published only) and newsletter leads (create only).
+
+- [ ] **28.2 The storefront for the feedback** · needs: 28.1
+  - **Lane** SHP · **Agent** senior-fe · **Wave** W2
+  - **Owns** `engine/packages/storefront/**`, `engine/packages/i18n/**`, `engine/apps/{web,shop}/src/app/**`, `tests/e2e/{shop,shop-app}/**`
+  - **Read** `old-east-indies-feedback-2026-11-19.md`; `docs/EXPERIENCE-SHOP.md`; `docs/DESIGN-SYSTEM.md`
+  - [x] 28.2.a contact in header, footer and menu; the landing page's new order and "Shop"; the Shop-by page; Wall Decor; articles (latest two and the list, each opening its PDF); partnerships' two categories with no sign-up; stores by flagship and area; the newsletter pop-up; the same-day promise; sizes and prices on the product page; the two signal lines gone
+  - [ ] 28.2.b **Check:** the changed pages on a production build at 390 and 1280 in en and id, axe clean, their e2e specs passing.
 
 ---
 

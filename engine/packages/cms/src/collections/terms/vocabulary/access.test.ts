@@ -4,7 +4,7 @@
 import type { PayloadRequest } from 'payload'
 import { describe, expect, it } from 'vitest'
 
-import { VOCABULARY_ACCESS } from './access'
+import { VOCABULARY_ACCESS } from '@engine/cms-core/access/vocabulary'
 
 describe('who writes and reads the catalogue', () => {
   const as = (user: unknown) => ({ req: { user } as unknown as PayloadRequest })

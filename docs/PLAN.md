@@ -4,6 +4,11 @@
 [`docs/archive/2026-10-replan/`](archive/2026-10-replan/). This file is the spine: every other doc and
 [`TASKS.md`](../TASKS.md) follows it. If a doc disagrees with this file, this file wins.
 
+> **Superseded as the spine by [PLAN-V2.md](PLAN-V2.md) (DR-17, approved 2026-11-03): two apps, two CMSs, two
+> databases, one repo.** Where the two disagree, PLAN-V2 wins. DR-2 … DR-16 stand (DR-15's one media bucket
+> becomes two); DR-1 and "one CMS, one database" below describe today's app, which serves both sites until
+> phase 26 retires it.
+
 ## What we are building
 
 Two websites, one CMS, one owner.
@@ -56,6 +61,7 @@ deploy, one set of collections, one analytics store.
 | **DR-14** | **Design:** the design team's delivered system is the base (`docs/design/input/claude-design-2026-09/`) — the owner's type decision, Cormorant Garamond + Karla (DESIGN-SYSTEM.md §2), not the design system's Inter — with a different palette per site, each in its own token file (the client's final colours are open, Q16); no dark mode; phone first. |
 | **DR-16** | **Build end to end first, polish the UI after.** The first-run UI comes from the design team's work and is built only from tokens and shared components, so the owner's later UI/UX pass is a token and component change, not a rebuild. |
 | **DR-15** | **What we keep from before:** the owner's answers ([owner-answers.md](design/journeys/owner-answers.md)), D12 (RustFS object storage), D13 (staging mail is Mailpit), D19/D20 (no photographer, no native review), D41–D43 and D53 (legacy reads and simulation), D49 (host-only secrets), the Helios go-ahead. See [archive/2026-10-replan/DECISIONS.md](archive/2026-10-replan/DECISIONS.md). |
+| **DR-17** | **Two apps, two Payload configs, two databases, one repo** (2026-10-22, approved 2026-11-03) — **retires DR-1.** `engine/apps/shop` (Old East Indies, database `indies_shop`, its own `/admin` on the shop's host) and `engine/apps/gallery` (Indies Gallery, database `indies_gallery`, its own `/admin` on the gallery's host); each app serves one site and an unknown host is a 404; no `site` field; two processes, two releases, two media buckets (the private `archive-masters` stays); CI per app by path. Shared code lives once in `engine/packages/*` (`cms-core`, `ui`, `chat`, …), never copied. The product's link to its antique becomes a stock number resolved through the gallery's public read API. The plan, inventory and phases are [PLAN-V2.md](PLAN-V2.md) (phases 21–26 in TASKS.md); until phase 26 lands, today's `engine/apps/web` serves both sites as DR-1 describes. |
 
 ## What is out (and where it went)
 

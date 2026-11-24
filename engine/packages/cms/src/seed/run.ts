@@ -2,8 +2,8 @@
  * The seed runner (DATA.md §2): one layer, one call — `seedLayer`. Every gallery layer seeds the
  * vocabulary first (the import matches makers, places, grades and subjects against it and holds
  * what nothing matches), then runs the 3.7.a importer over the layer's antiques file; the shop
- * layer runs the four shop sheets; the shop-catalogue layer loads the owner's real designs
- * (`./catalogue/layer`). Every write is the importer's own — key-matched upserts, one
+ * layer runs the four shop sheets; the shop-catalogue layer loads the owner's real designs — both
+ * the shop seed's own (`@engine/cms-shop/seed`, TASKS.md 24.1), run here on today's one database. Every write is the importer's own — key-matched upserts, one
  * transaction per file — so seeding twice is a no-op. The gallery's review marks and old
  * categories ride into `works.legacy.categories` after the import (§4): carried, never cleaned.
  */
@@ -11,16 +11,23 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { ANTIQUE_COLUMNS } from '../import/kinds'
-import { parseCsv, ImportError } from '../import/csv'
-import { render } from '../import/report'
-import { runImportFile, runImportPath, type RunOptions } from '../import/apply'
-import type { ImportKind, ImportReport } from '../import/types'
+import { ANTIQUE_COLUMNS } from '@engine/cms-core/import/kinds'
+import { parseCsv, ImportError } from '@engine/cms-core/import/csv'
+import { render } from '@engine/cms-core/import/report'
+import { runImportFile, type RunOptions } from '../import/apply'
+import type { ImportKind, ImportReport } from '@engine/cms-core/import/types'
 import type { Payload } from 'payload'
 
 import { antiqueCsv, antiqueRows, type AntiqueRow } from './gallery/rows'
+import {
+  catalogueDir,
+  renderCatalogue,
+  renderStorefront,
+  seedCatalogue,
+  seedMockShop,
+  type CatalogueRun,
+} from '@engine/cms-shop/seed'
 import { legacyDataDir, loadImages, loadRecords, type LegacyImage } from './gallery/records'
-import { renderCatalogue, seedCatalogue, type CatalogueRun } from './catalogue/layer'
 import { seedVocabulary, type VocabularyReport } from './vocabulary/seed'
 
 export const SEED_LAYERS = [
@@ -62,11 +69,7 @@ export async function seedLayer(layer: SeedLayer, options: SeedOptions): Promise
   if (layer === 'vocabulary') return { layer, vocabulary, imports: [], marked: 0 }
 
   if (layer === 'shop') {
-    const imports: ImportReport[] = []
-    for (const kind of ['products', 'stores', 'stock', 'discounts'] as const) {
-      imports.push(await runImportPath(kind, shopFile(kind), { payload, ...runOptions }))
-    }
-    return { layer, vocabulary, imports, marked: 0 }
+    return { layer, vocabulary, imports: await seedMockShop(payload, runOptions), marked: 0 }
   }
 
   if (layer === 'shop-catalogue') {
@@ -87,25 +90,6 @@ export async function seedLayer(layer: SeedLayer, options: SeedOptions): Promise
   const marked = dryRun ? 0 : await carryMarks(payload, rows, context)
   return { layer, vocabulary, imports: [report], marked }
 }
-
-/** The legacy data folder when this machine has one; `null` on a server, which never does. */
-function catalogueDir(): string | null {
-  try {
-    return legacyDataDir()
-  } catch {
-    return null
-  }
-}
-
-/** The mock shop's sheets, each by a `new URL()` a bundler follows (the admin's seed screen). */
-const SHOP_FILES = {
-  products: new URL('./shop/data/products.csv', import.meta.url),
-  stores: new URL('./shop/data/stores.csv', import.meta.url),
-  stock: new URL('./shop/data/stock.csv', import.meta.url),
-  discounts: new URL('./shop/data/discounts.csv', import.meta.url),
-} as const
-
-const shopFile = (kind: keyof typeof SHOP_FILES) => fileURLToPath(SHOP_FILES[kind])
 
 /**
  * The committed sample's rows, read back from the files the generator wrote (DATA.md §2): the
@@ -256,6 +240,7 @@ export function renderSeedRun(run: SeedRun): string {
         `terms ${v.terms.created} / ${v.terms.present}, categories ${v.categories.created} / ` +
         `${v.categories.present}, makers ${v.makers.created} / ` +
         `${v.makers.present}, site-settings ${v.siteSettings}`,
+      ...(v.storefront ? [renderStorefront(v.storefront)] : []),
     )
     if (v.published) {
       const p = v.published

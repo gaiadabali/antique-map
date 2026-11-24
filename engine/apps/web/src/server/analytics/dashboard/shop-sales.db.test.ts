@@ -6,8 +6,8 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { loadDashboard } from '../../../../../../packages/cms/src/admin/dashboard/loaders'
-import { DashboardForbidden } from '../../../../../../packages/cms/src/admin/dashboard/context'
-import { resolvePeriod } from '../../../../../../packages/cms/src/admin/dashboard/period'
+import { DashboardForbidden } from '../../../../../../packages/cms-core/src/admin/dashboard/context'
+import { resolvePeriod } from '../../../../../../packages/cms-core/src/admin/dashboard/period'
 
 import {
   makePaymentEvent,

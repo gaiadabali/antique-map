@@ -4,7 +4,7 @@ vi.mock('server-only', () => ({}))
 vi.mock('@engine/cms/instance', () => ({}))
 vi.mock('@engine/cms/import', () => ({}))
 vi.mock('@engine/cms/seed', () => ({}))
-vi.mock('../../../../server/shop/pages/seed/pages', () => ({}))
+vi.mock('@engine/storefront/server/pages/seed/pages', () => ({}))
 
 import { isSeedAction, seedsAllowed, summaryOf } from './runner'
 

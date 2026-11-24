@@ -8,7 +8,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { ItemView } from '../../../server/gallery/item/view-model'
-import { SectionHead } from '../../../shared/ui'
+import { SectionHead } from '@engine/ui/section-head'
 import { creditLine, itemText, type ItemText } from './copy'
 import styles from './item.module.css'
 

@@ -2,7 +2,7 @@
 import type { LocaleCode } from '@engine/config/constants'
 import { siteOrigin, type SiteKey } from '@engine/config/sites'
 
-import { Footer } from '../shared/ui'
+import { Footer } from '@engine/ui/footer'
 import type { PublicSiteSettings } from '../server/site-settings'
 
 import { ContactBlock } from './contact-block'

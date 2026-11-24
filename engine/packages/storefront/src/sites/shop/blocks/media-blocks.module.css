@@ -1,0 +1,78 @@
+/* A page's video and PDF link blocks. Every value is a token; each holds the reading measure,
+   like the text block, inside the full-bleed page. */
+
+.section {
+  padding: var(--shop-section) var(--shop-gutter);
+}
+
+.figure,
+.about,
+.document {
+  max-inline-size: 56rem;
+  margin-inline: auto;
+}
+
+.figure {
+  margin-block: 0;
+}
+
+/* The player keeps the video's own shape and never overflows a phone. */
+.video {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+  max-block-size: 80vh;
+  background: var(--color-text);
+}
+
+.caption {
+  margin-block-start: var(--space-3);
+  font: var(--shop-text-body);
+  color: var(--color-text-muted);
+}
+
+.about {
+  margin-block-start: var(--space-4);
+  box-shadow: inset 0 var(--rule-hair) 0 var(--color-border);
+}
+
+.about summary {
+  padding-block: var(--space-3);
+  font: var(--shop-text-body);
+  cursor: pointer;
+}
+
+.about p {
+  margin: 0 0 var(--space-3);
+  font: var(--shop-text-read);
+  color: var(--color-text-muted);
+}
+
+.document {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-4);
+}
+
+.meta {
+  margin: 0;
+  font: var(--shop-text-body);
+  color: var(--color-text-muted);
+}
+
+.note {
+  flex-basis: 100%;
+  margin: 0;
+  font: var(--shop-text-read);
+}
+
+/* Said to a screen reader with the link, not shown: the meta beside it shows the same. */
+.visuallyHidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

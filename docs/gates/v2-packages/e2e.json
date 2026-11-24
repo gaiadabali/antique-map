@@ -1,0 +1,61 @@
+{
+  "before": {
+    "commit": "9d9d30e5",
+    "passed": 166,
+    "skipped": 25,
+    "flaky": 2,
+    "failed": 0,
+    "total": 193,
+    "wallSeconds": 215
+  },
+  "after": {
+    "tree": "plan-v2/phase-a working tree (phases 21+22+27)",
+    "passed": 195,
+    "skipped": 30,
+    "flaky": 1,
+    "failed": 1,
+    "total": 227,
+    "wallSeconds": 509
+  },
+  "common": {
+    "count": 190,
+    "sameOutcome": 190,
+    "changed": []
+  },
+  "onlyBefore": [
+    "expected admin | tests/e2e/admin/roles.spec.ts | owner: the sidebar and the dashboard counts, in both languages",
+    "expected admin | tests/e2e/admin/roles.spec.ts | editor: the sidebar and the dashboard counts, in both languages",
+    "flaky admin | tests/e2e/admin/roles.spec.ts | storeA: the sidebar and the dashboard counts, in both languages"
+  ],
+  "onlyAfterByProject": [
+    "admin-home-menu expected: 2",
+    "admin-staff expected: 1",
+    "admin-site-navigation expected: 2",
+    "admin-stores-stock expected: 4",
+    "admin-orders-door expected: 2",
+    "admin-orders-door skipped: 1",
+    "admin expected: 3",
+    "shop-e2e expected: 8",
+    "admin-product-editor expected: 2",
+    "admin-product-editor unexpected: 1",
+    "admin-product-editor skipped: 1",
+    "admin-gate expected: 4",
+    "admin-gate skipped: 1",
+    "admin-timed skipped: 2",
+    "admin-timed expected: 3"
+  ],
+  "notOk": {
+    "before": [
+      "flaky [admin] storeA: the sidebar and the dashboard counts, in both languages [\"failed\",\"passed\"]",
+      "flaky [gallery-e2e] lists its available work before its sold one [\"failed\",\"passed\"]"
+    ],
+    "after": [
+      "flaky [gallery-e2e] lists its available work before its sold one [\"failed\",\"passed\"]",
+      "unexpected [admin-product-editor] the list shows the thumbnail and total stock, filters and moves in bulk [\"failed\",\"failed\",\"failed\"]"
+    ]
+  },
+  "rerunAlone": [
+    "passed [gallery-e2e] lists its available work before its sold one (1st attempt)",
+    "failed x3 [admin-product-editor] the list shows the thumbnail and total stock… — row shows \"No photo\" (pe-thumb--none); reproducible"
+  ]
+}

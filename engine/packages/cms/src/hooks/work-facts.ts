@@ -13,12 +13,8 @@ import type { ImageFacts } from '../validators/work-images'
 
 export type Doc = Record<string, unknown>
 
-/**
- * A refusal's `label`, which Payload lists in the refusal's message and the admin's toast shows
- * item by item, split at commas: the field's name and the message, its commas made dashes.
- */
-export const asLabel = (name: string, message: string) =>
-  `${name} — ${message.replace(/\.$/, '').replace(/,/g, ' —')}`
+/** A refusal's `label` (`@engine/cms-core/fields`). */
+export { asLabel } from '@engine/cms-core/fields'
 
 const isPlainObject = (value: unknown): value is Doc =>
   typeof value === 'object' && value !== null && !Array.isArray(value) && !(value instanceof Date)

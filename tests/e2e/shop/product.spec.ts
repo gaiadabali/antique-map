@@ -15,105 +15,18 @@
  * the suite fails loudly rather than skipping (rule 6: "a missing product is a failure").
  */
 import AxeBuilder from '@axe-core/playwright'
-import { expect, test, type APIRequestContext, type Page } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 
-const PORT = process.env.E2E_PORT ?? '4282'
-// The `request` fixture uses Node's resolver, which may not know `*.localhost` (playwright.config.ts's
-// own note); a plain IP plus a Host header reaches the same vhost Chromium resolves by name.
-const BASE_URL = `http://127.0.0.1:${PORT}`
-const HOST_HEADER = { Host: `shop.localhost:${PORT}` }
-// The real host, for page navigation (Chromium resolves `*.localhost` by itself) and for a
-// forced server-action replay, which must hit the exact origin Next's own CSRF check expects.
-const SHOP_ORIGIN = `http://shop.localhost:${PORT}`
+import {
+  BASE_URL,
+  findCandidates,
+  PORT,
+  PRICE,
+  SHOP_ORIGIN,
+  type Candidates,
+} from './product-candidates'
+
 const SHOTS = process.env.PHASE6_SHOTS
-
-type ProductSummary = { readonly id: number; readonly slug: string }
-
-type Candidates = {
-  /** A published product with >=2 variants whose prices differ, and stock to add. */
-  readonly withVariants: { id: number; slug: string; variantLabels: string[] }
-  /** A published product whose add button is disabled everywhere (zero stock). */
-  readonly outOfStock: { id: number; slug: string }
-}
-
-async function listProducts(request: APIRequestContext): Promise<ProductSummary[]> {
-  const res = await request.get(`${BASE_URL}/api/products?limit=200&depth=0`, {
-    headers: HOST_HEADER,
-  })
-  expect(res.ok(), 'GET /api/products').toBeTruthy()
-  const body = (await res.json()) as { docs: ProductSummary[] }
-  return body.docs
-}
-
-/** Reads one product page's real markup for what the suite needs to classify it. */
-async function inspect(
-  request: APIRequestContext,
-  id: number,
-  slug: string,
-): Promise<{
-  id: number
-  slug: string
-  variantValues: string[]
-  variantLabels: string[]
-  variantPrices: string[]
-  addDisabled: boolean
-  status: number
-}> {
-  const res = await request.get(`${BASE_URL}/product/${slug}`, { headers: HOST_HEADER })
-  const html = await res.text()
-  const variantValues = [...html.matchAll(/type="radio"[^>]*value="([^"]+)"/g)].map(
-    (m) => m[1] ?? '',
-  )
-  const variantLabels = [...html.matchAll(/optionLabel">([^<]+)</g)].map((m) => m[1] ?? '')
-  // Only the chosen variant's price renders into a `__price` span; every variant's own
-  // `priceText` (`variant-picker.tsx`'s `PickerVariant`) is still in the RSC payload for
-  // hydration, escaped as `\"Rp …\"`, so that is what tells the variants' prices apart.
-  const variantPrices = [...html.matchAll(/priceText\\":\\"(Rp[^"\\]+)\\"/g)].map((m) => m[1] ?? '')
-  const addDisabled = /__addButton"\s+disabled/.test(html)
-  return {
-    id,
-    slug,
-    variantValues,
-    variantLabels,
-    variantPrices,
-    addDisabled,
-    status: res.status(),
-  }
-}
-
-/** Finds the two products the suite needs by reading real product pages — never a guess. */
-async function findCandidates(request: APIRequestContext): Promise<Candidates> {
-  const products = await listProducts(request)
-  expect(products.length, 'seeded, published products').toBeGreaterThan(0)
-
-  let withVariants: Candidates['withVariants'] | null = null
-  let outOfStock: Candidates['outOfStock'] | null = null
-
-  for (const { id, slug } of products) {
-    if (withVariants !== null && outOfStock !== null) break
-    const found = await inspect(request, id, slug)
-    if (found.status !== 200) continue
-
-    if (
-      withVariants === null &&
-      found.variantValues.length >= 2 &&
-      !found.addDisabled &&
-      new Set(found.variantPrices).size >= 2
-    ) {
-      withVariants = { id: found.id, slug: found.slug, variantLabels: found.variantLabels }
-    }
-    if (outOfStock === null && found.addDisabled) {
-      outOfStock = { id: found.id, slug: found.slug }
-    }
-  }
-
-  expect(
-    withVariants,
-    'a published product with >=2 differently priced variants, in stock',
-  ).not.toBeNull()
-  expect(outOfStock, 'a published product with its add button disabled (zero stock)').not.toBeNull()
-  return { withVariants: withVariants!, outOfStock: outOfStock! }
-}
 
 async function shoot(page: Page, name: string) {
   if (!SHOTS) return
@@ -185,11 +98,15 @@ test.describe('Shop product page (6.1.c)', () => {
     await expect(first).toBeChecked()
     await expect(second).not.toBeChecked()
 
-    const priceBefore = await page.locator('[class*="__price"]').textContent()
+    // The options are sizes (TASKS.md 28.2), unless they are the finishes (Mounted, Framed).
+    const finishes = candidates.withVariants.variantLabels.every((l) => /mounted|framed/i.test(l))
+    await expect(page.locator('[id$="-legend"]')).toContainText(finishes ? 'Option:' : 'Size:')
+
+    const priceBefore = await page.locator(PRICE).textContent()
     await second.check()
     await expect(second).toBeChecked()
     await expect(first).not.toBeChecked()
-    const priceAfter = await page.locator('[class*="__price"]').textContent()
+    const priceAfter = await page.locator(PRICE).textContent()
     expect(priceAfter, 'the price text changes with the chosen variant').not.toBe(priceBefore)
 
     await shoot(page, 'product-variants-390')

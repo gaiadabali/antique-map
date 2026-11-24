@@ -25,18 +25,18 @@
  *   (`hooks/work-references`), and every work save holds the lock those deletes take. A work's
  *   sources are plain-text `references` rows now (3.2.a) — no collection to delete.
  */
+import { hiddenFromAllButCatalogueStaff } from '@engine/cms-core/access'
+import { foldSections } from '@engine/cms-core/fields'
 import type { CollectionConfig } from 'payload'
 
-import { ADMIN_GROUPS } from '../../admin/groups'
+import { ADMIN_GROUPS } from '@engine/cms-core/admin/groups'
 import { stampAiDraft } from '../../ai/audit'
 import { draftFromPhotosField } from '../../ai/fields'
-import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
 import { stampCataloguing } from '../../hooks/work-cataloguing'
 import { guardWork } from '../../hooks/work-guard'
 import { invalidateWorkOnChange, invalidateWorkOnDelete } from '../../hooks/work-invalidate'
 import { holdWorkReferences } from '../../hooks/work-references'
 import { assignWorkUid } from '../../hooks/work-uid'
-import { foldSections } from '../../fields/fold'
 import { WORKS_ACCESS, WORKS_VERSIONS } from './access'
 import { OBJECT_FIELDS } from './fields-object'
 import { RECORD_FIELDS } from './fields-record'
@@ -66,7 +66,7 @@ export const Works: CollectionConfig = {
     plural: { en: 'Antiques', id: 'Antik' },
   },
   admin: {
-    group: ADMIN_GROUPS.antiques,
+    group: ADMIN_GROUPS.gallery,
     hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'title',
     defaultColumns: ['title', 'stockNumber', 'objectType', 'status', '_status', 'updatedAt'],

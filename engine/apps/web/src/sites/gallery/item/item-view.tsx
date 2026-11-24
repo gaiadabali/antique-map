@@ -9,8 +9,11 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { ItemView } from '../../../server/gallery/item/view-model'
-import { Breadcrumbs, Crossing, StockTag, TextLink } from '../../../shared/ui'
-import { ChatPageContext } from '../../../shared/chat/chat-page-context'
+import { Breadcrumbs } from '@engine/ui/breadcrumbs'
+import { Crossing } from '@engine/ui/crossing'
+import { StockTag } from '@engine/ui/stock-tag'
+import { TextLink } from '@engine/ui/text-link'
+import { ChatPageContext } from '@engine/chat/client/page-context'
 import { AskPanel, ItemProof } from './ask-panel'
 import { creditLine, itemText } from './copy'
 import { LeadPicture, MediaCaption, leadImage, sheetShape } from './item-media'

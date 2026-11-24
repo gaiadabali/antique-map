@@ -4,7 +4,8 @@
  * leaves everything else to the route (`/api/x/draft`), which checks the session again. `.jsx`:
  * the cms package does not type-check React — see `../../admin/leads/shared.jsx`'s header.
  */
-import { isCatalogueStaff } from '../../access/roles'
+import { isCatalogueStaff } from '@engine/cms-core/access'
+
 import { DraftButtonClient } from './draft-button-client'
 
 export function DraftFromPhotosButton({ id, req, user, i18n }) {

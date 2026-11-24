@@ -24,7 +24,9 @@ const homeOf = (site: SmokeMetadata, locale: string) =>
  * gallery's second is its about lead).
  */
 const homeCopy = (site: SmokeMetadata, locale: string, key: 'title' | 'lede'): string => {
-  const file = `engine/apps/web/src/sites/${site.site}/lexicon/${locale}.json`
+  // The shop's lexicon moved to `@engine/storefront` in phase 23 (23.3); the gallery's is still in web.
+  const root = site.site === 'shop' ? 'engine/packages/storefront/src' : 'engine/apps/web/src'
+  const file = `${root}/sites/${site.site}/lexicon/${locale}.json`
   const messages = JSON.parse(readFileSync(file, 'utf8')) as Record<string, string>
   const text = messages[`home.${site.site}.${key}`]
   if (!text) throw new Error(`${file} has no home.${site.site}.${key}`)
@@ -44,7 +46,9 @@ for (const locale of ['en', 'id']) {
     await expect(page.locator('html')).toHaveAttribute('lang', locale)
     await expect(page.locator('html')).toHaveAttribute('data-site', site.site)
     await expect(page).toHaveTitle(new RegExp(escape(site.name)))
-    await expect(page.locator('header')).toContainText(site.name)
+    // The site's own header, the page's one banner: not the newsletter dialog's own `<header>`
+    // (in the DOM, closed, once the shop switches the pop-up on).
+    await expect(page.getByRole('banner')).toContainText(site.name)
     // By role, not `h1`: while the shop's hero streams in, React parks the streamed `<h1>` in a
     // hidden node beside the placeholder's, and a bare `h1` locator then matches both (CI 38521749344).
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(

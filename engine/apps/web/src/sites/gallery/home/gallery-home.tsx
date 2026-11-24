@@ -10,7 +10,9 @@
 import type { SiteLocale } from '@engine/config/sites'
 import { siteOrigin } from '@engine/config/sites'
 
-import { Band, Button, SectionHead } from '../../../shared/ui'
+import { Band } from '@engine/ui/band'
+import { Button } from '@engine/ui/button'
+import { SectionHead } from '@engine/ui/section-head'
 import { siteHref } from '../../../shell/site'
 
 import { Hero } from './hero'

@@ -1,32 +1,22 @@
 /**
- * The shop's categories are vocabulary (DATA.md §2): every category the committed products sheet
- * names is one the vocabulary layer seeds — else the import holds the product and rejects its
- * variants. Each carries its Indonesian label.
+ * Today's one database holds the shop's categories beside the gallery's subject terms (DATA.md §2):
+ * the six the shop catalogue names (`@engine/cms-shop/seed`) are seeded and match no subject term,
+ * so a design's category and an antique's subject never fold to the same word.
  */
-import { readFileSync } from 'node:fs'
-
+import { categorySeeds } from '@engine/cms-shop/seed'
 import { describe, expect, it } from 'vitest'
 
-import { PRODUCT_COLUMNS } from '../../import/kinds'
-import { parseCsv } from '../../import/csv'
-import { fold } from '../../import/vocabulary'
-import { categorySeeds } from './seed'
+import { subjectSeeds } from './seed'
 
-describe('the shop categories', () => {
-  it('cover every category the committed products sheet names', () => {
-    const bytes = readFileSync(new URL('../shop/data/products.csv', import.meta.url))
-    const sheet = parseCsv('products.csv', bytes, 'products', PRODUCT_COLUMNS)
-    const column = PRODUCT_COLUMNS.indexOf('category')
-    const named = new Set(sheet.rows.map((row) => fold(row.cells[column] ?? '')))
-    const seeded = new Set(categorySeeds().map((seed) => fold(seed.label)))
-    expect(named.size).toBeGreaterThan(0)
-    for (const category of named) expect(seeded.has(category), category).toBe(true)
-  })
+const CATALOGUE = ['Maps', 'Travel posters', 'Bali', 'Animals', 'Botanicals', 'Landscapes']
 
-  it('carry both labels', () => {
-    for (const seed of categorySeeds()) {
-      expect(seed.label.trim()).not.toBe('')
-      expect(seed.labelId?.trim()).not.toBe('')
+describe("the shop catalogue's categories beside the gallery subjects", () => {
+  it('are seeded and match no subject term', () => {
+    const subjects = new Set(subjectSeeds().map((subject) => subject.label.toLowerCase()))
+    const seeded = new Set(categorySeeds().map((seed) => seed.label))
+    for (const label of CATALOGUE) {
+      expect(seeded.has(label), label).toBe(true)
+      expect(subjects.has(label.toLowerCase()), label).toBe(false)
     }
   })
 })

@@ -40,14 +40,16 @@ describe('wallHref', () => {
   const base = parseFilter({ site: 'gallery', state: 'attention', q: 'bali', page: '2' })
 
   it('leaves defaults out and resets the page when a filter changes', () => {
-    expect(wallHref(parseFilter({}))).toBe('/admin')
-    expect(wallHref(base, { state: 'all' })).toBe('/admin?site=gallery&q=bali')
-    expect(wallHref(base, { site: 'all' })).toBe('/admin?state=attention&q=bali')
+    expect(wallHref(parseFilter({}))).toBe('/admin/wall')
+    expect(wallHref(base, { state: 'all' })).toBe('/admin/wall?site=gallery&q=bali')
+    expect(wallHref(base, { site: 'all' })).toBe('/admin/wall?state=attention&q=bali')
   })
 
   it('keeps the page when only the page changes, and encodes the search', () => {
-    expect(wallHref(base, { page: 3 })).toBe('/admin?site=gallery&state=attention&q=bali&page=3')
-    expect(wallHref(parseFilter({ q: 'a&b c' }))).toBe('/admin?q=a%26b+c')
+    expect(wallHref(base, { page: 3 })).toBe(
+      '/admin/wall?site=gallery&state=attention&q=bali&page=3',
+    )
+    expect(wallHref(parseFilter({ q: 'a&b c' }))).toBe('/admin/wall?q=a%26b+c')
   })
 })
 

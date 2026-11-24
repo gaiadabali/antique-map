@@ -16,8 +16,8 @@ import type { ListingQuery, SiteLocale } from '@engine/config/sites'
 
 // From their own folders, never the `shared/ui` barrel: a Client Component importing the barrel
 // ships every shared component to the browser.
-import { Button } from '../../../shared/ui/button'
-import { Input } from '../../../shared/ui/input'
+import { Button } from '@engine/ui/button'
+import { Input } from '@engine/ui/input'
 import styles from './facets.module.css'
 
 /** The canonical browse address of `query`, with the gallery's route table loaded on demand. */

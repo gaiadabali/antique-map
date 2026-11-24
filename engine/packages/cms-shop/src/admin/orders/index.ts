@@ -1,0 +1,1 @@
+export { OrdersPanelView } from './view'

@@ -12,10 +12,10 @@
  * Every problem found is refused at once, each on its own field, in plain words. The pure rules —
  * dates, sizes, rows — are the fields' own validators, which Payload runs after this hook.
  */
+import { isPublishing } from '@engine/cms-core/fields'
 import { ValidationError, type CollectionBeforeChangeHook, type PayloadRequest } from 'payload'
 
 import { unverifiedAiDraft } from '../collections/works/vocabulary'
-import { isPublishing } from '../fields/validate'
 import { hasPrimaryPlace, refId } from '../validators/work-credits'
 import { imageRowErrors } from '../validators/work-images'
 import { publishProblems } from '../validators/work-publish'

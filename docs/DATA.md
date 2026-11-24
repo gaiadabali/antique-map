@@ -25,12 +25,19 @@ The sites are built and tested on seed data loaded through **the same import as 
 seed is the import's first user, so the import is proven long before his data arrives, and his data replaces the
 seed without a code change (requirement 10.3).
 
-| Layer          | What                                                                                                                                              | Runs on                                              | Source                                                                                              |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
-| Vocabulary     | places with historical names and parents; grade, technique, subject and category terms; `site-settings` defaults                                  | every environment, production included               | committed, `engine/packages/cms/src/seed/`                                                          |
-| Gallery sample | 50 antiques with 640 px copies of their legacy photographs (about 3 MB)                                                                           | workstations, CI                                     | committed                                                                                           |
-| Gallery, full  | the 1,823 normalised records and their 2,289 images                                                                                               | staging; production only if the owner chooses (Open) | made by `@engine/migrate` in `LEGACY_DATA_DIR` (§8), never committed                                |
-| Shop mock      | about 80 products (some with variants, some linked to a seeded antique), 120 stores spread over Bali's towns, stock per store, a welcome discount | workstations, CI, staging; never production          | generated with a fixed random seed, committed as import files                                       |
+**Plan v2 (DR-17).** Each app seeds its own database: the shop's layers (vocabulary and categories, stores, the
+156 designs, CMS pages) run against `indies_shop` from `engine/packages/cms-shop` (phase 24); the gallery's
+(places, terms, the crawled works, gallery sample or full) against `indies_gallery` from
+`engine/packages/cms-gallery` (phase 25). Media are re-uploaded per app by its seed into its own bucket, so a
+picture both sites use is stored twice (PLAN-V2 §6). The table below is today's single seed into one database,
+until phase 26.
+
+| Layer          | What                                                                                                                                              | Runs on                                              | Source                                                                                                                                                                                                                                                        |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Vocabulary     | places with historical names and parents; grade, technique, subject and category terms; `site-settings` defaults                                  | every environment, production included               | committed, `engine/packages/cms/src/seed/`                                                                                                                                                                                                                    |
+| Gallery sample | 50 antiques with 640 px copies of their legacy photographs (about 3 MB)                                                                           | workstations, CI                                     | committed                                                                                                                                                                                                                                                     |
+| Gallery, full  | the 1,823 normalised records and their 2,289 images                                                                                               | staging; production only if the owner chooses (Open) | made by `@engine/migrate` in `LEGACY_DATA_DIR` (§8), never committed                                                                                                                                                                                          |
+| Shop mock      | about 80 products (some with variants, some linked to a seeded antique), 120 stores spread over Bali's towns, stock per store, a welcome discount | workstations, CI, staging; never production          | generated with a fixed random seed, committed as import files                                                                                                                                                                                                 |
 | Shop catalogue | the owner's 156 real designs as products with two variants each and **placeholder prices**; the 80 mock products retire                           | staging, for the client review; never production     | made in `LEGACY_DATA_DIR` (`old-east-indies/designs`, `old-east-indies/instagram`); with the owner's OK, also committed as one export of the local shop (`seed/catalogue/data/designs.json` + `images/`, 2026-10-22), which a server without the folder seeds |
 
 - **Deterministic and idempotent.** The same command twice changes nothing; every key comes from the data (stock
@@ -90,10 +97,10 @@ Import screen. A developer runs the same code from the command line for the seed
 (`pnpm data:import --kind <kind> --file <path> [--apply]`). Each run is a Payload job kept after it completes, with
 its file and report in the private bucket under `imports/<job>/`; there is no import collection.
 
-**The file**: `.csv` (UTF-8, a byte-order mark allowed, `,` or `;` sniffed from the header). **`.xlsx` is not read yet** (no
-spreadsheet library is a dependency; 10.8, 2026-10-09): when it is, `.xlsx` means the first
-sheet, cell values only — a formula counts by its stored result; macros and links to other workbooks are refused),
-at most 10 MB and 20,000 rows, the header in row 1 spelled as the template. A file that is not UTF-8 is refused
+**The file**: `.csv` (UTF-8, a byte-order mark allowed, `,` or `;` sniffed from the header) or **`.xlsx`** (since
+TASKS.md 27.4, read with `read-excel-file`: the first sheet only, cell values only — a formula counts by the result
+Excel stored and is never evaluated; macros and links to other workbooks are refused; each part is inflated under a
+cap before it is parsed), at most 10 MB and 20,000 rows, the header in row 1 spelled as the template. A file that is not UTF-8 is refused
 with its fix ("Save as CSV UTF-8"), never read in a guessed encoding.
 
 **Two steps, always.**
@@ -163,8 +170,9 @@ the review queue the owner clears first.
 The owner supplies every photograph (D19). The intake spec, [design/imagery/intake-spec.md](design/imagery/intake-spec.md),
 says how each is judged; his guides say how to take one.
 
-- **Everyday**: staff drop photos on an antique or a product in the admin (JPEG, PNG or WebP, at most 25 MB, typed
-  by their bytes: SECURITY.md F1–F2). The file becomes the `media` record's private upload, and a job makes the
+- **Everyday**: staff drop photos on an antique or a product in the admin (JPEG, PNG, WebP or AVIF, at most 25 MB, typed
+  by their bytes: SECURITY.md F1–F2); a shop page's video (MP4, WebM) or PDF (at most 20 MB) goes into Media the same way
+  and is served as it is, with no derivatives. The file becomes the `media` record's private upload, and a job makes the
   derivatives and, where the image is large enough, the tiles (ARCHITECTURE.md §8).
 - **A handover** (a folder of captures, TIFF scans): each file goes straight to the private bucket by presigned
   PUT, checked by length and SHA-256, into an intake batch (`masters/intake/<batch>/<checksum>.<ext>`) beside the

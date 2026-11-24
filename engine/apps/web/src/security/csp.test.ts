@@ -191,6 +191,13 @@ describe('wired into the proxy', () => {
     ).toBe(header)
   })
 
+  it('gives a published video or PDF a sandbox, never a page policy (SECURITY.md F7)', () => {
+    expect(decide('/api/x/media/12').setResponse['Content-Security-Policy']).toBe('sandbox')
+    expect(decide('/api/x/media/12/x').setResponse['Content-Security-Policy']).toContain(
+      'script-src',
+    )
+  })
+
   it('draws a new nonce for every request', () => {
     const nonces = new Set(
       Array.from(

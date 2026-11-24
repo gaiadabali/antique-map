@@ -16,11 +16,11 @@
  * One masters bucket serves both sites: no key names a brand, and the configurator's print files
  * — the one kind an outlet brand could upload — are gone (TASKS.md 2.4.b).
  */
+import { hasRole } from '@engine/cms-core/access'
 import { INTAKE_MASTERS_PREFIX, intakeMasterKey, masterKey } from '@engine/media/contract'
 import { isSha256Hex, masterContentType, masterUploadProblems } from '@engine/media/storage'
 import { addDataAndFileToRequest, type Endpoint, type PayloadHandler } from 'payload'
 
-import { hasRole } from '../users/roles'
 import { MASTER_WRITERS } from './access'
 import { discardSentFile } from './hooks'
 import { mastersStoreFromEnv, STORE_MISSING, type StoreSource } from './store'

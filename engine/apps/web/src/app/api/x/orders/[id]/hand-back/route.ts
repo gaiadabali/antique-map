@@ -1,1 +1,1 @@
-export { ordersHandBackPost as POST } from '../../../../../../server/orders/hand-back'
+export { ordersHandBackPost as POST } from '../../../../../../server/orders/routes'

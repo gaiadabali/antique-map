@@ -5,7 +5,7 @@
  * suggests the nearest (DATA.md §3). Only the cells the row carries go into the data: an empty
  * cell never clears a field (`./apply` writes only these).
  */
-import type { Problem } from './types'
+import type { Problem } from '@engine/cms-core/import/types'
 import { CERTAINTIES } from '../collections/works/vocabulary'
 import {
   COLOURINGS,
@@ -24,9 +24,9 @@ import {
   holding,
   planned,
   refused,
-} from './plan'
-import type { Vocabulary } from './vocabulary'
-import { list } from './cells'
+} from '@engine/cms-core/import/plan'
+import type { Vocabulary } from '@engine/cms-core/import/vocabulary'
+import { list } from '@engine/cms-core/import/cells'
 
 const CURRENCY = 'USD' // The asking price is whole US dollars; there is no other currency here.
 

@@ -5,7 +5,8 @@
  * never cropped (DESIGN-SYSTEM.md §7).
  */
 import type { ItemImage } from '../../../server/gallery/item/view-model'
-import { Mat, ResponsiveImage } from '../../../shared/ui'
+import { Mat } from '@engine/ui/mat'
+import { ResponsiveImage } from '@engine/ui/responsive-image'
 import { itemText, type ItemText } from './copy'
 import styles from './item.module.css'
 import { ZoomLazy, type ZoomLabels } from './zoom-lazy'

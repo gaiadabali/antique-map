@@ -1,6 +1,6 @@
 /**
  * Recipe 1 (CONTENT-OPERATIONS.md 3.3, target under 3 minutes): the owner adds a product and publishes it,
- * then puts stock at three stores. Timed from the dashboard to "published" (A) and to "stock entered" (B).
+ * then puts stock at three stores, all on the one-screen product editor (TASKS.md 27.2). Timed from the dashboard to "published" (A) and to "stock entered" (B).
  * The product is marked REHEARSAL 10.4 and unpublished at the end; the public page must then answer 404.
  */
 import { expect, test, type Page } from '@playwright/test'
@@ -57,32 +57,24 @@ test('R1 owner: add and publish a product, then stock at three stores', async ({
     .locator('#field-description')
     .fill('A rehearsal product from the 10.4 timed admin test. Not for sale.')
   await choose(page.locator('#field-category'), 'Prints')
-  await m.click(page.getByRole('button', { name: 'Add Image' }))
-  await m.click(page.getByRole('button', { name: 'Create New' }))
-  const drawer = page.locator('.drawer__content, .drawer').last()
-  await drawer.locator('input[type="file"]').setInputFiles({
+  // The one-screen editor (TASKS.md 27.2): the photo is dropped on the product, its intake filled in.
+  await page.locator('#field-images input[type="file"]').setInputFiles({
     name: 'rehearsal-10-4.png',
     mimeType: 'image/png',
     buffer: await page.screenshot({ clip: { x: 0, y: 0, width: 600, height: 400 } }),
   })
-  await drawer.locator('#field-alt').fill('A rehearsal image for the 10.4 admin test')
-  await m.shot('r1-1-image-drawer')
-  await choose(drawer.locator('#field-subject'), /product/i)
-  await choose(drawer.locator('#field-role'))
-  await choose(drawer.locator('#field-provenance'), /photo/i)
-  await m.click(drawer.getByRole('button', { name: 'Save' }))
-  await expect(drawer).toBeHidden()
+  await expect(page.locator('.pe-photo:not(.pe-photo--pending)')).toHaveCount(1, {
+    timeout: 90_000,
+  })
+  await m.shot('r1-1-photo')
   await page.locator('#field-price').fill('95000')
   await m.shot('r1-2-filled')
-  await m.click(page.getByRole('button', { name: 'Publish changes' }))
-  const pubToast = page.locator('[data-sonner-toast]').filter({ hasNotText: 'Image' }).first()
-  await expect(pubToast).toBeVisible({ timeout: 120_000 })
-  const publishToast = (await pubToast.innerText()).replace(/\s+/g, ' ')
-  m.stumble(`message after Publish: "${publishToast}"`)
+  await m.click(page.getByRole('button', { name: 'Published', exact: true }))
   await expect(
-    page,
-    `after Publish the page stayed put; the message said: ${publishToast}`,
-  ).toHaveURL(/\/admin\/collections\/products\/\d+/, { timeout: 60_000 })
+    page.getByRole('button', { name: 'Published', exact: true }),
+    'the Draft / Published control shows Published',
+  ).toHaveAttribute('aria-pressed', 'true', { timeout: 120_000 })
+  await expect(page).toHaveURL(/\/admin\/collections\/products\/\d+/, { timeout: 60_000 })
   const id = Number(/products\/(\d+)/.exec(page.url())![1])
   const slug = await page.locator('#field-slug').first().inputValue()
   expect(slug, 'the slug the admin made from the name').not.toBe('')
@@ -90,30 +82,14 @@ test('R1 owner: add and publish a product, then stock at three stores', async ({
   record({ kind: 'product', id, sku: SKU, slug, name: NAME, width: widthOf(info) })
   await m.shot('r1-3-published')
 
-  // Stock at three stores: Stock > Create New, three times.
-  for (const store of ['Denpasar 004', 'Denpasar 008', 'Canggu 001']) {
-    if (store === 'Denpasar 004') {
-      await m.click(page.locator('a[href="/admin"]:visible').first())
-      await expect(page).toHaveURL(/\/admin$/)
-      await page.waitForLoadState('networkidle')
-      await m.click(await sidebarLink(page, '/admin/collections/stock-levels'))
-    } else {
-      // The saved record has no visible way to the next stock row (the sidebar is closed): back to the list by
-      // address, counted as a page load, not a click.
-      await page.goto(`${SHOP}/admin/collections/stock-levels`)
-    }
-    await expect(page).toHaveURL(/\/collections\/stock-levels\?/)
-    await m.click(page.getByRole('link', { name: 'Create New' }).first())
-    const storeField = page.locator('#field-store')
-    await choose(storeField, store)
-    const productField = page.locator('#field-product')
-    await productField.locator('input').fill(SKU)
-    await choose(productField, NAME)
-    await page.getByLabel(/count on the shelf/i).fill('1')
-    await m.click(page.getByRole('button', { name: 'Save' }))
-    await expect(page.locator('[data-sonner-toast]').first()).toBeVisible()
-    const stockId = /stock-levels\/(\d+)/.exec(page.url())?.[1]
-    record({ kind: 'stock-level', id: stockId ?? null, store, product: id })
+  // Stock at three stores, in the product's own table: find the store, type the count.
+  for (const store of ['DPS-004', 'DPS-008', 'CGU-001']) {
+    await page.locator('#pe-stock-find').fill(store)
+    const cell = page.locator('.pe-stock tbody tr').first().locator('input').first()
+    await cell.fill('1')
+    await cell.press('Tab')
+    await expect(page.locator('.pe-stock .pe-cell-status', { hasText: 'Saved' })).toHaveCount(1)
+    record({ kind: 'stock-level', store, product: id })
   }
   await m.shot('r1-4-stock')
   m.stop()

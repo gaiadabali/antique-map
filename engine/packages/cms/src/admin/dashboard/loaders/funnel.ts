@@ -4,9 +4,17 @@
  * the beacon and server events (ANALYTICS.md §4): `product.viewed`, `cart.added`,
  * `checkout.started`, `checkout.stepCompleted` (`step: 'delivery'`) and `order.paid`.
  */
-import { compared, type Compared, type Counted } from '../compare'
-import type { DashboardContext } from '../context'
-import { eventsFilter, inPeriod, inPrevious, num, rowsOf, sql, topCounts } from '../sql'
+import { compared, type Compared, type Counted } from '@engine/cms-core/admin/dashboard/compare'
+import type { DashboardContext } from '@engine/cms-core/admin/dashboard/context'
+import {
+  eventsFilter,
+  inPeriod,
+  inPrevious,
+  num,
+  rowsOf,
+  sql,
+  topCounts,
+} from '@engine/cms-core/admin/dashboard/sql'
 
 export type FunnelStep = { readonly key: string; readonly label: string; readonly count: Compared }
 

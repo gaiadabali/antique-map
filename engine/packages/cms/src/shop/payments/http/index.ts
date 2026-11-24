@@ -1,25 +1,27 @@
 /**
- * The payment routes as handler factories, for `@engine/http` to mount (C13): importing this loads
- * no Payload — each handler loads its Payload-backed port with `import()` after it has read and
- * checked its request. The mounts, in `@engine/http`:
- *
- *   webhooks/midtrans/route.ts  export const POST = midtransWebhookRoute()
- *   cron/sweeps/route.ts        export const POST = paymentSweepsRoute({ refuse: refuseCron })
- *   cron/reconcile/route.ts     export const POST = paymentReconcileRoute({ refuse: refuseCron })
+ * `@engine/cms/shop/payments/http` — the payment routes (`@engine/cms-shop/payments/http`) bound to
+ * this CMS's own Payload (`./payload-port`), for today's app's mounts in `@engine/http` until phase
+ * 26. A caller's own `load` still wins (the routes' tests).
  */
-export {
-  paymentReconcileRoute,
-  paymentSweepsRoute,
+import {
+  midtransWebhookRoute as webhookRoute,
+  paymentReconcileRoute as reconcileRoute,
+  paymentSweepsRoute as sweepsRoute,
   type CronOptions,
-  type JobsPort,
   type JobsPortLoader,
-  type PaymentJob,
-} from './cron'
-export {
-  BUSY_RETRY_AFTER_SECONDS,
-  MAX_BODY_BYTES,
-  midtransWebhookRoute,
   type WebhookOptions,
-  type WebhookPort,
   type WebhookPortLoader,
-} from './webhook'
+} from '@engine/cms-shop/payments/http'
+
+export * from '@engine/cms-shop/payments/http'
+
+const loadWebhook: WebhookPortLoader = async (config) =>
+  (await import('./payload-port')).webhookPort(config)
+const loadJobs: JobsPortLoader = async () => (await import('./payload-port')).jobsPort()
+
+export const midtransWebhookRoute = (options: WebhookOptions = {}) =>
+  webhookRoute({ load: loadWebhook, ...options })
+export const paymentSweepsRoute = (options: CronOptions) =>
+  sweepsRoute({ load: loadJobs, ...options })
+export const paymentReconcileRoute = (options: CronOptions) =>
+  reconcileRoute({ load: loadJobs, ...options })

@@ -1,7 +1,7 @@
 /** The reply links on a lead (TASKS.md 10.8.b): number, language, item and nothing priced. */
 import { describe, expect, it } from 'vitest'
 
-import { LEADS_COPY } from './copy'
+import { LEADS_COPY } from '@engine/cms-core/admin/leads-copy'
 import { buildReply, openingLine } from './reply'
 
 const lead = {

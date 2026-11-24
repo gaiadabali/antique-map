@@ -2,29 +2,30 @@
 
 ### product at 390 px
 
-Tab stops (21, focus left the page or came round):
+Tab stops (22, focus left the page or came round):
 
 1. link "Skip to content" — a
-2. link "Old East Indies, home" — a
-3. button "Open menu" — button
-4. link "Shop" — a
-5. link "Bali" — a
-6. radio "Mounted print" — input
-7. button "Add to bag" — button
-8. link "Privacy" — a
-9. link "Terms" — a
-10. link "Antique Maps Indonesia — the originals we print from" — a
-11. link "Shop prints" — a
-12. link "Gallery walls" — a
-13. link "Where to buy" — a
-14. link "Partnership" — a
-15. link "Delivery" — a
-16. link "Frequently asked" — a
-17. link "About us" — a
-18. link "Contact" — a
-19. link "Instagram" — a
-20. link "Facebook" — a
-21. button "Chat with us" — button
+2. button "Open menu" — button
+3. link "Old East Indies, home" — a
+4. button "Search" — button
+5. link "Bag" — a
+6. button "View 1" — button
+7. button "View 2" — button
+8. button "View 3" — button
+9. button "View 4" — button
+10. button "View 5" — button
+11. button "View 6" — button
+12. button "Enlarge" — button
+13. link "Prints" — a
+14. radio "A4" — input
+15. button "Add to bag" — button
+16. link "About" — a
+17. link "Ask on WhatsApp (opens in a new tab)" — a
+18. link "Instagram (opens in a new tab)" — a
+19. link "Facebook (opens in a new tab)" — a
+20. link "Privacy policy" — a
+21. link "Gallery en (opens in a new tab)" — a
+22. button "Chat with us" — button
 
 Problems: none
 
@@ -32,67 +33,62 @@ Same name on more than one stop: none
 
 ### product at 1280 px
 
-Tab stops (26, focus left the page or came round):
+Tab stops (25, focus left the page or came round):
 
 1. link "Skip to content" — a
-2. link "Old East Indies, home" — a
-3. link "Shop" — a
-4. link "Collections" — a
-5. link "Stores" — a
-6. link "Partnership" — a
-7. link "English" — a
-8. link "Bahasa Indonesia" — a
-9. link "Shop" — a
-10. link "Bali" — a
-11. radio "Mounted print" — input
-12. button "Add to bag" — button
-13. link "Privacy" — a
-14. link "Terms" — a
-15. link "Antique Maps Indonesia — the originals we print from" — a
-16. link "Shop prints" — a
-17. link "Gallery walls" — a
-18. link "Where to buy" — a
-19. link "Partnership" — a
-20. link "Delivery" — a
-21. link "Frequently asked" — a
-22. link "About us" — a
-23. link "Contact" — a
-24. link "Instagram" — a
-25. link "Facebook" — a
-26. button "Chat with us" — button
+2. link "PRIVACY" — a
+3. link "STORES" — a
+4. link "Old East Indies, home" — a
+5. link "ENGLISH" — a
+6. link "BAHASA INDONESIA" — a
+7. button "Search" — button
+8. link "Bag" — a
+9. button "View 1" — button
+10. button "View 2" — button
+11. button "View 3" — button
+12. button "View 4" — button
+13. button "View 5" — button
+14. button "View 6" — button
+15. button "Enlarge" — button
+16. link "Prints" — a
+17. radio "A4" — input
+18. button "Add to bag" — button
+19. link "About" — a
+20. link "Ask on WhatsApp (opens in a new tab)" — a
+21. link "Instagram (opens in a new tab)" — a
+22. link "Facebook (opens in a new tab)" — a
+23. link "Privacy policy" — a
+24. link "Gallery en (opens in a new tab)" — a
+25. button "Chat with us" — button
 
 Problems: none
 
-Same name on more than one stop: link|Shop x2; link|Partnership x2
+Same name on more than one stop: none
 
 ### bag at 390 px
 
-Tab stops (24, focus left the page or came round):
+Tab stops (20, focus left the page or came round):
 
 1. link "Skip to content" — a
-2. link "Old East Indies, home" — a
-3. button "Open menu" — button
-4. link "Balinese Dancer Photograph, c. 1927" — a
-5. spinbutton "Quantity" — input
-6. button "Update" — button
-7. button "Remove Balinese Dancer Photograph, c. 1927" — button
-8. textbox "Voucher or gift card code" — input
-9. button "Apply" — button
-10. link "Checkout" — a
-11. link "Privacy" — a
-12. link "Terms" — a
-13. link "Antique Maps Indonesia — the originals we print from" — a
-14. link "Shop prints" — a
-15. link "Gallery walls" — a
-16. link "Where to buy" — a
-17. link "Partnership" — a
-18. link "Delivery" — a
-19. link "Frequently asked" — a
-20. link "About us" — a
-21. link "Contact" — a
-22. link "Instagram" — a
-23. link "Facebook" — a
-24. button "Chat with us" — button
+2. button "Open menu" — button
+3. link "Old East Indies, home" — a
+4. button "Search" — button
+5. link "Bag, 1 items" — a
+6. link "Editor print, run MWIYWDUU" — a
+7. button "One fewer" — button
+8. button "One more" — button
+9. button "Remove Editor print, run MWIYWDUU" — button
+10. link "CHECKOUT" — a
+11. link "CONTINUE SHOPPING" — a
+12. textbox "Voucher or gift card code" — input
+13. button "Apply" — button
+14. link "About" — a
+15. link "Ask on WhatsApp (opens in a new tab)" — a
+16. link "Instagram (opens in a new tab)" — a
+17. link "Facebook (opens in a new tab)" — a
+18. link "Privacy policy" — a
+19. link "Gallery en (opens in a new tab)" — a
+20. button "Chat with us" — button
 
 Problems: none
 
@@ -100,75 +96,64 @@ Same name on more than one stop: none
 
 ### bag at 1280 px
 
-Tab stops (29, focus left the page or came round):
+Tab stops (23, focus left the page or came round):
 
 1. link "Skip to content" — a
-2. link "Old East Indies, home" — a
-3. link "Shop" — a
-4. link "Collections" — a
-5. link "Stores" — a
-6. link "Partnership" — a
-7. link "English" — a
-8. link "Bahasa Indonesia" — a
-9. link "Balinese Dancer Photograph, c. 1927" — a
-10. spinbutton "Quantity" — input
-11. button "Update" — button
-12. button "Remove Balinese Dancer Photograph, c. 1927" — button
-13. textbox "Voucher or gift card code" — input
-14. button "Apply" — button
-15. link "Checkout" — a
-16. link "Privacy" — a
-17. link "Terms" — a
-18. link "Antique Maps Indonesia — the originals we print from" — a
-19. link "Shop prints" — a
-20. link "Gallery walls" — a
-21. link "Where to buy" — a
-22. link "Partnership" — a
-23. link "Delivery" — a
-24. link "Frequently asked" — a
-25. link "About us" — a
-26. link "Contact" — a
-27. link "Instagram" — a
-28. link "Facebook" — a
-29. button "Chat with us" — button
+2. link "PRIVACY" — a
+3. link "STORES" — a
+4. link "Old East Indies, home" — a
+5. link "ENGLISH" — a
+6. link "BAHASA INDONESIA" — a
+7. button "Search" — button
+8. link "Bag, 1 items" — a
+9. link "Editor print, run MWIYWDUU" — a
+10. button "One fewer" — button
+11. button "One more" — button
+12. button "Remove Editor print, run MWIYWDUU" — button
+13. link "CHECKOUT" — a
+14. link "CONTINUE SHOPPING" — a
+15. textbox "Voucher or gift card code" — input
+16. button "Apply" — button
+17. link "About" — a
+18. link "Ask on WhatsApp (opens in a new tab)" — a
+19. link "Instagram (opens in a new tab)" — a
+20. link "Facebook (opens in a new tab)" — a
+21. link "Privacy policy" — a
+22. link "Gallery en (opens in a new tab)" — a
+23. button "Chat with us" — button
 
 Problems: none
 
-Same name on more than one stop: link|Partnership x2
+Same name on more than one stop: none
 
 ### checkout at 390 px
 
-Tab stops (29, focus left the page or came round):
+Tab stops (24, focus left the page or came round):
 
 1. link "Skip to content" — a
-2. link "Old East Indies, home" — a
-3. button "Open menu" — button
-4. link "Back to the bag" — a
-5. textbox "Full name" — input
-6. textbox "WhatsApp number" — input
-7. textbox "Email" — input
-8. textbox "Address" — input
-9. button "Use my location" — button
-10. textbox "Or paste a Google Maps link" — input
-11. textbox "Latitude" — input
-12. textbox "Longitude" — input
-13. textbox "Notes for the driver (landmark, villa name) — optional" — textarea
-14. textbox "Gift note for the parcel (optional)" — textarea
-15. button "Continue to payment" — button
-16. link "Privacy" — a
-17. link "Terms" — a
-18. link "Antique Maps Indonesia — the originals we print from" — a
-19. link "Shop prints" — a
-20. link "Gallery walls" — a
-21. link "Where to buy" — a
-22. link "Partnership" — a
-23. link "Delivery" — a
-24. link "Frequently asked" — a
-25. link "About us" — a
-26. link "Contact" — a
-27. link "Instagram" — a
-28. link "Facebook" — a
-29. button "Chat with us" — button
+2. button "Open menu" — button
+3. link "Old East Indies, home" — a
+4. button "Search" — button
+5. link "Bag, 1 items" — a
+6. link "BACK TO THE BAG" — a
+7. textbox "FULL NAME" — input
+8. textbox "WHATSAPP NUMBER" — input
+9. textbox "EMAIL" — input
+10. textbox "ADDRESS" — input
+11. button "Use my location" — button
+12. textbox "Or paste a Google Maps link" — input
+13. textbox "Latitude" — input
+14. textbox "Longitude" — input
+15. textbox "NOTES FOR THE DRIVER (LANDMARK, VILLA NAME) — OPTIONAL" — textarea
+16. textbox "GIFT NOTE FOR THE PARCEL (OPTIONAL)" — textarea
+17. button "CONTINUE TO PAYMENT" — button
+18. link "About" — a
+19. link "Ask on WhatsApp (opens in a new tab)" — a
+20. link "Instagram (opens in a new tab)" — a
+21. link "Facebook (opens in a new tab)" — a
+22. link "Privacy policy" — a
+23. link "Gallery en (opens in a new tab)" — a
+24. button "Chat with us" — button
 
 Problems: none
 
@@ -176,69 +161,57 @@ Same name on more than one stop: none
 
 ### checkout at 1280 px
 
-Tab stops (34, focus left the page or came round):
+Tab stops (27, focus left the page or came round):
 
 1. link "Skip to content" — a
-2. link "Old East Indies, home" — a
-3. link "Shop" — a
-4. link "Collections" — a
-5. link "Stores" — a
-6. link "Partnership" — a
-7. link "English" — a
-8. link "Bahasa Indonesia" — a
-9. link "Back to the bag" — a
-10. textbox "Full name" — input
-11. textbox "WhatsApp number" — input
-12. textbox "Email" — input
-13. textbox "Address" — input
+2. link "PRIVACY" — a
+3. link "STORES" — a
+4. link "Old East Indies, home" — a
+5. link "ENGLISH" — a
+6. link "BAHASA INDONESIA" — a
+7. button "Search" — button
+8. link "Bag, 1 items" — a
+9. link "BACK TO THE BAG" — a
+10. textbox "FULL NAME" — input
+11. textbox "WHATSAPP NUMBER" — input
+12. textbox "EMAIL" — input
+13. textbox "ADDRESS" — input
 14. button "Use my location" — button
 15. textbox "Or paste a Google Maps link" — input
 16. textbox "Latitude" — input
 17. textbox "Longitude" — input
-18. textbox "Notes for the driver (landmark, villa name) — optional" — textarea
-19. textbox "Gift note for the parcel (optional)" — textarea
-20. button "Continue to payment" — button
-21. link "Privacy" — a
-22. link "Terms" — a
-23. link "Antique Maps Indonesia — the originals we print from" — a
-24. link "Shop prints" — a
-25. link "Gallery walls" — a
-26. link "Where to buy" — a
-27. link "Partnership" — a
-28. link "Delivery" — a
-29. link "Frequently asked" — a
-30. link "About us" — a
-31. link "Contact" — a
-32. link "Instagram" — a
-33. link "Facebook" — a
-34. button "Chat with us" — button
+18. textbox "NOTES FOR THE DRIVER (LANDMARK, VILLA NAME) — OPTIONAL" — textarea
+19. textbox "GIFT NOTE FOR THE PARCEL (OPTIONAL)" — textarea
+20. button "CONTINUE TO PAYMENT" — button
+21. link "About" — a
+22. link "Ask on WhatsApp (opens in a new tab)" — a
+23. link "Instagram (opens in a new tab)" — a
+24. link "Facebook (opens in a new tab)" — a
+25. link "Privacy policy" — a
+26. link "Gallery en (opens in a new tab)" — a
+27. button "Chat with us" — button
 
 Problems: none
 
-Same name on more than one stop: link|Partnership x2
+Same name on more than one stop: none
 
 ### order at 390 px
 
-Tab stops (18, focus left the page or came round):
+Tab stops (13, focus left the page or came round):
 
 1. link "Skip to content" — a
-2. link "Old East Indies, home" — a
-3. button "Open menu" — button
-4. link "Check again" — a
-5. link "Privacy" — a
-6. link "Terms" — a
-7. link "Antique Maps Indonesia — the originals we print from" — a
-8. link "Shop prints" — a
-9. link "Gallery walls" — a
-10. link "Where to buy" — a
-11. link "Partnership" — a
-12. link "Delivery" — a
-13. link "Frequently asked" — a
-14. link "About us" — a
-15. link "Contact" — a
-16. link "Instagram" — a
-17. link "Facebook" — a
-18. button "Chat with us" — button
+2. button "Open menu" — button
+3. link "Old East Indies, home" — a
+4. button "Search" — button
+5. link "Bag, 1 items" — a
+6. link "Check again" — a
+7. link "About" — a
+8. link "Ask on WhatsApp (opens in a new tab)" — a
+9. link "Instagram (opens in a new tab)" — a
+10. link "Facebook (opens in a new tab)" — a
+11. link "Privacy policy" — a
+12. link "Gallery en (opens in a new tab)" — a
+13. button "Chat with us" — button
 
 Problems: none
 
@@ -246,32 +219,26 @@ Same name on more than one stop: none
 
 ### order at 1280 px
 
-Tab stops (23, focus left the page or came round):
+Tab stops (16, focus left the page or came round):
 
 1. link "Skip to content" — a
-2. link "Old East Indies, home" — a
-3. link "Shop" — a
-4. link "Collections" — a
-5. link "Stores" — a
-6. link "Partnership" — a
-7. link "English" — a
-8. link "Bahasa Indonesia" — a
+2. link "PRIVACY" — a
+3. link "STORES" — a
+4. link "Old East Indies, home" — a
+5. link "ENGLISH" — a
+6. link "BAHASA INDONESIA" — a
+7. button "Search" — button
+8. link "Bag, 1 items" — a
 9. link "Check again" — a
-10. link "Privacy" — a
-11. link "Terms" — a
-12. link "Antique Maps Indonesia — the originals we print from" — a
-13. link "Shop prints" — a
-14. link "Gallery walls" — a
-15. link "Where to buy" — a
-16. link "Partnership" — a
-17. link "Delivery" — a
-18. link "Frequently asked" — a
-19. link "About us" — a
-20. link "Contact" — a
-21. link "Instagram" — a
-22. link "Facebook" — a
-23. button "Chat with us" — button
+10. link "About" — a
+11. link "Ask on WhatsApp (opens in a new tab)" — a
+12. link "Instagram (opens in a new tab)" — a
+13. link "Facebook (opens in a new tab)" — a
+14. link "Privacy policy" — a
+15. link "Gallery en (opens in a new tab)" — a
+16. button "Chat with us" — button
 
 Problems: none
 
-Same name on more than one stop: link|Partnership x2
+Same name on more than one stop: none
+

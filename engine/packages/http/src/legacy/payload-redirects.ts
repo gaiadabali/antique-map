@@ -2,7 +2,8 @@
  * The legacy route's Payload-backed port (TASKS.md 9.4.b): the one module of `legacy/` that
  * reaches `@engine/cms`, loaded by `./route` with `import()` on the first legacy request — so
  * `next build`, route parity's runner and the route's tests never evaluate the Payload config
- * (ARCHITECTURE.md §15).
+ * (ARCHITECTURE.md §15). Today's one CMS keeps both sites' rows, each with its `site`; one site's own
+ * CMS (the shop's, `indies_shop`) keeps its own alone, with no `site` to filter on (TASKS.md 23.5).
  */
 import { cms } from '@engine/cms/instance'
 import type { SiteKey } from '@engine/config/sites'
@@ -11,5 +12,7 @@ import { readRedirectMap, type RedirectMap, type RedirectReader } from './redire
 
 export async function loadRedirectMap(site: SiteKey): Promise<RedirectMap> {
   const payload = await cms()
-  return readRedirectMap(payload as unknown as RedirectReader, site)
+  const fields = payload.collections?.['redirects' as never]?.config.flattenedFields ?? []
+  const rowsCarrySite = fields.some((field) => 'name' in field && field.name === 'site')
+  return readRedirectMap(payload as unknown as RedirectReader, site, rowsCarrySite)
 }

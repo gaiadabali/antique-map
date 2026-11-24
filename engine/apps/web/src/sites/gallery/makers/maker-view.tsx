@@ -9,7 +9,9 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { MakerVM } from '../../../server/gallery/makers/view-models'
-import { Band, ResponsiveImage, SectionHead } from '../../../shared/ui'
+import { Band } from '@engine/ui/band'
+import { ResponsiveImage } from '@engine/ui/responsive-image'
+import { SectionHead } from '@engine/ui/section-head'
 import { lexiconMessages, type LexiconMessageKey } from '../../../messages/keys'
 import { WorkGrid } from '../browse/work-grid'
 import type { MakerText } from './copy'

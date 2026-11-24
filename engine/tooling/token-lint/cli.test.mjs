@@ -3,7 +3,7 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
 
-import { run } from './cli.mjs'
+import { defaultTargets, run } from './cli.mjs'
 
 describe('token-lint', () => {
   let dir
@@ -45,6 +45,29 @@ describe('token-lint', () => {
       'sites/shop/tokens/brand.css': '[data-site="shop"] { --brand-red: #ff0000; }',
     })
     expect(run(target)).toHaveLength(0)
+  })
+
+  it("passes on the shared UI package's token files and fails on its components", () => {
+    const target = setup({
+      'styles/tokens/primitives.css': ':root { --primitive-red: #ff0000; }',
+      'styles/tokens/gallery.css': ':root { --brand-red: #ff0000; }',
+      'components/card/card.module.css': '.card { color: #00ff00; }',
+    })
+    const v = run(target)
+    expect(v).toHaveLength(1)
+    expect(v[0].snippet).toBe('#00ff00')
+  })
+
+  it('lints several directories at once, and by default the app and the UI package', () => {
+    const a = setup({ 'a.css': '.a { color: #ff0000; }' })
+    const b = join(dir, 'other')
+    mkdirSync(b)
+    writeFileSync(join(b, 'b.css'), '.b { font-family: Arial; }', 'utf8')
+    const v = run([a, b])
+    expect(v.map((x) => x.kind).sort()).toEqual(['font-family declaration', 'hex colour'])
+    const dirs = defaultTargets.map((t) => t.replace(/\\/g, '/'))
+    expect(dirs.some((t) => t.endsWith('/engine/apps/web/src'))).toBe(true)
+    expect(dirs.some((t) => t.endsWith('/engine/packages/ui/src'))).toBe(true)
   })
 
   it('fails on font-family in CSS and fontFamily in TSX', () => {

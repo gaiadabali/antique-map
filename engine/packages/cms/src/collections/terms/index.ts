@@ -11,24 +11,24 @@
  * - A grade carries its `definition` and its A–D `equivalent`; publishing a grade needs both.
  * - `position` orders a vocabulary where order means something: a grade scale, best first.
  */
+import { hiddenFromAllButCatalogueStaff } from '@engine/cms-core/access'
+import {
+  IN_DEFAULT_LOCALE_NOTE,
+  requiredInDefaultLocale,
+  requiredToPublish,
+  slugField,
+  translationStatusField,
+} from '@engine/cms-core/fields'
 import type { CollectionConfig, Validate } from 'payload'
 
-import { ADMIN_GROUPS } from '../../admin/groups'
-import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
+import { ADMIN_GROUPS } from '@engine/cms-core/admin/groups'
 import {
   invalidateVocabularyOnChange,
   invalidateVocabularyOnDelete,
 } from '../../hooks/vocabulary-invalidate'
 import { gradeEquivalentError } from '../../validators/term-grade'
 import { TERM_KIND_LABELS, TERM_KINDS } from './kinds'
-import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from './vocabulary/access'
-import { slugField } from '../../fields/slug'
-import { translationStatusField } from '../../fields/translation-status'
-import {
-  IN_DEFAULT_LOCALE_NOTE,
-  requiredInDefaultLocale,
-  requiredToPublish,
-} from '../../fields/validate'
+import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from '@engine/cms-core/access/vocabulary'
 import { refuseDeleteWhileUsed } from './still-used'
 
 const isGrade = (data: unknown) => (data as { kind?: unknown } | undefined)?.kind === 'grade'
@@ -62,7 +62,7 @@ export const Terms: CollectionConfig = {
     plural: { en: 'Tags and grades', id: 'Tag dan kelas kondisi' },
   },
   admin: {
-    group: ADMIN_GROUPS.photosAndTags,
+    group: ADMIN_GROUPS.gallery,
     hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'label',
     defaultColumns: ['label', 'kind', 'position', '_status', 'updatedAt'],

@@ -1,13 +1,20 @@
 # Agents — read this first
 
-You are working on the **Indies Platform**: **one app, one CMS and one database** serving two websites chosen by
-hostname — **Indies Gallery** (the owner's antique maps, prints and photographs, held in Singapore; catalogue and
-enquiry only) and **Old East Indies** (the owner's merchandise, stocked in 100+ Bali stores; a real online
-store). Everything belongs to one owner, the client. The plan is `docs/PLAN.md`; the board is `TASKS.md`.
+You are working on the **Indies Platform**: **two apps, two CMSs and two databases in one repo** — **Indies
+Gallery** (`engine/apps/gallery`, the owner's antique maps, prints and photographs, held in Singapore; catalogue
+and enquiry only) and **Old East Indies** (`engine/apps/shop`, the owner's merchandise, stocked in 100+ Bali
+stores; a real online store). Each app serves one site from its own Payload config, database, admin and media
+bucket; shared code lives once in `engine/packages/*`. Everything belongs to one owner, the client. The plan is
+`docs/PLAN-V2.md` (DR-17, which retires `docs/PLAN.md`'s DR-1); the board is `TASKS.md`.
+
+**In transition (phases 21–26).** Until phase 26 lands, today's one app (`engine/apps/web`, one CMS in
+`engine/packages/cms`, one database, the site chosen by hostname) still serves both sites, and its rules below
+still apply to it. New code goes where PLAN-V2 §3–§4 puts it; never copy code into both apps — move it into a
+package — and an app never imports the other app.
 
 ## Before you touch anything
 
-1. Read `docs/PLAN.md`, then `.claude/specs/indies-platform/design.md`, then your task in `TASKS.md` (the progress
+1. Read `docs/PLAN-V2.md` and `docs/PLAN.md` (DR-2 … DR-16 stand), then `.claude/specs/indies-platform/design.md`, then your task in `TASKS.md` (the progress
    board at the repo root), then every doc in the task's **Read** list.
 2. Read `docs/WORKFLOW.md` and `docs/CONVENTIONS.md`. You may edit **only** the paths your task **Owns**.
 3. Work in **your own git worktree**, with your own database suffix and port. Never `git add -A`; commit
@@ -29,15 +36,21 @@ store). Everything belongs to one owner, the client. The plan is `docs/PLAN.md`;
 - **No file over 300 lines.** Split by responsibility.
 - **Never hand-edit generated files** (`payload-types.ts`, `importMap.js`, `next-env.d.ts`) or
   `pnpm-lock.yaml`. Never commit a migration your dev server generated — the lead for the wave generates it.
+  Each CMS (`cms-shop`, `cms-gallery`) has its own migrations, `payload-types.ts` and `importMap.js`; a change to
+  a `cms-core` factory is migrated in both, in the same wave.
+- **One app, one site.** An app serves only its own hosts (anything else is a 404), reads only its own database,
+  and never imports the other app. Code both need lives once in `engine/packages/*`. The shop reaches the
+  gallery only through the gallery's public read API, cached and optional.
 - **The build never touches a database.** The app uses **Cache Components** (`docs/ARCHITECTURE.md` §Rendering).
   Reads that decide a purchase are never cached. Storefront links never prefetch.
-- **Engine routes live under `/api/x/`** (webhooks, cron, chat, beacon); Payload owns `/api/*` otherwise.
+- **Engine routes live under `/api/x/`** (webhooks, cron, chat, beacon) in the app they serve; Payload owns
+  `/api/*` otherwise.
 - **Copy lives in keyed lexicon files, never in components.** Both languages for every key.
 - **UI is built from tokens and shared components only.** No raw colour, font-family or one-off style in feature code — a lint fails it. The owner's UI/UX pass comes after the build and must be a token and component change (`docs/DESIGN-SYSTEM.md`).
 
 ## This is not the Next.js or Payload you remember
 
-Next.js is pinned at **16.3.x** (the `middleware` convention is now `proxy`) and Payload at **3.90.x**. Before
+Next.js is pinned at **16.4.x** (the `middleware` convention is now `proxy`) and Payload at **3.90.x**. Before
 writing framework code, read the installed docs in `node_modules/next/dist/docs/` and Payload's docs for 3.90 —
 heed deprecation notices. Do not use APIs marked for removal in Payload 4.
 
