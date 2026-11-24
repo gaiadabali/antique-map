@@ -26,3 +26,5 @@ cc51ccfac7689fff017a360dd77e5c7cb855a004:docs/gates/rehearsal/shots/created.ndjs
 cc51ccfac7689fff017a360dd77e5c7cb855a004:docs/gates/rehearsal/shots/created.ndjson:generic-api-key:5
 cc51ccfac7689fff017a360dd77e5c7cb855a004:docs/gates/rehearsal/shots/created.ndjson:generic-api-key:7
 cc51ccfac7689fff017a360dd77e5c7cb855a004:docs/gates/rehearsal/shots/created.ndjson:generic-api-key:9
+# 27.7 timed staff recipe: the made-up password of a throwaway store user the e2e test creates on a test database.
+6d4070423f204c891b69daec47a4c46c03967bd7:tests/e2e/admin/staff-timed.spec.ts:generic-api-key:33
