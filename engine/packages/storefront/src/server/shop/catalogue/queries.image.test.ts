@@ -44,8 +44,8 @@ describe('the shop product image', () => {
   })
 
   it.each([
-    ['rendered', 'digital-mockup'],
-    ['composite', 'digital-mockup'],
+    ['rendered', null], // the shop shows no "Digital mockup" label (the owner, 2026-11-24)
+    ['composite', null],
     ['ai-generated', 'ai-generated'],
     ['photograph', null],
   ])('labels a %s image %s', (provenance, label) => {
