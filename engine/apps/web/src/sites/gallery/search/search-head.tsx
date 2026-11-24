@@ -3,7 +3,8 @@
  * title, the
  * answer's lede (the count, the sold toggle, the suggestion) and the search form under it.
  */
-import { Band, SectionHead } from '@engine/ui'
+import { Band } from '@engine/ui/band'
+import { SectionHead } from '@engine/ui/section-head'
 import styles from './search.module.css'
 
 export function SearchHead({

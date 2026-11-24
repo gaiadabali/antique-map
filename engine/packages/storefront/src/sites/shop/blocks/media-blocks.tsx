@@ -5,7 +5,7 @@
  * in a new tab, its size beside it. Both files come from the site's own origin
  * (`/api/x/media/{id}`), so the page's CSP needs no new source. No third-party player.
  */
-import { Button } from '@engine/ui'
+import { Button } from '@engine/ui/button'
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { DocumentLinkVM, VideoVM } from '../../../server/shop/pages/blocks'

@@ -8,7 +8,9 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { ProductCardVM } from '../../../server/shop/catalogue/view-models'
-import { Price, ResponsiveImage, printAspectOf, printRatioOf } from '@engine/ui'
+import { Price } from '@engine/ui/price'
+import { printAspectOf, printRatioOf } from '@engine/ui/print-tile'
+import { ResponsiveImage } from '@engine/ui/responsive-image'
 import { formatRupiah } from '@engine/ui/format-rupiah'
 import { productText } from '../product/copy'
 import { imageAlt, syntheticLabelText } from '../product/synthetic'

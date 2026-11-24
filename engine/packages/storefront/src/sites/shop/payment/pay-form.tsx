@@ -8,7 +8,7 @@
 import { useActionState } from 'react'
 import { useRouter } from 'next/navigation'
 
-import { Button } from '@engine/ui'
+import { Button } from '@engine/ui/button'
 import { payAction, type PayState } from '../../../server/shop/payment/actions'
 import { SnapPay } from './snap-pay'
 import styles from './order-view.module.css'

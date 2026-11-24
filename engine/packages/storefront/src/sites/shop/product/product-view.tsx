@@ -12,14 +12,9 @@
 import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
 
 import type { CatalogueImage, ProductVM } from '../../../server/shop/catalogue/view-models'
-import {
-  PrintTile,
-  PrintTileNote,
-  ResponsiveImage,
-  TextLink,
-  printAspectOf,
-  printRatioOf,
-} from '@engine/ui'
+import { PrintTile, PrintTileNote, printAspectOf, printRatioOf } from '@engine/ui/print-tile'
+import { ResponsiveImage } from '@engine/ui/responsive-image'
+import { TextLink } from '@engine/ui/text-link'
 import { ChatPageContext } from '@engine/chat/client/page-context'
 import { formatRupiah } from '@engine/ui/format-rupiah'
 import { GALLERY_LIVE, GALLERY_LIVE_LINK } from '../gallery-live'

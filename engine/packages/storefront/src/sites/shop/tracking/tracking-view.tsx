@@ -5,7 +5,10 @@
  */
 import type { SiteLocale } from '@engine/config/sites'
 
-import { Price, ResponsiveImage, StatusTimeline, TextLink } from '@engine/ui'
+import { Price } from '@engine/ui/price'
+import { ResponsiveImage } from '@engine/ui/responsive-image'
+import { StatusTimeline } from '@engine/ui/status-timeline'
+import { TextLink } from '@engine/ui/text-link'
 import { PageHead } from '../ui/page-head'
 import type { TrackingView } from '../../../server/shop/tracking/load-tracking'
 import { baliDateTime } from './bali-datetime'

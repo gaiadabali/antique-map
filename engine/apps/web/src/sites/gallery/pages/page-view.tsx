@@ -11,7 +11,10 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { PageVM } from '../../../server/gallery/pages/view-models'
-import { Band, Crossing, ResponsiveImage, SectionHead } from '@engine/ui'
+import { Band } from '@engine/ui/band'
+import { Crossing } from '@engine/ui/crossing'
+import { ResponsiveImage } from '@engine/ui/responsive-image'
+import { SectionHead } from '@engine/ui/section-head'
 import { WorkGrid } from '../browse/work-grid'
 import type { CmsPageText } from './copy'
 import styles from './pages.module.css'

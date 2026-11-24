@@ -7,7 +7,7 @@
  */
 import type { ReactNode } from 'react'
 
-import { PrintTile, PrintTileNote } from '@engine/ui'
+import { PrintTile, PrintTileNote } from '@engine/ui/print-tile'
 import styles from './shop-card.module.css'
 
 type Props = {

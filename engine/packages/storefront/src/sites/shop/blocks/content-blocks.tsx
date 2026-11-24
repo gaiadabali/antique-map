@@ -4,7 +4,9 @@
  * warm band. Every word is the block's; the picture is the public derivative.
  */
 import type { CallToActionVM, FaqVM, ImageTextVM, TextVM } from '../../../server/shop/pages/blocks'
-import { Button, ResponsiveImage, printAspectOf, printRatioOf } from '@engine/ui'
+import { Button } from '@engine/ui/button'
+import { printAspectOf, printRatioOf } from '@engine/ui/print-tile'
+import { ResponsiveImage } from '@engine/ui/responsive-image'
 import { Caps, CapsLink } from '../ui/caps-link'
 import styles from './content-blocks.module.css'
 import { linkProps } from './link-props'

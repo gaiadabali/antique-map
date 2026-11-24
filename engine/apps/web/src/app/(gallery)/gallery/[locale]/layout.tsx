@@ -18,6 +18,7 @@ import { SITE_LOCALES } from '@engine/config/sites'
 import type { Metadata } from 'next'
 
 import { SiteRoot, siteMetadata } from '../../../../shell/site-root'
+import { SiteShell } from '../../../../shell/site-shell'
 
 export const instant = false
 
@@ -35,7 +36,7 @@ export function generateMetadata({ params }: LayoutProps<'/gallery/[locale]'>): 
 
 export default function GalleryLayout({ children, params }: LayoutProps<'/gallery/[locale]'>) {
   return (
-    <SiteRoot site="gallery" params={params}>
+    <SiteRoot site="gallery" Shell={SiteShell} params={params}>
       {children}
     </SiteRoot>
   )

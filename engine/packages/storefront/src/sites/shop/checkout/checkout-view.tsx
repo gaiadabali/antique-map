@@ -9,7 +9,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { CheckoutRead } from '../../../server/shop/checkout'
-import { Button } from '@engine/ui'
+import { Button } from '@engine/ui/button'
 import { createHref, SITES } from '@engine/config/sites'
 import { formatRupiah } from '@engine/ui/format-rupiah'
 import { checkoutText } from './copy'

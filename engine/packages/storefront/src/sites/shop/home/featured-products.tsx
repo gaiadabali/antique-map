@@ -10,7 +10,9 @@ import { Suspense } from 'react'
 
 import { createHref, SITES } from '@engine/config/sites'
 
-import { Price, ResponsiveImage, printAspectOf, printRatioOf } from '@engine/ui'
+import { Price } from '@engine/ui/price'
+import { printAspectOf, printRatioOf } from '@engine/ui/print-tile'
+import { ResponsiveImage } from '@engine/ui/responsive-image'
 import { productText } from '../product/copy'
 import { imageAlt, syntheticLabelText } from '../product/synthetic'
 import {

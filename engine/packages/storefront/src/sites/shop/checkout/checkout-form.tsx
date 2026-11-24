@@ -28,7 +28,10 @@
  */
 import { useActionState, useCallback, useEffect, useRef, useState } from 'react'
 
-import { Button, FormMessage, Input, Textarea } from '@engine/ui'
+import { Button } from '@engine/ui/button'
+import { FormMessage } from '@engine/ui/form-message'
+import { Input } from '@engine/ui/input'
+import { Textarea } from '@engine/ui/textarea'
 import { submitOrderAction, type SubmitState } from '../../../server/shop/checkout/actions'
 import styles from './checkout.module.css'
 import { DeliveryPreview, type DeliveryPreviewLabels } from './delivery-preview'

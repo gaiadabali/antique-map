@@ -1,4 +1,5 @@
-import { Breadcrumbs, Pagination } from '@engine/ui'
+import { Breadcrumbs } from '@engine/ui/breadcrumbs'
+import { Pagination } from '@engine/ui/pagination'
 
 import { Section } from './section'
 

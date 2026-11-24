@@ -7,7 +7,8 @@
  */
 import { Suspense } from 'react'
 
-import { PrintTile, ResponsiveImage, printAspectOf, printRatioOf } from '@engine/ui'
+import { PrintTile, printAspectOf, printRatioOf } from '@engine/ui/print-tile'
+import { ResponsiveImage } from '@engine/ui/responsive-image'
 import {
   loadFeaturedProducts,
   type FeaturedProduct,

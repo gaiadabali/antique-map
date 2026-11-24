@@ -5,7 +5,8 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { PlaceChildVM, PlaceIndexNodeVM } from '../../../server/gallery/places/view-models'
-import { Band, SectionHead } from '@engine/ui'
+import { Band } from '@engine/ui/band'
+import { SectionHead } from '@engine/ui/section-head'
 import type { PlaceText } from './copy'
 import { placeHref } from './links'
 import styles from './places.module.css'

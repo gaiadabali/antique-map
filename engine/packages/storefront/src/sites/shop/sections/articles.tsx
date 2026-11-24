@@ -10,7 +10,8 @@
 import { Suspense } from 'react'
 
 import type { SiteLocale } from '@engine/config/sites'
-import { PrintTile, ResponsiveImage, printAspectOf, printRatioOf } from '@engine/ui'
+import { PrintTile, printAspectOf, printRatioOf } from '@engine/ui/print-tile'
+import { ResponsiveImage } from '@engine/ui/responsive-image'
 
 import { publishedArticles, type ArticleVM } from '../../../server/shop/articles/articles'
 import { productText } from '../product/copy'
