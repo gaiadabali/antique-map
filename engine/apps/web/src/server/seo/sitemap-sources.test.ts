@@ -110,8 +110,8 @@ describe('the shop sitemap sources', () => {
     expect(entries.some((entry) => /contact|kontak/.test(entry.paths.en + entry.paths.id))).toBe(
       false,
     )
-    expect(entries.find((entry) => entry.paths.en === '/partnership')?.paths.id).toBe(
-      '/id/kemitraan',
+    expect(entries.find((entry) => entry.paths.en === '/collaboration')?.paths.id).toBe(
+      '/id/kolaborasi',
     )
   })
 })

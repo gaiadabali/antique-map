@@ -12,11 +12,16 @@ import {
 import { derivativeSrcSetOf, derivativeUrlOf } from '@engine/site/media/public-image'
 import type { CatalogueImage } from './view-models'
 
-/** An image's label from its stored provenance; an unknown or missing one is a photograph. */
-const syntheticLabelOf = (provenance: unknown): SyntheticLabel | null =>
-  (MEDIA_PROVENANCES as readonly unknown[]).includes(provenance)
-    ? SYNTHETIC_LABEL[provenance as MediaProvenance]
-    : null
+/**
+ * An image's label from its stored provenance; an unknown or missing one is a photograph. The shop
+ * shows no "Digital mockup" label (the owner's request, 2026-11-24): its prints are shown framed
+ * and in rooms by design. An AI-generated image keeps its label.
+ */
+const syntheticLabelOf = (provenance: unknown): SyntheticLabel | null => {
+  if (!(MEDIA_PROVENANCES as readonly unknown[]).includes(provenance)) return null
+  const label = SYNTHETIC_LABEL[provenance as MediaProvenance]
+  return label === 'digital-mockup' ? null : label
+}
 
 /**
  * An image as the shop shows it: the public derivative, once the media pipeline has published it

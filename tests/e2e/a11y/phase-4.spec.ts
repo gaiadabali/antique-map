@@ -36,7 +36,7 @@ const UI_DIR = join(process.cwd(), 'engine/packages/ui/src/components')
 const meta = (testInfo: TestInfo) => testInfo.project.metadata as SmokeMetadata
 const prefixOf = (m: SmokeMetadata, locale: string) =>
   locale === m.locales.default ? '' : `/${locale}`
-/** The partnership page's slug in a locale, from the committed route table (`kemitraan` in id). */
+/** The partnership page's slug in a locale, from the committed route table (`kolaborasi` in id). */
 const partnershipSlug = (locale: string) => SITES.shop.routes[locale as 'en' | 'id'].partnership
 
 async function shoot(page: Page, testInfo: TestInfo, name: string) {
@@ -321,7 +321,7 @@ test.describe('4.3.e the homes and the partnership page', () => {
     page,
   }, testInfo) => {
     test.skip(meta(testInfo).site !== 'shop', 'the shop alone has a partnership page')
-    for (const url of ['/partnership', `/id/${partnershipSlug('id')}`]) {
+    for (const url of ['/collaboration', `/id/${partnershipSlug('id')}`]) {
       await page.goto(url)
       const main = page.locator('main')
       const ids = await main.locator('section').evaluateAll((all) => all.map((each) => each.id))
