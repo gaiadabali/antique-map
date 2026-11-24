@@ -12,6 +12,11 @@ name: CI
 # Wall clock is the longest job, not the sum: the jobs run side by side, and inside a job the
 # independent steps run together (.github/scripts/run-parallel.sh). The e2e job is the long pole;
 # see e2e.yml for what it caches.
+#
+# STAGING SPEED (2026-11-24, owner's decision): pushes and PRs run only the static checks, the unit
+# tests and the secret scan (about 3 min). The database tests, end-to-end and Lighthouse, for both
+# the website and the shop, run only on a manual run: Actions → CI → "Run workflow". Run it before a
+# `production` release.
 on:
   push:
     branches: [main]
@@ -137,7 +142,7 @@ jobs:
   db-tests:
     name: Database tests (today's CMS)
     needs: changes
-    if: needs.changes.outputs.web == 'true'
+    if: github.event_name == 'workflow_dispatch' && needs.changes.outputs.web == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
@@ -153,13 +158,13 @@ jobs:
   e2e:
     name: End-to-end
     needs: changes
-    if: needs.changes.outputs.web == 'true'
+    if: github.event_name == 'workflow_dispatch' && needs.changes.outputs.web == 'true'
     uses: ./.github/workflows/e2e.yml
 
   lighthouse:
     name: Lighthouse
     needs: changes
-    if: needs.changes.outputs.web == 'true'
+    if: github.event_name == 'workflow_dispatch' && needs.changes.outputs.web == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     # Lighthouse audits both sites' home pages (lighthouserc.web.json) on the release's own tree,
@@ -237,5 +242,5 @@ jobs:
   shop:
     name: Shop
     needs: changes
-    if: needs.changes.outputs.shop == 'true'
+    if: github.event_name == 'workflow_dispatch' && needs.changes.outputs.shop == 'true'
     uses: ./.github/workflows/shop.yml
