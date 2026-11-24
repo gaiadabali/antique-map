@@ -34,6 +34,8 @@
  * marked `sensitive` (a tracking token) answers with `Referrer-Policy: no-referrer` and
  * `X-Robots-Tag: noindex`. Given `securityHeaders`, every answer carries them (SECURITY.md B3).
  */
+import { SITES } from '@engine/config/sites'
+
 import { PROXY_REQUEST_HEADERS, PROXY_USER_AGENT } from '../manifest'
 import { clientAddress, hasUserAgent, isApiPath, isEngineRoute, isHostFree } from './gates'
 import { resolveHost, type ResolvedHost } from './host'
@@ -69,6 +71,13 @@ export function decideProxy(request: ProxyRequest, options: DecideOptions = {}):
     const location = `${host.origin}${pathname}${request.url.search}`
     const method = (request.method ?? 'GET').toUpperCase()
     return respond('alias', method === 'GET' || method === 'HEAD' ? 301 : 308, location, secure)
+  }
+  // A page of this site whose address changed (`movedPaths`): a permanent redirect, query kept.
+  const moved = (SITES[host.site].routes as { movedPaths?: Record<string, string> }).movedPaths?.[
+    pathname
+  ]
+  if (moved !== undefined) {
+    return respond('alias', 301, `${host.origin}${moved}${request.url.search}`, secure)
   }
   if (isApiPath(pathname) && !isEngineRoute(pathname) && !host.admin) {
     return respond('not-admin-host', 404, null, secure)

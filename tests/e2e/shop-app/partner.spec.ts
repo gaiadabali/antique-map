@@ -50,7 +50,7 @@ async function signInWith(page: Page, password: string): Promise<void> {
 }
 
 test('an approved partner signs in on the partnership page, and out again', async ({ page }) => {
-  const answer = await page.goto(`${SHOP_ORIGIN}/partnership`)
+  const answer = await page.goto(`${SHOP_ORIGIN}/collaboration`)
   expect(answer?.status()).toBe(200)
   await expect(page.getByRole('heading', { name: 'Sign in to your prices.' })).toBeVisible()
 
