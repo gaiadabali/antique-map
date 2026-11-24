@@ -13,8 +13,8 @@ export const SEEDS_COPY = t({
   navLink: { en: 'Run seeds', id: 'Jalankan seed' },
   title: { en: 'Run seeds', id: 'Jalankan seed' },
   intro: {
-    en: 'Loads the seed data committed in the code into this site’s database — after a deploy that changed it, press the matching button. Each seed is safe to run again: it adds what is missing and never overwrites what was edited here.',
-    id: 'Memuat data seed yang ada di kode ke database situs ini — setelah deploy yang mengubahnya, tekan tombol yang sesuai. Setiap seed aman dijalankan ulang: ia menambah yang belum ada dan tidak menimpa yang sudah diedit di sini.',
+    en: 'Loads the seed data committed in the code into this site’s database — after a deploy that changed it, press the matching button. Each seed is safe to run again: it adds what is missing and never overwrites what was edited here — except Client preview, which says what it overwrites.',
+    id: 'Memuat data seed yang ada di kode ke database situs ini — setelah deploy yang mengubahnya, tekan tombol yang sesuai. Setiap seed aman dijalankan ulang: ia menambah yang belum ada dan tidak menimpa yang sudah diedit di sini — kecuali Pratinjau klien, yang menyebutkan apa yang ditimpanya.',
   },
   refusalNotOwner: { en: 'Only the owner runs seeds.', id: 'Hanya pemilik yang menjalankan seed.' },
   refusalProduction: {
@@ -45,6 +45,11 @@ export const SEEDS_COPY = t({
   picturesBody: {
     en: 'Makes the web sizes of every picture still waiting for them.',
     id: 'Membuat ukuran web untuk setiap gambar yang masih menunggu.',
+  },
+  previewTitle: { en: 'Client preview', id: 'Pratinjau klien' },
+  previewBody: {
+    en: 'Sample content for the client’s review, so this site looks like the preview. It OVERWRITES the shop’s Home and Partnership pages with the latest built-in versions (other pages are untouched; missing built-in pages are added), and sets these sample fields whatever they hold now: the shop’s WhatsApp (+62 812 9925 3712) and newsletter pop-up, product types (subject categories’ products move to Mounted Art Prints and those categories become drafts), themes on products, exactly seven best sellers, store regions and the two flagships, and the Map of Bali Island 1724’s four sizes and prices. It also adds the four themes and two sample articles with their PDFs if missing. Only the shop is touched, never the gallery. Running it again changes nothing more.',
+    id: 'Konten contoh untuk ditinjau klien, agar situs ini tampil seperti pratinjaunya. Seed ini MENIMPA halaman Beranda dan Kemitraan toko dengan versi bawaan terbaru (halaman lain tidak disentuh; halaman bawaan yang belum ada ditambahkan), dan mengisi kolom contoh berikut apa pun isinya sekarang: WhatsApp toko (+62 812 9925 3712) dan pop-up newsletter, jenis produk (produk di kategori subjek dipindah ke Cetakan Seni Mounted dan kategori itu menjadi draf), tema pada produk, tepat tujuh produk terlaris, wilayah toko dan dua toko utama, serta empat ukuran dan harga Peta Pulau Bali 1724. Seed ini juga menambah empat tema dan dua artikel contoh beserta PDF-nya bila belum ada. Hanya toko yang disentuh, galeri tidak. Menjalankannya lagi tidak mengubah apa pun.',
   },
   run: { en: 'Run', id: 'Jalankan' },
   running: {

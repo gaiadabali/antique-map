@@ -15,6 +15,7 @@ const ACTIONS = [
   { action: 'shop-catalogue', title: 'catalogueTitle', body: 'catalogueBody' },
   { action: 'shop-pages', title: 'pagesTitle', body: 'pagesBody' },
   { action: 'pictures', title: 'picturesTitle', body: 'picturesBody' },
+  { action: 'preview', title: 'previewTitle', body: 'previewBody' },
 ]
 
 async function call(method, body) {

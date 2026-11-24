@@ -6,5 +6,11 @@ export type { PurgeReport } from '@engine/cms-shop/seed'
 export { seedVocabulary } from './vocabulary/seed'
 export type { VocabularyReport } from './vocabulary/seed'
 export type { PublishReport } from '@engine/cms-shop/seed'
-export { seedEnv, reqOf, derivePending, renderDerivatives } from '@engine/cms-shop/seed'
+export {
+  seedEnv,
+  reqOf,
+  derivePending,
+  renderDerivatives,
+  seedClientPreview,
+} from '@engine/cms-shop/seed'
 export type { DerivativesReport } from '@engine/cms-shop/seed'
