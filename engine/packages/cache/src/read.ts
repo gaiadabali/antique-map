@@ -2,7 +2,7 @@
  * The read side (ARCHITECTURE.md §6, CONVENTIONS.md §12): how a `'use cache'` scope tags itself,
  * and the lifetime a scope that shows a stock status declares.
  */
-import { cacheLife, cacheTag } from 'next/cache'
+import { cacheTag } from 'next/cache'
 
 import { requireCacheTag, type CacheTag } from './tags'
 
@@ -18,7 +18,18 @@ export const AVAILABILITY_STATUS_LIFE = Object.freeze({
   stale: 30,
   revalidate: 30,
   expire: 60,
-}) satisfies Parameters<typeof cacheLife>[0]
+}) satisfies CacheLifeProfile
+
+/**
+ * An inline `cacheLife` profile (seconds). Spelled out, not `Parameters<typeof cacheLife>[0]`: since
+ * Next 16.4 `next typegen` overloads `cacheLife` per app with the configured profile names, and
+ * `Parameters` reads only the last overload (a name such as `'max'`).
+ */
+type CacheLifeProfile = {
+  readonly stale?: number
+  readonly revalidate?: number
+  readonly expire?: number
+}
 
 /** Next keeps at most 128 tags of one `cacheTag()` call and drops the rest with a warning. */
 export const CACHE_TAG_BATCH = 128
