@@ -1,11 +1,15 @@
-/* The shop home's hero (the handoff's oei.css §hero): 750 px, two full-bleed halves under the clear
-   header — the words on the warm left, the framed lead print on the grey right. Every value is a
-   token. */
+/* The shop home's hero (the handoff's oei.css §hero): two full-bleed halves under the clear header —
+   the words on the warm left, the framed lead print on the grey right — one full screen tall at
+   every width (the design pass: 100vh), under the contact bar. Every value is a token. */
 
+/* The small-viewport unit keeps the hero inside a phone's visible area while its browser bars
+   show; the plain unit stands in where it is not known. Content taller than a short screen
+   grows the hero rather than spilling out of it. */
 .hero {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  block-size: 46.875rem;
+  min-block-size: calc(100vh - var(--shop-strip));
+  min-block-size: calc(100svh - var(--shop-strip));
 }
 
 .words {
@@ -79,13 +83,15 @@ p.lede {
 }
 
 @media (max-width: 56.25rem) {
+  /* stacked: the words at their own height, a little air under the header; the print fills the
+     rest of the screen, never shorter than 10rem, so the hero still fits a 667 px phone */
   .hero {
     grid-template-columns: 1fr;
-    block-size: auto;
+    grid-template-rows: auto minmax(10rem, 1fr);
   }
 
   .words {
-    min-block-size: 26.375rem;
+    padding-block-start: calc(var(--shop-header) + var(--space-5));
   }
 
   .block {
@@ -99,7 +105,7 @@ p.lede {
   }
 
   .wall {
-    block-size: 26.375rem;
+    min-block-size: 10rem;
   }
 
   .wall .tile {

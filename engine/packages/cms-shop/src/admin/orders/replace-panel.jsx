@@ -7,25 +7,7 @@
  * `shared.jsx`'s header.
  */
 import { ORDER_STATUS_LABELS } from '../../collections/orders/statuses'
-import { Card, L, QuietLink, SubmitButton, rupiah } from './shared'
-
-/** The order's items, as every order screen shows them. */
-export function LinesCard({ order, language }) {
-  return (
-    <Card>
-      <h2 className="ix-card__title">{L('items', language)}</h2>
-      {order.lines.map((line, i) => (
-        <div key={line.id ?? i} className="ix-line">
-          <span>
-            {line.qty}× {line.name}
-            {line.variantLabel ? ` — ${line.variantLabel}` : ''}
-          </span>
-          <span className="ix-num">{rupiah(line.lineTotal)}</span>
-        </div>
-      ))}
-    </Card>
-  )
-}
+import { Card, L, QuietLink, SubmitButton } from './shared'
 
 /** Tick the damaged lines, how many of each, a one-line note, Confirm. */
 export function ReplaceSheet({ order, language }) {

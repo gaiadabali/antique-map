@@ -14,7 +14,6 @@ import type { Field, Tab } from 'payload'
 
 import {
   AI,
-  announcement,
   CONTACT,
   hours,
   leadNotifyEmails,
@@ -77,12 +76,11 @@ export const shopTab: Tab = {
             {
               label: { en: 'Contact and social', id: 'Kontak dan sosial' },
               fields: [
-                contactGroup(CONTACT, { address: true }),
+                contactGroup(CONTACT),
                 replyPromise(),
                 hours(),
                 socialField(),
                 leadNotifyEmails(),
-                announcement({ moved: true }),
               ],
             },
             {

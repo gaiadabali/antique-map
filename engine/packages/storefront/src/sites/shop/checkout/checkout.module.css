@@ -48,7 +48,7 @@
     grid-column: 2;
     grid-row: 1;
     position: sticky;
-    top: calc(var(--shop-header) + var(--space-5));
+    top: calc(var(--shop-chrome) + var(--space-5));
   }
 }
 
@@ -235,11 +235,6 @@
 
 .submit {
   align-self: flex-start;
-}
-
-.token {
-  color: var(--color-accent);
-  font: var(--text-body);
 }
 
 .back {

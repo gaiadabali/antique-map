@@ -2450,10 +2450,6 @@ export interface SiteSetting {
       whatsapp?: string | null
       email?: string | null
       phone?: string | null
-      /**
-       * Shown with the phone, WhatsApp and email at the top and bottom of the site and in its menu.
-       */
-      address?: string | null
     }
     /**
      * One line telling visitors how fast you answer, such as "We reply within a day".
@@ -2483,10 +2479,6 @@ export interface SiteSetting {
      * These addresses get an email when a new enquiry arrives.
      */
     leadNotifyEmails?: string[] | null
-    /**
-     * Moved to Menu and footer → Announcement, which has dates and a link. The site shows this text until it reads the new one; clear it once you have copied it there.
-     */
-    announcement?: string | null
     /**
      * Turn off to stop new orders, for example while stock is being counted.
      */
@@ -2664,8 +2656,6 @@ export interface SiteSetting {
      * The words every product page shows beside the product’s own.
      */
     productPage?: {
-      signalFirst?: string | null
-      signalSecond?: string | null
       /**
        * Under the button. {freeOver} becomes the free-delivery amount set under Checkout and delivery.
        */
@@ -2813,7 +2803,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
               whatsapp?: T
               email?: T
               phone?: T
-              address?: T
             }
         replyPromise?: T
         hours?: T
@@ -2826,7 +2815,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
               id?: T
             }
         leadNotifyEmails?: T
-        announcement?: T
         checkoutEnabled?: T
         delivery?:
           | T
@@ -2955,8 +2943,6 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         productPage?:
           | T
           | {
-              signalFirst?: T
-              signalSecond?: T
               deliveryLine?: T
               finishHelpLabel?: T
               finishHelp?: T

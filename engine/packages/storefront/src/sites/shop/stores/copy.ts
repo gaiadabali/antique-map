@@ -8,9 +8,7 @@ import type { SiteLocale } from '@engine/config/sites'
 import { SITE_COPY } from '../../../shell/copy'
 
 export const STORES_KEYS = defineMessages({
-  'stores.eyebrow': 'Where to buy',
   'stores.title': 'Our stores',
-  'stores.description': 'The shops across Bali that stock Old East Indies.',
   'stores.lede.other': 'Old East Indies is stocked in {count} shops across Bali.',
   'stores.lede.one': 'Old East Indies is stocked in {count} shop in Bali.',
   'stores.areas': 'Areas',

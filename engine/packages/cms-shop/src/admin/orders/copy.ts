@@ -105,5 +105,3 @@ export const ORDERS_INBOX_COPY = t({
   packingSlipItem: { en: 'Item', id: 'Barang' },
   packingSlipChecked: { en: 'Packed', id: 'Dikemas' },
 })
-
-export type OrdersInboxCopyKey = keyof typeof ORDERS_INBOX_COPY

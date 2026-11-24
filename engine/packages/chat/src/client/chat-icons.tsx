@@ -74,3 +74,12 @@ export function ChatIcon({ className }: IconProps): React.ReactElement {
     </svg>
   )
 }
+
+/** The round chat door (the shop): a circular speech bubble, tail at the lower left, a heavier line. */
+export function RoundChatIcon({ className }: IconProps): React.ReactElement {
+  return (
+    <svg {...BASE} strokeWidth={2.5} className={className}>
+      <path d="M12 3a8.5 8.5 0 1 1-4.2 15.9L3.5 20.5l1.6-4.3A8.5 8.5 0 0 1 12 3z" />
+    </svg>
+  )
+}

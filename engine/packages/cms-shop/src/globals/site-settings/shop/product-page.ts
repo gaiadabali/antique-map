@@ -1,9 +1,8 @@
 /**
- * The product page's fixed words (the plan's §3.4; TASKS.md 27.1.b, 27.5.c): the two signals under
- * the price, the delivery line and the help for the finishes — until now in the shop's lexicon
- * (`product.signalPaper`, `product.signalWorkshop`, `product.delivery`, `product.finishHelpLabel`,
- * `product.finishHelp`), whose words are the defaults here. A field read empty (a database from
- * before these fields) means the lexicon's words.
+ * The product page's fixed words (the plan's §3.4; TASKS.md 27.1.b, 27.5.c): the delivery line and
+ * the help for the finishes — until now in the shop's lexicon (`product.delivery`,
+ * `product.finishHelpLabel`, `product.finishHelp`), whose words are the defaults here. A field read
+ * empty (a database from before these fields) means the lexicon's words.
  *
  * `{freeOver}` in the delivery line stands for the free-delivery amount of the delivery settings,
  * so the figure is set once.
@@ -13,8 +12,6 @@ import type { Field } from 'payload'
 type Bilingual = { en: string; id: string }
 
 export const PRODUCT_PAGE_COPY = {
-  signalFirst: { en: '300gsm cotton · archival inks', id: 'Katun 300gsm · tinta arsip' },
-  signalSecond: { en: 'Printed in our own workshop', id: 'Dicetak di workshop kami sendiri' },
   deliveryLine: {
     en: 'Sent from the nearest store by Gojek or Grab. The fee shows at checkout once you drop a pin — free over {freeOver}.',
     id: 'Dikirim dari toko terdekat lewat Gojek atau Grab. Biayanya muncul saat checkout setelah Anda pasang pin — gratis di atas {freeOver}.',
@@ -63,13 +60,6 @@ export const productPageFields: Field[] = [
       },
     },
     fields: [
-      {
-        type: 'row',
-        fields: [
-          words('signalFirst', { en: 'First signal', id: 'Keunggulan pertama' }, 80),
-          words('signalSecond', { en: 'Second signal', id: 'Keunggulan kedua' }, 80),
-        ],
-      },
       words('deliveryLine', { en: 'Delivery line', id: 'Baris pengiriman' }, 300, {
         en: 'Under the button. {freeOver} becomes the free-delivery amount set under Checkout and delivery.',
         id: 'Di bawah tombol. {freeOver} menjadi batas gratis ongkir yang diatur di Checkout dan pengiriman.',

@@ -107,8 +107,3 @@
   align-items: flex-start;
   gap: var(--space-3);
 }
-
-.reference {
-  font: var(--text-small);
-  color: var(--color-text-muted);
-}

@@ -20,8 +20,6 @@ export { RAIL_SOURCES, railSourceOf, type RailSource } from './rail-source'
 
 export const SHOP_BLOCKS: Block[] = [...HOME_BLOCKS, ...PARTNERSHIP_BLOCKS, ...CONTENT_BLOCKS]
 
-export const SHOP_BLOCK_SLUGS = SHOP_BLOCKS.map((block) => block.slug)
-
 export const SHOP_PAGE_KINDS = ['home', 'partnership', 'general'] as const
 export type ShopPageKind = (typeof SHOP_PAGE_KINDS)[number]
 

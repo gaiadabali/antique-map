@@ -12,13 +12,22 @@ import styles from './search-bar.module.css'
 type Props = {
   /** The search page's address (no query). */
   readonly action: string
+  /** On the search page: the magnifier drawn in bold (the design pass). */
+  readonly current?: boolean
   readonly openLabel: string
   readonly fieldLabel: string
   readonly submitLabel: string
   readonly closeLabel: string
 }
 
-export function SearchBar({ action, openLabel, fieldLabel, submitLabel, closeLabel }: Props) {
+export function SearchBar({
+  action,
+  current = false,
+  openLabel,
+  fieldLabel,
+  submitLabel,
+  closeLabel,
+}: Props) {
   const [open, setOpen] = useState(false)
   const id = useId()
   const field = useRef<HTMLInputElement>(null)
@@ -42,6 +51,7 @@ export function SearchBar({ action, openLabel, fieldLabel, submitLabel, closeLab
         ref={toggle}
         type="button"
         className={styles.icon}
+        data-current={current || undefined}
         aria-label={openLabel}
         aria-expanded={open}
         aria-controls={id}

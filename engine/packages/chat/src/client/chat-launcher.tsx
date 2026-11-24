@@ -8,11 +8,13 @@
  * `sites/gallery/item/zoom-lazy.tsx`. Open, the panel is fixed to the viewport: a full-height sheet
  * on a phone, a side panel from tablet up (DESIGN-SYSTEM.md §5). Every word arrives as a prop,
  * resolved server-side (`lexicon.chatPanelText`), so no lexicon ships before the visitor asks.
+ * A site may keep the icon square at every width (`iconOnly`, the shop); its words stay the name.
+ * It may also draw the round bubble (`icon="round"`) and set the button's radius (a token knob).
  */
 import dynamic from 'next/dynamic'
 import { useEffect, useRef, useState } from 'react'
 
-import { ChatIcon } from './chat-icons'
+import { ChatIcon, RoundChatIcon } from './chat-icons'
 import type { ChatPanelProps } from './chat-panel'
 import styles from './chat-launcher.module.css'
 
@@ -24,11 +26,17 @@ export type ChatLauncherProps = Omit<ChatPanelProps, 'onClose'> & {
   readonly label: string
   /** Stop above the site footer once it scrolls into view, keeping the usual gap (the shop). */
   readonly dock?: boolean
+  /** The icon square at every width, its words only the accessible name (the shop). */
+  readonly iconOnly?: boolean
+  /** The launcher's glyph: the square-cornered bubble, or the round one (the shop). */
+  readonly icon?: 'bubble' | 'round'
 }
 
 export function ChatLauncher({
   label,
   dock = false,
+  iconOnly = false,
+  icon = 'bubble',
   ...panelProps
 }: ChatLauncherProps): React.ReactElement {
   const [open, setOpen] = useState(false)
@@ -48,11 +56,12 @@ export function ChatLauncher({
         type="button"
         className={styles.launcher}
         data-dock={dock || undefined}
+        data-icon-only={iconOnly || undefined}
         aria-haspopup="dialog"
         onClick={() => setOpen(true)}
       >
         <span className={styles.icon} aria-hidden="true">
-          <ChatIcon />
+          {icon === 'round' ? <RoundChatIcon /> : <ChatIcon />}
         </span>
         <span className={styles.text}>{label}</span>
       </button>

@@ -93,6 +93,3 @@ export function shopNavSections(options: ShopNavOptions): NavSection[] {
 export const SHOP_NAV_PLAN: readonly NavSection[] = shopNavSections({
   leads: collection('leads', OWNER),
 })
-
-/** Collections with a better door than their raw list, kept out of the shop's menu (routes intact). */
-export const SHOP_OFF_MENU: readonly string[] = ['orders', 'stock-levels']

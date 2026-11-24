@@ -3,14 +3,11 @@
  * AI and the shop's delivery table (the social-links array is `./social`'s). Split out so the global's own config
  * file stays under the file-size limit (AGENTS.md).
  */
+
 /**
- * How to reach the site. `address` (the shop's, TASKS.md 28.1): a postal address in each
- * language, for the header, the footer and the menu.
+ * How to reach the site: WhatsApp, email and phone. Both sites use the same group.
  */
-export function contactGroup(
-  label: { en: string; id: string },
-  options: { address?: boolean } = {},
-): import('payload').GroupField {
+export function contactGroup(label: { en: string; id: string }): import('payload').GroupField {
   return {
     name: 'contact',
     type: 'group',
@@ -39,24 +36,6 @@ export function contactGroup(
         maxLength: 24,
         label: { en: 'Phone', id: 'Telepon' },
       },
-      ...(options.address
-        ? [
-            {
-              name: 'address',
-              type: 'textarea',
-              localized: true,
-              maxLength: 300,
-              label: { en: 'Address', id: 'Alamat' },
-              admin: {
-                rows: 2,
-                description: {
-                  en: 'Shown with the phone, WhatsApp and email at the top and bottom of the site and in its menu.',
-                  id: 'Ditampilkan bersama telepon, WhatsApp, dan email di bagian atas dan bawah situs serta di menunya.',
-                },
-              },
-            } as import('payload').Field,
-          ]
-        : []),
     ],
   }
 }

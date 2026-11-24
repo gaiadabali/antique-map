@@ -12,7 +12,7 @@
 @media (min-width: 56.3125rem) {
   .summary {
     position: sticky;
-    top: calc(var(--shop-header) + var(--space-5));
+    top: calc(var(--shop-chrome) + var(--space-5));
   }
 }
 

@@ -238,13 +238,6 @@ export async function currentOrderId(token: string | null | undefined): Promise<
   return orderIdForBuyer(await cms(), token)
 }
 
-/** "Put these back in my bag"'s read of an order's lines: see `loadOrderLinesForBag`. */
-export async function currentBagLines(
-  token: string | null | undefined,
-): Promise<ReadonlyArray<{ productId: number; variantSku: string | null; qty: number }> | null> {
-  return loadOrderLinesForBag(await cms(), token)
-}
-
 /** The simulate page's and `simulateAction`'s read: see `openOrPendingAttemptId`. */
 export async function currentOpenAttemptId(
   token: string | null | undefined,

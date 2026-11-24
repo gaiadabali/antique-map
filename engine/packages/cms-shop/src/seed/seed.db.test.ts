@@ -14,12 +14,18 @@ import { STOREFRONT_COPY } from '../globals/site-settings/shop/storefront'
 import { shopDatabaseRefusal } from './guard'
 import { seedShopLayer } from './run'
 import { categorySeeds } from './vocabulary/categories'
+import { SHOP_SETTINGS_DEFAULTS } from './vocabulary/settings'
 import { THEME_SEEDS } from './vocabulary/storefront'
 
 type Promo = {
   shop?: { promo?: Record<string, unknown>; newsletter?: { title?: string } }
 }
-type Settings = { shop?: { contact?: { whatsapp?: string }; productPage?: Record<string, string> } }
+type Settings = {
+  shop?: {
+    contact?: { whatsapp?: string }
+    productPage?: Record<string, string>
+  }
+}
 
 describe.skipIf(!server)('the shop seed: the vocabulary, on the shop database', () => {
   let stack: StaffStack
@@ -61,9 +67,10 @@ describe.skipIf(!server)('the shop seed: the vocabulary, on the shop database', 
     expect(live.totalDocs).toBe(categorySeeds().length)
     const en = (await payload.findGlobal({ slug: 'site-settings', locale: 'en' })) as Settings
     const id = (await payload.findGlobal({ slug: 'site-settings', locale: 'id' })) as Settings
-    expect(en.shop?.contact?.whatsapp).toBe('+6281299253712')
-    expect(en.shop?.productPage?.signalFirst).toBe(PRODUCT_PAGE_COPY.signalFirst.en)
-    expect(id.shop?.productPage?.signalFirst).toBe(PRODUCT_PAGE_COPY.signalFirst.id)
+    expect(en.shop?.contact).toMatchObject(SHOP_SETTINGS_DEFAULTS.contact)
+    expect(id.shop?.contact).toMatchObject(SHOP_SETTINGS_DEFAULTS.contact)
+    expect(en.shop?.productPage?.deliveryLine).toBe(PRODUCT_PAGE_COPY.deliveryLine.en)
+    expect(id.shop?.productPage?.deliveryLine).toBe(PRODUCT_PAGE_COPY.deliveryLine.id)
   }, 120_000)
 
   it('seeds the four themes published and the promotions’ words in both languages, once', async () => {

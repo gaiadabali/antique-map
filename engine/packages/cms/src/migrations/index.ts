@@ -14,6 +14,8 @@ import * as migration_20261109_082713_shop_header_footer_staff from './20261109_
 import * as migration_20261116_031741_media_video_pdf from './20261116_031741_media_video_pdf'
 import * as migration_20261116_061814_media_label from './20261116_061814_media_label'
 import * as migration_20261119_073601_feedback_data from './20261119_073601_feedback_data'
+import * as migration_20261123_082412_maps_url from './20261123_082412_maps_url'
+import * as migration_20261124_030215_drop_unused_shop_settings from './20261124_030215_drop_unused_shop_settings'
 
 export const migrations = [
   {
@@ -95,5 +97,15 @@ export const migrations = [
     up: migration_20261119_073601_feedback_data.up,
     down: migration_20261119_073601_feedback_data.down,
     name: '20261119_073601_feedback_data',
+  },
+  {
+    up: migration_20261123_082412_maps_url.up,
+    down: migration_20261123_082412_maps_url.down,
+    name: '20261123_082412_maps_url',
+  },
+  {
+    up: migration_20261124_030215_drop_unused_shop_settings.up,
+    down: migration_20261124_030215_drop_unused_shop_settings.down,
+    name: '20261124_030215_drop_unused_shop_settings',
   },
 ]

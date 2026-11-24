@@ -34,10 +34,6 @@ export const PAYMENT_KEYS = defineMessages({
   'order.putBackInBag': 'Put these back in my bag',
   'order.lateChargeTitle':
     "We received a payment after the order expired — we'll contact you on WhatsApp today.",
-  'order.serverErrorTitle': 'Something went wrong on our side. Your bag is safe.',
-  'order.reference': 'Reference: {id}',
-  'order.outOfStockTitle': '{item} sold out a moment ago. Nothing was charged.',
-  'order.statusUnavailable': 'Message us on WhatsApp and we will sort it out.',
   'order.total': 'Total',
   'order.itemsTotal': 'Items total',
   'order.cancelledTitle': 'This order was cancelled.',

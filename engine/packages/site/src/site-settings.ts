@@ -36,8 +36,6 @@ export type PublicSiteSettings = {
     whatsapp: string | null
     email: string | null
     phone: string | null
-    /** The shop's postal address (TASKS.md 28.1), in the visitor's language; the gallery has none. */
-    address?: string | null
   }
   replyPromise: string | null
   hours: string | null
@@ -50,7 +48,7 @@ export type PublicSiteSettings = {
 }
 
 const EMPTY: PublicSiteSettings = {
-  contact: { whatsapp: null, email: null, phone: null, address: null },
+  contact: { whatsapp: null, email: null, phone: null },
   replyPromise: null,
   hours: null,
   announcement: null,
@@ -100,12 +98,7 @@ async function readSettings(site: SiteKey, locale: SiteLocale): Promise<PublicSi
       locale,
       select: {
         [group]: {
-          contact: {
-            whatsapp: true,
-            email: true,
-            phone: true,
-            ...(group === 'shop' ? { address: true } : {}),
-          },
+          contact: { whatsapp: true, email: true, phone: true },
           replyPromise: true,
           hours: true,
           social: { platform: true, url: true },
@@ -121,7 +114,6 @@ async function readSettings(site: SiteKey, locale: SiteLocale): Promise<PublicSi
       whatsapp?: string | null
       email?: string | null
       phone?: string | null
-      address?: string | null
     } | null
     replyPromise?: string | null
     hours?: string | null
@@ -135,7 +127,6 @@ async function readSettings(site: SiteKey, locale: SiteLocale): Promise<PublicSi
       whatsapp: data.contact?.whatsapp ?? null,
       email: data.contact?.email ?? null,
       phone: data.contact?.phone ?? null,
-      address: str(data.contact?.address),
     },
     replyPromise: data.replyPromise ?? null,
     hours: data.hours ?? null,

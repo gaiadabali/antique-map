@@ -1,25 +1,31 @@
 /**
  * The shop's contact details (TASKS.md 28.2; the owner's feedback of 2026-11-19: "contact details
- * on the top of the page and at the bottom; also in the drop-down list"): the phone, WhatsApp,
- * email and address from `site-settings.shop.contact` (`@engine/site/site-settings`, public fields
- * only). Drawn twice from one list: as the slim bar above the header (`bar`) and inside the phone's
- * menu (`menu`); the footer has its own Contact column. With no detail set, nothing is drawn.
+ * on the top of the page and at the bottom; also in the drop-down list"): the phone, WhatsApp and
+ * email from `site-settings.shop.contact` (`@engine/site/site-settings`, public fields only). No
+ * address: the owner took it out of the header, the footer and the menu (2026-11-24). Drawn twice
+ * from one list: as the slim bar above the header (`bar`) and inside the phone's menu (`menu`); the
+ * footer has its own Contact column. With no detail set, nothing is drawn.
+ *
+ * The bar (the design pass) also carries the footer's icons at its right — the owner's accounts and
+ * WhatsApp (`./contact-icons`), WhatsApp then as its icon alone, not in words too — and stays at
+ * the top of the screen with the header under it.
  */
 import type { SiteLocale } from '@engine/config/sites'
 import type { PublicSiteSettings } from '@engine/site/site-settings'
 
 import { sectionsText } from '../sections/copy'
+import { ContactIcons, contactIconLinks } from './contact-icons'
 import styles from './contact-strip.module.css'
 
 type Line = {
-  readonly key: 'phone' | 'whatsapp' | 'email' | 'address'
+  readonly key: 'phone' | 'whatsapp' | 'email'
   readonly text: string
   readonly href?: string
   readonly label?: string
   readonly away?: boolean
 }
 
-/** The settings' contact as lines, in the owner's order: phone, WhatsApp, email, address. */
+/** The settings' contact as lines, in the owner's order: phone, WhatsApp, email. */
 export function contactLinesOf(
   contact: PublicSiteSettings['contact'],
   locale: SiteLocale,
@@ -51,7 +57,6 @@ export function contactLinesOf(
       label: t('contact.emailLabel', { email: contact.email }),
     })
   }
-  if (contact.address) lines.push({ key: 'address', text: contact.address })
   return lines
 }
 
@@ -59,36 +64,64 @@ export function ContactStrip({
   contact,
   locale,
   variant,
+  social,
+  newTab,
 }: {
   readonly contact: PublicSiteSettings['contact']
   readonly locale: SiteLocale
   readonly variant: 'bar' | 'menu'
+  /** The bar's icons: the owner's accounts (WhatsApp's from `contact`). */
+  readonly social?: PublicSiteSettings['social']
+  /** An icon's name with "opens in a new tab", from the shell's lexicon. */
+  readonly newTab?: (label: string) => string
 }) {
   const lines = contactLinesOf(contact, locale)
-  if (lines.length === 0) return null
+  const icons =
+    variant === 'bar' && newTab
+      ? contactIconLinks(
+          social ?? null,
+          lines.find((line) => line.key === 'whatsapp'),
+        )
+      : []
+  // The menu leaves WhatsApp out (the owner's request, 2026-11-24); the bar shows WhatsApp as its
+  // icon alone (the design pass).
+  const hidden = new Set<Line['key']>()
+  if (variant === 'menu' || icons.some((icon) => icon.icon === 'whatsapp')) hidden.add('whatsapp')
+  const shown = lines.filter((line) => !hidden.has(line.key))
+  if (shown.length === 0 && icons.length === 0) return null
   return (
     <nav
       className={variant === 'bar' ? styles.bar : styles.menu}
       aria-label={sectionsText(locale)('contact.label')}
       data-contact={variant}
     >
-      <ul className={styles.list}>
-        {lines.map((line) => (
-          <li key={line.key} className={styles.item} data-line={line.key}>
-            {line.href ? (
-              <a
-                href={line.href}
-                aria-label={line.label}
-                {...(line.away ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
-              >
-                {line.text}
-              </a>
-            ) : (
-              <span>{line.text}</span>
-            )}
-          </li>
-        ))}
-      </ul>
+      {shown.length > 0 ? (
+        <ul className={styles.list}>
+          {shown.map((line) => (
+            <li key={line.key} className={styles.item} data-line={line.key}>
+              {line.href ? (
+                <a
+                  href={line.href}
+                  aria-label={line.label}
+                  {...(line.away ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+                >
+                  {line.text}
+                </a>
+              ) : (
+                <span>{line.text}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+      {newTab ? (
+        <ContactIcons
+          links={icons}
+          newTab={newTab}
+          className={styles.icons}
+          linkClassName={styles.iconLink}
+        />
+      ) : null}
     </nav>
   )
 }

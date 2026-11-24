@@ -246,7 +246,7 @@ store** (☰ menu) → find the product → type what is on the shelf → **Ente
 - **Notifications and email:** **Store alerts** and **Lead notify emails** (who gets the alerts); under **Emails**,
   for each email (Order received, Paid, Being packed, … Store: new paid order) its **Subject** and **Opening
   paragraph**, per language. The order details and tracking link are added by the system.
-- **Product page:** the lines every product page shows (the two signals, the delivery line with `{freeOver}`, the
+- **Product page:** the lines every product page shows (the delivery line with `{freeOver}`, the
   finishes question and answer).
 - **Stock:** **Low stock at** — the count at or below which a product shows as low (default 2).
 - **Chat and AI:** the chat on or off, its daily budget.

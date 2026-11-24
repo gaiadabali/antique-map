@@ -18,8 +18,8 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  inline-size: 3rem;
-  block-size: 3rem;
+  inline-size: var(--chat-launcher-size, 3rem);
+  block-size: var(--chat-launcher-size, 3rem);
   padding: 0;
   font: var(--text-label);
   /* The gallery: a quiet paper button with a hairline, floating over any print or footer without
@@ -28,7 +28,7 @@
   color: var(--chat-launcher-ink, var(--color-text));
   background: var(--chat-launcher-bg, var(--color-surface-raised));
   border: var(--chat-launcher-border, var(--rule-hair) solid var(--color-border-strong));
-  border-radius: var(--radius-pill);
+  border-radius: var(--chat-launcher-radius, var(--radius-pill));
   box-shadow: var(--chat-launcher-shadow, none);
   cursor: pointer;
   transition:
@@ -48,6 +48,12 @@
 
 .icon {
   display: inline-flex;
+}
+
+/* A site may scale the square and its glyph together (the shop's design pass: 10% larger). */
+.icon svg {
+  inline-size: var(--chat-launcher-icon, 1.25rem);
+  block-size: var(--chat-launcher-icon, 1.25rem);
 }
 
 /* The words as the accessible name: out of sight on a phone, never display:none. */
@@ -74,11 +80,15 @@
   }
 }
 
-/* From 48rem up the launcher is the labelled text button, unchanged: icon out, words in. */
+/* From 48rem up the launcher is the labelled text button, unchanged: icon out, words in — unless the
+   site keeps the icon square at every width (`data-icon-only`, the shop). */
 @media (min-width: 48rem) {
   .launcher {
     right: calc(var(--space-5) + env(safe-area-inset-right, 0px));
     bottom: calc(var(--space-5) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .launcher:not([data-icon-only]) {
     gap: var(--space-2);
     inline-size: auto;
     block-size: auto;
@@ -86,11 +96,11 @@
     padding: var(--chat-launcher-pad, var(--space-3) var(--space-5));
   }
 
-  .icon {
+  .launcher:not([data-icon-only]) .icon {
     display: none;
   }
 
-  .text {
+  .launcher:not([data-icon-only]) .text {
     position: static;
     inline-size: auto;
     block-size: auto;

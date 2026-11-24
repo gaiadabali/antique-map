@@ -243,9 +243,3 @@ export const ORDERS_PANEL_COPY = t({
     id: 'Terjadi kesalahan. Coba lagi.',
   },
 })
-
-export type OrdersPanelCopyKey = keyof typeof ORDERS_PANEL_COPY
-
-export function orderLabel(key: OrdersPanelCopyKey, language: Language): string {
-  return ORDERS_PANEL_COPY[key][language] ?? ORDERS_PANEL_COPY[key].en
-}

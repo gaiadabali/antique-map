@@ -1,9 +1,11 @@
 /* The shop's header (the handoff's oei.css §header): 3 equal columns, sticky, a hairline under it;
-   clear over the home's hero until the page scrolls. Every value is a token. */
+   white on every page, the home's hero included (the design pass). The current link and language
+   in bold and still under the pointer; the others take a line under the pointer. Every value is a
+   token. */
 
 .header {
   position: sticky;
-  top: 0;
+  top: var(--shop-strip);
   z-index: 100;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
@@ -15,11 +17,6 @@
   transition:
     background-color var(--dur-in) var(--ease),
     box-shadow var(--dur-in) var(--ease);
-}
-
-.header[data-clear] {
-  background: transparent;
-  box-shadow: inset 0 calc(-1 * var(--rule-hair)) 0 var(--shop-overlay-rule);
 }
 
 .left {
@@ -62,10 +59,13 @@
   transition: transform var(--dur-in) var(--ease);
 }
 
-.navLink:hover::after,
-.navLink[aria-current='page']::after {
+.navLink:not([aria-current='page']):hover::after {
   transform: scaleX(1);
   transform-origin: left;
+}
+
+.navLink[aria-current='page'] {
+  font-weight: 700;
 }
 
 .logo {
@@ -111,6 +111,11 @@
 
 .locales :global(.site-locales) a[aria-current='true'],
 .drawerLocales :global(.site-locales) a[aria-current='true'] {
+  font-weight: 700;
+}
+
+.locales :global(.site-locales) a:not([aria-current='true']):hover,
+.drawerLocales :global(.site-locales) a:not([aria-current='true']):hover {
   text-decoration: underline;
   text-underline-offset: 0.45em;
 }
@@ -155,11 +160,17 @@
 .drawer {
   position: fixed;
   inset: 0;
+  /* Under the contact bar, which stays on top of the screen: the bar never covers the drawer's
+     logo and close button (`--shop-strip` is 0 when there is no bar). */
+  inset-block-start: var(--shop-strip);
   z-index: 9999;
   display: flex;
   flex-direction: column;
   background: var(--color-surface);
+  /* Scrolls only when its own links outgrow a short screen, and never hands the scroll on to the
+     page behind it. */
   overflow-y: auto;
+  overscroll-behavior: contain;
   animation: drawer-in var(--dur-in) var(--ease-out) both;
 }
 
@@ -253,8 +264,14 @@
   color: var(--color-text-muted);
 }
 
-/* The label alone is underlined; on the link itself the line would run under the chevron too. */
+/* The current page's label in bold, as in the header (the design pass); the pointer underlines the
+   label alone, since on the link itself the line would run under the chevron too. */
+/* Cormorant's heaviest face is 600: the bold the drawer's serif labels have */
 .drawerNav a[aria-current='page'] > span {
+  font-weight: 600;
+}
+
+.drawerNav a:not([aria-current='page']):hover > span {
   text-decoration: underline;
   text-underline-offset: 0.2em;
   text-decoration-thickness: var(--rule-hair);

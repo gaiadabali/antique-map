@@ -43,8 +43,6 @@ export type StockRow = {
 /** A bag line named without its quantity — what the buyer is asked to remove. */
 export type LineRef = { readonly productId: number; readonly variantSku: string | null }
 
-export type PickRefusalReason = PickRefusal['refusal']
-
 export type PickedStore = {
   readonly ok: true
   readonly store: Pick<StoreCandidate, 'id' | 'code' | 'name' | 'area'>

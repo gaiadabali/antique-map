@@ -5,13 +5,11 @@ import type { SiteLocale } from '@engine/config/sites'
 import { SITE_COPY } from '../../../shell/copy'
 
 export const COLLECTIONS_KEYS = defineMessages({
-  'collections.eyebrow': 'Gallery walls',
   'collections.title': 'Collections',
   'collections.lede': 'Our prints gathered by subject — choose a wall to browse.',
   'collections.count.one': '{count} print',
   'collections.count.other': '{count} prints',
   'collections.empty': 'The gallery walls are being hung — please look again soon.',
-  'collections.noPicture': 'Picture to come',
 })
 
 export type CollectionsMessageKey = keyof typeof COLLECTIONS_KEYS

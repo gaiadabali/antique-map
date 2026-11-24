@@ -187,7 +187,7 @@ Reshape note: the code's `masters.brand`, `design` and the `print-file` kind, an
 | `events`        | ANALYTICS.md §4                                                                                                                                                                                                                                                                                                                                                                                                              | append-only; read by the dashboard                                                                                                                                                                                                                          |
 
 **Global `site-settings`** — one group per site (`gallery`, `shop`), each: `contact { whatsapp, email, phone }`,
-`replyPromise` **L** (G9: "the same working day, Singapore time"), `hours` **L**, `announcement` **L**,
+`replyPromise` **L** (G9: "the same working day, Singapore time"), `hours` **L**, `announcement` **L** (the gallery's alone; the shop's is `shop-header`'s),
 `social[]`, `leadNotifyEmails[]`, `ai { chatEnabled, draftingEnabled, dailyBudgetUsd, sessionTokenCap }` (AI.md).
 The shop's group adds `checkoutEnabled` (the kill switch, SECURITY.md), `delivery { bands[] { upToKm, feeIdr },
 freeOverIdr }` (the last band's `upToKm` is the delivery reach; free over Rp 500.000, S13), `welcomeDiscount` →

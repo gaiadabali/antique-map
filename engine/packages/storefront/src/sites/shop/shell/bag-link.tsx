@@ -9,7 +9,12 @@ import { bagCount } from '../../../server/shop/bag'
 import type { ShopShellText } from './shell-messages'
 import styles from './bag-link.module.css'
 
-type Props = { readonly href: string; readonly t: ShopShellText }
+type Props = {
+  readonly href: string
+  /** On the bag's own page: marked current, the icon drawn in bold (the design pass). */
+  readonly current?: boolean
+  readonly t: ShopShellText
+}
 
 export function BagLink(props: Props) {
   return (
@@ -29,11 +34,12 @@ async function CountedBag(props: Props) {
   return <Icon {...props} count={count} />
 }
 
-function Icon({ href, t, count }: Props & { readonly count: number }) {
+function Icon({ href, current = false, t, count }: Props & { readonly count: number }) {
   return (
     <a
       className={styles.bag}
       href={href}
+      aria-current={current ? 'page' : undefined}
       aria-label={
         count > 0 ? t('shell.shop.bagCount', { count: String(count) }) : t('shell.shop.bag')
       }

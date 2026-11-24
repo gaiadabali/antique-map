@@ -1,6 +1,7 @@
 /**
  * The owner's feedback of 2026-11-19 (TASKS.md 28.2), the pure parts: the landing page's order, the
- * shop page's narrowed addresses, and when the same-day promise still holds today.
+ * shop page's narrowed addresses, when the same-day promise still holds today, and the contact
+ * strip's lines.
  */
 import { describe, expect, it, vi } from 'vitest'
 
@@ -10,6 +11,7 @@ import type { ShopBlockVM } from '../../../server/shop/pages/blocks'
 import { homeOrder } from './home-order'
 import { shopFilterHref, shopFilterOf } from './links'
 import { sameDayOpen } from './promo'
+import { contactLinesOf } from '../shell/contact-strip'
 
 const block = (type: ShopBlockVM['type'], id = type) => ({ type, id }) as unknown as ShopBlockVM
 const order = (blocks: readonly ShopBlockVM[]) =>
@@ -87,5 +89,17 @@ describe('the same-day promise', () => {
     const saturday = new Date('2026-11-21T02:00:00Z') // Sat 10:00
     expect(sameDayOpen(saturday, rule)).toBe(false)
     expect(sameDayOpen(saturday, { ...rule, weekdaysOnly: false })).toBe(true)
+  })
+})
+
+describe('the contact strip’s lines', () => {
+  it('are phone, WhatsApp and email, in that order, and no address', () => {
+    const contact = { whatsapp: '+6281299253712', email: 'hello@example.test', phone: '0361 123' }
+    expect(contactLinesOf(contact, 'en').map((line) => line.key)).toEqual([
+      'phone',
+      'whatsapp',
+      'email',
+    ])
+    expect(contactLinesOf({ whatsapp: null, email: null, phone: null }, 'en')).toEqual([])
   })
 })

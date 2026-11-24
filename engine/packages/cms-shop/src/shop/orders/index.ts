@@ -42,7 +42,6 @@ export {
   type AssignInput,
   type LineRef,
   type PickRefusal,
-  type PickRefusalReason,
   type PickResult,
   type PickedStore,
   type StockRow,
@@ -95,4 +94,3 @@ export {
   type QuoteFeeResult,
 } from './quote'
 export { orderStartFor, type OrderStart, type OrderStartStatus, type OrderWindows } from './start'
-export { ordersQuoteRoute, type QuoteRouteContext, type QuoteRouteOptions } from './http'

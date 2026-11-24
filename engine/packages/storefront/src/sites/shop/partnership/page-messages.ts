@@ -25,7 +25,6 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
   'partnership.resellerReorder': 'One click from your order history',
   'partnership.resellerDisplay': 'Counter stands and signage, on request',
   'partnership.resellerCta': 'Apply as a reseller',
-  'partnership.posterReseller': 'Shop display — placeholder',
   'partnership.companyEyebrow': '02 · Company gifting',
   'partnership.companyTitle': 'A gift that carries a story, not a logo.',
   'partnership.companyBody':
@@ -35,17 +34,6 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
   'partnership.companyQuantity': 'From 25 pieces',
   'partnership.companyLeadTime': 'Three to four weeks, including a sample',
   'partnership.companyCta': 'Request a gifting quote',
-  'partnership.posterCompany': 'Corporate gift set — placeholder',
-  'partnership.hotelEyebrow': '03 · Hotels & villas',
-  'partnership.hotelTitle': 'Bali on the wall, not a postcard of it.',
-  'partnership.hotelBody':
-    'For hotels, villas and restaurants that want art with a reason to be there. Antique charts of Bali, botanical studies of local spice, and views of the islands as travellers first saw them — sized for corridors, suites and lobbies.',
-  'partnership.hotelThemed': 'Curated to your island, your period, your palette',
-  'partnership.hotelSizes': 'Up to 120 cm, framed and ready to hang',
-  'partnership.hotelRepeat': 'We hold your specification for future rooms',
-  'partnership.hotelSample': 'One piece sent before you commit',
-  'partnership.hotelCta': 'Request hotel samples',
-  'partnership.posterHotel': 'Hotel interior — placeholder',
   'partnership.enquireEyebrow': 'Apply',
   'partnership.enquireTitle': 'One form, whichever you are.',
   'partnership.enquireBody':
@@ -53,7 +41,6 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
   'partnership.talkFirst': 'Prefer to talk first?',
   'partnership.talkWhatsapp': 'WhatsApp {number}',
   'partnership.talkWhatsappLabel': 'WhatsApp {number} (opens in a new tab)',
-  'partnership.ctaWhatsapp': 'WhatsApp us',
   'partnership.ctaEmail': 'Email us',
   'partnership.whatsappMessage':
     'Hello — I am buying for a shop, hotel or company and would like to know about your trade terms.',
@@ -72,9 +59,6 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
   'partnership.formWhatsapp': 'WhatsApp number',
   'partnership.formWhatsappHint': 'With the country code, for example +62 812 3456 7890.',
   'partnership.formContactNote': 'Give a WhatsApp number or an email address — one is enough.',
-  'partnership.formConsent':
-    'I agree that Old East Indies may use these details to answer this enquiry, and keep them for up to 24 months after it is closed.',
-  'partnership.formConsentVersion': 'Consent text {version}',
   'partnership.formSending': 'Sending…',
   'partnership.formSuccessTitle': 'Thank you — we have your enquiry.',
   'partnership.formSuccessBody':
@@ -101,11 +85,6 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
   'partnership.labelBranding': 'Branding',
   'partnership.labelQuantity': 'Quantity',
   'partnership.labelLeadTime': 'Lead time',
-  'partnership.labelThemed': 'Themed',
-  'partnership.labelSizes': 'Sizes',
-  'partnership.labelRepeat': 'Repeat',
-  'partnership.labelSample': 'Sample',
-  'partnership.signInLink': 'Partner sign in',
   'partnership.signInEyebrow': 'Already a partner',
   'partnership.signInTitle': 'Sign in to your prices.',
   'partnership.signInBody':

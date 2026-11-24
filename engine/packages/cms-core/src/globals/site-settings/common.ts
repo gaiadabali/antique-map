@@ -1,6 +1,6 @@
 /**
  * The settings fields both sites' groups use (`./sites`, `./shop`): the reply promise, the hours,
- * the announcement and who hears of a new lead.
+ * who hears of a new lead — and the gallery's announcement.
  */
 import type { Field } from 'payload'
 
@@ -28,35 +28,21 @@ export const hours = (): Field => ({
   label: { en: 'Hours', id: 'Jam' },
 })
 
-const ANNOUNCEMENT_NOTE: Bilingual = {
-  en: 'A notice shown to visitors of this site, such as a holiday closure. Leave empty for none.',
-  id: 'Pengumuman untuk pengunjung situs ini, misalnya libur. Kosongkan jika tidak ada.',
-}
-
-/** Where the shop's announcement now lives; this field shows only while it still holds text. */
-const MOVED_NOTE: Bilingual = {
-  en: 'Moved to Menu and footer → Announcement, which has dates and a link. The site shows this text until it reads the new one; clear it once you have copied it there.',
-  id: 'Dipindah ke Menu dan footer → Pengumuman, yang punya tanggal dan tautan. Situs menampilkan teks ini sampai membaca yang baru; kosongkan setelah Anda menyalinnya ke sana.',
-}
-
 /**
- * The site's announcement. `moved`: the shop's, replaced by `shop-header.announcement` —
- * kept (the site still reads it) but shown only while it holds text, so nobody starts a new one here.
+ * The gallery's announcement. The shop has none here: its announcement is `shop-header`'s, with
+ * dates and a link.
  */
-export const announcement = (options: { moved?: boolean } = {}): Field => ({
+export const announcement = (): Field => ({
   name: 'announcement',
   type: 'textarea',
   localized: true,
   maxLength: 1000,
   label: { en: 'Announcement', id: 'Pengumuman' },
   admin: {
-    description: options.moved ? MOVED_NOTE : ANNOUNCEMENT_NOTE,
-    ...(options.moved
-      ? {
-          condition: (_data: unknown, sibling: { announcement?: unknown } | undefined) =>
-            typeof sibling?.announcement === 'string' && sibling.announcement.trim() !== '',
-        }
-      : {}),
+    description: {
+      en: 'A notice shown to visitors of this site, such as a holiday closure. Leave empty for none.',
+      id: 'Pengumuman untuk pengunjung situs ini, misalnya libur. Kosongkan jika tidak ada.',
+    },
   },
 })
 

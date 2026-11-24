@@ -23,8 +23,9 @@ export const CONTACT = {
   phone: '+62 361 000 111',
   whatsapp: '+6281200001111',
   email: 'hello-e2e@example.test',
-  address: 'Jl. Raya Ubud 1, Gianyar, Bali',
 }
+/** The showroom's address, which the settings once held: no page shows it (the owner, 2026-11-24). */
+const SHOWROOM_ADDRESS = /Jl\. Gambuh/
 const SEEN = 'oei:newsletter-seen'
 
 /** A one-page PDF, as small as a valid one gets. */
@@ -263,8 +264,9 @@ export function feedbackTests(): void {
         const articles = page.locator('section[aria-labelledby="home-articles"] a[target="_blank"]')
         await expect(articles).toHaveCount(2)
         await expect(articles.first()).toHaveAccessibleName(w.pdf)
-        // The footer's contact.
-        await expect(page.getByRole('contentinfo')).toContainText(CONTACT.address)
+        // The footer's contact: the email, never the address (the owner, 2026-11-24).
+        await expect(page.getByRole('contentinfo')).toContainText(CONTACT.email)
+        await expect(page.getByRole('contentinfo')).not.toContainText(SHOWROOM_ADDRESS)
         await noOverflow(page, `home ${locale}`)
         await axeClean(page, `home ${locale} ${viewport.width}`)
       })
@@ -302,7 +304,9 @@ export function feedbackTests(): void {
     }
   }
 
-  test('the menu on a phone carries the contact', async ({ page }) => {
+  test('the menu on a phone carries the contact, without the address or WhatsApp', async ({
+    page,
+  }) => {
     await quiet(page)
     await page.setViewportSize(WIDTHS[0])
     await page.goto(at(href('stores', {}, 'en')))
@@ -314,7 +318,9 @@ export function feedbackTests(): void {
     }).toPass({ timeout: 15_000 })
     const menu = sheet.getByRole('navigation', { name: WORDS.en.contact })
     await expect(menu.getByRole('link', { name: CONTACT.email })).toBeVisible()
-    await expect(menu).toContainText(CONTACT.address)
+    // Neither the address nor WhatsApp in the menu (the owner, 2026-11-24).
+    await expect(menu).not.toContainText(SHOWROOM_ADDRESS)
+    await expect(menu).not.toContainText('WhatsApp')
   })
 
   test('the articles page lists every article; each PDF opens, sandboxed', async ({

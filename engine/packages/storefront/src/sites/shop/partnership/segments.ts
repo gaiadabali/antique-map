@@ -32,8 +32,6 @@ export const SEGMENT_MESSAGES = defineMessages({
   'partnership.formPrivacy': 'Privacy notice',
 })
 
-export type SegmentKey = keyof typeof SEGMENT_MESSAGES
-
 export function segmentText(locale: SiteLocale): SegmentText {
   const { t } = createMessages({
     defaults: SEGMENT_MESSAGES,

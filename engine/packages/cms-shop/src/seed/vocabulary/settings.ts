@@ -1,7 +1,7 @@
 /**
  * The shop's `site-settings` group as a fresh environment starts on (`./seed`; today's one CMS
  * writes it beside the gallery's, `@engine/cms`'s vocabulary settings): the schema's own defaults,
- * the accounts the owner's old pages named (10.6.e) and the shop's WhatsApp number as the local
+ * the accounts the owner's old pages named (10.6.e), the shop's WhatsApp number as the local
  * shop held it. Written once.
  */
 import { PRODUCT_PAGE_COPY } from '../../globals/site-settings/shop/product-page'
@@ -27,9 +27,9 @@ export const SHOP_SETTINGS_DEFAULTS = {
 } as const
 
 /**
- * The same group's Indonesian words, written once beside it in the `id` locale: the product
- * page's fixed words (`PRODUCT_PAGE_COPY`). The first write fills only English, and a read in
- * Indonesian would otherwise fall back to it.
+ * The same group's Indonesian words, written once beside it in the `id` locale: the product page's
+ * fixed words (`PRODUCT_PAGE_COPY`). The first write fills only English, and a read in Indonesian
+ * would otherwise fall back to it.
  */
 export const SHOP_SETTINGS_DEFAULTS_ID = {
   productPage: Object.fromEntries(
