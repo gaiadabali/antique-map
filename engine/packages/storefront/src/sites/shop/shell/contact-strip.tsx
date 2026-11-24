@@ -70,19 +70,18 @@ export function ContactStrip({
   readonly contact: PublicSiteSettings['contact']
   readonly locale: SiteLocale
   readonly variant: 'bar' | 'menu'
-  /** The bar's icons: the owner's accounts (WhatsApp's from `contact`). */
+  /** The icons (the bar's and the menu's): the owner's accounts (WhatsApp's from `contact`). */
   readonly social?: PublicSiteSettings['social']
   /** An icon's name with "opens in a new tab", from the shell's lexicon. */
   readonly newTab?: (label: string) => string
 }) {
   const lines = contactLinesOf(contact, locale)
-  const icons =
-    variant === 'bar' && newTab
-      ? contactIconLinks(
-          social ?? null,
-          lines.find((line) => line.key === 'whatsapp'),
-        )
-      : []
+  const icons = newTab
+    ? contactIconLinks(
+        social ?? null,
+        lines.find((line) => line.key === 'whatsapp'),
+      )
+    : []
   // The menu leaves WhatsApp out (the owner's request, 2026-11-24); the bar shows WhatsApp as its
   // icon alone (the design pass).
   const hidden = new Set<Line['key']>()
