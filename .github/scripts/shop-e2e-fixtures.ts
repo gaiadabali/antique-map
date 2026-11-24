@@ -153,7 +153,7 @@ if ((await payload.count({ collection: 'orders', overrideAccess: true })).totalD
 // The orders above carry their own numbers, so the sequence a checkout draws from must start past
 // them, or the first purchase collides on `orders_number_idx`.
 await (payload.db as unknown as { pool: { query: (text: string) => Promise<unknown> } }).pool.query(
-  "SELECT setval('orders_number_seq', GREATEST((SELECT COALESCE(MAX(number), 0) FROM orders), 100000))",
+  "SELECT setval('orders_number_seq'::regclass, GREATEST((SELECT COALESCE(MAX(number), 0) FROM orders), 100000)::bigint)",
 )
 
 const count = async (collection: string, where?: object) =>
