@@ -5,7 +5,7 @@
  * it. Plain links, no client JS. `.jsx`: see `./shared.jsx`'s header.
  */
 import { buildReply } from './reply'
-import { Card, L } from './shared'
+import { Card, L } from '@engine/cms-core/admin/shared'
 
 async function firstItemTitle(payload, req, data, locale) {
   const first = Array.isArray(data?.items) ? data.items[0] : undefined

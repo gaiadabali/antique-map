@@ -12,7 +12,7 @@ import { PROXY_REQUEST_HEADERS } from '@engine/http/manifest'
 
 import { siteLocale } from '../../../shell/messages'
 import { currentSite, siteHref } from '../../../shell/site'
-import { Band, Button, SectionHead } from '../../../shared/ui'
+import { Band, Button, SectionHead } from '@engine/ui'
 import { browseBase } from '../browse/state-links'
 import { SearchForm } from '../search/search-form'
 import { cmsPageText } from './copy'

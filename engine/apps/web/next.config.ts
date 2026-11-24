@@ -26,10 +26,16 @@ const nextConfig: NextConfig = {
   turbopack: { root: workspaceRoot },
   // The engine's packages ship as TypeScript source (their exports maps point at src/).
   transpilePackages: [
+    '@engine/chat',
     '@engine/cms',
+    '@engine/cms-core',
+    '@engine/cms-shop',
     '@engine/config',
     '@engine/http',
     '@engine/i18n',
+    '@engine/site',
+    '@engine/storefront',
+    '@engine/ui',
     '@engine/view-models',
   ],
   // One `payload` module per process (TASKS.md 8.6, carried here by 2.1). Bundled, it is compiled

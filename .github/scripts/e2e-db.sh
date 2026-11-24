@@ -11,9 +11,12 @@
 #   e2e-db.sh restore <database> <dir>                create the database and pg_restore it
 #
 # The key hashes git's own blob ids of every tracked file that decides what the seed writes — the
-# CMS and the packages it imports (cache, config, media; tests excluded), the db tooling, the shop
-# publish script, the lockfile (Payload's version) and this script — plus the Postgres major. It
-# reads git's index, never the working tree's node_modules.
+# CMS and the packages it imports (cms-core, cms-shop, cache, config, media; tests excluded): since
+# phase 23 the shop layers' data, the import kit and `pnpm data:seed` itself (cms-shop's
+# src/seed/app.mjs) live in cms-shop and cms-core — the db tooling, the shop publish script, the
+# root package.json (the data:seed and db:fresh scripts), the lockfile (Payload's version) and
+# this script — plus the Postgres major. It reads git's index, never the working tree's
+# node_modules.
 #
 # Postgres runs on the runner itself (.github/actions/setup-postgres): pg_dump and pg_restore are
 # the server's own tools, at its major version, reached through PGHOST/PGPORT/PGPASSWORD. Without S3 settings Payload writes uploads to the collection's local folder
@@ -33,11 +36,12 @@ usage() {
 key() {
   local sum
   sum="$(git ls-files -s -- \
-    engine/packages/cms engine/packages/cache engine/packages/config engine/packages/media \
-    engine/tooling/db tests/e2e/support/publish-shop-products.ts pnpm-lock.yaml \
+    engine/packages/cms engine/packages/cms-core engine/packages/cms-shop \
+    engine/packages/cache engine/packages/config engine/packages/media \
+    engine/tooling/db tests/e2e/support/publish-shop-products.ts package.json pnpm-lock.yaml \
     .github/scripts/e2e-db.sh \
     ':!:*.test.*' ':!:*.test-support.*' | sha256sum | cut -c1-40)"
-  echo "e2e-db-v2-$POSTGRES_MAJOR-$sum"
+  echo "e2e-db-v3-$POSTGRES_MAJOR-$sum"
 }
 
 seed() {

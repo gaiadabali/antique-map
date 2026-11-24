@@ -7,16 +7,16 @@ import { describe, expect, it } from 'vitest'
 
 import type { SiteKey, SiteLocale } from '@engine/config/sites'
 
-import { partnershipText } from '../../sites/shop/partnership/page-messages'
+import { partnershipText } from '@engine/storefront/sites/partnership/page-messages'
 import { browseText as galleryBrowseText } from '../../sites/gallery/browse/copy'
 import { contactText } from '../../sites/gallery/contact/messages'
 import { homeText as galleryHomeText } from '../../sites/gallery/home/home-messages'
 import { makerText } from '../../sites/gallery/makers/copy'
 import { placeText } from '../../sites/gallery/places/copy'
-import { browseText as shopBrowseText } from '../../sites/shop/browse/copy'
-import { homeText as shopHomeText } from '../../sites/shop/home/home-messages'
-import { productText } from '../../sites/shop/product/copy'
-import { pageMetadata, trimDescription } from './metadata'
+import { browseText as shopBrowseText } from '@engine/storefront/sites/browse/copy'
+import { homeText as shopHomeText } from '@engine/storefront/sites/home/home-messages'
+import { productText } from '@engine/storefront/sites/product/copy'
+import { pageMetadata, trimDescription } from '@engine/site/seo'
 
 type Case = {
   readonly site: SiteKey

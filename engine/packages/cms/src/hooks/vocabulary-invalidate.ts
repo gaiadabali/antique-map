@@ -19,9 +19,8 @@
  * listing.
  */
 import { catalogueTag, invalidate } from '@engine/cache'
+import { changedPublishedState } from '@engine/cms-core/hooks'
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
-
-import { changedPublishedState } from './published-state'
 
 /** What a vocabulary record's change expires: the gallery's listings. */
 export const VOCABULARY_TAGS = [catalogueTag('gallery')] as const

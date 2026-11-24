@@ -17,7 +17,14 @@ import '../../../../styles/site.css'
 import { SITE_LOCALES } from '@engine/config/sites'
 import type { Metadata } from 'next'
 
+import { registerOriginals } from '@engine/storefront/originals'
+
+import { loadOriginals } from '../../../../server/shop/home/load-originals'
 import { SiteRoot, siteMetadata } from '../../../../shell/site-root'
+
+// The home's bridge to the originals reads this database's `works` (`@engine/storefront/originals`):
+// registered here, in the module every shop page loads before it renders.
+registerOriginals(loadOriginals)
 
 export const instant = false
 

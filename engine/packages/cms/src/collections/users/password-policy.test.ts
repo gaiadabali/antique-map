@@ -1,8 +1,11 @@
+import {
+  enforcePasswordPolicy,
+  isCommonPassword,
+  passwordProblem,
+} from '@engine/cms-core/collections/users'
 import { describe, expect, it } from 'vitest'
 
-import { isCommonPassword } from './common-passwords'
 import { Users } from './index'
-import { enforcePasswordPolicy, passwordProblem } from './password-policy'
 
 describe('the password policy (A2, F-03)', () => {
   it('refuses under 12 characters and common passwords, accepts a long unusual one', () => {

@@ -5,10 +5,10 @@
  */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { DashboardForbidden } from '../../../../../../packages/cms/src/admin/dashboard/context'
-import { compared } from '../../../../../../packages/cms/src/admin/dashboard/compare'
+import { DashboardForbidden } from '../../../../../../packages/cms-core/src/admin/dashboard/context'
+import { compared } from '../../../../../../packages/cms-core/src/admin/dashboard/compare'
 import { loadDashboard } from '../../../../../../packages/cms/src/admin/dashboard/loaders'
-import { resolvePeriod } from '../../../../../../packages/cms/src/admin/dashboard/period'
+import { resolvePeriod } from '../../../../../../packages/cms-core/src/admin/dashboard/period'
 
 import { server, shiftDay, startDashboardStack, type Dashboardish } from './dashboard.test-support'
 

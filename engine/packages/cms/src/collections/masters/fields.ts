@@ -3,10 +3,6 @@
  * per private file. Its consistency rules are `./validators`; that the file is really in the
  * bucket, and is the one declared, is `./hooks`.
  */
-import { MEDIA_ROLES } from '@engine/media/contract'
-import { MASTER_KINDS } from '@engine/media/storage'
-import type { Field } from 'payload'
-
 import {
   optionsOf,
   PROVENANCE_OPTIONS,
@@ -14,7 +10,10 @@ import {
   ROLE_LABELS,
   TIER_OPTIONS,
   VERDICT_OPTIONS,
-} from '../media/options'
+} from '@engine/cms-core/collections/media'
+import { MEDIA_ROLES } from '@engine/media/contract'
+import { MASTER_KINDS } from '@engine/media/storage'
+import type { Field } from 'payload'
 
 /** C9 `MasterRole`: a media role, or a `reference` frame kept to correct the shots it goes with. */
 export const MASTER_ROLES = [...MEDIA_ROLES, 'reference'] as const

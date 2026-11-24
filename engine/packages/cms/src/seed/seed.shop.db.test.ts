@@ -6,7 +6,7 @@ import { getPayload } from 'payload'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { server, startStaffStack, type StaffStack } from '../collections/users/staff.test-support'
-import { purgeSeed } from './purge'
+import { purgeSeed } from '@engine/cms-shop/seed'
 import { sampleRows, seedLayer } from './run'
 
 describe.skipIf(!server)('the shop seed layer, on a real database', () => {

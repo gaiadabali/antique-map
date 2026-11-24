@@ -20,7 +20,7 @@ to mix, not copy: Etalage (a detailed showcase catalogue) and Everart (a consist
 complete filtering).
 
 **Ported, not pasted.** Their tokens and component CSS are the base: tiers 1 and 3 and the fonts go to
-`src/shared/styles/`, each site's tier 2 to `src/sites/<site>/tokens/` (ARCHITECTURE.md §4), the component CSS into
+`engine/packages/ui/src/styles/`, each site's tier 2 to `engine/packages/ui/src/styles/tokens/<site>.css` (ARCHITECTURE.md §4), the component CSS into
 one CSS Module per shared component. The pages are references for composition and content: their page-level
 overrides (their own reading face, one green palette for both sites) and inline values (`#1C201C`,
 `padding-block: 70px`) are re-expressed in tokens, never copied into feature code. The surfaces they did not draw
@@ -125,8 +125,8 @@ shift. Weights loaded: Cormorant 400, 500, 600 and italic 400; Karla 400, 500, 7
 ## 4. Colour
 
 > **Superseded in its values by Ivory and ink (phase 18):** the roles and the three tiers stand; the ramps and their
-> contrast are in DESIGN.md and `shared/styles/tokens/primitives.css`, mapped per site in
-> `sites/{gallery,shop}/tokens/brand.css`. The client's final colours (Q16) remain an edit to those files.
+> contrast are in DESIGN.md and `packages/ui/src/styles/tokens/primitives.css`, mapped per site in
+> `packages/ui/src/styles/tokens/{gallery,shop}.css`. The client's final colours (Q16) remain an edit to those files.
 
 Components use **roles** (tier 3), never raw values. **Each site's palette is tier 2** — its brand variables, in one
 file per site: `sites/gallery/tokens` and `sites/shop/tokens` — and both define every role. The gallery is quiet and

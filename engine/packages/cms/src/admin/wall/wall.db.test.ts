@@ -134,6 +134,12 @@ describe.skipIf(!server)('the Catalogue Wall, on a real database', () => {
     expect(card['WALL-STOCKED']?.tag).toBe('published')
   })
 
+  it('shows a card’s photo from its stored file before any derivative is published', () => {
+    expect(card['WALL-OUT']?.image).toMatch(/\/api\/media\/file\/flat-/)
+    expect(card['P.1']?.image).toMatch(/\/api\/media\/file\/recto-/)
+    expect(card['WALL-NOPHOTO']?.image).toBeNull()
+  })
+
   it('links every card to its record’s edit page', () => {
     expect(card['WALL-OUT']?.href).toMatch(/^\/admin\/collections\/products\/\d+$/)
     expect(card['P.1']?.href).toMatch(/^\/admin\/collections\/works\/\d+$/)

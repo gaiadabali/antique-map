@@ -1,7 +1,7 @@
 /**
  * Recipe 2 (CONTENT-OPERATIONS.md 3.5, DATA.md 3, target 10 minutes): the owner imports a stock spreadsheet on the
  * admin's stock import screen (/admin/stock-import, 10.8.a). A new staff member finds it from the sidebar's
- * "Import stock" link (or, with the sidebar closed, the address the manual gives), uploads a one-row CSV for the
+ * "Import from a spreadsheet" link (or, with the sidebar closed, the address the manual gives), uploads a one-row CSV for the
  * REHEARSAL 10.4 product's stock at DPS-004 only, reads the Preview (nothing is saved), then presses Apply.
  * A recipe that finds no screen FAILS with that reason; it is never skipped.
  */
@@ -23,9 +23,7 @@ test('R2 owner: import a stock spreadsheet', async ({ page }, info) => {
   // The sidebar may open closed (Payload's choice under 1440 px): the helper opens it.
   await m.click(await sidebarLink(page, '/admin/stock-import'))
   await page.waitForLoadState('networkidle')
-  await expect(
-    page.getByRole('heading', { name: /import stock from a spreadsheet/i }),
-  ).toBeVisible()
+  await expect(page.getByRole('heading', { name: /import from a spreadsheet/i })).toBeVisible()
   await m.shot('r2-1-stock-import')
 
   // The one row: two units at DPS-004 (recipe 1 left one), a change the preview must show.

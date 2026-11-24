@@ -3,11 +3,11 @@
  * extension or the `Content-Type` it was sent or stored with. The pipeline re-reads the upload
  * from the bucket, so it sniffs again rather than trusting what Payload sniffed on the way in —
  * sharp would decode a TIFF, a GIF or an SVG just as happily, and none of them is a `media` image
- * (`../storage` `MEDIA_UPLOAD_MIME_TYPES`).
+ * (`../storage` `MEDIA_IMAGE_MIME_TYPES`). A video or a PDF never reaches the pipeline.
  */
-import type { MEDIA_UPLOAD_MIME_TYPES } from '../storage/limits'
+import type { MEDIA_IMAGE_MIME_TYPES } from '../storage/limits'
 
-export type MediaImageType = (typeof MEDIA_UPLOAD_MIME_TYPES)[number]
+export type MediaImageType = (typeof MEDIA_IMAGE_MIME_TYPES)[number]
 
 const startsWith = (bytes: Uint8Array, at: number, signature: readonly number[]) =>
   bytes.length >= at + signature.length && signature.every((byte, i) => bytes[at + i] === byte)

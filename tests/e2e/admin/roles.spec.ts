@@ -2,7 +2,7 @@
  * TASKS.md 3.6.d, driven in a browser at 1280 px as the owner, an editor and store staff, on a
  * production build: each sees the sidebar their role may; an invalid save shows a plain message
  * naming the field and the fix, in English and in Indonesian (switched on the profile); the
- * dashboard's counts equal SQL counts on the server's database. Then phase 3's admin **Done
+ * Today home's counts equal SQL counts on the server's database. Then phase 3's admin **Done
  * when**: a store user sees only their store's orders, and `/admin` is a 404 on the gallery's host.
  * The owner's timed flow is `owner-flow.spec.ts`. Accounts and records: `fixtures.ts`.
  */
@@ -40,53 +40,49 @@ const ROLES = ['owner', 'editor', 'storeA'] as const satisfies readonly AccountK
 const LANGUAGES = ['en', 'id'] as const
 
 /**
- * The sidebar each role may see (TASKS.md 3.6.b; CONTENT-MODEL.md §7; 15.3's regrouping, `docs/gates/cms-clarity.md`),
- * in English: each group names its site, in the order daily work first and the technical records
- * last (`registries/collections.ts`, `admin/groups.ts`). Object order is the order shown.
+ * The sidebar each role may see (TASKS.md 3.6.b, 27.6.b; CONTENT-MODEL.md §7; `admin/nav/plan.ts`),
+ * in English: the shop's five groups, then the technical records and the gallery, both folded
+ * (their entries hidden until opened). Object order is the order shown.
  */
 const SIDEBARS: Record<(typeof ROLES)[number], Record<string, string[]>> = {
   owner: {
-    'Gallery — antiques': ['Antiques', 'Makers', 'Places'],
-    'Shop — products': ['Products', 'Categories', 'Discount codes'],
-    'Stores and stock': ['Stores', 'Stock'],
-    Orders: ['Orders'],
-    'Leads and partners': ['Leads', 'Partners', 'Chat sessions'],
-    'Photos and tags (both sites)': ['Tags and grades', 'Images', 'Original photo files (private)'],
-    Content: ['Pages', 'Redirects'],
-    Settings: ['Staff', 'Site settings'],
-    'Technical records': ['Events', 'Payment events'],
+    Content: ['Pages', 'Header', 'Footer', 'Media'],
+    Orders: ['Orders', 'Leads inbox', 'Partners'],
+    Catalogue: ['Products', 'Categories', 'Discount codes'],
+    Stores: ['Stores', 'Stock by store', 'Import from a spreadsheet'],
+    Settings: ['Site settings', 'Staff', 'Chat sessions'],
+    'Technical records': [],
+    'Indies Gallery — antiques': [],
   },
   // Staff: the editor's own account, the only one they may read; no leads, settings or records.
   editor: {
-    'Gallery — antiques': ['Antiques', 'Makers', 'Places'],
-    'Shop — products': ['Products', 'Categories'],
-    'Stores and stock': ['Stores', 'Stock'],
+    Content: ['Pages', 'Header', 'Footer', 'Media'],
     Orders: ['Orders'],
-    'Photos and tags (both sites)': ['Tags and grades', 'Images', 'Original photo files (private)'],
-    Content: ['Pages', 'Redirects'],
+    Catalogue: ['Products', 'Categories'],
+    Stores: ['Stores', 'Stock by store'],
     Settings: ['Staff'],
+    'Indies Gallery — antiques': [],
   },
-  storeA: { 'Stores and stock': ['Stores', 'Stock'], Orders: ['Orders'] },
+  // A store user is offered their two screens alone (TASKS.md 27.6.b).
+  storeA: { Orders: ['Orders'], Stores: ['Stock by store'] },
 }
 
 /** The same groups' titles in Indonesian (the entries under them follow the collections' own labels). */
 const GROUPS_ID: Record<string, string> = {
-  'Gallery — antiques': 'Galeri — antik',
-  'Shop — products': 'Toko daring — produk',
-  'Stores and stock': 'Toko dan stok',
   Orders: 'Pesanan',
-  'Leads and partners': 'Calon pembeli dan mitra',
-  'Photos and tags (both sites)': 'Foto dan tag (kedua situs)',
+  Catalogue: 'Katalog',
+  Stores: 'Toko dan stok',
   Content: 'Konten',
   Settings: 'Pengaturan',
   'Technical records': 'Catatan teknis',
+  'Indies Gallery — antiques': 'Indies Gallery — antik',
 }
 
-const ACTING = `status NOT IN ('delivered', 'cancelled', 'expired')`
+const NEEDS_ACTION = `(status IN ('awaiting_quote', 'pending_payment', 'paid') OR needs_attention_flag)`
 const count = (query: string) => Number(sql(query))
 
 for (const role of ROLES) {
-  test(`${role}: the sidebar and the dashboard counts, in both languages`, async ({ page }) => {
+  test(`${role}: the sidebar and the Today counts, in both languages`, async ({ page }) => {
     await signIn(page, ACCOUNTS[role].email)
     for (const language of LANGUAGES) {
       await setLanguage(page, language)
@@ -98,46 +94,51 @@ for (const role of ROLES) {
       } else {
         expect(Object.keys(groups)).toEqual(Object.keys(SIDEBARS[role]).map((en) => GROUPS_ID[en]))
       }
-      // The "Daily work" heading above the working views, and the language link under the groups.
-      await expect(
-        page.locator('nav .nav-group__label', { hasText: /^(Daily work|Pekerjaan harian)$/ }),
-      ).toHaveText(language === 'en' ? 'Daily work' : 'Pekerjaan harian')
+      // The home link above the groups (not for store staff), and the language link under them.
+      const home = page.locator('nav #nav-link-today')
+      if (role === 'storeA') await expect(home).toHaveCount(0)
+      else await expect(home).toHaveText(language === 'en' ? 'Today' : 'Hari ini')
       await expect(page.locator('nav a[href="/admin/account#language-select"]')).toHaveText(
         'Bahasa Indonesia / English',
       )
-      // The Order panel link under the groups (owner, editor and store staff; 10.4 proxy run), and
-      // the home's strip of today's work opens the panel (`/admin/orders`) and the inbox
-      // (`/admin/leads`).
-      await expect(page.locator('nav a.nav__link[href="/admin/orders"]')).toHaveText(
-        language === 'en' ? 'Order panel' : 'Panel pesanan',
+      // The Orders link — the orders inbox, TASKS.md 27.3 (owner, editor and store staff).
+      await expect(page.locator('nav .nav__link[href="/admin/orders"]')).toHaveText(
+        language === 'en' ? 'Orders' : 'Pesanan',
       )
       await page.screenshot({ path: shot(`sidebar-${role}-${language}-1280`) })
 
-      const store = role === 'storeA' ? fx.stores.a.id : null
       if (role === 'storeA') {
-        // Store staff land on their order panel, never the Catalogue Wall (16.2, a server redirect),
-        // inside Payload's frame (the sidebar above was read there).
+        // Store staff land on their orders, never the Today home (a server redirect), inside
+        // Payload's frame (the sidebar above was read there).
         await page.goto('/admin')
         await expect(page).toHaveURL(/\/admin\/orders$/)
         await expect(page.locator('h1').first()).toHaveText(
-          language === 'en' ? 'Your orders' : 'Pesanan Anda',
+          language === 'en' ? 'Orders' : 'Pesanan',
         )
         await record(`dashboard.${role}.${language}`, { landing: '/admin/orders', groups })
         continue
       }
-      const ordersSql = count(
-        `SELECT count(*) FROM orders WHERE ${ACTING}${store ? ` AND store_id = ${store}` : ''}`,
-      )
+      await page.goto('/admin/today')
+      const needsSql = count(`SELECT count(*) FROM orders WHERE ${NEEDS_ACTION}`)
+      const packingSql = count(`SELECT count(*) FROM orders WHERE status = 'processing'`)
       const leadsSql = count(`SELECT count(*) FROM leads WHERE status = 'new'`)
-      const orders = await widgetCount(page, '/admin/orders')
+      const needs = await widgetCount(page, '/admin/orders?tab=needs_action')
+      const packing = await widgetCount(page, '/admin/orders?tab=processing')
       const leads = await widgetCount(page, '/admin/leads')
-      expect(orders).toBe(ordersSql)
-      // New leads are the owner's panel; nobody else is shown one.
+      expect(needs).toBe(needsSql)
+      expect(packing).toBe(packingSql)
+      // New leads are the owner's card; nobody else is shown one.
       expect(leads).toBe(role === 'owner' ? leadsSql : null)
-      const panel = language === 'en' ? 'Orders to act on' : 'Pesanan perlu tindakan'
-      const widget = page.locator('a.wall-strip__item[href="/admin/orders"]')
-      await expect(widget).toContainText(panel)
-      await record(`dashboard.${role}.${language}`, { orders, ordersSql, leads, leadsSql, groups })
+      await expect(page.locator('h1').first()).toHaveText(language === 'en' ? 'Today' : 'Hari ini')
+      await record(`dashboard.${role}.${language}`, {
+        needs,
+        needsSql,
+        packing,
+        packingSql,
+        leads,
+        leadsSql,
+        groups,
+      })
     }
   })
 }
@@ -164,9 +165,7 @@ const REFUSALS: Record<(typeof ROLES)[number], Refusal> = {
       await page.goto('/admin/collections/products/create')
       await page.locator('#field-sku').fill(`E2E-NEG-${Date.now()}`)
       await page.locator('#field-name').fill('E2E: a product with a negative price')
-      // The price sits on the edit screen's third tab since the 2026-10 reorganisation
-      // (`products/fields.ts`): open it as a person would; sku and name are on the first.
-      await page.getByRole('button', { name: /^(Price and variants|Harga dan varian)$/ }).click()
+      // The price is on the one-screen editor with the SKU and name (`products/fields.ts`, 27.2).
       await fillSettled(page, '#field-price', '-5000')
       await page.locator('#action-save-draft').click()
     },

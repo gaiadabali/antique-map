@@ -67,7 +67,7 @@ test.describe.serial('office tasks on existing records', () => {
     await h.read(10)
     const first = (await page.locator('main').innerText()).replace(/\s+/g, ' ')
     h.stumble(
-      `first preview: ${COUNTS.exec(first)?.[0] ?? 'counts not found'}; the rejected and held rows are listed last, below every row that changes`,
+      `first preview: ${COUNTS.exec(first)?.[0] ?? 'counts not found'}; the rejected and held rows are listed first, above the rows that change`,
     )
     await h.shot('t6-preview-errors')
     await h.away(

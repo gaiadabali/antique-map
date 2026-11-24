@@ -19,7 +19,7 @@ import {
   WORK_UID_LOCK_KEY,
 } from '../../hooks/work-transaction'
 import { nextPublicId } from '../../validators/work-record'
-import { pickLanguage, type Bilingual } from '../products/money'
+import { pickLanguage, type Bilingual } from '@engine/cms-shop/collections/products/money'
 
 const WORKS = 'works'
 

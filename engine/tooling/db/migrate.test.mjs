@@ -80,6 +80,16 @@ describe('runMigrations', () => {
     ])
   })
 
+  it('migrates the shop with its own CMS package', async () => {
+    const calls = []
+    const run = async (args) => {
+      calls.push(args)
+      return { code: 0, stdout: '', stderr: '' }
+    }
+    await runMigrations({ ...base, cmsPackage: '@engine/cms-shop', run, log: () => {} })
+    expect(calls[0]).toEqual(['--silent', '--filter', '@engine/cms-shop', 'migrate'])
+  })
+
   it('refuses a failed migration with its last words, the password redacted', async () => {
     const env = { POSTGRES_PASSWORD: 'not-for-logs-123' }
     const run = async () => ({

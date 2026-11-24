@@ -12,10 +12,10 @@
  * - **`rights`** decide whether a reproduction may publish (COMPLIANCE.md §8): printing is allowed
  *   only on rights that allow it, and defaults to not allowed.
  */
+import { STAFF_ONLY_ACCESS } from '@engine/cms-core/access'
 import { CURRENCY_CODES } from '@engine/config/constants'
 import type { Field, Validate } from 'payload'
 
-import { STAFF_ONLY_ACCESS } from '../../access/fields'
 import { costErrors, rightsErrors, type Cost, type Rights } from '../../validators/work-record'
 import { OWNER_ONLY_ACCESS, ACQUISITION_ACCESS, PHYSICAL_ACCESS } from './access'
 import { CATALOGUING_FIELDS } from './fields-staff-cataloguing'

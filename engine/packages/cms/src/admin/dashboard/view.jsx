@@ -3,7 +3,7 @@
  * screen. The view itself is `./view-body.jsx`, split out so tests never import
  * `@payloadcms/next` (its templates pull in .css files that Node cannot load), as the leads inbox.
  */
-import { AdminPage } from '../page'
+import { AdminPage } from '@engine/cms-core/admin/page'
 import { DashboardViewBody } from './view-body'
 
 export async function DashboardView(props) {

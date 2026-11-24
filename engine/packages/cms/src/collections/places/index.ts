@@ -16,18 +16,21 @@
  *   vocabulary's own (`../terms/vocabulary/access`).
  * - A published change expires the gallery's listings (`hooks/vocabulary-invalidate`).
  */
+import { hiddenFromAllButCatalogueStaff } from '@engine/cms-core/access'
+import {
+  IN_DEFAULT_LOCALE_NOTE,
+  requiredInDefaultLocale,
+  slugField,
+  translationStatusField,
+} from '@engine/cms-core/fields'
 import type { CollectionConfig } from 'payload'
 
-import { ADMIN_GROUPS } from '../../admin/groups'
-import { hiddenFromAllButCatalogueStaff } from '../../admin/hidden'
+import { ADMIN_GROUPS } from '@engine/cms-core/admin/groups'
 import {
   invalidateVocabularyOnChange,
   invalidateVocabularyOnDelete,
 } from '../../hooks/vocabulary-invalidate'
-import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from '../terms/vocabulary/access'
-import { slugField } from '../../fields/slug'
-import { translationStatusField } from '../../fields/translation-status'
-import { IN_DEFAULT_LOCALE_NOTE, requiredInDefaultLocale } from '../../fields/validate'
+import { VOCABULARY_ACCESS, VOCABULARY_VERSIONS } from '@engine/cms-core/access/vocabulary'
 import { guardAncestry, keepChildrenAttached } from './ancestry'
 import { geoField, historicalNamesField } from './fields'
 import { PLACE_TYPE_LABELS, PLACE_TYPES } from './place-types'
@@ -40,7 +43,7 @@ export const Places: CollectionConfig = {
     plural: { en: 'Places', id: 'Tempat' },
   },
   admin: {
-    group: ADMIN_GROUPS.antiques,
+    group: ADMIN_GROUPS.gallery,
     hidden: hiddenFromAllButCatalogueStaff,
     useAsTitle: 'name',
     defaultColumns: ['name', 'type', 'parent', '_status', 'updatedAt'],

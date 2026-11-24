@@ -12,7 +12,7 @@
  */
 import type { TaskConfig, WorkflowConfig } from 'payload'
 
-import { uniqueEntries, type RegistryEntry } from './entries'
+import { uniqueEntries, type RegistryEntry } from '@engine/cms-core/registries/entries'
 
 // Barrels, one line each when they exist:
 //   ...mediaJobs,   // MED — @engine/media/jobs (derivatives, IIIF tiles, manifests)

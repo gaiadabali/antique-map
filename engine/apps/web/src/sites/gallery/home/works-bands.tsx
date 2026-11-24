@@ -13,7 +13,7 @@ import type { SiteLocale } from '@engine/config/sites'
 
 import { EMPTY_STATE, listing, type WorkCardVM } from '../../../server/gallery/catalogue'
 import { loadRecentlyPlaced } from '../../../server/gallery/home/load-recently-placed'
-import { Button, SectionHead, Skeleton } from '../../../shared/ui'
+import { Button, SectionHead, Skeleton } from '@engine/ui'
 import { WorkGrid } from '../browse/work-grid'
 
 import { leadWork } from './hero'

@@ -9,16 +9,16 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { collectConstraints } from '@engine/cms-core/db'
 import { describe, expect, it } from 'vitest'
 
 import {
   PAYMENT_EVENTS_APPEND_ONLY_DOWN_SQL,
   PAYMENT_EVENTS_APPEND_ONLY_SQL,
-} from '../collections/payment-events/append-only'
+} from '@engine/cms-shop/collections/payment-events/append-only'
 import { migrations } from '../migrations'
 import * as wave from '../migrations/20261002_200042_indies_wave_3_1'
 import { registeredCollections } from '../registries/collections'
-import { collectConstraints } from './constraints'
 
 const NAME = '20261002_200042_indies_wave_3_1'
 const dir = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../migrations')

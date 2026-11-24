@@ -7,7 +7,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { SearchResultVM } from '../../../server/gallery/catalogue/view-models'
-import { Button, TextLink } from '../../../shared/ui'
+import { Button, TextLink } from '@engine/ui'
 import browse from '../browse/browse.module.css'
 import { browseText } from '../browse/copy'
 import { searchHref } from '../browse/state-links'

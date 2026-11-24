@@ -1,0 +1,285 @@
+/* The product editor and the product list's additions (TASKS.md 27.2): the status control, the
+   photo wall, the variant and stock tables, the document buttons, the list's thumbnails, chips and
+   bulk move. Tokens only (`@engine/ui` `tokens/admin.css`, DESIGN.md "The admin"): paper with a
+   hairline, square panels, controls at the control height and 44 px targets on a phone, bronze for
+   the current choice and focus. Phone first: at 390 px tables scroll inside their panel and
+   nothing is wider than the screen. Imported by the editor's client components. */
+
+@import './editor-parts.css';
+
+.pe-section,
+.pe-status {
+  margin-block-end: calc(var(--base) * 1.25);
+}
+
+.pe-label {
+  display: block;
+  margin-block-end: calc(var(--base) * 0.25);
+  font: var(--admin-text-strong);
+  color: var(--admin-ink);
+}
+
+.pe-mini-label {
+  display: block;
+  margin-block: calc(var(--base) * 0.35) calc(var(--base) * 0.15);
+  font: var(--admin-text-label);
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.pe-help,
+.pe-doc-actions__note,
+.pe-cell-status {
+  margin: calc(var(--base) * 0.25) 0;
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+  max-inline-size: 72ch;
+}
+
+.pe-cell-status {
+  display: block;
+}
+
+.pe-cell-status:empty {
+  display: none;
+}
+
+.pe-error {
+  display: block;
+  margin: calc(var(--base) * 0.25) 0;
+  font: var(--admin-text-small);
+  color: var(--admin-danger);
+}
+
+.pe-notice {
+  margin: calc(var(--base) * 0.25) 0 calc(var(--base) * 0.5);
+  padding: calc(var(--base) * 0.5) calc(var(--base) * 0.75);
+  font: var(--admin-text-small);
+  color: var(--admin-ink);
+  background: var(--admin-warning-tint);
+}
+
+.pe-visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.pe-num,
+.pe-input--num {
+  font-variant-numeric: tabular-nums;
+}
+
+.pe-code {
+  display: block;
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+}
+
+/* ---- controls ------------------------------------------------------------------------------ */
+
+.pe-btn,
+.pe-icon-btn,
+.pe-chip,
+.pe-segment__option {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-block-size: var(--admin-control-height);
+  padding: 0 calc(var(--base) * 0.9);
+  font: var(--admin-text-small);
+  font-weight: 700;
+  color: var(--admin-ink);
+  text-decoration: none;
+  white-space: nowrap;
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-rule);
+  border-radius: var(--admin-radius-control);
+  cursor: pointer;
+  transition:
+    background var(--admin-dur) var(--admin-ease),
+    border-color var(--admin-dur) var(--admin-ease);
+}
+
+.pe-btn:hover,
+.pe-icon-btn:hover,
+.pe-chip:hover {
+  background: var(--admin-wash);
+}
+
+.pe-btn--quiet {
+  border-color: var(--admin-hairline);
+}
+
+.pe-btn:disabled,
+.pe-icon-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pe-icon-btn {
+  min-inline-size: var(--admin-control-height);
+  padding: 0;
+}
+
+.pe-btn:focus-visible,
+.pe-icon-btn:focus-visible,
+.pe-chip:focus-visible,
+.pe-segment__option:focus-visible,
+.pe-input:focus-visible,
+.pe-select:focus-visible,
+.pe-scroll:focus-visible,
+.pe-photo__handle:focus-visible {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 2px;
+}
+
+.pe-input,
+.pe-select {
+  box-sizing: border-box;
+  inline-size: 100%;
+  min-block-size: var(--admin-control-height);
+  padding: calc(var(--base) * 0.3) calc(var(--base) * 0.5);
+  font: var(--admin-text-body);
+  color: var(--admin-ink);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-input-border);
+  border-radius: var(--admin-radius-control);
+}
+
+.pe-input[readonly] {
+  background: var(--admin-wash);
+}
+
+.pe-input--code {
+  min-inline-size: 11rem;
+}
+
+.pe-input--num {
+  min-inline-size: 6rem;
+  text-align: end;
+}
+
+.pe-check {
+  inline-size: 1.4rem;
+  block-size: 1.4rem;
+  accent-color: var(--admin-accent);
+}
+
+.pe-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--base) * 0.5);
+  margin-block: calc(var(--base) * 0.5);
+}
+
+/* ---- the status control -------------------------------------------------------------------- */
+
+.pe-status__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--base) * 0.5);
+}
+
+.pe-segment {
+  display: inline-flex;
+}
+
+.pe-segment__option {
+  min-inline-size: 8rem;
+  border-radius: 0;
+}
+
+.pe-segment__option:first-child {
+  border-start-start-radius: var(--admin-radius-control);
+  border-end-start-radius: var(--admin-radius-control);
+}
+
+.pe-segment__option:last-child {
+  border-start-end-radius: var(--admin-radius-control);
+  border-end-end-radius: var(--admin-radius-control);
+  margin-inline-start: -1px;
+}
+
+.pe-segment__option[aria-pressed='true'] {
+  color: var(--admin-accent-on);
+  background: var(--admin-accent);
+  border-color: var(--admin-accent);
+  opacity: 1;
+  cursor: default;
+}
+
+.pe-segment__option:disabled:not([aria-pressed='true']) {
+  color: var(--admin-muted);
+  cursor: not-allowed;
+}
+
+/* ---- a phone -------------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  /* Payload's header on a phone is one row that scrolls sideways: Duplicate and View on the site
+     follow Save and Publish there, so the primary actions stay first on the screen. */
+  .pe-doc-actions {
+    order: 1;
+  }
+
+  .pe-btn,
+  .pe-icon-btn,
+  .pe-chip,
+  .pe-segment__option,
+  .pe-input,
+  .pe-select {
+    min-block-size: var(--admin-target);
+  }
+
+  .pe-icon-btn {
+    min-inline-size: var(--admin-target);
+  }
+
+  .pe-segment {
+    display: flex;
+    inline-size: 100%;
+  }
+
+  .pe-segment__option {
+    flex: 1 1 50%;
+    min-inline-size: 0;
+  }
+
+  .pe-photos {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pe-stock__store {
+    min-inline-size: 7rem;
+  }
+
+  .pe-stock__cell .pe-input {
+    inline-size: 4.5rem;
+    min-inline-size: 0;
+  }
+
+  .pe-option {
+    grid-template-columns: 1fr;
+  }
+
+  .pe-chips .pe-chips__select,
+  .pe-bulk .pe-select {
+    flex: 1 1 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pe-btn,
+  .pe-icon-btn,
+  .pe-chip,
+  .pe-segment__option {
+    transition: none;
+  }
+}

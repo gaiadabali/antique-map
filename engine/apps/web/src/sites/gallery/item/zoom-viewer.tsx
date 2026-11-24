@@ -14,7 +14,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 
 // From its own folder, never the `shared/ui` barrel: a Client Component importing the barrel
 // ships every shared component to the browser (5.5 Lighthouse follow-up).
-import { ZoomShell } from '../../../shared/ui/zoom-shell'
+import { ZoomShell } from '@engine/ui/zoom-shell'
 import styles from './item.module.css'
 import type { ZoomViewerProps } from './zoom-lazy'
 

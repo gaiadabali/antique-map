@@ -16,15 +16,14 @@
  * Field access is skipped by the Local API's default `overrideAccess: true`, which is why no public
  * read uses that default (`access/published`).
  */
+import { rolesOnlyField, type UserRole } from '@engine/cms-core/access'
 import type { FieldAccess } from 'payload'
-
-import { rolesOnlyField, type UserRole } from '../users/roles'
 
 export {
   VOCABULARY_ACCESS as WORKS_ACCESS,
   VOCABULARY_PUBLISHERS as WORK_PUBLISHERS,
   VOCABULARY_VERSIONS as WORKS_VERSIONS,
-} from '../terms/vocabulary/access'
+} from '@engine/cms-core/access/vocabulary'
 
 /** Who reads and records where an original may go, from the owner's item register. */
 export const PHYSICAL_ROLES = ['owner', 'editor'] as const satisfies readonly UserRole[]

@@ -28,6 +28,8 @@ export type OriginalVM = {
   readonly title: string
   readonly date: string | null
   readonly maker: string | null
+  /** The work's public id: the gallery's public read API links its page (TASKS.md 23.5). */
+  readonly publicId: number
   readonly image: NonNullable<WorkCardVM['image']>
 }
 
@@ -63,6 +65,7 @@ export async function loadOriginals(locale: SiteLocale): Promise<readonly Origin
     title: card.title,
     date: card.date || null,
     maker: card.maker?.name ?? null,
+    publicId: card.publicId,
     image: card.image as NonNullable<WorkCardVM['image']>,
   }))
 }

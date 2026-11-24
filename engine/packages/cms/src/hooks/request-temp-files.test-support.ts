@@ -15,6 +15,7 @@ import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { testOrigin } from '@engine/cms-core/db/test-origin'
 import { MULTIPART_ENVELOPE_BYTES, multipartUploadOptions } from '@engine/media/storage'
 import {
   addDataAndFileToRequest,
@@ -26,7 +27,6 @@ import {
 } from 'payload'
 
 import { buildEngineConfig, engineConfig } from '../payload.config'
-import { testOrigin } from '../db/test-origin.test-support'
 
 export const LIMIT = 1024 * 1024
 const admin = testOrigin(4181)

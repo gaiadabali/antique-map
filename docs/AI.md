@@ -94,6 +94,7 @@ British spelling (DR-12). The AI says what it is in its first message (§3.5).
 | `delivery_info` | optional area text | shop: fee bands, free-shipping threshold, delivery area; gallery: the fixed "arranged with you after agreement" statement | from `site-settings`, never model knowledge |
 | `create_lead` | `kind`, `summary` (≤ 500 chars), `itemIds` | `needs_consent` (the server then emits `lead_form`) or `{ reference }` | the model never supplies or sees contact details; §4 |
 | `handoff_link` | `channel`, `topic`, `itemIds`, optional `summary` (≤ 300 chars, URLs stripped) | `{ href, label }` | the server builds the link (below) |
+| `sister_site` | none | `{ shown }`, and a server-built card | shop only (TASKS.md 23.4): antiques are the gallery's; the card links to the gallery's origin from config (`GALLERY_ORIGIN`, `sisterOrigin`), no link when none is set |
 
 **The handoff link.** The server takes the number or address from `site-settings`, the message template from
 the site's copy in the visitor's locale, and fills it with each item's title, stock number or SKU and public

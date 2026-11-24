@@ -13,7 +13,7 @@ import { useState } from 'react'
 import type { ItemImage } from '../../../server/gallery/item/view-model'
 // From its own folder, never the `shared/ui` barrel: a Client Component importing the barrel
 // ships every shared component to the browser (5.5 Lighthouse follow-up).
-import { Button } from '../../../shared/ui/button'
+import { Button } from '@engine/ui/button'
 import styles from './item.module.css'
 
 /** Every word the door and the viewer say, in the page's locale. */

@@ -1,0 +1,100 @@
+{
+  "admin.editor": {
+    "landed": "/admin",
+    "partners": 403,
+    "sidebar": {
+      "Content": ["Pages", "Header", "Footer", "Media"],
+      "Orders": ["Orders"],
+      "Catalogue": ["Products", "Categories"],
+      "Stores": ["Stores", "Stock by store"],
+      "Settings": ["Staff"]
+    }
+  },
+  "admin.owner": {
+    "landed": "/admin",
+    "partners": 200,
+    "sidebar": {
+      "Content": ["Pages", "Header", "Footer", "Media"],
+      "Orders": ["Orders", "Leads", "Partners"],
+      "Catalogue": ["Products", "Categories", "Discount codes"],
+      "Stores": ["Stores", "Stock by store", "Import from a spreadsheet"],
+      "Settings": ["Site settings", "Staff", "Chat sessions"],
+      "Technical records": []
+    }
+  },
+  "admin.storeA": {
+    "landed": "/admin/orders",
+    "partners": 403,
+    "sidebar": { "Orders": ["Orders"], "Stores": ["Stock by store"] }
+  },
+  "admin.storeIsolation": {
+    "storeA": { "store": 1, "listed": 2, "otherStore": 2, "otherById": 404 },
+    "storeB": { "store": 2, "listed": 1, "otherStore": 1, "otherById": 404 },
+    "ownerSeesStoreAssigned": 7
+  },
+  "host": {
+    "shop.localhost/": 200,
+    "shop.localhost/admin/login": 200,
+    "shop.localhost/shop/en": 404,
+    "gallery.localhost/": 404,
+    "gallery.localhost/admin/login": 404,
+    "unknown.localhost/": 404
+  },
+  "originals.down": {
+    "products": [
+      { "slug": "map-reproduction-parang", "originalStockNumber": "M.9999", "galleryStatus": 0 },
+      {
+        "slug": "greeting-card-set-frangipani",
+        "originalStockNumber": "M.0232",
+        "galleryStatus": 0
+      }
+    ],
+    "seen": {
+      "M.9999@390": { "link": null, "ms": 760 },
+      "M.9999@1280": { "link": null, "ms": 132 },
+      "M.0232@390": { "link": null, "ms": 73 },
+      "M.0232@1280": { "link": null, "ms": 52 }
+    }
+  },
+  "originals.up": {
+    "products": [
+      { "slug": "map-reproduction-parang", "originalStockNumber": "M.9999", "galleryStatus": 404 },
+      {
+        "slug": "greeting-card-set-frangipani",
+        "originalStockNumber": "M.0232",
+        "galleryStatus": 200
+      }
+    ],
+    "seen": {
+      "M.9999@390": { "link": null, "ms": 226 },
+      "M.9999@1280": { "link": null, "ms": 90 },
+      "M.0232@390": {
+        "href": "http://gallery.localhost:4880/product/1701-map-of-florida-the-gulf-coast-and-the-caribbean-scheeps-togt-door-rodrigue-de-bastides",
+        "ms": 89
+      },
+      "M.0232@1280": {
+        "href": "http://gallery.localhost:4880/product/1701-map-of-florida-the-gulf-coast-and-the-caribbean-scheeps-togt-door-rodrigue-de-bastides",
+        "ms": 58
+      }
+    }
+  },
+  "partner": {
+    "refusedWrongPassword": true,
+    "signedIn": true,
+    "signedOut": true,
+    "cookies": ["oei_partner"]
+  },
+  "purchase.inBand": {
+    "slug": "orchid-print-rice-terrace-2",
+    "items": 75000,
+    "fee": 20000,
+    "total": 95000,
+    "status": "paid"
+  },
+  "purchase.pastBand": {
+    "slug": "orchid-print-rice-terrace-2",
+    "quoteIdr": 35000,
+    "pay": "PAY RP 110.000",
+    "status": "paid"
+  }
+}

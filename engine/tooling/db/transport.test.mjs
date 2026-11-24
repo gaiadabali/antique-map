@@ -86,6 +86,15 @@ describe('buildCommand', () => {
     expect(args).toEqual(['-h', 'db.internal', '-p', '5432', '--username', 'postgres', 'db'])
   })
 
+  it('direct: a native server takes PGUSER over POSTGRES_USER', () => {
+    const { args } = buildCommand('psql', [], {
+      PGHOST: 'localhost',
+      PGUSER: 'me',
+      POSTGRES_USER: 'app',
+    })
+    expect(args).toEqual(['-h', 'localhost', '-p', '5432', '--username', 'me'])
+  })
+
   it('never places a password on the command line', () => {
     const { args } = buildCommand('psql', ['--dbname', 'postgres'], {
       PGHOST: '127.0.0.1',

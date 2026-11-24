@@ -1,1 +1,1 @@
-export { ordersDriverImagePost as POST } from '../../../../../../server/orders/driver-image'
+export { ordersDriverImagePost as POST } from '../../../../../../server/orders/routes'

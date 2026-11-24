@@ -1,16 +1,17 @@
-import { Forbidden, ValidationError, type PayloadRequest } from 'payload'
-import { describe, expect, it } from 'vitest'
-
-import { anOwner, call, fakeReq } from './fake-req.test-support'
+import { USER_ROLES } from '@engine/cms-core/access'
 import {
   ADMINS_LOCK_KEY,
   firstUserIsOwner,
   keepAnOwnerOnDelete,
   keepAnOwnerOnUpdate,
-} from './guards'
+  roleField,
+  storeField,
+} from '@engine/cms-core/collections/users'
+import { Forbidden, ValidationError, type PayloadRequest } from 'payload'
+import { describe, expect, it } from 'vitest'
+
+import { anOwner, call, fakeReq } from './fake-req.test-support'
 import { LOCK_TIME_MS, MAX_LOGIN_ATTEMPTS, Users } from './index'
-import { roleField, storeField } from './roles-field'
-import { USER_ROLES } from './roles'
 
 describe('the users collection', () => {
   it('is staff, with sessions and a lockout after five failures', () => {

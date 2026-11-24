@@ -1,0 +1,140 @@
+name: Shop (reusable)
+
+# The shop app's own jobs (TASKS.md 24.3, PLAN-V2 §4.4): `engine/apps/shop` on its own database,
+# called from ci.yml's `shop` job when a change reaches the shop (.github/scripts/affected-apps.mjs).
+# Today's app keeps its jobs in ci.yml and e2e.yml.
+#
+# Built for wall clock, like e2e.yml:
+# - ONE production build per run (`build`), assembled as the host will run it and handed to the e2e
+#   and Lighthouse jobs as an artifact (one tar: pnpm's symlinks survive);
+# - the seeded database is a cached snapshot (.github/scripts/shop-e2e-db.sh), keyed on what the
+#   seed writes; on a miss `build` seeds it beside the build (the build reads no database) and
+#   saves it, so every downstream job restores it in seconds — on a hit `build` needs no Postgres;
+# - cms-shop's real-database tests run in shards on their own runners, beside the build.
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+env:
+  NEXT_TELEMETRY_DISABLED: '1'
+  PGHOST: 127.0.0.1
+  PGPORT: '5432'
+  POSTGRES_USER: postgres
+  PGPASSWORD: postgres
+  DB_SUFFIX: ci
+  SNAPSHOT_DIR: ${{ github.workspace }}/.shop-e2e-db
+
+jobs:
+  build:
+    name: Build (one per run)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      snapshot: ${{ steps.snapshot-key.outputs.key }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: ./.github/actions/setup-pnpm-node
+
+      - name: The seeded database's cache key
+        id: snapshot-key
+        run: echo "key=$(bash .github/scripts/shop-e2e-db.sh key)" >> "$GITHUB_OUTPUT"
+
+      - name: Is the seeded database cached?
+        id: snapshot
+        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: .shop-e2e-db
+          key: ${{ steps.snapshot-key.outputs.key }}
+          lookup-only: true
+
+      # Only a miss seeds, so only a miss needs Postgres here.
+      - if: steps.snapshot.outputs.cache-hit != 'true'
+        uses: ./.github/actions/setup-postgres
+
+      - name: Restore the Next build cache
+        uses: actions/cache/restore@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: engine/apps/shop/.next/cache
+          key: next-shop-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+          restore-keys: |
+            next-shop-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-
+
+      # The build touches no database (CONVENTIONS.md §12): no DATABASE_URL or PAYLOAD_SECRET, and
+      # PGHOST/PGPORT pointed at a port that refuses every connection. On a miss the seed runs
+      # beside it, on the job's real Postgres.
+      - name: Build (no database env), and the seed on a snapshot miss, in parallel
+        env:
+          SNAPSHOT_HIT: ${{ steps.snapshot.outputs.cache-hit }}
+        run: |
+          set -- 'Build (no database env)' \
+            'env -u DATABASE_URL -u PAYLOAD_SECRET PGHOST=127.0.0.1 PGPORT=1 pnpm --filter @engine/shop build'
+          if [ "$SNAPSHOT_HIT" != 'true' ]; then
+            set -- "$@" 'Database (seed and snapshot)' \
+              'bash .github/scripts/shop-e2e-db.sh seed "indies_shop_$DB_SUFFIX" "$SNAPSHOT_DIR" && bash .github/scripts/shop-e2e-db.sh save "indies_shop_$DB_SUFFIX" "$SNAPSHOT_DIR"'
+          fi
+          bash .github/scripts/run-parallel.sh "$@"
+
+      - name: Save the seeded database snapshot
+        if: steps.snapshot.outputs.cache-hit != 'true'
+        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: .shop-e2e-db
+          key: ${{ steps.snapshot-key.outputs.key }}
+
+      - name: Save the Next build cache
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/cache/save@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: engine/apps/shop/.next/cache
+          key: next-shop-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}-${{ github.sha }}
+
+      # The tree a host will run (the shop's release tarball itself is TASKS.md 24.4's).
+      - name: Assemble the shop's tree and tar it
+        run: |
+          bash .github/scripts/assemble-artifact.sh "$RUNNER_TEMP/artifact" shop
+          tar -C "$RUNNER_TEMP/artifact" -cf "$RUNNER_TEMP/shop-build.tar" shop
+          ls -lh "$RUNNER_TEMP/shop-build.tar"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: shop-build
+          path: ${{ runner.temp }}/shop-build.tar
+          retention-days: 1
+          compression-level: 1
+          if-no-files-found: error
+
+  # cms-shop's `*.db.test.*`, each file in its own database cloned from the shop's templates; the
+  # root `pnpm test:db` (ci.yml's `db-tests`) excludes them.
+  db-tests:
+    name: Database tests (shard ${{ matrix.shard }}/2)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2]
+    env:
+      CMS_TEST_POSTGRES_URL: postgres://postgres:postgres@127.0.0.1:5432/postgres
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: ./.github/actions/setup-postgres
+      - uses: ./.github/actions/setup-pnpm-node
+      - name: cms-shop real-database tests
+        run: pnpm --filter @engine/cms-shop test:db --shard=${{ matrix.shard }}/2
+
+  e2e:
+    name: End-to-end
+    needs: build
+    uses: ./.github/workflows/shop-serve.yml
+    with:
+      snapshot: ${{ needs.build.outputs.snapshot }}
+
+  lighthouse:
+    name: Lighthouse
+    needs: build
+    uses: ./.github/workflows/shop-serve.yml
+    with:
+      snapshot: ${{ needs.build.outputs.snapshot }}
+      lighthouse: true

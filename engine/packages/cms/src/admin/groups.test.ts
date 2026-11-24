@@ -1,16 +1,18 @@
 /**
- * Static checks for TASKS.md 3.6.b: every registered collection and global is grouped in the
- * sidebar, each group is one of the named task groups (Gallery, Shop, Stores and stock, Orders,
- * Leads and partners, Photos and tags, Content, Settings, Technical records), and the menu a role sees is the menu its access allows
- * (`admin.hidden` is built from the same role helpers, `./hidden`). Access still enforces the
+ * Static checks for TASKS.md 3.6.b and 27.6.b: every registered collection and global is grouped,
+ * each group is one of the named groups (Orders, Catalogue, Stores, Content, Settings, Technical
+ * records, Indies Gallery), and the menu a role sees is the menu its access allows (`admin.hidden` is built from the same role helpers, `./hidden`). Access still enforces the
  * reads; these tests prove the menu agrees with it.
  */
 import { describe, expect, it } from 'vitest'
 
 import { registeredCollections, registeredGlobals } from '../registries/collections'
-import { ADMIN_GROUPS } from './groups'
+import { ADMIN_GROUPS } from '@engine/cms-core/admin/groups'
 
 const GROUP_VALUES = Object.values(ADMIN_GROUPS)
+
+/** Kept out of the sidebar (`group: false`, routes intact): orders' door is the inbox (TASKS.md 27.3.a). */
+const OFF_SIDEBAR = new Set(['orders'])
 
 /** A signed-in `users` document, as `admin.hidden` receives it. */
 const asUser = (role: string, store?: number) => ({ collection: 'users', role, store })
@@ -35,14 +37,18 @@ function visibleTo(user: unknown): Set<string> {
 describe('admin sidebar groups', () => {
   for (const collection of registeredCollections()) {
     it(`${collection.slug} belongs to a named group`, () => {
+      if (OFF_SIDEBAR.has(collection.slug)) {
+        expect(collection.admin?.group).toBe(false)
+        return
+      }
       expect(collection.admin?.group).toBeDefined()
       expect(GROUP_VALUES).toContainEqual(collection.admin!.group)
     })
   }
 
   for (const global of registeredGlobals()) {
-    it(`${global.slug} belongs to the Settings group`, () => {
-      expect(global.admin?.group).toEqual(ADMIN_GROUPS.settings)
+    it(`${global.slug} belongs to Settings or, the shop's header and footer, Content`, () => {
+      expect([ADMIN_GROUPS.settings, ADMIN_GROUPS.content]).toContainEqual(global.admin?.group)
     })
   }
 

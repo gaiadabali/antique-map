@@ -6,7 +6,7 @@
 import type { Payload } from 'payload'
 import { describe, expect, it } from 'vitest'
 
-import { buildSitemap } from './sitemap'
+import { buildSitemap } from '@engine/site/seo'
 import { queryGallerySitemap, queryShopSitemap } from './sitemap-sources'
 
 type FindArgs = {

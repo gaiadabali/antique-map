@@ -2,6 +2,8 @@
  * The config itself (TASKS.md 3.2.a, 2.4): the same schema in every context, with the settings the
  * Check names. One CMS serves both sites, so no brand or site shapes it.
  */
+import { siteOrigin, trustedOrigins } from '@engine/cms-core/access'
+import { testOrigin } from '@engine/cms-core/db/test-origin'
 import type { PostgresAdapter } from '@payloadcms/db-postgres'
 import {
   buildConfig,
@@ -10,11 +12,9 @@ import {
   type Payload,
   type SanitizedConfig,
 } from 'payload'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
-import { siteOrigin, trustedOrigins } from '../access/origins'
-import { testOrigin } from '../db/test-origin.test-support'
-import { COOKIE_PREFIX, engineConfig } from '../payload.config'
+import { COOKIE_PREFIX } from '../payload.config'
 
 type Env = Record<string, string | undefined>
 
@@ -31,8 +31,15 @@ const SERVING: Env = {
 
 const UPLOADS: CollectionConfig = { slug: 'scratch-uploads', upload: true, fields: [] }
 
+/**
+ * A config as a fresh process builds it. Payload sanitizes the collection configs in place, and
+ * its `orderable` (the categories, TASKS.md 27.1.c) adds its `_order` field on every build: a second
+ * build from the same modules would hold it twice, which no real process ever does.
+ */
 async function build(env: Env, extra: CollectionConfig[] = []): Promise<SanitizedConfig> {
-  const input = engineConfig(env)
+  vi.resetModules()
+  const { engineConfig: fresh } = await import('../payload.config')
+  const input = fresh(env)
   return buildConfig({ ...input, collections: [...(input.collections ?? []), ...extra] })
 }
 

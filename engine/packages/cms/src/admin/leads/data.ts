@@ -3,9 +3,8 @@
  * non-owner's request returns nothing through access, not through a check repeated here
  * (`collections/leads/index.ts`'s `LEADS_ACCESS`).
  */
+import { LEAD_STATUSES, type LeadKind, type LeadStatus } from '@engine/cms-core/collections/leads'
 import type { Payload, PayloadRequest, Where } from 'payload'
-
-import { LEAD_STATUSES, type LeadKind, type LeadStatus } from '../../collections/leads/kinds'
 
 export const INBOX_PAGE_SIZE = 25
 

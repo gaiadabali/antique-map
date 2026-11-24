@@ -4,10 +4,9 @@
  * stand while a field an AI drafted is still unchecked. The
  * moment of verification is recorded by the server, never typed.
  */
+import { hasRole, isStaffUser } from '@engine/cms-core/access'
 import { ValidationError, type CollectionBeforeChangeHook } from 'payload'
 
-import { isStaffUser } from '../access/roles'
-import { hasRole } from '../collections/users/roles'
 import { WORK_PUBLISHERS } from '../collections/works/access'
 import { unverifiedAiDraft } from '../collections/works/vocabulary'
 import { asLabel, mergeOver, type Doc } from './work-facts'

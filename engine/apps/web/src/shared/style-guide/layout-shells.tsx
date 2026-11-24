@@ -1,4 +1,4 @@
-import { Button, Footer, Header, TextLink } from '../ui'
+import { Button, Footer, Header, TextLink } from '@engine/ui'
 
 import { Section } from './section'
 import styles from './style-guide.module.css'

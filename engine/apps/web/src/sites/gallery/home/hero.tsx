@@ -21,7 +21,7 @@ import {
   ResponsiveImage,
   Skeleton,
   StockTag,
-} from '../../../shared/ui'
+} from '@engine/ui'
 import { statusLineOf } from '../browse/work-card'
 import { browseText } from '../browse/copy'
 import { itemHref } from '../browse/state-links'

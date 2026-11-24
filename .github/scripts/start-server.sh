@@ -23,6 +23,11 @@
 # router sees its own origin as 127.0.0.1 while the proxy's request URL says `localhost`, so every
 # proxy rewrite looks external and the page hangs. The runner's own HOSTNAME never leaks in: the
 # server starts from an empty environment.
+#
+# SERVER_APP=shop (TASKS.md 24.3) starts the shop's own app instead — `engine/apps/shop/server.js`
+# from an assembled `…/artifact/shop` — with the one-app environment (PLAN-V2 §4.5): SITE_HOSTS
+# shop.localhost and no GALLERY_HOSTS/SHOP_HOSTS. SERVER_MEDIA_DIR, when set, is copied to the
+# server's `media/` (its working directory's: where Payload's uploads live without a bucket).
 set -euo pipefail
 
 if [ "$#" -lt 4 ]; then
@@ -31,7 +36,15 @@ if [ "$#" -lt 4 ]; then
 fi
 name="$1" release="$2" port="$3" database="$4"
 shift 4
-app=engine/apps/web
+case "${SERVER_APP:-web}" in
+  web) hosts=(GALLERY_HOSTS=gallery.localhost SHOP_HOSTS=shop.localhost) ;;
+  shop) hosts=(SITE_HOSTS=shop.localhost) ;;
+  *)
+    echo "::error::SERVER_APP is web or shop (got '$SERVER_APP')"
+    exit 2
+    ;;
+esac
+app="engine/apps/${SERVER_APP:-web}"
 
 SERVERS_DIR="${SERVERS_DIR:-${RUNNER_TEMP:-/tmp}/servers}"
 mkdir -p "$SERVERS_DIR"
@@ -44,6 +57,9 @@ test -f "$release/$app/server.js" || {
 }
 rm -rf "$tree"
 cp -r "$release" "$tree"
+if [ -n "${SERVER_MEDIA_DIR:-}" ] && [ -d "$SERVER_MEDIA_DIR" ]; then
+  cp -r "$SERVER_MEDIA_DIR" "$tree/$app/media"
+fi
 
 secret() { node -e "process.stdout.write(require('node:crypto').randomBytes(32).toString('base64url'))"; }
 payload_secret="$(secret)"
@@ -64,7 +80,7 @@ database_url="postgres://${POSTGRES_USER}:${PGPASSWORD}@${PGHOST}:${PGPORT:-5432
     PATH="$PATH" HOME="${HOME:-/tmp}" TMPDIR="${TMPDIR:-/tmp}" \
     NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 \
     PORT="$port" HOSTNAME=0.0.0.0 \
-    GALLERY_HOSTS=gallery.localhost SHOP_HOSTS=shop.localhost \
+    "${hosts[@]}" \
     DATABASE_URL="$database_url" PAYLOAD_SECRET="$payload_secret" \
     LINK_TOKEN_KEYS="ci:$link_key" ORDER_LINK_KEY="$order_link_key" \
     LOCAL_PRODUCTION_BUILD=1 \

@@ -6,7 +6,6 @@
  * drops the database afterwards. Without that variable it skips — a setup state; a server that
  * is named and refuses is a failure (CONVENTIONS.md §8).
  */
-import { createTestDatabase } from '../../db/test-database.test-support'
 import {
   buildConfig,
   commitTransaction,
@@ -22,10 +21,11 @@ import { createRequire } from 'node:module'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
+import { createTestDatabase } from '@engine/cms-core/db/test-database'
+import { testOrigin } from '@engine/cms-core/db/test-origin'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
 import { migrations } from '../../migrations'
-import { testOrigin } from '../../db/test-origin.test-support'
 import { engineConfig } from '../../payload.config'
 
 const server = process.env.CMS_TEST_POSTGRES_URL

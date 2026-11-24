@@ -10,9 +10,10 @@
  *   first photographed recto.
  * - **Master**: the recto's capture, or a better scan of it; staff-only, like every master's field.
  */
+import { IMAGES_ONLY } from '@engine/cms-core/collections/media/kinds'
+import { STAFF_ONLY_ACCESS } from '@engine/cms-core/access'
 import type { ArrayField, Field, Validate } from 'payload'
 
-import { STAFF_ONLY_ACCESS } from '../../access/fields'
 import { placeRowErrors, refId, type PlaceRow } from '../../validators/work-credits'
 import { rowOf } from './fields-record'
 import { MAX_SECONDARY_PLACES, PLACE_ROLE_OPTIONS } from './vocabulary'
@@ -101,6 +102,7 @@ export const imagesField: ArrayField = {
       name: 'media',
       type: 'upload',
       relationTo: 'media',
+      filterOptions: IMAGES_ONLY,
       label: { en: 'Image', id: 'Gambar' },
       required: true,
     },

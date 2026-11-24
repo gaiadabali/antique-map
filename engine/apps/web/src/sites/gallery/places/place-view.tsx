@@ -9,7 +9,7 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { PlaceVM } from '../../../server/gallery/places/view-models'
-import { Band, SectionHead } from '../../../shared/ui'
+import { Band, SectionHead } from '@engine/ui'
 import { lexiconMessages } from '../../../messages/keys'
 import { WorkGrid } from '../browse/work-grid'
 import type { PlaceText } from './copy'

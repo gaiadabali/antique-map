@@ -1,0 +1,58 @@
+.bag {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  inline-size: 44px;
+  block-size: 44px;
+  margin-inline-end: calc(-1 * var(--space-3));
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.bag svg {
+  inline-size: 1rem;
+  block-size: 1rem;
+}
+
+.count {
+  position: absolute;
+  inset-block-start: 0.5rem;
+  inset-inline-end: 0.4375rem;
+  min-inline-size: 0.875rem;
+  block-size: 0.875rem;
+  padding-inline: 0.1875rem;
+  border-radius: var(--primitive-radius-pill);
+  background: var(--color-text);
+  color: var(--color-surface);
+  font: 500 0.5625rem / 0.875rem var(--font-body);
+  text-align: center;
+}
+
+/* The design pass: a line under the glyph for the pointer alone, as under the header's links; on
+   the bag's own page the glyph is drawn in bold instead. */
+.bag::after {
+  content: '';
+  position: absolute;
+  inset-inline: calc(50% - 0.5rem);
+  inset-block-end: 0.5rem;
+  block-size: var(--rule-hair);
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform var(--dur-in) var(--ease);
+}
+
+.bag:not([aria-current='page']):hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.bag[aria-current='page'] svg {
+  stroke-width: 2.25;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bag::after {
+    transition: none;
+  }
+}

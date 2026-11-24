@@ -1,6 +1,6 @@
 /** The purge CLI: `pnpm data:purge-seed` — refuses production, deletes the seed rows, reports. */
 import { seedEnv } from './env'
-import { purgeSeed, purgeRefusal } from './purge'
+import { purgeSeed, purgeRefusal } from '@engine/cms-shop/seed'
 
 async function main(): Promise<number> {
   const refusal = purgeRefusal()

@@ -58,9 +58,11 @@ export class Human {
     readonly task: string,
     readonly title: string,
     readonly targetSeconds: number,
+    /** A phone's taps and pauses where the project is not named 'mobile' (the admin projects). */
+    opts: { phone?: boolean } = {},
   ) {
     this.rand = seeded(`${task}:${widthOf(info)}`)
-    this.phone = widthOf(info) < 600
+    this.phone = opts.phone ?? widthOf(info) < 600
     page.on('framenavigated', (f) => {
       if (f === page.mainFrame() && this.t0 > 0 && this.t1 === 0) this.pages += 1
     })
@@ -78,7 +80,8 @@ export class Human {
 
   /** A page that just loaded, glanced at. */
   async read(seconds: number = PACE.read): Promise<void> {
-    await this.page.waitForLoadState('networkidle').catch(() => undefined)
+    // At most a few seconds: a page that keeps polling (the Live Preview's frame) is never idle.
+    await this.page.waitForLoadState('networkidle', { timeout: 5_000 }).catch(() => undefined)
     await this.pause(seconds)
   }
 

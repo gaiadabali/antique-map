@@ -95,14 +95,28 @@ export const SPILL_OFFSET = STRIDE * MAX_PHASE
  * other worktrees already use. `usedPorts` holds only OTHER worktrees' ports,
  * so re-running in the same worktree returns the same answer.
  */
-export function allocatePort(phase, lane, usedPorts = new Set()) {
-  let port = basePort(phase, lane)
+export function allocatePort(phase, lane, usedPorts = new Set(), offset = 0) {
+  let port = basePort(phase, lane) + offset
   if (RESERVED_PORTS.has(port)) port += SPILL_OFFSET
   while (RESERVED_PORTS.has(port) || usedPorts.has(port)) {
     port += 1
     if (port > 65535) throw new Error('no free port above the computed one')
   }
   return port
+}
+
+/**
+ * A worktree's second app (PLAN-V2 §4.4: two ports per worktree). The shop's ports are a block of
+ * their own, past the gallery's primary and spill ranges (4100–7939), with a spill range of their
+ * own above — so no shop port ever equals any worktree's gallery port.
+ */
+export const APP_PORT_OFFSET = Object.freeze({ gallery: 0, shop: 2 * SPILL_OFFSET })
+
+/** `{ gallery, shop }`: each app's port for (phase, lane), stepped past `usedPorts` and each other. */
+export function allocateAppPorts(phase, lane, usedPorts = new Set()) {
+  const gallery = allocatePort(phase, lane, usedPorts, APP_PORT_OFFSET.gallery)
+  const shop = allocatePort(phase, lane, new Set([...usedPorts, gallery]), APP_PORT_OFFSET.shop)
+  return { gallery, shop }
 }
 
 /** Database suffix: `p<phase>_<lane>`, lower-case, Postgres-identifier safe (e.g. p1_har, p1_arc_p). */

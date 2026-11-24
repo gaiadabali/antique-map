@@ -1,4 +1,4 @@
-import { ChatShell, Input, MapPinShell, ZoomShell } from '../ui'
+import { ChatShell, Input, MapPinShell, ZoomShell } from '@engine/ui'
 
 import { Section } from './section'
 import styles from './style-guide.module.css'

@@ -3,7 +3,9 @@
 // run (refuses without `ANTHROPIC_API_KEY`, exit 2), `--record` to rewrite recordings from a live
 // run, `--max-usd` to cap live spend (default 3). Loads the TS eval package through Vite's SSR
 // module runner — the same loader Vitest itself uses — so `import 'server-only'` and the app's
-// workspace packages resolve exactly as they do under the real tests.
+// workspace packages resolve exactly as they do under the real tests. The eval itself lives with
+// the engine in `@engine/chat` (`engine/packages/chat/src/server/eval`); this file stays where the
+// root `ai:eval` script points.
 // This file lives under `src/server`, so the repo's eslint config does not grant it Node's
 // globals (that's reserved for `engine/tooling/**` and `scripts/**`) — import them explicitly.
 import console from 'node:console'
@@ -51,10 +53,10 @@ async function main() {
   })
   try {
     const { runEval, writeReport } = await server.ssrLoadModule(
-      '/engine/apps/web/src/server/chat/eval/run-eval.ts',
+      '/engine/packages/chat/src/server/eval/run-eval.ts',
     )
     const { summaryMarkdown, passed } = await server.ssrLoadModule(
-      '/engine/apps/web/src/server/chat/eval/report.ts',
+      '/engine/packages/chat/src/server/eval/report.ts',
     )
 
     const result = await runEval(options)

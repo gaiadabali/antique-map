@@ -18,7 +18,7 @@ import type { ReactNode } from 'react'
 
 import { SITE_ASSETS } from '@engine/http/manifest'
 
-import { fontVariables } from '../shared/styles/fonts'
+import { fontVariables } from '@engine/ui/fonts'
 
 import { siteLocale } from './messages'
 import { currentSite, shellOf, shellText, siteAsset, siteHref, type CurrentSite } from './site'

@@ -10,7 +10,7 @@
             - button "How do I know a print is original?" [disabled]
             - button "I'd like to sell an antique map" [disabled]
         - alert:
-            - paragraph: Something went wrong. Please try again, or contact us directly.
+            - paragraph: The assistant is unavailable at the moment. Please contact Indies Gallery using the buttons below.
     - text: Your message
     - textbox "Your message" [disabled]:
         - /placeholder: Ask a question…

@@ -32,10 +32,10 @@
  * served the old page once while a fresh one is computed.
  */
 import { catalogueTag, invalidate, workTag, type CacheTag } from '@engine/cache'
+import { changedPublishedState } from '@engine/cms-core/hooks'
 import type { CollectionAfterChangeHook, CollectionAfterDeleteHook } from 'payload'
 
 import { WORK_UID_PATTERN } from '../validators/work-record'
-import { changedPublishedState } from './published-state'
 
 type WorkDoc = { workUid?: unknown; _status?: unknown; status?: unknown } | null | undefined
 

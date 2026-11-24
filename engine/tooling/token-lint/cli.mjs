@@ -4,19 +4,29 @@ import { join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 /**
- * Token-only lint for the web app.
+ * Token-only lint for the apps and the packages that draw (ui, chat, storefront, site).
  *
- * Scans CSS/TS/TSX under engine/apps/web/src outside the token directories
- * and fails on raw colour literals and font-family declarations, as required
- * by DESIGN-SYSTEM.md §Built to be restyled and ticket 4.1.d.
+ * Scans CSS/TS/TSX under engine/apps/web/src and engine/packages/ui/src outside
+ * the token directories and fails on raw colour literals and font-family
+ * declarations, as required by DESIGN-SYSTEM.md §Built to be restyled and
+ * ticket 4.1.d (the package since TASKS.md 22.2.b).
  */
 
 const root = resolve(fileURLToPath(import.meta.url), '../../../..')
-const defaultTarget = resolve(root, 'engine/apps/web/src')
+export const defaultTargets = [
+  resolve(root, 'engine/apps/web/src'),
+  resolve(root, 'engine/packages/ui/src'),
+  resolve(root, 'engine/packages/chat/src'),
+  // The shop's storefront and the shell's shared parts (TASKS.md 23.3), and the shop app.
+  resolve(root, 'engine/packages/storefront/src'),
+  resolve(root, 'engine/packages/site/src'),
+  resolve(root, 'engine/apps/shop/src'),
+]
 const tokenDirs = [
-  resolve(root, 'engine/apps/web/src/shared/styles/tokens'),
-  resolve(root, 'engine/apps/web/src/sites/gallery/tokens'),
-  resolve(root, 'engine/apps/web/src/sites/shop/tokens'),
+  // The base tokens, both site palettes and the admin tokens (@engine/ui).
+  resolve(root, 'engine/packages/ui/src/styles/tokens'),
+  // The shop's own layout and chat knobs.
+  resolve(root, 'engine/packages/storefront/src/sites/shop/tokens'),
 ]
 
 const hexPattern = /#([0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})\b/g
@@ -32,7 +42,7 @@ function isUnderTokenDir(filePath) {
     tokenDirs.some((dir) => {
       const d = dir.replace(/\\/g, '/')
       return normalized.startsWith(d + '/') || normalized === d
-    }) || /\/(shared\/styles\/tokens|sites\/gallery\/tokens|sites\/shop\/tokens)\//.test(normalized)
+    }) || /\/(styles\/tokens|sites\/gallery\/tokens|sites\/shop\/tokens)\//.test(normalized)
   )
 }
 
@@ -78,9 +88,12 @@ function findViolations(source, filePath) {
   return out
 }
 
-export function run(target = defaultTarget) {
-  const targetPath = resolve(target)
-  const files = [...walk(targetPath)].filter((filePath) => !isUnderTokenDir(filePath))
+/** Lints one directory or several (`defaultTargets` when none is named). */
+export function run(target = defaultTargets) {
+  const targets = (Array.isArray(target) ? target : [target]).map((t) => resolve(t))
+  const files = targets
+    .flatMap((targetPath) => [...walk(targetPath)])
+    .filter((filePath) => !isUnderTokenDir(filePath))
   const violations = []
   for (const filePath of files) {
     const source = readFileSync(filePath, 'utf8')
@@ -93,12 +106,14 @@ export function run(target = defaultTarget) {
 }
 
 function main() {
-  const target = process.argv[2] ? resolve(process.argv[2]) : defaultTarget
-  if (!statSync(target, { throwIfNoEntry: false })?.isDirectory()) {
-    console.error(`Target is not a directory: ${target}`)
-    process.exit(1)
+  const targets = process.argv[2] ? [resolve(process.argv[2])] : defaultTargets
+  for (const target of targets) {
+    if (!statSync(target, { throwIfNoEntry: false })?.isDirectory()) {
+      console.error(`Target is not a directory: ${target}`)
+      process.exit(1)
+    }
   }
-  const violations = run(target)
+  const violations = run(targets)
   if (violations.length === 0) {
     console.log(`No raw colours or font-family declarations found outside token files.`)
     process.exit(0)

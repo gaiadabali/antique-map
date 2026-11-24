@@ -98,3 +98,42 @@ describe('bootCheck() — loader source and development defaults', () => {
     ).toMatch(/"1" in the web process/)
   })
 })
+
+describe('bootCheck() — one app’s environment (SITE_HOSTS, TASKS.md 23.5)', () => {
+  const oneApp = (environment: 'local' | 'staging' | 'production', hosts: string) => {
+    const { GALLERY_HOSTS: _gallery, SHOP_HOSTS: _shop, ...rest } = fullEnv(environment)
+    return { ...rest, SITE_HOSTS: hosts }
+  }
+
+  it('passes the shop app on its own hosts, with no two-site list', () => {
+    for (const [environment, hosts] of [
+      ['local', 'shop.localhost,www.shop.localhost'],
+      ['staging', 'old-east-indies.gaiada.com'],
+      ['production', 'oldeastindies.com,www.oldeastindies.com'],
+    ] as const) {
+      const report = check(oneApp(environment, hosts))
+      expect(report.problems, formatBootReport(report)).toEqual([])
+      expect(report.environment).toBe(environment)
+    }
+  })
+
+  it('refuses an unusable SITE_HOSTS or an ADMIN_HOST that is one of its aliases', () => {
+    expect(refusal(check(oneApp('local', 'shop.localhost:4881')), 'SITE_HOSTS')).toMatch(
+      /not a bare hostname/,
+    )
+    const alias = {
+      ...oneApp('local', 'shop.localhost,www.shop.localhost'),
+      ADMIN_HOST: 'www.shop.localhost',
+    }
+    expect(refusal(check(alias), 'ADMIN_HOST')).toMatch(/is an alias/)
+  })
+
+  it('keeps today’s two-site check whenever a two-site list is set', () => {
+    const report = check({
+      ...fullEnv('local'),
+      SHOP_HOSTS: undefined,
+      SITE_HOSTS: 'shop.localhost',
+    })
+    expect(subjects(report)).toContain('SHOP_HOSTS')
+  })
+})

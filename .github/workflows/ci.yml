@@ -1,8 +1,9 @@
 name: CI
 
 # Every push to main and every PR into it gets the static checks and the production-dependency
-# audit; the unit tests, the real-database tests, e2e and Lighthouse are skipped on a docs-only
-# change (`changes`). The secret scan (secrets.yml) runs on every push to any branch; CodeQL is
+# audit; the unit tests run on any change that is not docs-only, and each app's database tests,
+# e2e and Lighthouse only when the change reaches that app (`changes`): today's app's here and in
+# e2e.yml, the shop app's in shop.yml (TASKS.md 24.3). The secret scan (secrets.yml) runs on every push to any branch; CodeQL is
 # GitHub's default setup, a repository setting with no workflow file (the user's decision of
 # 2026-10-08, the file removed 2026-10-10: the default setup refused its upload on every push).
 # The deploy artifact and its release are a separate workflow (release.yml), triggered by a push
@@ -29,28 +30,41 @@ env:
   NEXT_TELEMETRY_DISABLED: '1'
 
 jobs:
-  # Docs-only pushes (docs/**, manual/**, *.md, TASKS.md, .claude/**) skip every test job.
-  # `static` still runs — it is fast and `tasks:lint` reads TASKS.md itself, so a docs-only push is
-  # exactly the case it must not skip.
+  # Which app's jobs run (TASKS.md 24.3.a, PLAN-V2 §4.4): paths-filter lists the changed paths and
+  # .github/scripts/affected-apps.mjs maps them — engine/apps/<app>/** to that app, a package under
+  # engine/packages/ to every app whose workspace dependencies reach it (read from package.json, so
+  # while today's app imports cms-shop and the shop's packages import cms, either CMS runs both),
+  # each app's own e2e/Lighthouse files to it, and anything else (tooling, root config, lockfile,
+  # .github) to both. Docs-only pushes (docs/**, manual/**, *.md, TASKS.md, .claude/**) run no test
+  # job; `static` still runs — it is fast and `tasks:lint` reads TASKS.md itself, so a docs-only
+  # push is exactly the case it must not skip. A manual run runs everything.
   changes:
     name: What changed
     runs-on: ubuntu-latest
     timeout-minutes: 3
     outputs:
-      code: ${{ steps.filter.outputs.code }}
+      code: ${{ steps.apps.outputs.code }}
+      web: ${{ steps.apps.outputs.web }}
+      shop: ${{ steps.apps.outputs.shop }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
       - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
         id: filter
         with:
+          list-files: json
           filters: |
-            code:
+            changed:
               - '**'
-              - '!docs/**'
-              - '!manual/**'
-              - '!.claude/**'
-              - '!TASKS.md'
-              - '!**/*.md'
+      - name: The apps the change reaches
+        id: apps
+        env:
+          CHANGED: ${{ steps.filter.outputs.changed_files }}
+        run: |
+          if [ "$GITHUB_EVENT_NAME" = 'workflow_dispatch' ]; then
+            printf 'web=true\nshop=true\ncode=true\n' | tee -a "$GITHUB_OUTPUT"
+          else
+            node .github/scripts/affected-apps.mjs "${CHANGED:-[]}" | tee -a "$GITHUB_OUTPUT"
+          fi
 
   static:
     name: Static checks
@@ -116,14 +130,14 @@ jobs:
       - name: AI eval (recorded set)
         run: pnpm ai:eval
 
-  # The CMS's real-database tests (`*.db.test.*`). Each test file gets its own database, cloned
-  # from one migrated template, and drops it after. CMS_TEST_POSTGRES_URL names the maintenance
+  # Today's CMS's real-database tests (`*.db.test.*`; cms-shop's are shop.yml's, sharded). Each
+  # test file gets its own database, cloned from one migrated template, and drops it after. CMS_TEST_POSTGRES_URL names the maintenance
   # database; the role must be able to CREATE DATABASE. Without the variable they skip, so this job
   # is what runs them.
   db-tests:
-    name: Database tests
+    name: Database tests (today's CMS)
     needs: changes
-    if: needs.changes.outputs.code == 'true'
+    if: needs.changes.outputs.web == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
@@ -139,13 +153,13 @@ jobs:
   e2e:
     name: End-to-end
     needs: changes
-    if: needs.changes.outputs.code == 'true'
+    if: needs.changes.outputs.web == 'true'
     uses: ./.github/workflows/e2e.yml
 
   lighthouse:
     name: Lighthouse
     needs: changes
-    if: needs.changes.outputs.code == 'true'
+    if: needs.changes.outputs.web == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     # Lighthouse audits both sites' home pages (lighthouserc.web.json) on the release's own tree,
@@ -217,3 +231,11 @@ jobs:
           path: .lighthouseci/
           retention-days: 7
           include-hidden-files: true
+
+  # The shop app's own jobs (shop.yml): one build shared by its e2e and Lighthouse, its database
+  # tests sharded — only when the change reaches the shop.
+  shop:
+    name: Shop
+    needs: changes
+    if: needs.changes.outputs.shop == 'true'
+    uses: ./.github/workflows/shop.yml

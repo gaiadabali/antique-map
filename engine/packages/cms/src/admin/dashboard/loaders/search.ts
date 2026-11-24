@@ -4,9 +4,17 @@
  * redacted before it was stored (§5), and a query that was nothing but `[removed]` is left out of
  * the lists, which would otherwise be topped by it.
  */
-import { compared, type Compared, type Counted } from '../compare'
-import type { DashboardContext } from '../context'
-import { inPeriod, inPrevious, num, rowsOf, sql, eventsFilter, topCounts } from '../sql'
+import { compared, type Compared, type Counted } from '@engine/cms-core/admin/dashboard/compare'
+import type { DashboardContext } from '@engine/cms-core/admin/dashboard/context'
+import {
+  inPeriod,
+  inPrevious,
+  num,
+  rowsOf,
+  sql,
+  eventsFilter,
+  topCounts,
+} from '@engine/cms-core/admin/dashboard/sql'
 
 export type SearchPanel = {
   readonly hasData: boolean

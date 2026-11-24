@@ -28,7 +28,11 @@ async function main(): Promise<void> {
   const { cms } = await import('../../../engine/packages/cms/src/instance')
   const payload = (await cms()) as unknown as Api
 
-  const product = (await payload.find({ collection: 'products', limit: 1, depth: 0 })).docs[0]
+  // A product without variants: a variant product's stock row needs its SKU (27.2's editor spec
+  // leaves variant products in the same database).
+  const product = (
+    await payload.find({ collection: 'products', limit: 100, depth: 0, sort: 'id' })
+  ).docs.find((doc) => !Array.isArray(doc.variants) || doc.variants.length === 0)
   if (!product) throw new Error('store-panel-fixtures: no product — run fixtures.ts first')
 
   // Reassignment needs an active store with an address and a pin (`reassignOrder`'s

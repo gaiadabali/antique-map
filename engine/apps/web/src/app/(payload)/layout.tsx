@@ -5,26 +5,27 @@
  *
  * The admin wears the Indies world (TASKS.md 16): the brand's faces on `<html>` (next/font, served
  * from our own origin), the shared primitives, the admin's tokens, then its stylesheets — after
- * Payload's own CSS, and unlayered, so they win over `@layer payload-default`.
+ * Payload's own CSS, and unlayered, so they win over `@layer payload-default`. The admin's theme is
+ * `@engine/ui/admin/*` (both apps' admins wear it); the Catalogue Wall's stylesheet is this app's.
  */
 import '@payloadcms/next/css'
-import '../../shared/styles/tokens/primitives.css'
-import '../../shared/styles/tokens/admin.css'
-import './admin/theme-base.css'
-import './admin/theme-shell.css'
-import './admin/theme-signin.css'
-import './admin/theme-forms.css'
-import './admin/theme-record.css'
-import './admin/theme-lists.css'
+import '@engine/ui/tokens/primitives.css'
+import '@engine/ui/tokens/admin.css'
+import '@engine/ui/admin/theme-base.css'
+import '@engine/ui/admin/theme-shell.css'
+import '@engine/ui/admin/theme-signin.css'
+import '@engine/ui/admin/theme-forms.css'
+import '@engine/ui/admin/theme-record.css'
+import '@engine/ui/admin/theme-lists.css'
 import './admin/wall.css'
-import './admin/panels.css'
+import '@engine/ui/admin/panels.css'
 
 import config from '@engine/cms/payload.config'
 import { handleServerFunctions, RootLayout } from '@payloadcms/next/layouts'
 import type { ServerFunctionClient } from 'payload'
 import type { ReactNode } from 'react'
 
-import { fontVariables } from '../../shared/styles/fonts'
+import { fontVariables } from '@engine/ui/fonts'
 
 import { importMap } from './admin/importMap.js'
 

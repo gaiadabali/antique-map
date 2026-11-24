@@ -9,8 +9,8 @@
  */
 import type { Plugin } from 'payload'
 
-import { uniqueEntries, type RegistryEntry } from './entries'
-import { mediaStoragePlugin } from './storage'
+import { uniqueEntries, type RegistryEntry } from '@engine/cms-core/registries/entries'
+import { mediaStoragePlugin } from '@engine/cms-core/registries/storage'
 
 type Env = Readonly<Record<string, string | undefined>>
 

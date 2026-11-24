@@ -6,9 +6,17 @@
  * read from the works' records, not from the event — the beacon never carried them.
  * No price, no price band: the events hold none (§4).
  */
-import { compared, type Compared } from '../compare'
-import type { DashboardContext } from '../context'
-import { inPeriod, inPrevious, num, rowsOf, sql, eventsFilter, type SQL } from '../sql'
+import { compared, type Compared } from '@engine/cms-core/admin/dashboard/compare'
+import type { DashboardContext } from '@engine/cms-core/admin/dashboard/context'
+import {
+  inPeriod,
+  inPrevious,
+  num,
+  rowsOf,
+  sql,
+  eventsFilter,
+  type SQL,
+} from '@engine/cms-core/admin/dashboard/sql'
 
 export type AntiqueRow = {
   readonly workId: number

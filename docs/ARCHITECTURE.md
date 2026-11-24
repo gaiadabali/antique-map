@@ -5,10 +5,28 @@ the stock guarantee, media, search, jobs, locales and roles. It serves [PLAN.md]
 [CONTENT-MODEL.md](CONTENT-MODEL.md), the shop's flows [COMMERCE.md](COMMERCE.md), controls
 [SECURITY.md](SECURITY.md), the AI [AI.md](AI.md), data in [DATA.md](DATA.md), hosts [DEPLOYMENT.md](DEPLOYMENT.md).
 
+> **Plan v2 (DR-17, [PLAN-V2.md](PLAN-V2.md)) — the target shape.** Two apps in one repo, each serving one site
+> from its own Payload config and database:
+>
+> ```
+> engine/apps/shop     Old East Indies — Payload config cms-shop    — DB indies_shop    — its own /admin
+> engine/apps/gallery  Indies Gallery  — Payload config cms-gallery — DB indies_gallery — its own /admin
+> engine/packages/     cms-core (fields, access, roles, the shared collection factories, migration tooling) ·
+>                      cms-shop · cms-gallery · ui (tokens, shared components) · chat · config · http · i18n ·
+>                      cache · media · migrate · view-models
+> ```
+>
+> Each app's proxy allows its own hosts only (an unknown host is a 404) and picks no site; there is no `site`
+> field; routes lose the internal `/shop/<locale>` and `/gallery/<locale>` prefixes; two pm2 processes, two
+> releases, two media buckets. An app never imports the other; the product's "See the original" resolves a stock
+> number through the gallery's public read API (cached, optional). **The sections below describe today's one app
+> (`engine/apps/web`), which serves both sites until phase 26**; each phase updates the sections it makes untrue.
+
 ## 1. Principles
 
-1. **One app, one database, one owner** (DR-1, DR-2). The hostname picks the site; a record that belongs to one
-   site carries `site`. Nothing is configured per brand.
+1. **One owner, one site per app** (DR-17, DR-2). Today: one app and one database, the hostname picks the site
+   and a record that belongs to one site carries `site` (DR-1, retired in phase 26). Nothing is configured per
+   brand.
 2. **Payload and Next as they come**: a built-in (drafts, versions, access, uploads, jobs, localisation) before our
    own code, and our own code only where a built-in is unsafe or misses a target.
 3. **Code and people decide; the model drafts.** Prices, stock, statuses and what is public are decided by code
@@ -44,19 +62,19 @@ the stock guarantee, media, search, jobs, locales and roles. It serves [PLAN.md]
 
 ## 3. Stack and pins
 
-| | Pin | Why |
-| --- | --- | --- |
-| Next.js | **16.3.6**, exact | App Router, React 19, Cache Components; `middleware` is now `proxy`; Payload 3.90 needs `>=16.3.3 <17` |
-| React | 19.3.0 | |
-| Payload | **3.90.2**, exact, every `@payloadcms/*` alike | admin, Postgres adapter, S3 storage, nodemailer, jobs; Payload 4 only once stable with a migration guide |
-| Postgres | 18 (local `postgres:18.0`, Helios 18.6) | `unaccent`, `pg_trgm`, `NULLS NOT DISTINCT`; local matches production |
-| Node · pnpm | ≥ 22.13 (Helios 22) · 11.3 | `allowBuilds` in `pnpm-workspace.yaml` approves native builds |
-| TypeScript · ESLint | 5.9.3 · 9.39 | typescript-eslint 8 supports TS < 6.1; `eslint-config-next` still breaks on ESLint 10 |
-| Tests | Vitest 5 · Playwright 1.56 with axe · Lighthouse CI 0.15 | |
-| Images · validation | sharp 0.35.5 · zod 4.6 | derivatives and tiles from one library; schemas on the server, never in a browser |
-| AI | `@anthropic-ai/sdk` | server only; model ids are configuration (AI.md §1) |
-| Styling · viewer | CSS Modules with custom-property tokens · OpenSeadragon | the design team's three-tier tokens, ported (DESIGN-SYSTEM.md); the viewer loads on intent (§8) |
-| Maps | Google Maps Platform: the Maps JavaScript API with Places (browser, checkout only) · the Geocoding API (server) | the owner's choice (Q2); the browser key reaches the page as a server-rendered prop (SECURITY.md S4, B6) |
+|                     | Pin                                                                                                             | Why                                                                                                      |
+| ------------------- | --------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Next.js             | **16.3.6**, exact                                                                                               | App Router, React 19, Cache Components; `middleware` is now `proxy`; Payload 3.90 needs `>=16.3.3 <17`   |
+| React               | 19.3.0                                                                                                          |                                                                                                          |
+| Payload             | **3.90.2**, exact, every `@payloadcms/*` alike                                                                  | admin, Postgres adapter, S3 storage, nodemailer, jobs; Payload 4 only once stable with a migration guide |
+| Postgres            | 18 (local `postgres:18.0`, Helios 18.6)                                                                         | `unaccent`, `pg_trgm`, `NULLS NOT DISTINCT`; local matches production                                    |
+| Node · pnpm         | ≥ 22.13 (Helios 22) · 11.3                                                                                      | `allowBuilds` in `pnpm-workspace.yaml` approves native builds                                            |
+| TypeScript · ESLint | 5.9.3 · 9.39                                                                                                    | typescript-eslint 8 supports TS < 6.1; `eslint-config-next` still breaks on ESLint 10                    |
+| Tests               | Vitest 5 · Playwright 1.56 with axe · Lighthouse CI 0.15                                                        |                                                                                                          |
+| Images · validation | sharp 0.35.5 · zod 4.6                                                                                          | derivatives and tiles from one library; schemas on the server, never in a browser                        |
+| AI                  | `@anthropic-ai/sdk`                                                                                             | server only; model ids are configuration (AI.md §1)                                                      |
+| Styling · viewer    | CSS Modules with custom-property tokens · OpenSeadragon                                                         | the design team's three-tier tokens, ported (DESIGN-SYSTEM.md); the viewer loads on intent (§8)          |
+| Maps                | Google Maps Platform: the Maps JavaScript API with Places (browser, checkout only) · the Geocoding API (server) | the owner's choice (Q2); the browser key reaches the page as a server-rendered prop (SECURITY.md S4, B6) |
 
 ## 4. Repository layout
 
@@ -88,7 +106,7 @@ scripts/ops/  Helios provisioning     tests/e2e/  status · smoke · a11y · che
 - **Only `src/server/**` and `(payload)` import Payload or `@engine/cms`**, and each `src/server/` module starts
   with `import 'server-only'`, so a Client Component that reaches one fails the build. Components render view
   models; a page calls its loaders.
-- *Reshape note:* today's two apps, brand folders and contract packages go; [CARRY-OVER.md](CARRY-OVER.md) lists
+- _Reshape note:_ today's two apps, brand folders and contract packages go; [CARRY-OVER.md](CARRY-OVER.md) lists
   every move and deletion.
 
 ## 5. Routes
@@ -97,16 +115,16 @@ English is unprefixed, Indonesian under `/id` (DR-12). Route segments are transl
 (CONTENT-MODEL.md §1). The segments live in `SITES`, with `href()` and its inverse `parsePublicPath()`; nothing
 builds a URL by hand.
 
-| Surface | Gallery (en · id) | Shop (en · id) |
-| --- | --- | --- |
-| Browse | one segment per object type (`/antique-maps`, `/antique-prints`, `/photographs` · `/id/peta-antik`, `/id/cetakan-antik`, `/id/foto`), optionally with a place path (`/antique-maps/java/batavia`); all types `/browse` · `/id/jelajah` | `/shop`, `/shop/{category}` · `/id/belanja/…`; `/collections/{slug}` · `/id/koleksi/…` |
-| Search | `/search?q=` · `/id/cari` | the same |
-| Item | `/product/{publicId}-{slug}` · `/id/produk/…` | `/product/{slug}` · `/id/produk/{slug}` |
-| Makers · places | `/makers`, `/makers/{slug}` · `/id/pembuat/…`; `/places`, `/places/{path}` · `/id/tempat/…` | — |
-| Bag · checkout | — | `/bag` · `/id/keranjang`; `/checkout` · `/id/checkout` |
-| Tracking | — | `/track` (find my order), `/track/{token}` · `/id/lacak/…` |
-| Contact | `/sell-to-us` · `/id/jual-ke-kami` | `/partnership` · `/id/kemitraan`; `/stores` · `/id/toko` |
-| Stories · pages | `/stories/{slug}` · `/id/cerita/…`; `/{slug}` · `/id/{slug}` | `/{slug}` · `/id/{slug}` |
+| Surface         | Gallery (en · id)                                                                                                                                                                                                                      | Shop (en · id)                                                                         |
+| --------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| Browse          | one segment per object type (`/antique-maps`, `/antique-prints`, `/photographs` · `/id/peta-antik`, `/id/cetakan-antik`, `/id/foto`), optionally with a place path (`/antique-maps/java/batavia`); all types `/browse` · `/id/jelajah` | `/shop`, `/shop/{category}` · `/id/belanja/…`; `/collections/{slug}` · `/id/koleksi/…` |
+| Search          | `/search?q=` · `/id/cari`                                                                                                                                                                                                              | the same                                                                               |
+| Item            | `/product/{publicId}-{slug}` · `/id/produk/…`                                                                                                                                                                                          | `/product/{slug}` · `/id/produk/{slug}`                                                |
+| Makers · places | `/makers`, `/makers/{slug}` · `/id/pembuat/…`; `/places`, `/places/{path}` · `/id/tempat/…`                                                                                                                                            | —                                                                                      |
+| Bag · checkout  | —                                                                                                                                                                                                                                      | `/bag` · `/id/keranjang`; `/checkout` · `/id/checkout`                                 |
+| Tracking        | —                                                                                                                                                                                                                                      | `/track` (find my order), `/track/{token}` · `/id/lacak/…`                             |
+| Contact         | `/sell-to-us` · `/id/jual-ke-kami`                                                                                                                                                                                                     | `/partnership` · `/id/kemitraan`; `/stores` · `/id/toko`                               |
+| Stories · pages | `/stories/{slug}` · `/id/cerita/…`; `/{slug}` · `/id/{slug}`                                                                                                                                                                           | `/{slug}` · `/id/{slug}`                                                               |
 
 - **The gallery's item route resolves by `publicId`**: the old site's product id for a migrated work, so its old
   URL is its URL; for a new work, a number from a sequence starting at 100000. A differing slug part answers one
@@ -126,15 +144,15 @@ builds a URL by hand.
 segment and a static route there wins, so ours share one segment no collection may take; a unit test refuses a
 collection slug `x` or `health`.
 
-| Route | Called by | Notes |
-| --- | --- | --- |
-| `GET /api/health` | the deploy agent, monitors | database, storage, queue lag (reported, never gating), the environment judged |
-| `POST /api/x/cron/{jobs,sweeps,reconcile,nightly}` | the site user's crontab | `Bearer $CRON_SECRET`, 503 when unset (§10) |
-| `POST /api/x/revalidate` | jobs, imports, seeds, on loopback | `REVALIDATE_SECRET`; each tag parsed against the grammar |
-| `POST /api/x/webhooks/midtrans` · `/api/x/orders/{id}/driver-image` | Midtrans · staff | COMMERCE.md §6, §9 |
-| `/api/x/chat/{session,message,consent}` · `POST /api/x/leads` | the chat · lead forms | AI.md §2.2 · COMMERCE.md §14 |
-| `POST /api/x/collect` · `GET /api/x/geocode` | the beacon · the checkout's pin | ANALYTICS.md §3 · Google's Geocoding API on the server key: checks a pin or a pasted Google Maps link, names the pin's area (SECURITY.md S1, S4) |
-| `GET /api/x/legacy/{site}/…` · `/api/x/{sitemap,robots}/{site}` | the proxy's rewrites | DATA.md §6 |
+| Route                                                               | Called by                         | Notes                                                                                                                                            |
+| ------------------------------------------------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `GET /api/health`                                                   | the deploy agent, monitors        | database, storage, queue lag (reported, never gating), the environment judged                                                                    |
+| `POST /api/x/cron/{jobs,sweeps,reconcile,nightly}`                  | the site user's crontab           | `Bearer $CRON_SECRET`, 503 when unset (§10)                                                                                                      |
+| `POST /api/x/revalidate`                                            | jobs, imports, seeds, on loopback | `REVALIDATE_SECRET`; each tag parsed against the grammar                                                                                         |
+| `POST /api/x/webhooks/midtrans` · `/api/x/orders/{id}/driver-image` | Midtrans · staff                  | COMMERCE.md §6, §9                                                                                                                               |
+| `/api/x/chat/{session,message,consent}` · `POST /api/x/leads`       | the chat · lead forms             | AI.md §2.2 · COMMERCE.md §14                                                                                                                     |
+| `POST /api/x/collect` · `GET /api/x/geocode`                        | the beacon · the checkout's pin   | ANALYTICS.md §3 · Google's Geocoding API on the server key: checks a pin or a pasted Google Maps link, names the pin's area (SECURITY.md S1, S4) |
+| `GET /api/x/legacy/{site}/…` · `/api/x/{sitemap,robots}/{site}`     | the proxy's rewrites              | DATA.md §6                                                                                                                                       |
 
 ## 6. Rendering and caching
 
@@ -183,7 +201,7 @@ The model is Next 16 **Cache Components** (`cacheComponents: true`), proven by t
   one Payload transaction, with raw SQL through the Postgres adapter where Payload cannot say it. Domain
   transactions run READ COMMITTED, with `lock_timeout` and `statement_timeout` set by `SET LOCAL`.
 - **The atomic decrement** (COMMERCE.md §4): per line, `UPDATE stock_levels SET quantity = quantity - $qty WHERE
-  … AND quantity >= $qty`; the row count is the answer, and a short line rolls the order back. The schema backs it
+… AND quantity >= $qty`; the row count is the answer, and a short line rolls the order back. The schema backs it
   through the adapter's hook, so a dev-pushed test database has it too: `CHECK (quantity >= 0)` and a unique
   `(store, product, variant_sku) NULLS NOT DISTINCT`, one row per product per store even without a variant.
 - **One lock order, so no two writers deadlock:** the `payment-events` dedupe row, the order, stock rows by (store,
@@ -195,19 +213,21 @@ The model is Next 16 **Cache Components** (`cacheComponents: true`), proven by t
 
 ## 8. Media and deep zoom
 
-| Tier | What | Where |
-| --- | --- | --- |
-| Masters | captures as received (TIFF, RAW, JPEG), checksum, the object's box and measured ppi | private bucket `masters/`; the record is a plain `masters` collection |
-| Uploads | a `media` record's processed image, full size, perhaps with camera metadata | media bucket, private `uploads/`; staff only, through Payload |
-| Derivatives | AVIF and WebP at 320, 640, 1024, 1600 and 2400 px, a blur placeholder; metadata stripped | media bucket, public `derivatives/`, content-addressed, immutable |
-| Deep zoom | IIIF Image API 3 Level 0 static tiles, 512 px, capped at the public long edge (4,096 px) | media bucket, public `iiif/` |
-| Order files | driver images | private bucket `orders/{id}/` (COMMERCE.md §9) |
+| Tier        | What                                                                                                         | Where                                                                                                                                                             |
+| ----------- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Masters     | captures as received (TIFF, RAW, JPEG), checksum, the object's box and measured ppi                          | private bucket `masters/`; the record is a plain `masters` collection                                                                                             |
+| Uploads     | a `media` record's processed image, full size, perhaps with camera metadata; or a video (MP4, WebM) or a PDF | media bucket, private `uploads/`; staff only, through Payload — a video or a PDF a published shop page places also through `/api/x/media/{id}` (streamed, ranges) |
+| Derivatives | AVIF and WebP at 320, 640, 1024, 1600 and 2400 px, a blur placeholder; metadata stripped                     | media bucket, public `derivatives/`, content-addressed, immutable                                                                                                 |
+| Deep zoom   | IIIF Image API 3 Level 0 static tiles, 512 px, capped at the public long edge (4,096 px)                     | media bucket, public `iiif/`                                                                                                                                      |
+| Order files | driver images                                                                                                | private bucket `orders/{id}/` (COMMERCE.md §9)                                                                                                                    |
 
 - **Masters go straight to the bucket** by presigned PUT, checked by length and SHA-256, never through `/admin`:
   a large TIFF exceeds a CDN's request limit and Payload's memory. Staff open one by a short-lived signed link.
 - **Public means two prefixes.** The media bucket is anonymous-readable only under `derivatives/` and `iiif/`
   (the slash included) and lists nothing; the private bucket admits no anonymous request. A public read of
-  `media` goes through the published record that places it (CONTENT-MODEL.md §5).
+  `media` goes through the published record that places it (CONTENT-MODEL.md §5). A video or a PDF is never
+  copied to a public prefix: the app streams it from `uploads/`, same origin, only while a published page places
+  it (SECURITY.md F7). Only images reach the pipeline.
 - **Tiles only where they add detail.** An image no longer than the largest derivative (2,400 px, as most legacy
   images are) opens in the viewer from that derivative; a larger one gets tiles capped at the public long edge,
   since Level 0 tile paths are predictable and a signed manifest over public tiles would protect nothing.
@@ -236,12 +256,12 @@ declared through the adapter's hook rather than as a collection, refreshed per r
 Payload's jobs queue holds the work and cron-called routes run it, never `autoRun`, which starts on the first
 `getPayload()` inside a page render and competes with renders for CPU and the thread pool password hashing uses.
 
-| Route | Every | Runs |
-| --- | --- | --- |
-| `cron/jobs` | minute | queued jobs, a per-run limit, one run at a time: emails (queued in the transaction of their change), derivatives and tiles, search refresh, imports, AI drafts |
-| `cron/sweeps` | minute | each `pending_payment` order past `expiresAt` + 5 min: ask Midtrans, apply its answer, else expire and release the stock (COMMERCE.md §6) |
-| `cron/reconcile` | 10 min | asks Midtrans about pending orders still in their window, so a lost notification shows sooner (SECURITY.md W6) |
-| `cron/nightly` | 02:00 WITA | the retention purge (chat sessions, leads, driver images, tracking links, raw events, import files; COMPLIANCE.md §1 sets each period), analytics and AI-cost roll-ups |
+| Route            | Every      | Runs                                                                                                                                                                   |
+| ---------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cron/jobs`      | minute     | queued jobs, a per-run limit, one run at a time: emails (queued in the transaction of their change), derivatives and tiles, search refresh, imports, AI drafts         |
+| `cron/sweeps`    | minute     | each `pending_payment` order past `expiresAt` + 5 min: ask Midtrans, apply its answer, else expire and release the stock (COMMERCE.md §6)                              |
+| `cron/reconcile` | 10 min     | asks Midtrans about pending orders still in their window, so a lost notification shows sooner (SECURITY.md W6)                                                         |
+| `cron/nightly`   | 02:00 WITA | the retention purge (chat sessions, leads, driver images, tracking links, raw events, import files; COMPLIANCE.md §1 sets each period), analytics and AI-cost roll-ups |
 
 Bulk image work (the legacy set, a large handover) runs off-box, a workstation CLI writing straight to the
 bucket (DATA.md §5). Migrations run in the web process alone (DEPLOYMENT.md §4).
@@ -249,7 +269,7 @@ bucket (DATA.md §5). Migrations run in the web process alone (DEPLOYMENT.md §4
 ## 11. Locales
 
 - `en` is the default, unprefixed; `id` lives under `/id`. Payload localises content fields in `en` and `id`, `id`
-  falling back to `en`. British spelling, the *Anda* register (DR-12).
+  falling back to `en`. British spelling, the _Anda_ register (DR-12).
 - The unprefixed root is always English, never negotiated from `Accept-Language` (crawlers must see one answer); a
   dismissible banner offers Indonesian. Each page has one canonical and reciprocal `hreflang`, `x-default` English.
 - Interface words are lexicon keys per site with an `en` and an `id` value; marketing text lives in the CMS
@@ -266,7 +286,8 @@ bucket (DATA.md §5). Migrations run in the web process alone (DEPLOYMENT.md §4
 
 ## 13. The AI and security
 
-- **The chat** (`src/server/chat`) calls the pages' own loaders and search, so it reads exactly what a visitor can:
+- **The chat** (`@engine/chat`, configured per site through the app's `src/server/chat/sites.ts`, with the
+  database reads injected from `src/server/chat/adapters`) calls the pages' own loaders and search, so it reads exactly what a visitor can:
   no draft, no asking price, no order. Its one write is a lead, behind the visitor's consent click. **The drafting
   tool** is an admin action in `cms` filling empty fields marked unverified, which the server refuses to publish.
   The rest is AI.md.
@@ -276,20 +297,21 @@ bucket (DATA.md §5). Migrations run in the web process alone (DEPLOYMENT.md §4
 
 ## 14. Deliberately not used
 
-| Not used | Why |
-| --- | --- |
-| `@payloadcms/plugin-ecommerce` | beta; it reads stock at payment start and decrements with an unguarded `$inc`, so the last unit can sell twice |
-| Payload's multi-tenant plugin, a database per site | one owner; a `site` field is enough (DR-1) |
-| Shopify, Medusa, Saleor, Vendure | a second system and admin to run for one small store, which would still need our own store assignment and tracking |
-| A courier or WhatsApp API · customer or partner accounts | staff book the driver and WhatsApp is click-to-chat (DR-6, DR-7) · only staff sign in (DR-8, DR-10) |
-| GraphQL · IIIF Presentation manifests, an image server | off for every collection (SECURITY.md R6) · static Level 0 tiles and the page's own image list do the job |
-| Elasticsearch, Algolia, Meilisearch · Redis | Postgres full text is ample (§9) · one process: Postgres holds locks and the queue, rate limits are in-process |
-| GA4, Meta Pixel, any third-party tag | DR-13 |
-| Docker in production · a separate API service | Helios is CloudPanel and pm2 · the App Router is the API, and a second service doubles the deploy surface |
-| Tailwind, CSS-in-JS, an animation library | tokens are custom properties and components are few; CSS and View Transitions carry the motion |
+| Not used                                                 | Why                                                                                                                |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `@payloadcms/plugin-ecommerce`                           | beta; it reads stock at payment start and decrements with an unguarded `$inc`, so the last unit can sell twice     |
+| Payload's multi-tenant plugin                            | one owner, and it keeps one database; v2 splits into two apps and two databases instead (DR-17)                    |
+| Two repositories                                         | shared tokens, UI, i18n and migration tooling would be copied and drift (DR-17)                                    |
+| Shopify, Medusa, Saleor, Vendure                         | a second system and admin to run for one small store, which would still need our own store assignment and tracking |
+| A courier or WhatsApp API · customer or partner accounts | staff book the driver and WhatsApp is click-to-chat (DR-6, DR-7) · only staff sign in (DR-8, DR-10)                |
+| GraphQL · IIIF Presentation manifests, an image server   | off for every collection (SECURITY.md R6) · static Level 0 tiles and the page's own image list do the job          |
+| Elasticsearch, Algolia, Meilisearch · Redis              | Postgres full text is ample (§9) · one process: Postgres holds locks and the queue, rate limits are in-process     |
+| GA4, Meta Pixel, any third-party tag                     | DR-13                                                                                                              |
+| Docker in production · a separate API service            | Helios is CloudPanel and pm2 · the App Router is the API, and a second service doubles the deploy surface          |
+| Tailwind, CSS-in-JS, an animation library                | tokens are custom properties and components are few; CSS and View Transitions carry the motion                     |
 
 ## Open
 
 - **The public deep-zoom cap** — default 4,096 px long edge: more lets collectors inspect, less protects captures
-  from reproduction. *Owner.*
-- **The production media origin** — a CDN host or the sites' own `/_media/` path (DEPLOYMENT.md). *Owner, DevOps.*
+  from reproduction. _Owner._
+- **The production media origin** — a CDN host or the sites' own `/_media/` path (DEPLOYMENT.md). _Owner, DevOps._

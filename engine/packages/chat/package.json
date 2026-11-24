@@ -1,0 +1,49 @@
+{
+  "name": "@engine/chat",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The AI chat engine (PLAN-V2.md §3, AI.md): the turn pipeline, the prompt builder, the tool runner, the classifier, the output checks, the caps and the kill switch, the Claude API adapter and the golden-set evaluation; each site's prompt, tools and projection as configuration (galleryChat, shopChat); and the client panel. What reads the database is injected: the app passes its store and catalogue reader in ChatDeps, so nothing here imports a CMS or an app. Ships as TypeScript and CSS source: an app lists it in transpilePackages.",
+  "type": "module",
+  "exports": {
+    "./server/anthropic": "./src/server/adapters/anthropic.ts",
+    "./server/capped-body": "./src/server/capped-body.ts",
+    "./server/consent": "./src/server/consent.ts",
+    "./server/context": "./src/server/context.ts",
+    "./server/cost": "./src/server/cost.ts",
+    "./server/env": "./src/server/env.ts",
+    "./server/identity": "./src/server/identity.ts",
+    "./server/limits": "./src/server/limits.ts",
+    "./server/ports": "./src/server/ports.ts",
+    "./server/routes": "./src/server/routes.ts",
+    "./server/sites": "./src/server/sites/index.ts",
+    "./server/types": "./src/server/types.ts",
+    "./client/launcher": "./src/client/chat-launcher.tsx",
+    "./client/page-context": "./src/client/chat-page-context.tsx",
+    "./client/panel-text": "./src/client/lexicon/index.ts",
+    "./client/types": "./src/client/types.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.131.0",
+    "@engine/config": "workspace:*",
+    "@engine/i18n": "workspace:*",
+    "@engine/ui": "workspace:*",
+    "server-only": "0.0.1"
+  },
+  "peerDependencies": {
+    "next": "16.3.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "26.6.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "next": "16.3.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "typescript": "5.9.3"
+  }
+}

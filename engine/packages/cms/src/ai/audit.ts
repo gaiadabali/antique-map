@@ -14,9 +14,9 @@
  *
  * Runs before `hooks/work-cataloguing` and `hooks/work-guard`, which read the result.
  */
+import { isCatalogueStaff } from '@engine/cms-core/access'
 import type { CollectionBeforeChangeHook, PayloadRequest } from 'payload'
 
-import { isCatalogueStaff } from '../access/roles'
 import { AI_DRAFTABLE_FIELDS } from '../collections/works/vocabulary'
 
 type Doc = Record<string, unknown>

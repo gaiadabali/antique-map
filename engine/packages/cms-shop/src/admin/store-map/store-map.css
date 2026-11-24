@@ -1,0 +1,224 @@
+/* The store location field (TASKS.md 27.4.a): the address search, the places found, the pin with
+   its Google Maps link and the nudge pad. Tokens only (`@engine/ui` `tokens/admin.css`, DESIGN.md
+   "The admin"): paper with a hairline, square controls at the control height, 44 px targets on a
+   phone, bronze for the primary action and focus. Nothing wider than the screen at 390 px. */
+
+.lc-finder {
+  margin-block-end: calc(var(--base) * 1.25);
+  padding: calc(var(--base) * 0.75);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+}
+
+.lc-label {
+  display: block;
+  font: var(--admin-text-strong);
+  color: var(--admin-ink);
+}
+
+.lc-help,
+.lc-pin,
+.lc-notice,
+.lc-error {
+  margin: calc(var(--base) * 0.3) 0;
+  font: var(--admin-text-small);
+  max-inline-size: 72ch;
+}
+
+.lc-help {
+  color: var(--admin-muted);
+}
+
+.lc-pin {
+  font: var(--admin-text-body);
+  color: var(--admin-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.lc-notice {
+  padding: calc(var(--base) * 0.5) calc(var(--base) * 0.75);
+  color: var(--admin-ink);
+  background: var(--admin-warning-tint);
+}
+
+.lc-error {
+  color: var(--admin-danger);
+}
+
+.lc-mini {
+  display: block;
+  margin-block: calc(var(--base) * 0.5) calc(var(--base) * 0.2);
+  padding: 0;
+  font: var(--admin-text-label);
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.lc-search {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--base) * 0.5);
+}
+
+.lc-input,
+.lc-select {
+  box-sizing: border-box;
+  min-block-size: var(--admin-target);
+  padding: 0 calc(var(--base) * 0.6);
+  font: var(--admin-text-body);
+  color: var(--admin-ink);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-input-border);
+  border-radius: var(--admin-radius-control);
+}
+
+.lc-input {
+  flex: 1 1 14rem;
+  min-inline-size: 0;
+}
+
+.lc-input:focus-visible,
+.lc-select:focus-visible,
+.lc-btn:focus-visible,
+.lc-candidate:focus-visible,
+.lc-link:focus-visible {
+  outline: 2px solid var(--admin-focus);
+  outline-offset: 2px;
+}
+
+.lc-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-block-size: var(--admin-target);
+  min-inline-size: var(--admin-target);
+  padding: 0 calc(var(--base) * 0.9);
+  font: var(--admin-text-small);
+  font-weight: 600;
+  color: var(--admin-ink);
+  background: var(--admin-paper);
+  border: 1px solid var(--admin-input-border);
+  border-radius: var(--admin-radius-control);
+  cursor: pointer;
+}
+
+.lc-btn:hover {
+  background: var(--admin-wash);
+}
+
+.lc-btn--primary {
+  color: var(--admin-accent-on);
+  background: var(--admin-accent);
+  border-color: var(--admin-accent);
+}
+
+.lc-btn--primary:hover {
+  background: var(--admin-accent-strong);
+}
+
+.lc-btn:disabled {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+.lc-candidates {
+  margin: calc(var(--base) * 0.5) 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--admin-hairline);
+  border-radius: var(--admin-radius-control);
+}
+
+.lc-candidates li + li {
+  border-block-start: 1px solid var(--admin-hairline);
+}
+
+.lc-candidate {
+  display: block;
+  inline-size: 100%;
+  min-block-size: var(--admin-target);
+  padding: calc(var(--base) * 0.4) calc(var(--base) * 0.6);
+  text-align: start;
+  color: var(--admin-ink);
+  background: var(--admin-paper);
+  border: 0;
+  cursor: pointer;
+}
+
+.lc-candidate:hover {
+  background: var(--admin-accent-tint);
+}
+
+.lc-candidate__label {
+  display: block;
+  font: var(--admin-text-body);
+}
+
+.lc-candidate__pin {
+  display: block;
+  font: var(--admin-text-small);
+  color: var(--admin-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.lc-link {
+  color: var(--admin-ink-strong);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  white-space: nowrap;
+}
+
+.lc-move {
+  margin: calc(var(--base) * 0.5) 0 0;
+  padding: 0;
+  border: 0;
+  min-inline-size: 0;
+}
+
+.lc-step {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--base) * 0.4);
+  font: var(--admin-text-small);
+  color: var(--admin-ink);
+}
+
+/* The four directions as a compass: north above, west and east beside, south below. */
+.lc-pad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(var(--admin-target), max-content));
+  grid-template-areas:
+    '. north .'
+    'west . east'
+    '. south .';
+  gap: calc(var(--base) * 0.3);
+  margin-block-start: calc(var(--base) * 0.5);
+}
+
+.lc-pad__north {
+  grid-area: north;
+}
+
+.lc-pad__west {
+  grid-area: west;
+}
+
+.lc-pad__east {
+  grid-area: east;
+}
+
+.lc-pad__south {
+  grid-area: south;
+}
+
+.lc-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

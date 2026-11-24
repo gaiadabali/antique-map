@@ -31,8 +31,8 @@ async function main(): Promise<number> {
   seedEnv()
   // Imported after the environment is filled: the config reads it at load time.
   const { cms } = await import('../../instance')
-  const { cliInvalidation, postCliTags } = await import('../../import/cli-cache')
-  const { deriveMedia } = await import('./pipeline')
+  const { cliInvalidation, postCliTags } = await import('@engine/cms-core/import/cli-cache')
+  const { deriveMedia } = await import('@engine/cms-core/collections/media/pipeline')
   const payload = await cms()
   const batch = cliInvalidation()
 
@@ -47,6 +47,7 @@ async function main(): Promise<number> {
             pagination: false,
             overrideAccess: true,
             sort: 'id',
+            where: { kind: { equals: 'image' } },
             select: { id: true },
           })
         ).docs.map((doc) => doc.id as number)

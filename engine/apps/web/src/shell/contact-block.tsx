@@ -7,15 +7,9 @@ import type { PublicSiteSettings } from '../server/site-settings'
 
 import type { ShellText } from './site'
 import styles from './shell.module.css'
+import { socialLinks } from '@engine/site/shell'
 
-/** Only an `https:` address becomes a link: the field is free text, so no `javascript:` or `//host`. */
-export function socialLinks(
-  social: PublicSiteSettings['social'],
-): readonly { platform: string; url: string }[] {
-  return (social ?? []).filter(
-    (link) => link.platform.trim() !== '' && /^https:\/\/[^/\s]+\.[^/\s]+/i.test(link.url),
-  )
-}
+export { socialLinks }
 
 /** WhatsApp, email and phone from `site-settings`; the lexicon's placeholder when it answers none. */
 export function ContactBlock({ settings, t }: { settings: PublicSiteSettings; t: ShellText }) {

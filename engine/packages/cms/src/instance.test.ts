@@ -147,7 +147,7 @@ describe('the one server-route getPayload()', () => {
     return found
   }
 
-  it("is cms's instance; only cms's CLI and tests call getPayload( besides", () => {
+  it("is each CMS's instance; only the CMSes' CLIs and tests call getPayload( besides", () => {
     const callers = [...modules(packages)]
       .filter(callsGetPayload)
       .map((file) => path.relative(packages, file).split(path.sep).join('/'))
@@ -156,6 +156,9 @@ describe('the one server-route getPayload()', () => {
       (file) =>
         file !== 'cms/src/instance.ts' &&
         file !== 'cms/src/db/cli.ts' &&
+        // The shop's own CMS (PLAN-V2 §3): its process's one instance and its schema CLI.
+        file !== 'cms-shop/src/instance.ts' &&
+        file !== 'cms-shop/src/db/cli.ts' &&
         !/\.test(-support)?\.[^/]+$/.test(file),
     )
     expect(others).toEqual([])

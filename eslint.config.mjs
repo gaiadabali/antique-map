@@ -12,10 +12,12 @@
 //      prefetch costs a database read (a storefront link is a plain <a>),
 //   4. view-models has no runtime dependencies (type imports only; its
 //      package.json declares no dependencies).
+// Plus one rule of our own, `boundaries/no-cross-app-imports`: an app never
+// imports another app (PLAN-V2.md §7) — shared code moves into a package.
 // A later config replaces a rule's options for the files it matches, so each
 // scope below lists every pattern that applies to it.
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
+import { dirname, join, relative, resolve, sep } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { includeIgnoreFile } from '@eslint/compat'
@@ -37,14 +39,22 @@ const APP_NEXT_CONFIG = 'engine/apps/*/next.config.{js,mjs,cjs,ts,mts,cts}'
 // App package names, read from disk so rule 2 keeps up as apps are added or
 // renamed; no name is hard-coded here.
 const appsDir = join(root, 'engine', 'apps')
-const appNames = existsSync(appsDir)
+const apps = existsSync(appsDir)
   ? readdirSync(appsDir, { withFileTypes: true })
       .filter((entry) => entry.isDirectory())
-      .map((entry) => join(appsDir, entry.name, 'package.json'))
-      .filter((file) => existsSync(file))
-      .map((file) => JSON.parse(readFileSync(file, 'utf8')).name)
-      .filter((name) => typeof name === 'string')
+      .map((entry) => ({ dir: entry.name, file: join(appsDir, entry.name, 'package.json') }))
+      .filter(({ file }) => existsSync(file))
+      .map(({ dir, file }) => ({ dir, name: JSON.parse(readFileSync(file, 'utf8')).name }))
+      .filter(({ name }) => typeof name === 'string')
   : []
+const appNames = apps.map(({ name }) => name)
+
+// The app directory (`engine/apps/<dir>`) a path lies in, or undefined.
+function appDirOf(path) {
+  const rel = relative(appsDir, path)
+  if (rel === '' || rel.startsWith('..')) return undefined
+  return rel.split(sep)[0]
+}
 
 const payloadImports = {
   group: [
@@ -122,6 +132,42 @@ const boundaries = {
         }
       },
     },
+    'no-cross-app-imports': {
+      meta: {
+        type: 'problem',
+        docs: { description: 'An app never imports another app' },
+        messages: {
+          found:
+            'An app never imports another app ("{{other}}"): move the shared code into a package both can use (PLAN-V2.md §7).',
+        },
+        schema: [],
+      },
+      create(context) {
+        const own = appDirOf(context.filename)
+        if (own === undefined) return {}
+        function check(node, source) {
+          if (typeof source !== 'string') return
+          let other
+          if (source.startsWith('.')) {
+            other = appDirOf(resolve(dirname(context.filename), source))
+          } else {
+            other =
+              apps.find(({ name }) => source === name || source.startsWith(`${name}/`))?.dir ??
+              /(?:^|\/)engine\/apps\/([^/]+)/.exec(source)?.[1]
+          }
+          if (other !== undefined && other !== own) {
+            context.report({ node, messageId: 'found', data: { other } })
+          }
+        }
+        const fromSource = (node) => check(node, node.source?.value)
+        return {
+          ImportDeclaration: fromSource,
+          ExportNamedDeclaration: fromSource,
+          ExportAllDeclaration: fromSource,
+          ImportExpression: fromSource,
+        }
+      },
+    },
   },
 }
 
@@ -133,6 +179,7 @@ export default defineConfig([
       '**/importMap.js',
       '**/next-env.d.ts',
       'engine/packages/cms/src/migrations/**',
+      'engine/packages/cms-shop/src/migrations/**',
     ],
     'generated files (regenerated, never edited: PARALLEL-TRACKS.md §2)',
   ),
@@ -161,6 +208,12 @@ export default defineConfig([
   },
 
   {
+    name: 'imports: an app never imports another app',
+    files: [code('engine/apps')],
+    plugins: { boundaries },
+    rules: { 'boundaries/no-cross-app-imports': 'error' },
+  },
+  {
     name: 'imports: apps — Payload only in src/server and (payload); no prefetch',
     files: [code('engine/apps')],
     ignores: [APP_SERVER, APP_PAYLOAD, APP_NEXT_CONFIG],
@@ -188,7 +241,11 @@ export default defineConfig([
   {
     name: 'imports: packages never import apps; no prefetch',
     files: [code('engine/packages')],
-    ignores: ['engine/packages/cms/**'],
+    ignores: [
+      'engine/packages/cms/**',
+      'engine/packages/cms-shop/**',
+      'engine/packages/cms-core/src/admin/**',
+    ],
     rules: {
       '@typescript-eslint/no-restricted-imports': [
         'error',
@@ -197,9 +254,14 @@ export default defineConfig([
     },
   },
   {
-    // The admin's own components live in cms and may link inside the admin.
+    // The admin's own components live in the CMS packages (each CMS's own and cms-core's shared
+    // shell) and may link inside the admin.
     name: 'imports: cms never imports apps; no next/form',
-    files: [code('engine/packages/cms')],
+    files: [
+      code('engine/packages/cms'),
+      code('engine/packages/cms-shop'),
+      code('engine/packages/cms-core/src/admin'),
+    ],
     rules: {
       '@typescript-eslint/no-restricted-imports': [
         'error',

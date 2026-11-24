@@ -5,6 +5,14 @@
 
 ## 1. Lanes and what they own
 
+> **Plan v2 (DR-17, [PLAN-V2.md](PLAN-V2.md)).** As each app lands, the lanes follow it: **SHP** owns
+> `engine/apps/shop/**` and `engine/packages/cms-shop/**`; **GAL** owns `engine/apps/gallery/**` and
+> `engine/packages/cms-gallery/**`; **CMS** owns `engine/packages/{cms-core,migrate}/**` (a change there is
+> migrated in both CMSs in the same wave); **DSG** owns `engine/packages/ui/**`; **AIX** owns
+> `engine/packages/chat/**` and each app's `app/api/x/chat/**`; **PLT** owns the other shared packages and each
+> app's `proxy.ts` and `next.config.ts`. A task that changes a shared package names both apps' checks in its
+> Check. The table below is today's one app, `engine/apps/web`, until phase 26.
+
 A **lane** is an area of the repo. A task lists its lane and the exact paths it **Owns**; an agent edits only those.
 Two tasks in the same wave never own the same path (a subdirectory counts as its parent).
 
@@ -26,7 +34,9 @@ needs it, named in its **Owns**, and only one task per wave may name them. Never
 
 ## 2. Schema and migrations
 
-One migration set, one database. **Only the wave's schema lead generates a migration**, once per wave, in a clean
+One migration set per CMS, one database per app (`cms-shop` → `indies_shop`, `cms-gallery` → `indies_gallery`;
+today's `cms` → `indies_<suffix>` until phase 26). A change to a `cms-core` factory needs a migration in **both**
+CMSs, from the same lead in the same wave. **Only the wave's schema lead generates a migration**, once per wave, in a clean
 worktree on merged `main` — never one a dev server pushed. Tasks in a wave that change collections report the
 tables and indexes they need; the lead commits the migration, regenerates `payload-types.ts` and `importMap.js`
 (`pnpm generate:types`, `pnpm generate:importmap`) and runs `pnpm check:generated`. Hand-written DDL (extensions,

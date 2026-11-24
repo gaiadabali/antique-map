@@ -9,8 +9,8 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { ItemView } from '../../../server/gallery/item/view-model'
-import { Breadcrumbs, Crossing, StockTag, TextLink } from '../../../shared/ui'
-import { ChatPageContext } from '../../../shared/chat/chat-page-context'
+import { Breadcrumbs, Crossing, StockTag, TextLink } from '@engine/ui'
+import { ChatPageContext } from '@engine/chat/client/page-context'
 import { AskPanel, ItemProof } from './ask-panel'
 import { creditLine, itemText } from './copy'
 import { LeadPicture, MediaCaption, leadImage, sheetShape } from './item-media'

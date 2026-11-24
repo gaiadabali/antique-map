@@ -3,6 +3,7 @@
 // build at local hosts is local only with LOCAL_PRODUCTION_BUILD=1, which a host never sets.
 import { describe, expect, it } from 'vitest'
 
+import { deploymentEnvironment } from './environment'
 import { bootCheck, formatBootReport, type BootReport } from './index'
 import { fullEnv } from './testing'
 
@@ -121,5 +122,35 @@ describe('bootCheck() — RUN_MIGRATIONS outside a production build', () => {
       problems: [],
       warnings: [],
     })
+  })
+})
+
+describe('deploymentEnvironment() — one app (SITE_HOSTS, TASKS.md 23.3)', () => {
+  const ignore = () => {}
+  const judge = (env: Record<string, string | undefined>) =>
+    deploymentEnvironment(env, {
+      problems: [],
+      warnings: [],
+      refuse: ignore,
+      warn: ignore,
+      require: ignore,
+    })
+
+  it('judges by the canonical host of SITE_HOSTS when there are no two-site lists', () => {
+    const build = { NODE_ENV: 'production', LOCAL_PRODUCTION_BUILD: '1' }
+    expect(judge({ ...build, SITE_HOSTS: 'shop.localhost,www.shop.localhost' })).toBe('local')
+    expect(judge({ ...build, SITE_HOSTS: 'old-east-indies.gaiada.com' })).toBe('staging')
+    expect(judge({ ...build, SITE_HOSTS: 'oldeastindies.com,www.oldeastindies.com' })).toBe(
+      'production',
+    )
+  })
+
+  it('fails closed on an unknown host, none, or a two-site list beside it', () => {
+    const build = { NODE_ENV: 'production', LOCAL_PRODUCTION_BUILD: '1' }
+    expect(judge({ ...build, SITE_HOSTS: 'shop.example.com' })).toBe('production')
+    expect(judge({ ...build })).toBe('production')
+    expect(judge({ ...build, SITE_HOSTS: 'shop.localhost', SHOP_HOSTS: 'oldeastindies.com' })).toBe(
+      'production',
+    )
   })
 })

@@ -1,0 +1,109 @@
+/* The admin's sign-in page and its marks (TASKS.md 16): no card — the Old East Indies logo, the
+   email and password under it, on the paper ground; and the small mark in the sidebar and
+   breadcrumbs. Tokens only. */
+
+/* ---- sign-in -------------------------------------------------------------------------------- */
+
+.template-minimal {
+  background: var(--admin-paper);
+  min-height: 100dvh;
+  display: grid;
+  /* One column 480 px wide (Payload's own sign-in width; the whole width on a phone),
+     centred both ways: a percentage width on the item itself would resolve against an
+     auto-sized track and shrink to the fields' minimum. */
+  grid-template-columns: min(100%, 480px);
+  place-content: center;
+  padding: var(--base);
+}
+
+.template-minimal__wrap {
+  inline-size: 100%;
+  max-inline-size: none;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+
+.login__brand {
+  display: flex;
+  justify-content: center;
+  margin-block-end: calc(var(--base) * 2);
+}
+
+.login__form .form-submit .btn {
+  inline-size: 100%;
+  justify-content: center;
+}
+
+@media (max-width: 480px) {
+  .template-minimal {
+    grid-template-columns: 100%;
+    align-content: start;
+    padding: calc(var(--base) * 3) var(--base);
+  }
+}
+
+/* ---- the marks (`@engine/cms/admin/brand/marks.jsx`) ----------------------------------------- */
+
+.ix-mark {
+  color: var(--admin-ink-strong);
+}
+
+.ix-mark--logo {
+  display: grid;
+  justify-items: center;
+  gap: calc(var(--base) * 0.4);
+}
+
+h1.ix-mark__name,
+.ix-mark__name {
+  margin: 0;
+  font: var(--admin-text-title);
+  font-size: 2.75rem;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+
+.ix-mark__image {
+  display: block;
+  inline-size: auto;
+  block-size: 9rem;
+}
+
+.ix-mark__rule {
+  inline-size: 3rem;
+  block-size: 1px;
+  background: var(--admin-accent);
+}
+
+p.ix-mark__sites,
+.ix-mark__sites {
+  margin: 0;
+  font: var(--admin-text-label);
+  letter-spacing: var(--admin-tracking-label);
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+img.ix-mark__icon-image {
+  display: block;
+  inline-size: auto;
+  block-size: 2.25rem;
+}
+
+.ix-mark--icon {
+  font: var(--admin-text-record);
+  font-size: 1.35rem;
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+
+/* Payload sizes its icon slot for an 18 px glyph; the wordmark needs its own width. */
+.step-nav__home,
+.step-nav__home .graphic-icon,
+.nav__header .graphic-icon {
+  inline-size: auto;
+  max-inline-size: none;
+  block-size: auto;
+  overflow: visible;
+}

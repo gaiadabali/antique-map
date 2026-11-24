@@ -13,13 +13,23 @@
 # their copy is bundled, their files are `public/<site>/`, and the request's Host picks one
 # (GALLERY_HOSTS, SHOP_HOSTS — TASKS.md 2.2). Nothing beside the build is read at runtime.
 #
-# Usage: assemble-artifact.sh [out-dir]   (default: $RUNNER_TEMP/artifact). Run from the repo root
-# after the app's `next build`.
+# Usage: assemble-artifact.sh [out-dir] [app]   (default: $RUNNER_TEMP/artifact, web). Run from the
+# repo root after the app's `next build`. `app` is `web` (today's app, what release.yml ships) or
+# `shop` (engine/apps/shop, the shop's own app: CI's shop jobs, TASKS.md 24.3), assembled the same
+# way into <out-dir>/<app>/ — the shop's release tarball is 24.4's.
 set -euo pipefail
 
 STAGE="${1:-${RUNNER_TEMP:?RUNNER_TEMP or an out-dir argument is required}/artifact}"
-APP_DIR=engine/apps/web
-OUT="$STAGE/web"
+APP="${2:-web}"
+case "$APP" in
+  web | shop) ;;
+  *)
+    echo "::error::assemble-artifact.sh: app is web or shop (got '$APP')"
+    exit 2
+    ;;
+esac
+APP_DIR="engine/apps/$APP"
+OUT="$STAGE/$APP"
 STANDALONE="$APP_DIR/.next/standalone"
 rm -rf "$STAGE"
 mkdir -p "$OUT"
@@ -71,5 +81,5 @@ sharp_version="$(cd "$SERVER_DIR" && node -e "import('sharp').then((s) => consol
   exit 1
 }
 
-echo "web assembled: $(du -sh "$OUT" | cut -f1), sharp $sharp_version, entry $APP_DIR/server.js, sites: $(cd "$SERVER_DIR/public" 2>/dev/null && printf '%s ' */)"
+echo "$APP assembled:$(du -sh "$OUT" | cut -f1), sharp $sharp_version, entry $APP_DIR/server.js, sites: $(cd "$SERVER_DIR/public" 2>/dev/null && printf '%s ' */)"
 echo "artifact staged at $STAGE"

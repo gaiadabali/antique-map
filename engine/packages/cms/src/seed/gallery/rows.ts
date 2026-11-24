@@ -25,7 +25,7 @@
  * - A stock number the record does not state falls back to `M.L<old id>` — a key no legacy record
  *   produces, so every record imports.
  */
-import { ANTIQUE_COLUMNS } from '../../import/kinds'
+import { ANTIQUE_COLUMNS } from '@engine/cms-core/import/kinds'
 import { STOCK_NUMBER_PATTERN, stockNumberError } from '../../validators/work-record'
 import type { LegacyImage, NormalisedGalleryRecord } from './records'
 

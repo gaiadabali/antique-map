@@ -1,7 +1,8 @@
 // Every message key has an English and an Indonesian value (TASKS.md 1.3.a): what was left of
 // `check:brands`' copy half once the brand machinery went (CARRY-OVER.md §2.3). Each site's copy
-// is its lexicon folder, `engine/apps/web/src/sites/<site>/lexicon/` (CONVENTIONS.md §6), found on
-// disk, never named, so a site added there is checked too.
+// is its lexicon folder, `<root>/sites/<site>/lexicon/` (CONVENTIONS.md §6) under each root that
+// holds sites — today's app's (the gallery) and the storefront's (the shop, TASKS.md 23.3) — found
+// on disk, never named, so a site added under either is checked too.
 //
 // The English file is the reference: `checkCopy()` (`@engine/i18n/copy`, the same rules the app
 // loads copy by) refuses an empty English value, an Indonesian key with no value, an Indonesian
@@ -18,15 +19,20 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { checkCopy } from '../../packages/i18n/src/copy.ts'
 
 const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url))
-const SITES_DIR = join(REPO_ROOT, 'engine', 'apps', 'web', 'src', 'sites')
+const SITES_DIRS = [
+  join(REPO_ROOT, 'engine', 'apps', 'web', 'src', 'sites'),
+  join(REPO_ROOT, 'engine', 'packages', 'storefront', 'src', 'sites'),
+]
 const REQUIRED = ['en', 'id']
 
 /** Every site's `lexicon/` folder that holds an `en.json`, relative to `root`, sorted. */
 function findCopyFolders(root) {
-  if (!existsSync(SITES_DIR)) return []
-  return readdirSync(SITES_DIR, { withFileTypes: true })
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => join(SITES_DIR, entry.name, 'lexicon'))
+  return SITES_DIRS.filter((dir) => existsSync(dir))
+    .flatMap((dir) =>
+      readdirSync(dir, { withFileTypes: true })
+        .filter((entry) => entry.isDirectory())
+        .map((entry) => join(dir, entry.name, 'lexicon')),
+    )
     .filter((path) => existsSync(join(path, 'en.json')))
     .map((path) => relative(root, path).split('\\').join('/'))
     .sort()
@@ -55,7 +61,7 @@ describe('every message key has an en and an id value (1.3.a)', () => {
   it('finds each site’s lexicon folder on disk', () => {
     expect(folders).toEqual([
       'engine/apps/web/src/sites/gallery/lexicon',
-      'engine/apps/web/src/sites/shop/lexicon',
+      'engine/packages/storefront/src/sites/shop/lexicon',
     ])
   })
 

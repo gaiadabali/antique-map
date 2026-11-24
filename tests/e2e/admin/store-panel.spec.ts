@@ -1,52 +1,21 @@
 /**
- * The store staff panel (TASKS.md 7.2.c; CONTENT-OPERATIONS.md §5.1), driven at 390 px on a
- * production build: a store user moves a fresh `paid` order `paid → processing → waiting_driver`,
- * uploads the driver's details, `on_the_way → delivered`, each step timed; another store's user
- * sees an empty list; as the owner, reassigning one order to another store. Accounts and stores
+ * The store staff's order screens (TASKS.md 7.2.c, 27.3; CONTENT-OPERATIONS.md §5.1), driven at
+ * 390 px on a production build: a store user moves a fresh `paid` order from the inbox's "Needs
+ * action" with the order page's one next-step button — `paid → processing → waiting_driver`,
+ * the driver's photo, `on_the_way → delivered` — each step timed; another store's user sees an
+ * empty inbox; as the owner, reassigning one order to a store that holds every item, with a reason. Accounts and stores
  * are `fixtures.ts`'s; the orders are `store-panel-fixtures.ts`'s own, fresh every run.
  */
-import { execFileSync } from 'node:child_process'
-import { existsSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
-
 import { expect, test } from '@playwright/test'
 
-import { readEnvFile } from '../../../engine/tooling/worktree/env-file.mjs'
 import { ACCOUNTS } from './accounts'
 import { signIn } from './admin'
 import { record, shot } from './evidence-72'
-import { fixtures, localPort, sql, type Fixtures } from './local.mjs'
+import { fixtures, sql, type Fixtures } from './local.mjs'
+import { paidOrders } from './order-fixtures'
 
-const here = dirname(fileURLToPath(import.meta.url))
-const root = join(here, '../../..')
-const windows = process.platform === 'win32'
-
-/** A fresh `paid` order at each fixture store — `store-panel-fixtures.ts`, run the way `fixtures.ts` is. */
-function storePanelOrders(storeAId: number, storeBId: number): { mine: number; other: number } {
-  const script = join(here, 'store-panel-fixtures.ts')
-  const port = localPort()
-  const envFile = join(root, '.env.local')
-  const local = existsSync(envFile) ? readEnvFile(envFile) : new Map<string, string>()
-  const suffix = process.env.DB_SUFFIX ?? local.get('DB_SUFFIX')
-  const url =
-    process.env.E2E_DATABASE_URL ??
-    `postgres://postgres:postgres@127.0.0.1:5432/indies_${suffix ?? ''}`
-  const out = execFileSync(
-    'pnpm',
-    ['--filter', '@engine/cms', 'payload', 'run', script, String(storeAId), String(storeBId)],
-    {
-      cwd: root,
-      encoding: 'utf8',
-      shell: windows,
-      env: { ...process.env, DATABASE_URL: url, NODE_ENV: 'development', E2E_PORT: port },
-      stdio: ['ignore', 'pipe', 'inherit'],
-    },
-  )
-  const line = out.split('\n').find((each) => each.startsWith('E2E_STORE_PANEL '))
-  if (!line) throw new Error(`store-panel-fixtures.ts printed no result:\n${out}`)
-  return JSON.parse(line.slice('E2E_STORE_PANEL '.length)) as { mine: number; other: number }
-}
+/** A fresh `paid` order at each fixture store (`./order-fixtures`). */
+const storePanelOrders = paidOrders
 
 test.use({ viewport: { width: 390, height: 844 } })
 
@@ -87,8 +56,7 @@ test.describe.serial('the store panel, at 390 px', () => {
     ).toBeVisible()
     await page.screenshot({ path: shot('store-panel-queue-390') })
     await page.goto(`/admin/orders/${orders.mine}`)
-    await page.getByRole('link', { name: /^Processing$/ }).click()
-    await page.getByRole('button', { name: /^Confirm$/ }).click()
+    await page.getByRole('button', { name: /^Start packing$/ }).click()
     await page.waitForURL(`**/admin/orders/${orders.mine}`)
     expect(sql(`SELECT status FROM orders WHERE id = ${orders.mine}`)).toBe('processing')
   })
@@ -96,8 +64,7 @@ test.describe.serial('the store panel, at 390 px', () => {
   timed('the store user books the driver', async (page) => {
     await signIn(page, ACCOUNTS.storeA.email)
     await page.goto(`/admin/orders/${orders.mine}`)
-    await page.getByRole('link', { name: /^Waiting for driver$/ }).click()
-    await page.getByRole('button', { name: /^Confirm$/ }).click()
+    await page.getByRole('button', { name: /^Packed — book a driver$/ }).click()
     await page.waitForURL(`**/admin/orders/${orders.mine}`)
     expect(sql(`SELECT status FROM orders WHERE id = ${orders.mine}`)).toBe('waiting_driver')
   })
@@ -124,13 +91,11 @@ test.describe.serial('the store panel, at 390 px', () => {
     test.skip(process.env.E2E_OBJECT_STORAGE !== '1', 'needs object storage (E2E_OBJECT_STORAGE=1)')
     await signIn(page, ACCOUNTS.storeA.email)
     await page.goto(`/admin/orders/${orders.mine}`)
-    await page.getByRole('link', { name: /^On the way$/ }).click()
-    await page.getByRole('button', { name: /^Confirm$/ }).click()
+    await page.getByRole('button', { name: /^Driver collected it$/ }).click()
     await page.waitForURL(`**/admin/orders/${orders.mine}`)
     expect(sql(`SELECT status FROM orders WHERE id = ${orders.mine}`)).toBe('on_the_way')
 
-    await page.getByRole('link', { name: /^Delivered$/ }).click()
-    await page.getByRole('button', { name: /^Confirm$/ }).click()
+    await page.getByRole('button', { name: /^Mark delivered$/ }).click()
     await page.waitForURL(`**/admin/orders/${orders.mine}`)
     expect(sql(`SELECT status FROM orders WHERE id = ${orders.mine}`)).toBe('delivered')
     await page.screenshot({ path: shot('store-panel-delivered-390') })
@@ -139,10 +104,12 @@ test.describe.serial('the store panel, at 390 px', () => {
 
 test('another store’s user sees an empty list for this order', async ({ page }) => {
   await signIn(page, ACCOUNTS.storeB.email)
+  const number = sql(`SELECT number FROM orders WHERE id = ${orders.mine}`)
   await page.goto('/admin/orders')
-  await expect(
-    page.getByText(`#${sql(`SELECT number FROM orders WHERE id = ${orders.mine}`)}`),
-  ).toHaveCount(0)
+  await expect(page.getByText(`#${number}`)).toHaveCount(0)
+  // Not even by its exact number: the search runs as the store user too.
+  await page.goto(`/admin/orders?q=${number}`)
+  await expect(page.getByText(`#${number}`)).toHaveCount(0)
   await page.screenshot({ path: shot('store-panel-other-store-empty-390') })
 })
 
@@ -150,7 +117,8 @@ test('the owner reassigns an order to another store', async ({ page }) => {
   await signIn(page, ACCOUNTS.owner.email)
   await page.goto(`/admin/orders/${orders.other}`)
   await page.getByRole('link', { name: /^Reassign$/ }).click()
-  await page.getByLabel(/Send to store/).selectOption({ value: String(fx.stores.a.id) })
+  await page.locator(`input[name="toStoreId"][value="${fx.stores.a.id}"]`).check()
+  await page.getByLabel(/Why move it?/).fill('Store B is closed today.')
   await page.getByRole('button', { name: /^Confirm reassignment$/ }).click()
   await page.waitForURL(`**/admin/orders/${orders.other}`)
   expect(sql(`SELECT store_id FROM orders WHERE id = ${orders.other}`)).toBe(String(fx.stores.a.id))

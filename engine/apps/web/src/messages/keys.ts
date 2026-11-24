@@ -13,34 +13,12 @@
  * dates, counts and hours are placeholders the page fills: copy never carries a figure of its own.
  */
 import { SITES, type SiteKey, type SiteLocale } from '@engine/config/sites'
-import { createMessages, defineMessages, type Messages } from '@engine/i18n'
+import { createMessages, type Messages } from '@engine/i18n'
 
 import { SITE_COPY } from '../shell/copy'
-import { ITEM_KEYS } from './lexicon/item'
-import { LISTING_KEYS } from './lexicon/listing'
-import { RECORD_KEYS } from './lexicon/record'
-import { ACCOUNT_KEYS } from './lexicon/account'
-import { BAG_AND_CHECKOUT_KEYS } from './lexicon/bag-and-checkout'
-import { PAYMENT_AND_ORDER_KEYS } from './lexicon/payment-and-order'
-import { CONVERSATION_KEYS } from './lexicon/conversations'
-import { FIELD_KEYS } from './lexicon/fields'
-import { SHOP_KEYS } from './lexicon/shop'
-import { WHATSAPP_AND_NOTE_KEYS } from './lexicon/whatsapp-and-notes'
+import { LEXICON_MESSAGES, type LexiconMessageKey } from '@engine/i18n/lexicon'
 
-export const LEXICON_MESSAGES = defineMessages({
-  ...ITEM_KEYS,
-  ...LISTING_KEYS,
-  ...RECORD_KEYS,
-  ...BAG_AND_CHECKOUT_KEYS,
-  ...PAYMENT_AND_ORDER_KEYS,
-  ...CONVERSATION_KEYS,
-  ...FIELD_KEYS,
-  ...ACCOUNT_KEYS,
-  ...SHOP_KEYS,
-  ...WHATSAPP_AND_NOTE_KEYS,
-})
-
-export type LexiconMessageKey = keyof typeof LEXICON_MESSAGES
+export { LEXICON_MESSAGES, type LexiconMessageKey }
 
 export function lexiconMessages(site: SiteKey, locale: SiteLocale): Messages<LexiconMessageKey> {
   return createMessages({
