@@ -44,12 +44,20 @@ async function axe(page: Page, label: string): Promise<void> {
   ).toEqual([])
 }
 
+/**
+ * The network gone quiet, bounded: the live preview frames the shop's home, whose newsletter
+ * pop-up holds Turnstile's iframe open, so that page never goes network-idle (an unbounded wait
+ * ate the 10-minute test timeout).
+ */
+const settle = (page: Page) =>
+  page.waitForLoadState('networkidle', { timeout: 15_000 }).catch(() => undefined)
+
 /** Opens `path` at each width, waits for `ready`, screenshots and checks it. */
 async function screen(page: Page, name: string, path: string, ready?: (p: Page) => Promise<void>) {
   for (const width of WIDTHS) {
     await page.setViewportSize({ width, height: width === 390 ? 844 : 900 })
     await page.goto(path)
-    await page.waitForLoadState('networkidle')
+    await settle(page)
     if (ready) await ready(page)
     await shoot(page, `${name}-${width}`)
     await axe(page, `${name}-${width}`)
@@ -62,7 +70,7 @@ async function sidebarShots(page: Page, who: string): Promise<string[]> {
   for (const width of WIDTHS) {
     await page.setViewportSize({ width, height: width === 390 ? 844 : 900 })
     await page.goto(who === 'store' ? '/admin/orders' : '/admin')
-    await page.waitForLoadState('networkidle')
+    await settle(page)
     const open = page
       .getByRole('button', { name: /^(Open Menu|Buka Menu)$/ })
       .filter({ visible: true })
@@ -122,10 +130,19 @@ test('the owner’s screens', async ({ page }) => {
     await expect(frame).toBeVisible()
     // 27.7: Payload gives the frame no title; the admin names it (`admin/preview/frame-title.jsx`).
     await expect(frame).toHaveAttribute('title', 'Preview of the page as the site shows it')
-    await p.waitForLoadState('networkidle')
+    await settle(p)
   })
   const owner = await sidebarShots(page, 'owner')
-  expect(owner.slice(0, 6)).toEqual(['Today', 'Pages', 'Header', 'Footer', 'Media', 'Orders'])
+  // Phase 28 put Articles under Pages.
+  expect(owner.slice(0, 7)).toEqual([
+    'Today',
+    'Pages',
+    'Articles',
+    'Header',
+    'Footer',
+    'Media',
+    'Orders',
+  ])
 })
 
 test('27.7’s fixes: a file’s header, the staff list’s sort buttons', async ({ page }) => {
@@ -142,27 +159,36 @@ test('27.7’s fixes: a file’s header, the staff list’s sort buttons', async
   await shoot(page, 'media-file-header-1280')
 
   await page.goto('/admin/collections/users')
-  const labels = await page
-    .locator('.sort-column__buttons button')
-    .evaluateAll((all) => all.map((each) => each.getAttribute('aria-label') ?? ''))
-  expect(labels.length).toBeGreaterThan(0)
-  expect(labels.filter((each) => each.includes('[object Object]'))).toEqual([])
-  expect(labels).toContain('Sort by Role Ascending')
+  // The names are mended in the browser once the admin hydrates (`cms-core`'s `a11y/mends.jsx`):
+  // read them until they settle, for seconds, not at the first paint.
+  const buttons = page.locator('.sort-column__buttons button')
+  await expect(buttons.first()).toBeVisible({ timeout: 15_000 })
+  const read = () =>
+    buttons.evaluateAll((all) => all.map((each) => each.getAttribute('aria-label') ?? ''))
+  await expect
+    .poll(async () => (await read()).filter((each) => each.includes('[object Object]')), {
+      timeout: 10_000,
+    })
+    .toEqual([])
+  expect(await read()).toContain('Sort by Role Ascending')
 })
 
 test('the editor’s menu', async ({ page }) => {
   await signIn(page, ACCOUNTS.editor.email)
   const editor = await sidebarShots(page, 'editor')
-  // "Staff" lists only their own account (`users` access: self or owner).
+  // "Staff" lists only their own account (`users` access: self or owner). Phase 28 added
+  // Articles and Themes.
   expect(editor).toEqual([
     'Today',
     'Pages',
+    'Articles',
     'Header',
     'Footer',
     'Media',
     'Orders',
     'Products',
     'Categories',
+    'Themes',
     'Stores',
     'Stock by store',
     'Staff',
@@ -175,7 +201,7 @@ test('a store user: the dashboard is their orders; their menu, their stock', asy
     await page.setViewportSize({ width, height: width === 390 ? 844 : 900 })
     await page.goto('/admin')
     await page.waitForURL(/\/admin\/orders$/)
-    await page.waitForLoadState('networkidle')
+    await settle(page)
     await shoot(page, `dashboard-store-${width}`)
     await axe(page, `dashboard-store-${width}`)
   }
