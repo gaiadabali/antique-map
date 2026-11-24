@@ -63,9 +63,17 @@ async function openMenu(page: Page): Promise<void> {
   await page.waitForTimeout(600)
 }
 
+/**
+ * The network gone quiet, bounded: the shop home's page editor frames the home in its live
+ * preview, whose newsletter pop-up holds Turnstile's iframe open, so it never goes network-idle
+ * (an unbounded wait ate the 5-minute test timeout).
+ */
+const settle = (page: Page) =>
+  page.waitForLoadState('networkidle', { timeout: 15_000 }).catch(() => undefined)
+
 async function visit(page: Page, path: string, name: string, width: number): Promise<void> {
   await page.goto(path)
-  await page.waitForLoadState('networkidle')
+  await settle(page)
   await axeClean(page, `${name}-${width}`)
   await page.screenshot({ path: shots(`${name}-${width}`), fullPage: true })
 }
@@ -115,7 +123,7 @@ test('a store user: two entries, their orders as home', async ({ page }) => {
     await page.setViewportSize({ width, height: width < 600 ? 844 : 800 })
     await page.goto('/admin')
     await expect(page).toHaveURL(/\/admin\/orders$/)
-    await page.waitForLoadState('networkidle')
+    await settle(page)
     await axeClean(page, `store-orders-${width}`)
     await openMenu(page)
     const links = page.locator('nav .nav__link')

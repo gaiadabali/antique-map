@@ -28,8 +28,15 @@ describe('the seed screen', () => {
     expect(seedsAllowed({})).toBe(false)
   })
 
-  it('knows its five actions and nothing else', () => {
-    for (const action of ['everything', 'vocabulary', 'shop-catalogue', 'shop-pages', 'pictures']) {
+  it('knows its six actions and nothing else', () => {
+    for (const action of [
+      'everything',
+      'vocabulary',
+      'shop-catalogue',
+      'shop-pages',
+      'pictures',
+      'preview',
+    ]) {
       expect(isSeedAction(action)).toBe(true)
     }
     for (const other of ['gallery-full', 'shop', '', null, 1])

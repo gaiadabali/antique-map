@@ -23,9 +23,13 @@ const DESKTOP = { width: 1280, height: 800 }
 
 /** What this task adds to the screen: every one must be axe clean, with no exception. */
 const OURS = ['.sm-scroll', '.ix-filter', '.ix-tabs', '.ix-pager', '.si-kinds', '.lc-finder']
-/** Payload's own admin markup recorded as F6 (`docs/gates/foundation.md`), as `product-editor.spec`. */
+/**
+ * Payload's own admin markup recorded as F6 (`docs/gates/foundation.md`), as `product-editor.spec`;
+ * the select's indicators since phase 28 gave a store its region (a Payload select field), as
+ * `shop-admin-gate.spec` already excuses them.
+ */
 const F6 =
-  /rs__|react-select|popup-button|popup__trigger|doc-tabs|doc-header|doc-controls|clickable-arrow|#select-all|^label: #_R_|^landmark-|^region: /
+  /rs__|react-select|popup-button|popup__trigger|doc-tabs|doc-header|doc-controls|clickable-arrow|#select-all|dropdown-indicator|clear-indicator|^label: #_R_|^landmark-|^region: /
 
 async function axeClean(page: Page, label: string): Promise<void> {
   const scoped = new AxeBuilder({ page })

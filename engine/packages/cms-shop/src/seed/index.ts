@@ -34,3 +34,4 @@ export {
 export { DATABASE_PREFIX, readWorktreeEnv, seedDatabaseUrl, seedEnv, type SeedApp } from './env'
 export { reqOf } from './req'
 export { derivePending, renderDerivatives, type DerivativesReport } from './derivatives'
+export { seedClientPreview } from './preview'

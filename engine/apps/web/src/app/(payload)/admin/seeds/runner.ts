@@ -12,7 +12,9 @@
  *   the state, never a write — every seed is idempotent and can simply be run again.
  * - **What it runs** is the CLIs' own code: `seedLayer` (`@engine/cms/seed`), the pending pictures'
  *   web sizes, and the shop's built-in pages (`server/shop/pages/seed/pages`) — one at a time, or
- *   the whole Old East Indies seed in order (`everything`; the gallery never). The cache tags the
+ *   the whole Old East Indies seed in order (`everything`; the gallery never). `preview` is the
+ *   client's review data (`seedClientPreview`, `replaceShopPages`), never part of `everything`:
+ *   it overwrites the shop's Home and Partnership and a few sample fields. The cache tags the
  *   writes expire are posted to this process's revalidate route at the end, as a CLI posts them.
  */
 import 'server-only'
@@ -20,9 +22,15 @@ import 'server-only'
 import { deploymentEnvironment } from '@engine/config/boot-check'
 import { postCliTags, cliInvalidation } from '@engine/cms/import'
 import type { Payload } from '@engine/cms/instance'
-import { derivePending, renderDerivatives, renderSeedRun, seedLayer } from '@engine/cms/seed'
+import {
+  derivePending,
+  renderDerivatives,
+  renderSeedRun,
+  seedClientPreview,
+  seedLayer,
+} from '@engine/cms/seed'
 
-import { seedShopPages } from '@engine/storefront/server/pages/seed/pages'
+import { replaceShopPages, seedShopPages } from '@engine/storefront/server/pages/seed/pages'
 
 export const SEED_ACTIONS = [
   'everything',
@@ -30,6 +38,7 @@ export const SEED_ACTIONS = [
   'shop-catalogue',
   'shop-pages',
   'pictures',
+  'preview',
 ] as const
 export type SeedAction = (typeof SEED_ACTIONS)[number]
 
@@ -97,6 +106,11 @@ async function performStep(step: SeedStep, payload: Payload, context: Context): 
   }
   if (step === 'shop-pages') {
     lines.push(...(await seedShopPages(payload, { publish: true, context })))
+  }
+  if (step === 'preview') {
+    // The client's review: Home and Partnership overwritten first, then the sample data.
+    lines.push(...(await replaceShopPages(payload, { context })))
+    lines.push(...(await seedClientPreview(payload, { context })))
   }
   if (step === 'shop-catalogue' || step === 'pictures') {
     lines.push(renderDerivatives(await derivePending(payload, context)))
