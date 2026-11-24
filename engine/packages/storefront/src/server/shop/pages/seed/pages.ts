@@ -44,7 +44,7 @@ const PAGES: readonly BuiltIn[] = [
   },
   {
     slug: 'partnership',
-    title: { en: 'Partnership', id: 'Kemitraan' },
+    title: { en: 'Collaboration', id: 'Kolaborasi' },
     blocks: defaultPartnershipBlocks,
   },
   { slug: 'stores', title: { en: 'Stores', id: 'Toko' }, blocks: defaultStoresBlocks },

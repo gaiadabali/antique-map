@@ -32,7 +32,7 @@ export const HOME_MESSAGES = defineMessages({
   'home.shop.tradeLead': 'More than 100 shops across Indonesia already stock Old East Indies.',
   'home.shop.tradeBodyMore':
     'We also make custom gifts for hotels and corporate orders — Bali-themed, printed from the antique originals we hold.',
-  'home.shop.tradeCta': 'See partnership options',
+  'home.shop.tradeCta': 'See collaboration options',
   'home.shop.tradeFact1': '100+ shops supplied',
   'home.shop.tradeFact3': 'Custom gifts for hotels and companies',
   'home.shop.originalsTitle': 'Every print begins with a map we hold',

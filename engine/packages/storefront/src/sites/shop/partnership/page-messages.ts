@@ -9,7 +9,7 @@ import type { SiteLocale } from '@engine/config/sites'
 import { SITE_COPY } from '../../../shell/copy'
 
 export const PARTNERSHIP_MESSAGES = defineMessages({
-  'partnership.eyebrow': 'Partnership',
+  'partnership.eyebrow': 'Collaboration',
   'partnership.title': 'Buying for a shop, a hotel, or a company.',
   'partnership.lede':
     'More than 100 shops across Indonesia already stock Old East Indies. Whatever you are buying for, every piece is printed from antique originals we hold.',
@@ -44,7 +44,7 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
   'partnership.ctaEmail': 'Email us',
   'partnership.whatsappMessage':
     'Hello — I am buying for a shop, hotel or company and would like to know about your trade terms.',
-  'partnership.emailSubject': 'Partnership enquiry — Old East Indies',
+  'partnership.emailSubject': 'Collaboration enquiry — Old East Indies',
   'partnership.emailBody':
     'Hello — I am buying for a shop, hotel or company. Please tell me about your trade terms.',
   'partnership.formEyebrow': 'Or write here',

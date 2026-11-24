@@ -102,6 +102,24 @@
   white-space: pre-line;
 }
 
+/* The menu's icons: the bar's three accounts under the links, at the left, as 44 px targets
+   (the owner's request, 2026-11-24). */
+.menu .icons {
+  justify-self: start;
+  column-gap: var(--space-2);
+}
+
+.menu .iconLink {
+  inline-size: 44px;
+  block-size: 44px;
+  margin-inline: 0;
+}
+
+.menu .iconLink svg {
+  inline-size: 1.25rem;
+  block-size: 1.25rem;
+}
+
 /* On a phone the bar keeps the phone and WhatsApp, at the left with the icons at the right; the
    rest is in the menu and the footer. */
 @media (max-width: 56.25rem) {
