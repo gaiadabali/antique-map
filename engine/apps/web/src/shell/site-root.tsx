@@ -1,9 +1,10 @@
 /**
  * What each site's root layout renders and its metadata (`app/(<site>)/<site>/[locale]/layout.tsx`
  * passes its own site): `<html>` in the page's locale, the site's palette by `data-site`, and the
- * shell. The site and its origin are read at request time, after `connection()` (`./site`), so
- * nothing under a root layout prerenders at `next build`: a prerendered shell would bake one
- * environment's origin into every environment's HTML, and serve its build-time status.
+ * site's own shell, which the layout passes in (`Shell`), so one site's shell never lands in the
+ * other's scripts. The site and its origin are read at request time, after `connection()`
+ * (`./site`), so nothing under a root layout prerenders at `next build`: a prerendered shell would
+ * bake one environment's origin into every environment's HTML, and serve its build-time status.
  *
  * Absolute URLs — `metadataBase`, the canonical and alternates, Open Graph's image — are built on
  * the site's canonical origin from the host allow-list (`siteOrigin()`), never on the request's
@@ -22,7 +23,7 @@ import { fontVariables } from '@engine/ui/fonts'
 
 import { siteLocale } from './messages'
 import { currentSite, shellOf, shellText, siteAsset, siteHref, type CurrentSite } from './site'
-import { SiteShell } from './site-shell'
+import type { SiteShellProps } from './site-shell'
 
 type LocaleParams = Promise<{ locale: string }>
 
@@ -69,8 +70,13 @@ export async function homeMetadata(key: SiteKey, params: LocaleParams): Promise<
   }
 }
 
-export async function SiteRoot(props: {
+export async function SiteRoot({
+  Shell,
+  ...props
+}: {
   readonly site: SiteKey
+  /** The site's shell: the gallery's `SiteShell` (`./site-shell`) or the shop's `ShopShell`. */
+  readonly Shell: (props: SiteShellProps) => Promise<ReactNode>
   readonly params: LocaleParams
   readonly children: ReactNode
 }) {
@@ -83,9 +89,9 @@ export async function SiteRoot(props: {
   return (
     <html lang={locale} data-site={site.key} className={fontVariables} suppressHydrationWarning>
       <body>
-        <SiteShell shell={{ ...shell, locale }} t={shellText(site.key, locale)}>
+        <Shell shell={{ ...shell, locale }} t={shellText(site.key, locale)}>
           {props.children}
-        </SiteShell>
+        </Shell>
       </body>
     </html>
   )

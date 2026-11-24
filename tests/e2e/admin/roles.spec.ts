@@ -42,13 +42,14 @@ const LANGUAGES = ['en', 'id'] as const
 /**
  * The sidebar each role may see (TASKS.md 3.6.b, 27.6.b; CONTENT-MODEL.md §7; `admin/nav/plan.ts`),
  * in English: the shop's five groups, then the technical records and the gallery, both folded
- * (their entries hidden until opened). Object order is the order shown.
+ * (their entries hidden until opened). Object order is the order shown. Phase 28 (the owner's
+ * feedback) added Articles under Content and Themes under Catalogue.
  */
 const SIDEBARS: Record<(typeof ROLES)[number], Record<string, string[]>> = {
   owner: {
-    Content: ['Pages', 'Header', 'Footer', 'Media'],
+    Content: ['Pages', 'Articles', 'Header', 'Footer', 'Media'],
     Orders: ['Orders', 'Leads inbox', 'Partners'],
-    Catalogue: ['Products', 'Categories', 'Discount codes'],
+    Catalogue: ['Products', 'Categories', 'Themes', 'Discount codes'],
     Stores: ['Stores', 'Stock by store', 'Import from a spreadsheet'],
     Settings: ['Site settings', 'Staff', 'Chat sessions'],
     'Technical records': [],
@@ -56,9 +57,9 @@ const SIDEBARS: Record<(typeof ROLES)[number], Record<string, string[]>> = {
   },
   // Staff: the editor's own account, the only one they may read; no leads, settings or records.
   editor: {
-    Content: ['Pages', 'Header', 'Footer', 'Media'],
+    Content: ['Pages', 'Articles', 'Header', 'Footer', 'Media'],
     Orders: ['Orders'],
-    Catalogue: ['Products', 'Categories'],
+    Catalogue: ['Products', 'Categories', 'Themes'],
     Stores: ['Stores', 'Stock by store'],
     Settings: ['Staff'],
     'Indies Gallery — antiques': [],

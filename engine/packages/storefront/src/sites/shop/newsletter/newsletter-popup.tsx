@@ -2,7 +2,7 @@
  * The newsletter pop-up's server half (TASKS.md 28.2): on the landing page only, while the owner
  * has it on (`site-settings.shop.newsletter`), with the owner's title and words (or the defaults),
  * the form's labels from the lexicon and Turnstile's public site key read at request time
- * (SECURITY.md K2: it reaches the browser only as a prop). The island loads on its own chunk.
+ * (SECURITY.md K2: it reaches the browser only as a prop). The dialog's code loads only as it opens.
  */
 import { Suspense } from 'react'
 
@@ -12,7 +12,7 @@ import { loadStorefrontSettings } from '../../../server/shop/settings/storefront
 import { siteHref } from '../../../shell/site'
 import { partnershipText } from '../partnership/page-messages'
 import { sectionsText } from '../sections/copy'
-import { NewsletterDialog } from '../ui/lazy-islands'
+import { NewsletterDoor } from '../ui/lazy-islands'
 import type { NewsletterText } from './state'
 
 const ERROR_KEYS = [
@@ -47,7 +47,7 @@ async function Popup({ locale }: { readonly locale: SiteLocale }) {
     errors: Object.fromEntries(ERROR_KEYS.map((key) => [key, lead(key)])),
   }
   return (
-    <NewsletterDialog
+    <NewsletterDoor
       text={text}
       locale={locale === 'id' ? 'id' : 'en'}
       siteKey={process.env.TURNSTILE_SITE_KEY?.trim() || null}

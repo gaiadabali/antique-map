@@ -14,7 +14,7 @@ import type {
   ListingVM,
   ProductCardVM,
 } from '../../../server/shop/catalogue/view-models'
-import { Pagination } from '@engine/ui'
+import { Pagination } from '@engine/ui/pagination'
 import type { ReactNode } from 'react'
 
 import { filterFacets, type ShopFilter } from '../sections/links'

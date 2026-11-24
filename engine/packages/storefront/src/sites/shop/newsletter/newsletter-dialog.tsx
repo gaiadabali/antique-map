@@ -1,15 +1,13 @@
 'use client'
 
 /**
- * The newsletter pop-up (TASKS.md 28.2; the owner's feedback of 2026-11-19): on the landing page,
- * once per visitor. A real modal dialog (the shared `Dialog`: the page behind is inert, focus stays
- * inside, Esc closes, the title labels it), opened a few seconds after the page has loaded — never
- * over another open dialog — and remembered in this browser the moment it shows, so it never asks
- * twice. Storage may be blocked (a private window): then it stays closed rather than ask on every
- * visit. The form posts an email and the consent to the lead service (`./action`), Turnstile as
- * every lead form. Every word arrives as a prop.
+ * The newsletter pop-up's dialog (TASKS.md 28.2), loaded by its door (`./newsletter-door`) only
+ * when the pop-up opens, and open from the moment it mounts. A real modal dialog (the shared
+ * `Dialog`: the page behind is inert, focus stays inside, Esc closes, the title labels it). The
+ * form posts an email and the consent to the lead service (`./action`), Turnstile as every lead
+ * form. Every word arrives as a prop.
  */
-import { useActionState, useEffect, useState } from 'react'
+import { useActionState, useState } from 'react'
 
 import { Button } from '@engine/ui/button'
 import { Checkbox } from '@engine/ui/checkbox'
@@ -20,54 +18,18 @@ import { Input } from '@engine/ui/input'
 import { TurnstileWidget } from '../partnership/turnstile-widget'
 import { submitNewsletter } from './action'
 import styles from './newsletter.module.css'
-import {
-  INITIAL_NEWSLETTER_STATE,
-  NEWSLETTER_DELAY_MS,
-  NEWSLETTER_SEEN_KEY,
-  type NewsletterText,
-} from './state'
+import { INITIAL_NEWSLETTER_STATE, type NewsletterText } from './state'
 
-/** Whether this browser has seen the pop-up; `true` too when storage cannot be read. */
-function seen(): boolean {
-  try {
-    return window.localStorage.getItem(NEWSLETTER_SEEN_KEY) !== null
-  } catch {
-    return true
-  }
-}
-
-function remember(): void {
-  try {
-    window.localStorage.setItem(NEWSLETTER_SEEN_KEY, new Date().toISOString())
-  } catch {
-    // Storage blocked: nothing to remember with, and `seen()` already answered yes.
-  }
-}
-
-export function NewsletterDialog({
-  text,
-  locale,
-  siteKey,
-  privacyHref,
-}: {
+export type NewsletterDialogProps = {
   readonly text: NewsletterText
   readonly locale: 'en' | 'id'
   readonly siteKey: string | null
   readonly privacyHref: string
-}) {
-  const [open, setOpen] = useState(false)
-  const [state, action, pending] = useActionState(submitNewsletter, INITIAL_NEWSLETTER_STATE)
+}
 
-  useEffect(() => {
-    if (seen()) return
-    const timer = window.setTimeout(() => {
-      // Never over the menu, the enlarged print or the chat: the next visit asks instead.
-      if (document.querySelector('dialog[open], [aria-modal="true"]')) return
-      remember()
-      setOpen(true)
-    }, NEWSLETTER_DELAY_MS)
-    return () => window.clearTimeout(timer)
-  }, [])
+export function NewsletterDialog({ text, locale, siteKey, privacyHref }: NewsletterDialogProps) {
+  const [open, setOpen] = useState(true)
+  const [state, action, pending] = useActionState(submitNewsletter, INITIAL_NEWSLETTER_STATE)
 
   const say = (key: string | undefined) =>
     key === undefined ? undefined : (text.errors[key] ?? text.errors['lead.error.invalid'])

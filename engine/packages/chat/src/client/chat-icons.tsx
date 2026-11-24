@@ -2,20 +2,10 @@
  * The panel's few glyphs, drawn inline in `currentColor` so they follow the surface's ink role and
  * need no image file. Decorative: every button that carries one names itself with an `aria-label`.
  */
-type IconProps = { readonly className?: string }
+import { ICON_BASE as BASE, type IconProps } from './launcher-icons'
 
-const BASE = {
-  width: 20,
-  height: 20,
-  viewBox: '0 0 24 24',
-  fill: 'none',
-  stroke: 'currentColor',
-  strokeWidth: 2,
-  strokeLinecap: 'round',
-  strokeLinejoin: 'round',
-  'aria-hidden': true,
-  focusable: false,
-} as const
+/** The door's own two, kept with the launcher (`./launcher-icons`). */
+export { ChatIcon, RoundChatIcon } from './launcher-icons'
 
 export function CloseIcon({ className }: IconProps): React.ReactElement {
   return (
@@ -62,24 +52,6 @@ export function CheckIcon({ className }: IconProps): React.ReactElement {
   return (
     <svg {...BASE} className={className}>
       <path d="M5 12.5l4.5 4.5L19 7.5" />
-    </svg>
-  )
-}
-
-/** The chat door: a square-cornered speech bubble with its tail at the lower left. */
-export function ChatIcon({ className }: IconProps): React.ReactElement {
-  return (
-    <svg {...BASE} className={className}>
-      <path d="M4 5h16v11H11l-4.5 3.5V16H4z" />
-    </svg>
-  )
-}
-
-/** The round chat door (the shop): a circular speech bubble, tail at the lower left, a heavier line. */
-export function RoundChatIcon({ className }: IconProps): React.ReactElement {
-  return (
-    <svg {...BASE} strokeWidth={2.5} className={className}>
-      <path d="M12 3a8.5 8.5 0 1 1-4.2 15.9L3.5 20.5l1.6-4.3A8.5 8.5 0 0 1 12 3z" />
     </svg>
   )
 }

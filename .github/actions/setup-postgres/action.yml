@@ -43,8 +43,14 @@ runs:
           -o Dir::Etc::sourceparts=- -o APT::Get::List-Cleanup=0
         sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends \
           "postgresql-$PG_MAJOR" "postgresql-client-$PG_MAJOR"
-        # The package creates `$PG_MAJOR/main` but does not start it: the runner image keeps the
-        # postgresql service disabled (CI run 39714453047). Start it, then make sure it is on 5432.
+        # A fresh install creates `$PG_MAJOR/main`; an image that already ships this major (the
+        # runner images do since 2026-11) has had that cluster dropped above, and the install is
+        # then a no-op that creates nothing — so create it when it is missing, on 5432.
+        if ! pg_lsclusters -h | awk -v v="$PG_MAJOR" '$1 == v && $2 == "main" { found = 1 } END { exit !found }'; then
+          sudo pg_createcluster --port 5432 "$PG_MAJOR" main
+        fi
+        # The runner image keeps the postgresql service disabled (CI run 39714453047): start the
+        # cluster, then make sure it is on 5432.
         sudo pg_ctlcluster "$PG_MAJOR" main start
         if ! pg_lsclusters -h | awk -v v="$PG_MAJOR" '$1 == v && $2 == "main" && $3 == 5432 && $4 == "online" { found = 1 } END { exit !found }'; then
           pg_lsclusters

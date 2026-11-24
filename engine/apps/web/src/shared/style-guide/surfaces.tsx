@@ -1,22 +1,18 @@
-import {
-  Badge,
-  Band,
-  Button,
-  Card,
-  Crossing,
-  Eyebrow,
-  FormMessage,
-  Hairline,
-  Mat,
-  MatNote,
-  PrintTile,
-  PrintTileNote,
-  ProofPoints,
-  SectionHead,
-  Skeleton,
-  StockTag,
-  Toast,
-} from '@engine/ui'
+import { Badge } from '@engine/ui/badge'
+import { Band } from '@engine/ui/band'
+import { Button } from '@engine/ui/button'
+import { Card } from '@engine/ui/card'
+import { Crossing } from '@engine/ui/crossing'
+import { Eyebrow } from '@engine/ui/eyebrow'
+import { FormMessage } from '@engine/ui/form-message'
+import { Hairline } from '@engine/ui/hairline'
+import { Mat, MatNote } from '@engine/ui/mat'
+import { PrintTile, PrintTileNote } from '@engine/ui/print-tile'
+import { ProofPoints } from '@engine/ui/proof-points'
+import { SectionHead } from '@engine/ui/section-head'
+import { Skeleton } from '@engine/ui/skeleton'
+import { StockTag } from '@engine/ui/stock-tag'
+import { Toast } from '@engine/ui/toast'
 
 import { samplePlate } from './fixtures'
 import { Section } from './section'

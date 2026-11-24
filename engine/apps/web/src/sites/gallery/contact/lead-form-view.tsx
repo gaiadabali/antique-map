@@ -5,7 +5,11 @@
  * refusal that is not a field's (the security check, the rate limit) shows above the button.
  * Tokens and shared components only. The form posts no photos — the page says where photos go.
  */
-import { Button, Checkbox, FormMessage, Input, Textarea } from '@engine/ui'
+import { Button } from '@engine/ui/button'
+import { Checkbox } from '@engine/ui/checkbox'
+import { FormMessage } from '@engine/ui/form-message'
+import { Input } from '@engine/ui/input'
+import { Textarea } from '@engine/ui/textarea'
 
 import type { FormText } from './form-text'
 import styles from './contact-form.module.css'

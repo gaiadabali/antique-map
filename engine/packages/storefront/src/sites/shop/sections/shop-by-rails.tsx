@@ -10,7 +10,8 @@
 import { Suspense, type ReactNode } from 'react'
 
 import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
-import { ResponsiveImage, printAspectOf, printRatioOf } from '@engine/ui'
+import { printAspectOf, printRatioOf } from '@engine/ui/print-tile'
+import { ResponsiveImage } from '@engine/ui/responsive-image'
 
 import { listing } from '../../../server/shop/catalogue'
 import { collections } from '../../../server/shop/catalogue/collections'

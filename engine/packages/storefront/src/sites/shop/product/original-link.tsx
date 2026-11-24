@@ -6,7 +6,7 @@
  * lexicon's, the style the product page's.
  */
 import type { SiteLocale } from '@engine/config/sites'
-import { TextLink } from '@engine/ui'
+import { TextLink } from '@engine/ui/text-link'
 
 import { productText } from './copy'
 import styles from './product.module.css'

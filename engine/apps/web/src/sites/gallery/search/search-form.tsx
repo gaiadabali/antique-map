@@ -4,7 +4,8 @@
  */
 import type { SiteLocale } from '@engine/config/sites'
 
-import { Button, Input } from '@engine/ui'
+import { Button } from '@engine/ui/button'
+import { Input } from '@engine/ui/input'
 import { browseText } from '../browse/copy'
 import { searchBase } from '../browse/state-links'
 import styles from './search.module.css'

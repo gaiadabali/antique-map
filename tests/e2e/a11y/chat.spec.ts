@@ -32,14 +32,21 @@ test('chat: axe, keyboard walk, Escape and accessibility tree', async ({
   const axe: AxeRecord[] = []
   let keyboard = `## ${site}: chat (the redesigned panel, 8.2.c, merged), keyboard walk\n\n`
 
+  // The shop's newsletter pop-up (TASKS.md 28.2) opens over the landing page a moment after load,
+  // a modal that would sit over the launcher: this browser has already seen it.
+  await page.addInitScript(() => window.localStorage.setItem('oei:newsletter-seen', 'e2e'))
+
   for (const viewport of WIDTHS) {
     await page.setViewportSize(viewport)
     await page.goto(`${origin}/`)
-    const launcher = page.getByRole('button', { name: 'Chat with us' })
-    await expect(launcher).toBeVisible()
+    // Exact: the shop's launcher is the round icon alone (`iconOnly`), its words still its name,
+    // and the page also has "Chat with us on WhatsApp".
+    const launcher = page.getByRole('button', { name: 'Chat with us', exact: true })
+    // A short first wait: a locator that no longer matches fails here, not at the 5-minute timeout.
+    await expect(launcher).toBeVisible({ timeout: 15_000 })
     axe.push(await axeAudit(page, `${site} chat launcher`))
 
-    await launcher.click()
+    await launcher.click({ timeout: 15_000 })
     const dialog = page.getByRole('dialog', { name: 'Chat with us' })
     await expect(dialog).toBeVisible()
     // The panel's script loads on opening: Escape counts once its own controls are there.
@@ -59,10 +66,12 @@ test('chat: axe, keyboard walk, Escape and accessibility tree', async ({
 
 `
     expect.soft(back, `focus returns to the launcher at ${viewport.width} px`).toBe(true)
-    await launcher.click()
+    await launcher.click({ timeout: 15_000 })
     await expect(dialog).toBeVisible()
-    // The panel loads its own script on opening; wait for its content to settle.
-    await page.waitForLoadState('networkidle').catch(() => undefined)
+    // The panel loads its own script on opening; wait for its content to settle. Bounded: the
+    // shop's home holds Turnstile's iframe open (the newsletter pop-up's), so it never goes
+    // network-idle, and an unbounded wait ate the whole 5-minute test timeout (CI 45349130204).
+    await page.waitForLoadState('networkidle', { timeout: 10_000 }).catch(() => undefined)
     // The panel slides in: axe's contrast check reads half-transparent pixels mid-animation.
     await page.waitForTimeout(1500)
     const record = await axeAudit(page, `${site} chat panel open`)

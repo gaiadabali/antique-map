@@ -3,7 +3,8 @@
  * status — pending, confirming, failed, paid, expired, or an expired order a late payment reached.
  * Every figure is the server's own (`OrderView`); nothing here prices anything.
  */
-import { Button, TextLink } from '@engine/ui'
+import { Button } from '@engine/ui/button'
+import { TextLink } from '@engine/ui/text-link'
 import { formatRupiah } from '@engine/ui/format-rupiah'
 import { baliTime } from './bali-time'
 import { paymentText, type PaymentText } from './copy'

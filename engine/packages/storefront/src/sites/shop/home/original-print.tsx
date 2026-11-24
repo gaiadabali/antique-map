@@ -6,7 +6,8 @@
  */
 import { Suspense } from 'react'
 
-import { PrintTile, ResponsiveImage, printAspectOf, printRatioOf } from '@engine/ui'
+import { PrintTile, printAspectOf, printRatioOf } from '@engine/ui/print-tile'
+import { ResponsiveImage } from '@engine/ui/responsive-image'
 import { loadOriginals, type OriginalVM } from '../../../server/shop/home/originals'
 import { FeaturedPrint } from './featured-print'
 import styles from './sections.module.css'

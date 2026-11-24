@@ -9,7 +9,7 @@ import { SITE_COPY } from '../../../shell/copy'
 
 export const HOME_MESSAGES = defineMessages({
   'home.shop.eyebrow': 'Art souvenirs of the East Indies',
-  'home.shop.title': 'Old maps, new walls.',
+  'home.shop.title': 'The old Indies, on your walls.',
   'home.shop.lede':
     'Museum-grade prints of antique maps and engravings, made from originals in our own collection.',
   'home.shop.ctaShop': 'Shop prints',

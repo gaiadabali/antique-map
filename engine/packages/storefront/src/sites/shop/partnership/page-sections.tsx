@@ -6,7 +6,7 @@
  * lexicon's defaults); the prints are the shop's own, chosen by position.
  */
 import type { FactStripVM, OfferVM, PageHeroVM } from '../../../server/shop/pages/blocks'
-import { Button } from '@engine/ui'
+import { Button } from '@engine/ui/button'
 import { linkProps } from '../blocks/link-props'
 import { FeaturedPrint } from '../home/featured-print'
 import { Caps, CapsLink } from '../ui/caps-link'

@@ -4,7 +4,8 @@
  * mistakes it for the real pay step. Shown only when the token's order has an attempt still `open`
  * or `pending`; otherwise a link back to the order page (`6.5-r2`: no attempt id in the URL).
  */
-import { Button, TextLink } from '@engine/ui'
+import { Button } from '@engine/ui/button'
+import { TextLink } from '@engine/ui/text-link'
 import {
   SIMULATOR_ACTIONS,
   simulateAction,

@@ -33,7 +33,7 @@ permissions:
 jobs:
   serve:
     name: ${{ inputs.lighthouse && 'Lighthouse budgets' || 'Playwright' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     env:
       LOCAL_PRODUCTION_BUILD: '1'

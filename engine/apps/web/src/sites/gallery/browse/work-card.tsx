@@ -9,7 +9,9 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { WorkCardVM } from '../../../server/gallery/catalogue/view-models'
-import { Mat, ResponsiveImage, StockTag } from '@engine/ui'
+import { Mat } from '@engine/ui/mat'
+import { ResponsiveImage } from '@engine/ui/responsive-image'
+import { StockTag } from '@engine/ui/stock-tag'
 import { browseText } from './copy'
 import styles from './card.module.css'
 

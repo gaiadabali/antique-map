@@ -7,7 +7,7 @@ import { headers } from 'next/headers'
 
 import { PROXY_REQUEST_HEADERS } from '@engine/http/manifest'
 
-import { Button } from '@engine/ui'
+import { Button } from '@engine/ui/button'
 import { siteLocale } from '../shell/messages'
 import { currentSite, shellText, siteHref } from '../shell/site'
 import styles from './not-found.module.css'

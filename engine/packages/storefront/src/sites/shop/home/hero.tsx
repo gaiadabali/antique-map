@@ -9,7 +9,9 @@
  */
 import { Suspense, type ReactNode } from 'react'
 
-import { Button, PrintTile, PrintTileNote, ResponsiveImage, printAspectOf } from '@engine/ui'
+import { Button } from '@engine/ui/button'
+import { PrintTile, PrintTileNote, printAspectOf } from '@engine/ui/print-tile'
+import { ResponsiveImage } from '@engine/ui/responsive-image'
 import { productText } from '../product/copy'
 import { imageAlt } from '../product/synthetic'
 import { Caps, CapsLink } from '../ui/caps-link'

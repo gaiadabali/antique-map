@@ -2,7 +2,8 @@
  * A rail's place while its read streams: the title, four empty wells and their caption lines, so
  * nothing below moves when the cards arrive. Hidden from assistive technology.
  */
-import { PrintTile, Skeleton } from '@engine/ui'
+import { PrintTile } from '@engine/ui/print-tile'
+import { Skeleton } from '@engine/ui/skeleton'
 import styles from './rail.module.css'
 
 export function RailSkeleton({

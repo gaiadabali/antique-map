@@ -1,5 +1,5 @@
 /**
- * The designed shell for both sites (the design team's drawings, phase 4.3.a): a header with the
+ * The gallery's designed shell (the design team's drawings, phase 4.3.a): a header with the
  * logo, the site's primary navigation and the language switcher keeping the current path; the
  * floating chat button (`ChatLauncher`, 8.2 — the panel's own JavaScript loads only once it is
  * opened); and a footer with contact, hours, the sister-site bridge and the legal links. Built
@@ -13,18 +13,19 @@
  *
  * The shop draws its own shell (`ShopShell`, `@engine/storefront/shell`): its menu, footer, logo and
  * dated announcement are `shop-header`'s and `shop-footer`'s (TASKS.md 27.5.c), and the brand link
- * and language switcher are the shared ones (`@engine/site/shell`), as here.
+ * and language switcher are the shared ones (`@engine/site/shell`), as here. Each root layout hands
+ * `SiteRoot` its own site's shell, so neither site's scripts carry the other's header and menu
+ * (the home's JS budget, DESIGN-SYSTEM.md).
  */
 import type { LocaleCode } from '@engine/config/constants'
 import { siteOrigin, type SiteKey, type SiteLocale } from '@engine/config/sites'
 import type { ReactNode } from 'react'
 
-import { Header } from '@engine/ui'
+import { Header } from '@engine/ui/header'
 import { ChatLauncher } from '@engine/chat/client/launcher'
 import { ChatPageProvider } from '@engine/chat/client/page-context'
 import { chatPanelText, suggestedStarts } from '@engine/chat/client/panel-text'
 import { Announcement, BrandLink, chatContact, LocaleSwitcher } from '@engine/site/shell'
-import { ShopShell } from '@engine/storefront/shell'
 
 import { PrimaryNav } from './primary-nav'
 import { SiteFooter } from './site-footer'
@@ -40,22 +41,13 @@ type ShellPart = {
   readonly logoOnDark: string
 }
 
-type Props = {
+export type SiteShellProps = {
   readonly shell: ShellPart
   readonly t: ShellText
   readonly children: ReactNode
 }
 
-export async function SiteShell({ shell, t, children }: Props) {
-  // The shop's own shell (the redesign of 2026-10-20): `@engine/storefront`'s, which the shop app
-  // draws too (TASKS.md 23.3).
-  if (shell.site.key === 'shop') {
-    return (
-      <ShopShell shell={shell} t={t}>
-        {children}
-      </ShopShell>
-    )
-  }
+export async function SiteShell({ shell, t, children }: SiteShellProps) {
   const locale = shell.locale as SiteLocale
   const settings = await loadSiteSettings(shell.site.key, locale)
   const chatText = chatPanelText(locale, shell.site.key)

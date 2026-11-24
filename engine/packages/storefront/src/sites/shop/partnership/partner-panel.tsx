@@ -8,7 +8,7 @@ import { Suspense } from 'react'
 
 import { currentPartner } from '../../../server/shop/partners/current'
 import { partnerSignOutAction } from '../../../server/shop/partners/actions'
-import { Button } from '@engine/ui'
+import { Button } from '@engine/ui/button'
 import { Caps } from '../ui/caps-link'
 import type { SignInText } from './sign-in-form'
 import { SignInForm } from '../ui/lazy-islands'

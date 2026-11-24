@@ -22,7 +22,9 @@ permissions:
 jobs:
   e2e:
     name: End-to-end
-    runs-on: ubuntu-latest
+    # Pinned, not `ubuntu-latest`: that label moved to 26.04 (2026-11), where Playwright 1.56
+    # installs no Chromium. Every workflow pins the same image.
+    runs-on: ubuntu-24.04
     timeout-minutes: 25
     # Postgres 18 installed on the runner (.github/actions/setup-postgres, PGDG apt — no container,
     # so no registry pull limit), with no docker-compose init script behind it: the

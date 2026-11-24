@@ -12,7 +12,7 @@
  */
 import { useActionState, useState } from 'react'
 
-import { TextLink } from '@engine/ui'
+import { TextLink } from '@engine/ui/text-link'
 import { addToBagAction } from '../../../server/shop/bag/actions'
 import type { VariantPickerText } from './copy'
 import styles from './picker.module.css'

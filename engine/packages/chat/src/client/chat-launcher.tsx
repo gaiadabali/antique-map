@@ -4,23 +4,21 @@
  * The floating chat entry point (8.2.a): a button at the bottom right of every page until the
  * visitor opens it (a 48 px icon square on a phone, its words kept as the accessible name; the labelled
  * button from 48rem) — the panel's JavaScript, Turnstile's script and every chat-only string load
- * only then (`next/dynamic`, `ssr: false`), the same lazy-door pattern as
- * `sites/gallery/item/zoom-lazy.tsx`. Open, the panel is fixed to the viewport: a full-height sheet
+ * only then (React's `lazy`: the panel is never server-rendered, it draws only after a click, so it
+ * needs none of `next/dynamic`'s server half — and the launcher, on every page, none of its code),
+ * the same lazy-door pattern as `sites/gallery/item/zoom-lazy.tsx`. Open, the panel is fixed to the viewport: a full-height sheet
  * on a phone, a side panel from tablet up (DESIGN-SYSTEM.md §5). Every word arrives as a prop,
  * resolved server-side (`lexicon.chatPanelText`), so no lexicon ships before the visitor asks.
  * A site may keep the icon square at every width (`iconOnly`, the shop); its words stay the name.
  * It may also draw the round bubble (`icon="round"`) and set the button's radius (a token knob).
  */
-import dynamic from 'next/dynamic'
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 
-import { ChatIcon, RoundChatIcon } from './chat-icons'
+import { ChatIcon, RoundChatIcon } from './launcher-icons'
 import type { ChatPanelProps } from './chat-panel'
 import styles from './chat-launcher.module.css'
 
-const ChatPanel = dynamic<ChatPanelProps>(() => import('./chat-panel').then((m) => m.ChatPanel), {
-  ssr: false,
-})
+const ChatPanel = lazy(() => import('./chat-panel').then((m) => ({ default: m.ChatPanel })))
 
 export type ChatLauncherProps = Omit<ChatPanelProps, 'onClose'> & {
   readonly label: string
@@ -70,7 +68,9 @@ export function ChatLauncher({
 
   return (
     <div className={styles.panel} role="dialog" aria-label={label}>
-      <ChatPanel {...panelProps} onClose={closePanel} />
+      <Suspense fallback={null}>
+        <ChatPanel {...panelProps} onClose={closePanel} />
+      </Suspense>
     </div>
   )
 }

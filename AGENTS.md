@@ -50,7 +50,7 @@ package — and an app never imports the other app.
 
 ## This is not the Next.js or Payload you remember
 
-Next.js is pinned at **16.3.x** (the `middleware` convention is now `proxy`) and Payload at **3.90.x**. Before
+Next.js is pinned at **16.4.x** (the `middleware` convention is now `proxy`) and Payload at **3.90.x**. Before
 writing framework code, read the installed docs in `node_modules/next/dist/docs/` and Payload's docs for 3.90 —
 heed deprecation notices. Do not use APIs marked for removal in Payload 4.
 

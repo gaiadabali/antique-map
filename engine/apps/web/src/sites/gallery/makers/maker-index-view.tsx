@@ -4,7 +4,8 @@
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { MakerIndexItemVM } from '../../../server/gallery/makers/view-models'
-import { Band, SectionHead } from '@engine/ui'
+import { Band } from '@engine/ui/band'
+import { SectionHead } from '@engine/ui/section-head'
 import type { MakerText } from './copy'
 import { ALPHABET, groupByLetter, letterId } from './letters'
 import { makerHref } from './links'

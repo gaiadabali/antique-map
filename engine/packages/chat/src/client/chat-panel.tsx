@@ -5,7 +5,7 @@
  * session, streams the turn's events through the reducer, and renders the handoff and lead-form
  * states the stream can end in (AI.md �2.2��4). Focus moves into the panel on open and Escape closes
  * it � the launcher restores focus to whatever opened it. The panel's JavaScript is loaded only when
- * the launcher mounts it (`next/dynamic`, `ssr: false`), so a page that never opens the chat ships
+ * the launcher mounts it (React's `lazy`), so a page that never opens the chat ships
  * none of it. The look lives in the parts: `chat-header`, `chat-thread`, `chat-composer`.
  */
 import { usePathname } from 'next/navigation'

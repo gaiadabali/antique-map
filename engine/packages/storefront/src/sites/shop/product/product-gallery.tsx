@@ -9,7 +9,7 @@
  */
 import { useState, type ReactNode } from 'react'
 
-import { Dialog } from '@engine/ui'
+import { Dialog } from '@engine/ui/dialog'
 import styles from './product-gallery.module.css'
 
 export type GalleryView = {
