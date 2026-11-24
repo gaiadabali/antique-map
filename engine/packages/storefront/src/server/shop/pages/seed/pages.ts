@@ -1,5 +1,5 @@
 /**
- * The shop's built-in pages (home, partnership, stores) as CMS `pages` records built from blocks,
+ * The shop's built-in pages (home, partnership, stores, privacy) as CMS `pages` records built from blocks,
  * in English and Indonesian, from their first content (`./content`): the site draws only what the
  * CMS holds (TASKS.md 27.5.b).
  *
@@ -15,6 +15,7 @@ import type { Payload } from 'payload'
 
 import { defaultHomeBlocks } from './content/home'
 import { defaultPartnershipBlocks } from './content/partnership'
+import { defaultPrivacyBlocks } from './content/privacy'
 import { defaultStoresBlocks } from './content/stores'
 import type { ShopBlockVM } from '../blocks'
 import { toCmsLayout, withIdsOf, type SurfaceOf } from './to-cms'
@@ -29,7 +30,7 @@ const surfaceOf =
     SURFACES.find((surface) => href(surface, {}, locale) === address) ?? null
 
 type BuiltIn = {
-  readonly slug: 'home' | 'partnership' | 'stores'
+  readonly slug: 'home' | 'partnership' | 'stores' | 'privacy'
   readonly title: Record<SiteLocale, string>
   readonly blocks: (locale: SiteLocale) => readonly ShopBlockVM[]
 }
@@ -46,6 +47,11 @@ const PAGES: readonly BuiltIn[] = [
     blocks: defaultPartnershipBlocks,
   },
   { slug: 'stores', title: { en: 'Stores', id: 'Toko' }, blocks: defaultStoresBlocks },
+  {
+    slug: 'privacy',
+    title: { en: 'Privacy policy', id: 'Kebijakan privasi' },
+    blocks: defaultPrivacyBlocks,
+  },
 ]
 
 async function seedPage(
