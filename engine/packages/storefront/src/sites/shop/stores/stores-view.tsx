@@ -16,10 +16,11 @@ import { createHref, SITES } from '@engine/config/sites'
 import type { StoreDirectoryVM } from '../../../server/shop/pages/blocks'
 import type { StoreDirectoryData, StoreVM } from '../../../server/shop/stores'
 import { shopShellText } from '../shell/shell-messages'
-import { CapsLink } from '../ui/caps-link'
 import { Crumb } from '../ui/crumb'
-import { AreaNav } from '../ui/lazy-islands'
+import { AreaNav, NearbyStores } from '../ui/lazy-islands'
 import { storesText, type StoresText } from './copy'
+import type { NearbyWords } from './nearby'
+import { StoreCard, type StoreCardData, type StoreCardWords } from './store-card'
 import { storePhotoFor } from './store-photos'
 import styles from './stores.module.css'
 
@@ -51,49 +52,46 @@ export function areaAnchors(names: readonly string[]): readonly string[] {
   })
 }
 
-function StoreCard({ store, t }: { store: Store; t: StoresText }) {
-  const photo = storePhotoFor(`${store.name}|${store.address ?? ''}`)
-  return (
-    <li className={styles.store}>
-      {/* One of the stores' photographs, not necessarily this store's own (`./store-photos`): the
-          words beside it name the store, so the picture is decoration. */}
-      <img
-        className={styles.photo}
-        src={photo.src}
-        width={photo.width}
-        height={photo.height}
-        alt=""
-        loading="lazy"
-        decoding="async"
-      />
-      <div className={styles.storeBody}>
-        <h3 className={styles.name}>{store.name}</h3>
-        {store.area !== null && <p className={styles.line}>{store.area}</p>}
-        <p className={styles.line}>{t('stores.address')}</p>
-        {store.hours !== null && (
-          <p className={styles.line}>
-            <span className={styles.hoursLabel}>{t('stores.hours')}</span> {store.hours}
-          </p>
-        )}
-        <CapsLink
-          href={store.mapUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={t('stores.mapFor', { name: store.name })}
-        >
-          {t('stores.map')}
-        </CapsLink>
-      </div>
-    </li>
-  )
+/** A store as its card draws it: the photo chosen and the map link's name resolved here. */
+function cardOf(store: Store, t: StoresText): StoreCardData {
+  const key = `${store.name}|${store.address ?? ''}`
+  const photo = storePhotoFor(key)
+  return {
+    key,
+    name: store.name,
+    area: store.area,
+    hours: store.hours,
+    mapUrl: store.mapUrl,
+    mapLabel: t('stores.mapFor', { name: store.name }),
+    photo: { src: photo.src, width: photo.width, height: photo.height },
+  }
+}
+
+function cardWords(t: StoresText): StoreCardWords {
+  return { address: t('stores.address'), hours: t('stores.hours'), map: t('stores.map') }
+}
+
+function nearbyWords(t: StoresText, count: number): NearbyWords {
+  return {
+    ...cardWords(t),
+    ask: t('stores.nearbyAsk'),
+    note: t('stores.nearbyNote'),
+    finding: t('stores.nearbyFinding'),
+    sorted: t('stores.nearbySorted'),
+    failed: t('stores.nearbyFailed'),
+    seeAll: t('stores.seeAllNearby', { count }),
+    distance: t('stores.distance', { distance: '{distance}' }),
+  }
 }
 
 function Cards({ stores, t }: { stores: readonly Store[]; t: StoresText }) {
+  const words = cardWords(t)
   return (
     <ul className={styles.grid}>
-      {stores.map((store) => (
-        <StoreCard key={`${store.name}|${store.address ?? ''}`} store={store} t={t} />
-      ))}
+      {stores.map((store) => {
+        const card = cardOf(store, t)
+        return <StoreCard key={card.key} store={card} words={words} />
+      })}
     </ul>
   )
 }
@@ -104,8 +102,8 @@ type Section = {
   readonly stores: readonly Store[]
   /** A region of the four: the drive note. */
   readonly region: boolean
-  /** Its first stores, the rest behind "See all": Nearby. */
-  readonly folds: boolean
+  /** Nearby: its first stores, the rest behind "See all", and "nearest to me" (`./nearby`). */
+  readonly nearby: boolean
 }
 
 /** The page's section titles in order — the stores page and the home's links share them. */
@@ -123,16 +121,16 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
   const anchors = areaAnchors(sectionLabels(data, t))
   const sections: Section[] = [
     ...(data.flagships.length > 0
-      ? [{ label: t('stores.flagships'), stores: data.flagships, region: false, folds: false }]
+      ? [{ label: t('stores.flagships'), stores: data.flagships, region: false, nearby: false }]
       : []),
     ...data.regions.map((group) => ({
       label: t(`stores.region.${group.region}`),
       stores: group.stores,
       region: true,
-      folds: false,
+      nearby: false,
     })),
     ...(data.nearby.length > 0
-      ? [{ label: t('stores.nearby'), stores: data.nearby, region: false, folds: true }]
+      ? [{ label: t('stores.nearby'), stores: data.nearby, region: false, nearby: true }]
       : []),
   ].map((section, index) => ({ ...section, anchor: anchors[index] ?? `area-${index}` }))
   return (
@@ -162,8 +160,6 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
             areas={sections.map(({ anchor, label }) => ({ anchor, label }))}
           />
           {sections.map((section) => {
-            const shown = section.folds ? section.stores.slice(0, NEARBY_PREVIEW) : section.stores
-            const rest = section.folds ? section.stores.slice(NEARBY_PREVIEW) : []
             return (
               <section
                 key={section.anchor}
@@ -179,15 +175,19 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
                   </span>
                 </div>
                 {section.region ? <p className={styles.drive}>{t('stores.drive')}</p> : null}
-                <Cards stores={shown} t={t} />
-                {rest.length > 0 ? (
-                  <details className={styles.more}>
-                    <summary className={styles.seeAll}>
-                      {t('stores.seeAllNearby', { count: section.stores.length })}
-                    </summary>
-                    <Cards stores={rest} t={t} />
-                  </details>
-                ) : null}
+                {section.nearby ? (
+                  <NearbyStores
+                    stores={data.nearby.map((store) => ({
+                      ...cardOf(store, t),
+                      position: store.position,
+                    }))}
+                    preview={NEARBY_PREVIEW}
+                    words={nearbyWords(t, data.nearby.length)}
+                    locale={locale}
+                  />
+                ) : (
+                  <Cards stores={section.stores} t={t} />
+                )}
               </section>
             )
           })}

@@ -20,6 +20,12 @@ export const STORES_KEYS = defineMessages({
   'stores.nearby': 'Nearby',
   'stores.drive': 'All reachable within a 30-minute drive.',
   'stores.seeAllNearby': 'See all nearby stores ({count})',
+  'stores.nearbyAsk': 'Show the stores nearest to me',
+  'stores.nearbyNote': 'Your browser asks for your location first. It stays on this device.',
+  'stores.nearbyFinding': 'Finding where you are…',
+  'stores.nearbySorted': 'Nearest first, from where you are now.',
+  'stores.nearbyFailed': 'We could not get your location, so the stores stay in name order.',
+  'stores.distance': '{distance} km away',
   // The owner's one address (2026-11-25), on every card: `server/shop/stores/owner-location`.
   'stores.address': 'Jl. Gambuh No.17, Pemecutan Kaja, Denpasar Utara, Denpasar, Bali 80231',
   'stores.count.other': '{count} stores',

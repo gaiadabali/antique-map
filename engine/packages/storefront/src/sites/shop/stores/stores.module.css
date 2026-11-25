@@ -220,3 +220,18 @@
   text-underline-offset: 0.3em;
   cursor: pointer;
 }
+
+/* Nearby's "nearest to me": the button and its one line of status, above the cards. */
+.nearbyBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--shop-gap);
+  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
+}
+
+.nearbyStatus {
+  margin: 0;
+  font: var(--shop-text-meta);
+  color: var(--color-text-muted);
+}

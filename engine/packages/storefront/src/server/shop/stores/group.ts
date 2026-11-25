@@ -1,8 +1,27 @@
 /**
  * The stores page's pure shaping (13.2): a raw, projected store doc into a view model, the stores
- * grouped by area, and the map link. Nothing here reads a database or a coordinate.
+ * grouped by area, and the map link. Nothing here reads a database. A store's coordinates leave
+ * only as Nearby's `position`, rounded to two decimals (about a kilometre): enough to sort by
+ * distance, never more exact than the street address the store already shows.
  */
 import { OWNER_MAP_URL } from './owner-location'
+
+/** Where a store is, to about a kilometre (`positionOf`). */
+export type Position = { readonly lat: number; readonly lng: number }
+
+const coordinate = (value: unknown, max: number): number | null =>
+  typeof value === 'number' && Number.isFinite(value) && Math.abs(value) <= max
+    ? Math.round(value * 100) / 100
+    : null
+
+/** A doc's coordinates rounded to two decimals, or `null` without both. */
+export function positionOf(doc: unknown): Position | null {
+  if (typeof doc !== 'object' || doc === null) return null
+  const record = doc as Record<string, unknown>
+  const lat = coordinate(record.lat, 90)
+  const lng = coordinate(record.lng, 180)
+  return lat === null || lng === null ? null : { lat, lng }
+}
 
 /** A store as the page shows it: the public fields and the map link, nothing else. */
 export type StoreVM = {
@@ -25,6 +44,9 @@ export const REGION_SHOWS = 1
 
 type Store = StoreVM & { readonly area: string | null }
 
+/** A Nearby store: its rounded position, for the page's "nearest to me". */
+export type NearbyStoreVM = Store & { readonly position: Position | null }
+
 export type RegionGroup = {
   readonly region: StoreRegionKey
   readonly stores: readonly Store[]
@@ -34,9 +56,17 @@ export type StoreDirectoryData = {
   readonly flagships: readonly Store[]
   readonly regions: readonly RegionGroup[]
   /** Every other store, by name: a region's stores past its first, and the stores of no region. */
-  readonly nearby: readonly Store[]
+  readonly nearby: readonly NearbyStoreVM[]
   readonly total: number
 }
+
+const withoutPosition = (store: NearbyStoreVM): Store => ({
+  name: store.name,
+  area: store.area,
+  address: store.address,
+  hours: store.hours,
+  mapUrl: store.mapUrl,
+})
 
 const regionOf = (value: unknown): StoreRegionKey | null =>
   (STORE_REGION_ORDER as readonly unknown[]).includes(value) ? (value as StoreRegionKey) : null
@@ -44,8 +74,8 @@ const regionOf = (value: unknown): StoreRegionKey | null =>
 /** Flagships first (by name), then each region with a store (its first by name), then Nearby. */
 export function groupByRegion(docs: readonly unknown[]): StoreDirectoryData {
   const flagships: Store[] = []
-  const byRegion = new Map<StoreRegionKey, Store[]>()
-  const nearby: Store[] = []
+  const byRegion = new Map<StoreRegionKey, NearbyStoreVM[]>()
+  const nearby: NearbyStoreVM[] = []
   let total = 0
   for (const doc of docs) {
     const store = storeFrom(doc)
@@ -56,15 +86,18 @@ export function groupByRegion(docs: readonly unknown[]): StoreDirectoryData {
       flagships.push(store)
       continue
     }
+    const placed = { ...store, position: positionOf(doc) }
     const region = regionOf(record.region)
-    if (region === null) nearby.push(store)
-    else byRegion.set(region, [...(byRegion.get(region) ?? []), store])
+    if (region === null) nearby.push(placed)
+    else byRegion.set(region, [...(byRegion.get(region) ?? []), placed])
   }
   const byName = (a: StoreVM, b: StoreVM) => compare(a.name, b.name)
   const regions = STORE_REGION_ORDER.flatMap((region) => {
     const stores = (byRegion.get(region) ?? []).sort(byName)
     nearby.push(...stores.slice(REGION_SHOWS))
-    return stores.length > 0 ? [{ region, stores: stores.slice(0, REGION_SHOWS) }] : []
+    // A region's own card needs no position: only Nearby is sorted by distance.
+    const shown = stores.slice(0, REGION_SHOWS).map(withoutPosition)
+    return shown.length > 0 ? [{ region, stores: shown }] : []
   })
   return { flagships: flagships.sort(byName), regions, nearby: nearby.sort(byName), total }
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { groupByArea, groupByRegion, mapUrl, storeFrom } from './group'
+import { groupByArea, groupByRegion, mapUrl, positionOf, storeFrom } from './group'
 import { OWNER_MAP_URL } from './owner-location'
 
 describe('groupByArea', () => {
@@ -74,7 +74,30 @@ describe('groupByRegion (TASKS.md 28.2; the order of 2026-11-25)', () => {
     expect(data.nearby.map((s) => s.name)).toEqual(['Hill', 'No region', 'Zed'])
   })
 
+  it("gives Nearby each store's position to about a kilometre, and the regions none", () => {
+    const data = groupByRegion([
+      { name: 'Hill', region: 'ubud', lat: -8.506912, lng: 115.262504 },
+      { name: 'Lane', region: 'ubud', lat: -8.51, lng: 115.27 },
+      { name: 'Loose' },
+    ])
+    expect(data.regions[0]?.stores[0]).not.toHaveProperty('position')
+    expect(data.nearby.map((s) => [s.name, s.position])).toEqual([
+      ['Lane', { lat: -8.51, lng: 115.27 }],
+      ['Loose', null],
+    ])
+  })
+
   it('has no flagship section when none is set', () => {
     expect(groupByRegion([{ name: 'A', region: 'amed' }]).flagships).toEqual([])
+  })
+})
+
+describe('positionOf', () => {
+  it('rounds to two decimals and needs both coordinates, each in range', () => {
+    expect(positionOf({ lat: -8.506912, lng: 115.262504 })).toEqual({ lat: -8.51, lng: 115.26 })
+    expect(positionOf({ lat: -8.5 })).toBeNull()
+    expect(positionOf({ lat: 'x', lng: 115 })).toBeNull()
+    expect(positionOf({ lat: 91, lng: 115 })).toBeNull()
+    expect(positionOf(null)).toBeNull()
   })
 })

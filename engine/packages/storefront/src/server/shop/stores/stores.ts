@@ -1,9 +1,11 @@
 /**
  * The shop's stores page read (13.2; TASKS.md 28.2): every store that is active and listed,
  * projected to name, area, address, hours, and — for the page's sections — whether it is a
- * flagship and its region. A public read of a protected collection — `overrideAccess: false`, so
- * the collection's own access answers with `PUBLIC_STORES`; `select` keeps a store's code,
- * WhatsApp, coordinates and notes out of the result in the first place.
+ * flagship, its region and its coordinates (Nearby's "nearest to me", the order of 2026-11-25;
+ * `./group` rounds them to about a kilometre before they reach a page). A public read of a
+ * protected collection — `overrideAccess: false`, so the collection's own access answers with
+ * `PUBLIC_STORES`; `select` keeps a store's code, WhatsApp and notes out of the result in the
+ * first place.
  */
 import 'server-only'
 
@@ -14,7 +16,15 @@ import { cms } from '@engine/cms/instance'
 
 import { groupByRegion, type StoreDirectoryData } from './group'
 
-export type { AreaGroup, RegionGroup, StoreDirectoryData, StoreRegionKey, StoreVM } from './group'
+export type {
+  AreaGroup,
+  NearbyStoreVM,
+  Position,
+  RegionGroup,
+  StoreDirectoryData,
+  StoreRegionKey,
+  StoreVM,
+} from './group'
 
 /** A sane ceiling: the shop is stocked in 100+ stores; this leaves room without an unbounded read. */
 const STORE_LIMIT = 500
@@ -31,7 +41,16 @@ export async function storeDirectory(locale: SiteLocale): Promise<StoreDirectory
     collection: 'stores',
     overrideAccess: false,
     where: { and: [{ active: { equals: true } }, { listed: { equals: true } }] },
-    select: { name: true, area: true, address: true, hours: true, flagship: true, region: true },
+    select: {
+      name: true,
+      area: true,
+      address: true,
+      hours: true,
+      flagship: true,
+      region: true,
+      lat: true,
+      lng: true,
+    },
     sort: 'name',
     locale,
     depth: 0,
