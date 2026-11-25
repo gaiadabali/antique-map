@@ -17,7 +17,14 @@ export type StoreCardData = {
   readonly place: string | null
   readonly hours: string | null
   readonly mapUrl: string
-  readonly photo: { readonly src: string; readonly width: number; readonly height: number }
+  /** The store's own photograph (`alt` from its media record) or a shared one (`alt` empty). */
+  readonly photo: {
+    readonly src: string
+    readonly srcSet?: string
+    readonly width: number
+    readonly height: number
+    readonly alt: string
+  }
 }
 
 /** The words every card shares. */
@@ -41,14 +48,16 @@ export function StoreCard({
 }) {
   return (
     <li className={styles.store}>
-      {/* One of the stores' photographs, not necessarily this store's own (`./store-photos`):
-          decoration, so it has no words of its own. */}
+      {/* The store's own photograph when it has one; else one of the shared ones
+          (`./store-photos`), which is decoration and has no words of its own. */}
       <img
         className={styles.photo}
         src={store.photo.src}
+        srcSet={store.photo.srcSet}
+        sizes={store.photo.srcSet ? '96px' : undefined}
         width={store.photo.width}
         height={store.photo.height}
-        alt=""
+        alt={store.photo.alt}
         loading="lazy"
         decoding="async"
       />

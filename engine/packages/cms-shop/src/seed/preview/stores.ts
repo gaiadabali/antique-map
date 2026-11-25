@@ -1,7 +1,7 @@
 /**
  * The client preview's stores and settings steps (`./index`):
  *
- * - **stores** — a store's region is its `area` when that is exactly Lombok, Ubud, Amed or Canggu
+ * - **stores** — on the seed stores only (a real store keeps what the owner set): a store's region is its `area` when that is exactly Lombok, Ubud, Amed or Canggu
  *   (any case), else none; the flagships are the first Ubud store and the first Canggu store by id.
  * - **settings** — the newsletter pop-up on, and the shop's WhatsApp set to the preview's number.
  *
@@ -23,8 +23,15 @@ export function regionOf(area: unknown): string | null {
   return (REGIONS as readonly string[]).includes(text) ? text : null
 }
 
+/** Every store the seed sheet makes is named "Seed store, <Area> 00N" (`../shop/data/stores.csv`). */
+const SEED_NAME = /^Seed store, /
+
+/** A seed store, by its seed name; any other store is a real one, and the preview leaves it alone. */
+export const isSeedStore = (store: object): boolean =>
+  SEED_NAME.test(String((store as { name?: unknown }).name ?? ''))
+
 export async function seedStoreRegions(step: Step): Promise<StoresReport> {
-  const stores = await allOf(step, 'stores')
+  const stores = (await allOf(step, 'stores')).filter((each) => isSeedStore(each))
   const flagshipIds = new Set<number>()
   for (const region of FLAGSHIP_REGIONS) {
     const first = stores.find((each) => regionOf(each.area) === region)

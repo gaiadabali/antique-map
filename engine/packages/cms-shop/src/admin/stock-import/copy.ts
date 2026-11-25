@@ -29,6 +29,10 @@ export const STOCK_IMPORT_COPY = t({
     en: 'Row 1 holds these columns, spelled exactly:',
     id: 'Baris 1 berisi kolom ini, dieja persis:',
   },
+  optionalColumnsLabel: {
+    en: 'You may also add these columns, or leave them out:',
+    id: 'Anda boleh menambahkan kolom ini, atau melewatkannya:',
+  },
   noteStock: {
     en: 'Each row is the count on the shelf at one store. Units waiting for a driver are taken off for you.',
     id: 'Setiap baris adalah jumlah di rak satu toko. Unit yang menunggu pengemudi dikurangi otomatis.',
@@ -38,8 +42,8 @@ export const STOCK_IMPORT_COPY = t({
     id: 'Produk baru masuk sebagai draf; terbitkan di editor produk, tempat fotonya ditambahkan. Baris varian menyebut produknya di parent_sku.',
   },
   noteStores: {
-    en: 'An empty cell keeps what the store has. An active store needs its address, lat and lng.',
-    id: 'Sel kosong mempertahankan data toko. Toko aktif perlu alamat, lat, dan lng.',
+    en: 'An empty cell keeps what the store has, except an empty region, which lists the store under Other. region is lombok, ubud, amed or canggu; flagship is yes or no. An active store needs its address, lat and lng.',
+    id: 'Sel kosong mempertahankan data toko, kecuali region yang kosong: toko itu tampil di bawah Lainnya. region berisi lombok, ubud, amed, atau canggu; flagship berisi yes atau no. Toko aktif perlu alamat, lat, dan lng.',
   },
   fileLabel: { en: 'Excel or CSV file', id: 'Berkas Excel atau CSV' },
   preview: { en: 'Preview', id: 'Pratinjau' },

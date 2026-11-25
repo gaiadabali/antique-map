@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 
 import { groupByArea, groupByRegion, mapUrl, positionOf, storeFrom } from './group'
 import { OWNER_MAP_URL } from './owner-location'
@@ -28,6 +28,7 @@ describe('groupByArea', () => {
     expect(Object.keys(first?.stores[0] ?? {}).sort()).toEqual([
       'address',
       'hours',
+      'image',
       'mapUrl',
       'name',
     ])
@@ -117,5 +118,59 @@ describe('positionOf', () => {
     expect(positionOf({ lat: 'x', lng: 115 })).toBeNull()
     expect(positionOf({ lat: 91, lng: 115 })).toBeNull()
     expect(positionOf(null)).toBeNull()
+  })
+})
+
+describe("a store's own photograph", () => {
+  const BASE = 'https://media.example.test/indies-media'
+  const ID = '0123456789abcdef0123456789abcdef'
+  const previous = process.env.MEDIA_PUBLIC_URL
+  beforeEach(() => {
+    process.env.MEDIA_PUBLIC_URL = BASE
+  })
+  afterEach(() => {
+    if (previous === undefined) delete process.env.MEDIA_PUBLIC_URL
+    else process.env.MEDIA_PUBLIC_URL = previous
+  })
+  const media = (extra: Record<string, unknown> = {}) => ({
+    url: '/api/media/file/shop.jpg',
+    alt: 'The shop front',
+    width: 640,
+    height: 480,
+    assetId: ID,
+    derivatives: { status: 'ready' },
+    ...extra,
+  })
+
+  it('carries the first published image as its public derivative', () => {
+    const store = storeFrom({
+      name: 'S',
+      images: [{ image: media({ derivatives: { status: 'pending' } }) }, { image: media() }],
+    })
+    expect(store?.image).toEqual({
+      url: `${BASE}/derivatives/v1/${ID}/640.webp`,
+      alt: 'The shop front',
+      width: 640,
+      height: 480,
+      srcSet: expect.stringContaining('320.webp 320w'),
+    })
+  })
+
+  it.each([
+    ['no images', {}],
+    ['an empty list', { images: [] }],
+    ['an unpopulated id', { images: [{ image: 12 }] }],
+    ['an unpublished derivative', { images: [{ image: media({ derivatives: null }) }] }],
+  ])('is null for %s, so the card falls back to the shared photos', (_label, extra) => {
+    expect(storeFrom({ name: 'S', ...extra })?.image).toBeNull()
+  })
+
+  it('keeps the image on a region card and on Nearby', () => {
+    const data = groupByRegion([
+      { name: 'A', region: 'ubud', images: [{ image: media() }] },
+      { name: 'B', region: 'ubud', images: [{ image: media() }] },
+    ])
+    expect(data.regions[0]?.stores[0]?.image?.alt).toBe('The shop front')
+    expect(data.nearby[0]?.image?.alt).toBe('The shop front')
   })
 })

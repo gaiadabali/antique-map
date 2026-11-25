@@ -2,7 +2,8 @@
  * The shop row plans (CONTENT-MODEL.md §9): products (a product row and one per variant, the
  * variant's `parent_sku` naming it), stores, stock (the raw cells — the store and product are
  * resolved against the database in `./apply`) and discounts. Only the cells the row carries go
- * into the data: an empty cell never clears a field.
+ * into the data: an empty cell never clears a field (the one exception, a stores sheet's own
+ * `region` column, is in `./plan-store-grouping`).
  */
 import type { Problem } from '@engine/cms-core/import/types'
 import { SKU_PATTERN } from '../collections/products/skus'
@@ -16,6 +17,7 @@ import {
 } from '@engine/cms-core/import/plan'
 import type { Vocabulary } from '@engine/cms-core/import/vocabulary'
 import { wholeNumber, yesNo } from '@engine/cms-core/import/cells'
+import { storeGrouping } from './plan-store-grouping'
 
 const clean = (raw: string | undefined) => (raw ?? '').trim()
 
@@ -194,6 +196,9 @@ export function planStoreRow(row: Row): PlannedRow {
       if (flag.error) throw new RowProblem({ column, problem: flag.error })
       if (flag.value !== undefined) data[field] = flag.value
     }
+    const grouping = storeGrouping(row)
+    if ('problem' in grouping) throw new RowProblem(grouping.problem)
+    Object.assign(data, grouping.data)
     return planned(row.row, row.key, 'stores', data)
   } catch (error) {
     if (error instanceof RowProblem) return refused(row.row, row.key, [error.problem])
