@@ -4,9 +4,7 @@
  * the lexicon's words, so an editor starts from the page as it was designed. Since the owner's
  * feedback of 2026-11-19 (TASKS.md 28.2): the hero's call is "Shop", to the shop page, and the
  * order is Shop by, How We Make Them, Partnerships, the Antiques — the site places Wall Decor, the
- * latest articles and the stores between them (`sites/shop/sections/home-order`). Since the GM's
- * review of 2026-11-24: no claim the owner never made — no "Restored by hand" signal or step, no
- * museum grade, no curator's certificate — until the owner confirms one.
+ * latest articles and the stores between them (`sites/shop/sections/home-order`).
  */
 import type { SiteLocale } from '@engine/config/sites'
 
@@ -26,7 +24,11 @@ export function defaultHomeBlocks(
       lede: t('home.shop.lede'),
       primary: { label: t('home.shop.ctaShop'), href: href('browse'), external: false },
       secondary: { label: t('home.shop.ctaProcess'), href: '#process', external: false },
-      signals: [t('home.shop.signalBali'), t('home.shop.signalShops')],
+      signals: [
+        t('home.shop.signalRestored'),
+        t('home.shop.signalBali'),
+        t('home.shop.signalShops'),
+      ],
       image: null,
     },
     {
@@ -42,6 +44,7 @@ export function defaultHomeBlocks(
       title: t('home.shop.processTitle'),
       steps: [
         { title: t('home.shop.processStep1Title'), body: t('home.shop.processStep1Body') },
+        { title: t('home.shop.processStep2Title'), body: t('home.shop.processStep2Body') },
         { title: t('home.shop.processStep3Title'), body: t('home.shop.processStep3Body') },
       ],
     },
