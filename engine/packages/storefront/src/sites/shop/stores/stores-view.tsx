@@ -3,8 +3,7 @@
  * owner's feedback of 2026-11-19): the listing's breadcrumb and head, a hairline sub-nav that
  * sticks under the header (each link to its section's title, and the page glides there), then the
  * two flagship stores, then Lombok, Ubud, Amed and Canggu — one store each (the order of
- * 2026-11-25), within a 30-minute drive — then every other store as Nearby, its first and "See
- * all", so a long remainder never stretches the page, above all on a phone. A section with no
+ * 2026-11-25) — then every other store as Nearby, its first and "See all", so a long remainder never stretches the page, above all on a phone. A section with no
  * store is left out (no flagship set: no flagship section). Each store: the name in the serif, its
  * area, the owner's one address and the hours muted, and the owner's map link
  * (`server/shop/stores/owner-location`). The title, lede and empty note are the page's
@@ -81,6 +80,7 @@ function nearbyWords(t: StoresText, count: number): NearbyWords {
   return {
     ...cardWords(t),
     lead: t('stores.nearbyLead'),
+    leadByArea: t('stores.nearbyLeadByArea'),
     note: t('stores.nearbyNote'),
     finding: t('stores.nearbyFinding'),
     sorted: t('stores.nearbySorted'),
@@ -184,7 +184,6 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
                     </span>
                   ) : null}
                 </div>
-                {section.region ? <p className={styles.drive}>{t('stores.drive')}</p> : null}
                 {section.nearby ? (
                   <NearbyStores
                     stores={data.nearby.map((store) => ({

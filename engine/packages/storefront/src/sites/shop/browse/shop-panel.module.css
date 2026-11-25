@@ -9,7 +9,9 @@
   --shop-panel-row: 0rem;
   --shop-branch-row: 0rem;
 
-  scroll-padding-block-start: calc(var(--shop-chrome) + var(--shop-panel-row) + var(--space-4));
+  /* the section's own top padding is the space above its title: no gap, where the end of the
+     section before would show between the sticky rows and the section */
+  scroll-padding-block-start: calc(var(--shop-chrome) + var(--shop-panel-row));
   scroll-behavior: smooth;
 }
 

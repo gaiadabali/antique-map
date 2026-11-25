@@ -18,14 +18,14 @@ export const STORES_KEYS = defineMessages({
   'stores.region.amed': 'Amed',
   'stores.region.canggu': 'Canggu',
   'stores.nearby': 'Nearby',
-  'stores.drive': 'Within a 30-minute drive.',
   'stores.seeAllNearby': 'See all nearby stores ({count})',
   'stores.nearbyLead': 'Stores nearest to you',
+  'stores.nearbyLeadByArea': 'Every other store, by area',
   'stores.nearbyNote':
     'Your browser asks for your location first. Your location never leaves this device.',
   'stores.nearbyFinding': 'Finding where you are…',
   'stores.nearbySorted': 'Nearest first, from where you are now.',
-  'stores.nearbyFailed': 'We could not get your location, so the stores stay in name order.',
+  'stores.nearbyFailed': 'We could not get your location, so the stores are listed by area.',
   'stores.distance': '{distance} km away',
   'stores.distanceNear': 'Under 1 km away',
   // The owner's one address (2026-11-25), on every card: `server/shop/stores/owner-location`.

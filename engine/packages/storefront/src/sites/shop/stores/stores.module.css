@@ -203,13 +203,7 @@
   }
 }
 
-/* TASKS.md 28.2: a region's note, and its "See all" opening the rest of its stores in place. */
-.drive {
-  margin: calc(-1 * var(--space-2)) 0 var(--space-4);
-  font: var(--shop-text-meta);
-  color: var(--color-text-muted);
-}
-
+/* TASKS.md 28.2: "See all" opening the rest of the stores in place. */
 .more > .grid {
   margin-block-start: 0;
 }

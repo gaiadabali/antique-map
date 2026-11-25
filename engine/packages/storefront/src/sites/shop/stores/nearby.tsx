@@ -1,13 +1,14 @@
 'use client'
 
 /**
- * Nearby on the stores page (the order of 2026-11-25): every other store, by name, its first ones
+ * Nearby on the stores page (the order of 2026-11-25): every other store, by area, its first ones
  * and "See all". Above them, "Stores nearest to you" as plain words, not a call to action,
  * and under it the line that explains or reports (the UI/UX revisions of 2026-11-25). Once the
  * section comes into view the browser is asked, a single time, where the visitor is, and the
  * stores are put nearest first, each with its distance. The position stays on the device
  * (`./distance` runs here) and is never sent anywhere. Without it — refused, unavailable, or no
- * answer in time — the stores stay by name and the line says so. Every word arrives as a prop.
+ * answer in time — the stores stay by area, and the words above them say so rather than promise
+ * "nearest" (the skill review of 2026-11-25). Every word arrives as a prop.
  */
 import { useEffect, useRef, useState } from 'react'
 
@@ -21,6 +22,8 @@ export type NearbyStore = StoreCardData & { readonly position: Position | null }
 export type NearbyWords = StoreCardWords & {
   /** "Stores nearest to you": a description, not a call to action. */
   readonly lead: string
+  /** "Every other store, by area": the lead once no position came, so it never says "nearest". */
+  readonly leadByArea: string
   readonly note: string
   readonly finding: string
   readonly sorted: string
@@ -110,7 +113,7 @@ export function NearbyStores({ stores, preview, words, locale }: Props): React.R
   return (
     <>
       <div className={styles.nearbyBar} ref={barRef}>
-        <p className={styles.nearbyLead}>{words.lead}</p>
+        <p className={styles.nearbyLead}>{status === 'failed' ? words.leadByArea : words.lead}</p>
         <p className={styles.nearbyStatus} role="status">
           {line[status]}
         </p>

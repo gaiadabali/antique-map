@@ -55,7 +55,11 @@ export type RegionGroup = {
 export type StoreDirectoryData = {
   readonly flagships: readonly Store[]
   readonly regions: readonly RegionGroup[]
-  /** Every other store, by name: a region's stores past its first, and the stores of no region. */
+  /**
+   * Every other store — a region's stores past its first, and the stores of no region — by area,
+   * as each Nearby card names it, then by name; a store with no area last. The page puts them
+   * nearest first instead once the visitor's browser gives a position.
+   */
   readonly nearby: readonly NearbyStoreVM[]
   readonly total: number
 }
@@ -92,6 +96,14 @@ export function groupByRegion(docs: readonly unknown[]): StoreDirectoryData {
     else byRegion.set(region, [...(byRegion.get(region) ?? []), placed])
   }
   const byName = (a: StoreVM, b: StoreVM) => compare(a.name, b.name)
+  const byArea = (a: Store, b: Store) =>
+    a.area === b.area
+      ? byName(a, b)
+      : a.area === null
+        ? 1
+        : b.area === null
+          ? -1
+          : compare(a.area, b.area) || byName(a, b)
   const regions = STORE_REGION_ORDER.flatMap((region) => {
     const stores = (byRegion.get(region) ?? []).sort(byName)
     nearby.push(...stores.slice(REGION_SHOWS))
@@ -99,7 +111,7 @@ export function groupByRegion(docs: readonly unknown[]): StoreDirectoryData {
     const shown = stores.slice(0, REGION_SHOWS).map(withoutPosition)
     return shown.length > 0 ? [{ region, stores: shown }] : []
   })
-  return { flagships: flagships.sort(byName), regions, nearby: nearby.sort(byName), total }
+  return { flagships: flagships.sort(byName), regions, nearby: nearby.sort(byArea), total }
 }
 
 /** One area's section. `area` is `null` for the stores that name none ("Other areas", last). */

@@ -87,6 +87,17 @@ describe('groupByRegion (TASKS.md 28.2; the order of 2026-11-25)', () => {
     ])
   })
 
+  it('lists Nearby by area, as its cards name it, then by name; no area last', () => {
+    const data = groupByRegion([
+      { name: 'Alpha', area: 'Ubud' },
+      { name: 'Bravo' },
+      { name: 'Delta', area: 'Amed' },
+      { name: 'Charlie', area: 'Amed' },
+      { name: 'Echo', area: 'Canggu' },
+    ])
+    expect(data.nearby.map((s) => s.name)).toEqual(['Charlie', 'Delta', 'Echo', 'Alpha', 'Bravo'])
+  })
+
   it('has no flagship section when none is set', () => {
     expect(groupByRegion([{ name: 'A', region: 'amed' }]).flagships).toEqual([])
   })
