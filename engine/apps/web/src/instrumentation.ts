@@ -8,4 +8,7 @@ export async function register(): Promise<void> {
   if (process.env.NEXT_PHASE === 'phase-production-build') return
   const { bootOrExit } = await import('./boot')
   await bootOrExit()
+  // Staging applies the "Client preview" seed by itself after each deploy (`./auto-preview`).
+  const { scheduleAutoPreview } = await import('./auto-preview')
+  scheduleAutoPreview()
 }
