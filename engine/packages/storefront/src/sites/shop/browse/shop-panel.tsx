@@ -1,18 +1,24 @@
 /**
- * The shop's left panel (the UI/UX revision of 2026-11-25, "like Tokopedia"): the five views in
- * the owner's order — Best sellers, Shop by theme, Shop by product type, Wall decor, Shop all —
- * the current one marked, and under Shop all, while it is the view, its Sort by branch. On a phone
- * (≤ 900 px) the views are one row that scrolls sideways and Sort by a second row under it
- * (`./shop-panel.module.css`). Every control is a link, so the shop works without JavaScript and
- * never prefetches, and each state has one address.
+ * The shop's left panel (the UI/UX revision of 2026-11-25, "like Tokopedia"): the shop page's
+ * sections in the owner's order — Best sellers, Shop by theme, Shop by product type, Wall decor —
+ * then Shop all, whose Sort by branch opens under it while it is the section being read. On the
+ * shop page the panel follows the sections as they scroll (`./shop-panel-nav`, a client island);
+ * on a narrowed page it marks the section the page belongs under and leads back to it. On a phone
+ * (≤ 900 px) it is one row that sticks under the header and scrolls sideways, and Sort by a second
+ * row under it (`./shop-panel.module.css`). The words are resolved here, on the server.
  */
 import type { SiteLocale } from '@engine/config/sites'
 
 import type { ListingSort } from '../../../server/shop/catalogue/queries'
 import { sectionsText } from '../sections/copy'
-import { SHOP_VIEWS, shopViewHref, type ShopView } from '../sections/links'
+import {
+  SECTION_ANCHORS,
+  SHOP_SECTIONS,
+  shopSectionHref,
+  type ShopSection,
+} from '../sections/links'
+import { ShopPanelNav } from '../ui/lazy-islands'
 import { browseText } from './copy'
-import styles from './shop-panel.module.css'
 
 /** The sorts Shop all offers, in the order its branch lists them. */
 export const SHOP_SORTS = [
@@ -24,21 +30,21 @@ export const SHOP_SORTS = [
 
 type Props = {
   readonly locale: SiteLocale
-  /** The view the page shows. */
-  readonly view: ShopView
-  /** `false` on a page inside a view (a theme's prints, a product type's): marked, not "this page". */
-  readonly exact?: boolean
-  /** Shop all's Sort by branch: the sort in force and each sort's address. */
+  /** The section marked at first: on the shop page the server's guess, elsewhere the page's. */
+  readonly section: ShopSection
+  /** The shop page itself: the links are its anchors, and the panel follows the scroll. */
+  readonly onShopPage?: boolean
+  /** Shop all's Sort by: the sort in force and each sort's address (the shop page only). */
   readonly sorts?: {
     readonly current: ListingSort
     readonly hrefOf: (sort: ListingSort) => string
   }
 }
 
-export function ShopPanel({ locale, view, exact = true, sorts }: Props): React.ReactElement {
+export function ShopPanel({ locale, section, onShopPage = false, sorts }: Props) {
   const t = sectionsText(locale)
   const text = browseText(locale)
-  const labels: Record<ShopView, string> = {
+  const labels: Record<ShopSection, string> = {
     'best-sellers': t('shopBy.bestSellers'),
     themes: t('shopBy.themes'),
     'product-types': t('shopBy.productTypes'),
@@ -46,40 +52,30 @@ export function ShopPanel({ locale, view, exact = true, sorts }: Props): React.R
     all: text('browse.title'),
   }
   return (
-    <nav className={styles.panel} aria-label={t('shopBy.panel')}>
-      <ul className={styles.views}>
-        {SHOP_VIEWS.map((each) => (
-          <li key={each}>
-            <a
-              href={shopViewHref(each, locale)}
-              className={styles.view}
-              aria-current={each === view ? (exact ? 'page' : 'true') : undefined}
-            >
-              {labels[each]}
-            </a>
-          </li>
-        ))}
-      </ul>
-      {view === 'all' && sorts ? (
-        <div className={styles.branch}>
-          <p className={styles.branchTitle} id="shop-sort">
-            {text('listing.sortBy')}
-          </p>
-          <ul className={styles.sorts} aria-labelledby="shop-sort">
-            {SHOP_SORTS.map((sort) => (
-              <li key={sort}>
-                <a
-                  href={sorts.hrefOf(sort)}
-                  className={styles.sort}
-                  aria-current={sorts.current === sort ? 'true' : undefined}
-                >
-                  {text(`sort.${sort}`)}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ) : null}
-    </nav>
+    <ShopPanelNav
+      label={t('shopBy.panel')}
+      items={SHOP_SECTIONS.map((each) => ({
+        key: each,
+        anchor: SECTION_ANCHORS[each],
+        href: onShopPage ? `#${SECTION_ANCHORS[each]}` : shopSectionHref(each, locale),
+        label: labels[each],
+      }))}
+      current={section}
+      follow={onShopPage}
+      branchOf="all"
+      {...(sorts
+        ? {
+            sorts: {
+              title: text('listing.sortBy'),
+              current: sorts.current,
+              items: SHOP_SORTS.map((sort) => ({
+                key: sort,
+                href: sorts.hrefOf(sort),
+                label: text(`sort.${sort}`),
+              })),
+            },
+          }
+        : {})}
+    />
   )
 }

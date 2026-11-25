@@ -1,8 +1,8 @@
 /**
- * The shop page's frame (the UI/UX revision of 2026-11-25): the same-day promise, the
- * breadcrumb, then the left panel (`./shop-panel`) beside the view — its title, with the count of
- * what it lists, a line of description, and its cards. The listings (`./browse-view`) and the
- * themes' and product types' cards (`./shop-by-view`) draw inside it.
+ * The shop's frame (the UI/UX revision of 2026-11-25): the same-day promise, the breadcrumb,
+ * then the left panel (`./shop-panel`) beside the page — its title, with the count of what it
+ * lists, a line of description, and its content: the shop page's sections (`./shop-sections`) or
+ * a narrowed listing (`./browse-view`).
  */
 import type { ReactNode } from 'react'
 
@@ -25,6 +25,8 @@ type Props = {
   readonly description?: string
   /** A line above the page (the same-day promise). */
   readonly banner?: ReactNode
+  /** The shop page itself: its crumb ends at the shop. */
+  readonly shopPage?: boolean
   readonly children: ReactNode
 }
 
@@ -35,21 +37,26 @@ export function ShopFrame({
   total,
   description,
   banner,
+  shopPage = false,
   children,
 }: Props): React.ReactElement {
   const shell = shopShellText(locale)
   const href = createHref(SITES.shop)
   return (
-    <section className={styles.browse} aria-labelledby="browse-title">
+    <section className={`${styles.browse} ${frame.page}`} aria-labelledby="browse-title">
       {banner ? <div className={styles.banner}>{banner}</div> : null}
       <Crumb
         homeHref={href('home', {}, locale)}
         homeLabel={shell('shell.shop.home')}
         label={shell('shell.shop.breadcrumb')}
-        steps={[
-          { label: sectionsText(locale)('shopBy.title'), href: href('browse', {}, locale) },
-          { label: title },
-        ]}
+        steps={
+          shopPage
+            ? [{ label: title }]
+            : [
+                { label: sectionsText(locale)('shopBy.title'), href: href('browse', {}, locale) },
+                { label: title },
+              ]
+        }
       />
       <div className={frame.layout}>
         {panel}

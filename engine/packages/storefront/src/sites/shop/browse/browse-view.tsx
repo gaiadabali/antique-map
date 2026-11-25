@@ -1,11 +1,12 @@
 /**
- * The shop's product listings (the redesign of 2026-10-20; the UI/UX revision of 2026-11-25, a
- * left panel "like Tokopedia"): inside the shop's frame (`./shop-frame`) — breadcrumb, the left
- * panel (`./shop-panel`), the title with its count — the framed cards three to a row beside the
- * panel (two on a phone), then the boxed pager and the count. It draws the best sellers, wall
- * decor, a theme's prints, a product type's (a category page) and Shop all, whose sort is the
- * panel's Sort by branch. Every control is a link, so browsing works without JavaScript and never
- * prefetches; the state in each URL is canonicalListing()'s, so one state has one address.
+ * The shop's narrowed listings (the redesign of 2026-10-20; the UI/UX revision of 2026-11-25, a
+ * left panel "like Tokopedia"): a section's "See all" (the best sellers, wall decor), a theme's
+ * prints and a product type's (a category page), inside the shop's frame (`./shop-frame`) —
+ * breadcrumb, the left panel marking the section the page belongs under (`./shop-panel`), the
+ * title with its count — the framed cards three to a row beside the panel (two on a phone), then
+ * the boxed pager and the count. The shop page itself is `./shop-sections`. Every control is a
+ * link, so browsing works without JavaScript and never prefetches; the state in each URL is
+ * canonicalListing()'s, so one state has one address.
  */
 import type { SiteLocale } from '@engine/config/sites'
 import { canonicalListing, createHref, listingSearch, SITES } from '@engine/config/sites'
@@ -14,7 +15,7 @@ import type { ListingVM, ProductCardVM } from '../../../server/shop/catalogue/vi
 import { Pagination } from '@engine/ui/pagination'
 import type { ReactNode } from 'react'
 
-import { filterFacets, viewOf, type ShopFilter } from '../sections/links'
+import { filterFacets, sectionOf, type ShopFilter, type ShopSection } from '../sections/links'
 import { browseText } from './copy'
 import styles from './browse.module.css'
 import { ProductCard } from './product-card'
@@ -65,18 +66,9 @@ export function BrowseView({
   // Pagination turns pages without touching the sort.
   const pageHref = (page: number): string => listingHref(listing.sort, page)
   // A product type's page sits under Shop by product type, a theme's prints under Shop by theme.
-  const view = categorySlug !== undefined ? 'product-types' : viewOf(filter)
-  const exact = categorySlug === undefined && filter?.kind !== 'theme'
-  const panel = (
-    <ShopPanel
-      locale={locale}
-      view={view}
-      exact={exact}
-      sorts={
-        view === 'all' ? { current: listing.sort, hrefOf: (sort) => listingHref(sort) } : undefined
-      }
-    />
-  )
+  const section: ShopSection =
+    categorySlug !== undefined ? 'product-types' : filter ? sectionOf(filter) : 'all'
+  const panel = <ShopPanel locale={locale} section={section} />
   return (
     <ShopFrame
       locale={locale}

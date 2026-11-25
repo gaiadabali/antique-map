@@ -1,19 +1,36 @@
 /**
- * The shop page's views (TASKS.md 28.2; the UI/UX revision of 2026-11-25, a left panel "like
- * Tokopedia"): the shop at its own address, narrowed or switched by one of the listing facets the
- * URL contract already carries (`@engine/config` `FACET_KEYS`, which the proxy keeps): a theme as
- * `subject` (`?subject=bali` — what a print shows), and a view as `productType`
- * (`?productType=themes`, `product-types`, `wall-decor`, `all`, and `best-sellers`, which is also
- * the shop's own address). The page (`pages/browse`) reads them back with `shopFilterOf()`.
+ * The shop page's addresses (TASKS.md 28.2; the UI/UX revision of 2026-11-25, a left panel "like
+ * Tokopedia"). The shop page shows every section in the owner's order, and its left panel follows
+ * them (`SHOP_SECTIONS`, each at `/shop#<anchor>`). A section's "See all" — and a theme's prints —
+ * is the shop listing narrowed by one of the listing facets the URL contract already carries
+ * (`@engine/config` `FACET_KEYS`, which the proxy keeps): a theme as `subject` (`?subject=bali` —
+ * what a print shows), and a set as `productType` (`?productType=best-sellers`,
+ * `?productType=wall-decor`). The page (`pages/browse`) reads them back with `shopFilterOf()`;
+ * anything else is the shop page itself.
  */
 import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
 
-/** The panel's views in the owner's order (the feedback of 2026-11-19): the first is the default. */
-export const SHOP_VIEWS = ['best-sellers', 'themes', 'product-types', 'wall-decor', 'all'] as const
-export type ShopView = (typeof SHOP_VIEWS)[number]
+export const SHOP_SETS = ['best-sellers', 'wall-decor'] as const
+export type ShopSet = (typeof SHOP_SETS)[number]
 
-export const SHOP_SETS = SHOP_VIEWS
-export type ShopSet = ShopView
+/** The shop page's sections in the owner's order (the feedback of 2026-11-19), Shop all last. */
+export const SHOP_SECTIONS = [
+  'best-sellers',
+  'themes',
+  'product-types',
+  'wall-decor',
+  'all',
+] as const
+export type ShopSection = (typeof SHOP_SECTIONS)[number]
+
+/** Each section's anchor on the shop page. */
+export const SECTION_ANCHORS: Readonly<Record<ShopSection, string>> = {
+  'best-sellers': 'best-sellers',
+  themes: 'themes',
+  'product-types': 'product-types',
+  'wall-decor': 'wall-decor',
+  all: 'shop-all',
+}
 
 export type ShopFilter =
   | { readonly kind: 'theme'; readonly slug: string }
@@ -44,15 +61,12 @@ export function shopFilterOf(
   return set === undefined ? null : { kind: 'set', set }
 }
 
-/** The view a filter shows: a theme's prints under the themes; no filter, the best sellers. */
-export function viewOf(filter: ShopFilter | null | undefined): ShopView {
-  if (filter === null || filter === undefined) return 'best-sellers'
+/** The section a narrowed page belongs under: a set's own, a theme's prints under the themes. */
+export function sectionOf(filter: ShopFilter): ShopSection {
   return filter.kind === 'theme' ? 'themes' : filter.set
 }
 
-/** A view's one address: the best sellers at the shop's own, every other as its set. */
-export function shopViewHref(view: ShopView, locale: SiteLocale): string {
-  return view === 'best-sellers'
-    ? createHref(SITES.shop)('browse', {}, locale)
-    : shopFilterHref({ kind: 'set', set: view }, locale)
+/** A section on the shop page, from another page (`/shop#themes`). */
+export function shopSectionHref(section: ShopSection, locale: SiteLocale): string {
+  return `${createHref(SITES.shop)('browse', {}, locale)}#${SECTION_ANCHORS[section]}`
 }
