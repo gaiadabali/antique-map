@@ -795,6 +795,7 @@
   "stores.areas": "Areas",
   "stores.count.one": "{count} store",
   "stores.count.other": "{count} stores",
+  "stores.drive": "Within a 30-minute drive.",
   "stores.empty": "No stores are listed yet — please check back soon.",
   "stores.flagships": "Flagship stores",
   "stores.hours": "Opening hours",

@@ -3,7 +3,8 @@
  * owner's feedback of 2026-11-19): the listing's breadcrumb and head, a hairline sub-nav that
  * sticks under the header (each link to its section's title, and the page glides there), then the
  * two flagship stores, then Lombok, Ubud, Amed and Canggu — one store each (the order of
- * 2026-11-25) — then every other store as Nearby, its first and "See all", so a long remainder never stretches the page, above all on a phone. A section with no
+ * 2026-11-25), within a 30-minute drive — then every other store as Nearby, its first and "See
+ * all", so a long remainder never stretches the page, above all on a phone. A section with no
  * store is left out (no flagship set: no flagship section). Each store: the name in the serif, its
  * area, the owner's one address and the hours muted, and the owner's map link
  * (`server/shop/stores/owner-location`). The title, lede and empty note are the page's
@@ -110,6 +111,8 @@ type Section = {
   readonly anchor: string
   readonly label: string
   readonly stores: readonly Store[]
+  /** A region of the four: the owner's note, "Within a 30-minute drive." */
+  readonly region: boolean
   /**
    * A region of the four with stores past its first: "3 more stores in Ubud", a link that narrows
    * Nearby to them (the skill review of 2026-11-25, T1).
@@ -134,16 +137,33 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
   const anchors = areaAnchors(sectionLabels(data, t))
   const sections: Section[] = [
     ...(data.flagships.length > 0
-      ? [{ label: t('stores.flagships'), stores: data.flagships, more: null, nearby: false }]
+      ? [
+          {
+            label: t('stores.flagships'),
+            stores: data.flagships,
+            region: false,
+            more: null,
+            nearby: false,
+          },
+        ]
       : []),
     ...data.regions.map((group) => ({
       label: t(`stores.region.${group.region}`),
       stores: group.stores,
+      region: true,
       more: group.more > 0 ? { region: group.region, count: group.more } : null,
       nearby: false,
     })),
     ...(data.nearby.length > 0
-      ? [{ label: t('stores.nearby'), stores: data.nearby, more: null, nearby: true }]
+      ? [
+          {
+            label: t('stores.nearby'),
+            stores: data.nearby,
+            region: false,
+            more: null,
+            nearby: true,
+          },
+        ]
       : []),
   ].map((section, index) => ({ ...section, anchor: anchors[index] ?? `area-${index}` }))
   // A region's "N more stores" link lands on Nearby narrowed to them: `#{nearby}-{region}`.
@@ -207,6 +227,7 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
                     </span>
                   ) : null}
                 </div>
+                {section.region ? <p className={styles.drive}>{t('stores.drive')}</p> : null}
                 {section.nearby ? (
                   <NearbyStores
                     stores={data.nearby.map((store) => ({

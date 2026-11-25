@@ -18,6 +18,7 @@ export const STORES_KEYS = defineMessages({
   'stores.region.amed': 'Amed',
   'stores.region.canggu': 'Canggu',
   'stores.nearby': 'Nearby',
+  'stores.drive': 'Within a 30-minute drive.',
   'stores.seeAllNearby': 'See all nearby stores ({count})',
   'stores.seeFewer': 'Show fewer stores',
   'stores.moreIn.other': '{count} more stores in {area}',
