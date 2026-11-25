@@ -20,18 +20,16 @@ const step = {
   },
 } as unknown as Step
 
-const SEEDS = ['SEED-1', 'SEED-2', 'SEED-3']
-
 describe('seedStoreRegions', () => {
   it('sets region and flagship on seed stores as before', async () => {
     docs.length = 0
     updates.length = 0
     docs.push(
-      { id: 1, code: 'SEED-1', area: 'Ubud' },
-      { id: 2, code: 'SEED-2', area: 'ubud' },
-      { id: 3, code: 'SEED-3', area: 'Denpasar' },
+      { id: 1, name: 'Seed store, Area 001', area: 'Ubud' },
+      { id: 2, name: 'Seed store, Area 002', area: 'ubud' },
+      { id: 3, name: 'Seed store, Area 003', area: 'Denpasar' },
     )
-    const report = await seedStoreRegions(step, SEEDS)
+    const report = await seedStoreRegions(step)
     expect(report).toEqual({ stores: 3, changed: 2, flagships: 1 })
     expect(updates).toEqual([
       { id: 1, data: { region: 'ubud', flagship: true } },
@@ -43,24 +41,24 @@ describe('seedStoreRegions', () => {
     docs.length = 0
     updates.length = 0
     docs.push(
-      { id: 10, code: 'REAL-1', area: 'Canggu', region: 'amed', flagship: false },
-      { id: 11, code: 'REAL-2', area: 'Ubud', region: 'lombok', flagship: true },
-      { id: 12, code: 'SEED-1', area: 'Ubud' },
+      { id: 10, name: 'Toko 1', area: 'Canggu', region: 'amed', flagship: false },
+      { id: 11, name: 'Toko 2', area: 'Ubud', region: 'lombok', flagship: true },
+      { id: 12, name: 'Seed store, Area 001', area: 'Ubud' },
     )
-    const report = await seedStoreRegions(step, SEEDS)
+    const report = await seedStoreRegions(step)
     expect(report.stores).toBe(1)
     // The seed store is the first Ubud one among the seed stores, not the real store at id 11.
     expect(updates).toEqual([{ id: 12, data: { region: 'ubud', flagship: true } }])
   })
 
-  it('a store with no code is real too, and a second run writes nothing', async () => {
+  it('a store with another name is real too, and a second run writes nothing', async () => {
     docs.length = 0
     updates.length = 0
     docs.push(
       { id: 20, area: 'Ubud' },
-      { id: 21, code: 'SEED-1', area: 'Amed', region: 'amed', flagship: false },
+      { id: 21, name: 'Seed store, Area 001', area: 'Amed', region: 'amed', flagship: false },
     )
-    const report = await seedStoreRegions(step, SEEDS)
+    const report = await seedStoreRegions(step)
     expect(report).toEqual({ stores: 1, changed: 0, flagships: 0 })
     expect(updates).toEqual([])
   })
