@@ -6,12 +6,23 @@
  * just under the sticky header, where a panel link lands it — and Shop all's Sort by branch opens
  * while Shop all is the one. Elsewhere (a "See all", a
  * theme's or a product type's page) it marks the section the page belongs under and leads back to
- * it. On a phone the marked link is kept in view inside the row's own sideways scroll. Every link
- * is a real address, so the panel works without JavaScript; every word arrives as a prop.
+ * it. On a phone the marked link, and the sort in force, are kept in view inside their rows' own
+ * sideways scroll. Every link is a real address, so the panel works without JavaScript; every word
+ * arrives as a prop.
  */
 import { useEffect, useRef, useState } from 'react'
 
 import styles from './shop-panel.module.css'
+
+/** Scrolls a sideways row (a phone's) so its marked link sits whole in sight, near the middle. */
+function keepInView(row: HTMLElement | null): void {
+  const link = row?.querySelector<HTMLElement>('[aria-current]')
+  if (!row || !link || row.scrollWidth <= row.clientWidth) return
+  const left = link.getBoundingClientRect().left - row.getBoundingClientRect().left + row.scrollLeft
+  if (left < row.scrollLeft || left + link.offsetWidth > row.scrollLeft + row.clientWidth) {
+    row.scrollTo({ left: Math.max(0, left - (row.clientWidth - link.offsetWidth) / 2) })
+  }
+}
 
 export type PanelItem = {
   readonly key: string
@@ -43,12 +54,14 @@ type Props = {
 export function ShopPanelNav({ label, items, current, follow, sorts, branchOf }: Props) {
   const [marked, setMarked] = useState(current)
   const rowRef = useRef<HTMLUListElement>(null)
+  const sortsRef = useRef<HTMLUListElement>(null)
 
   useEffect(() => {
     if (!follow) return
     let frame = 0
     // The section being read: the last whose top has passed the reading line — just under the
-    // sticky header (and a phone's chips), where an anchor lands it (the page's scroll padding).
+    // sticky header (and a phone's chips), where an anchor lands it (the page's scroll padding,
+    // plus the section's own scroll margin: Shop all's makes room for a phone's Sort by row).
     const update = () => {
       frame = 0
       const padding = Number.parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop)
@@ -56,7 +69,10 @@ export function ShopPanelNav({ label, items, current, follow, sorts, branchOf }:
       let key = items[0]?.key
       for (const item of items) {
         const section = document.getElementById(item.anchor)
-        if (section && section.getBoundingClientRect().top <= line) key = item.key
+        if (!section) continue
+        const margin = Number.parseFloat(getComputedStyle(section).scrollMarginTop)
+        const reach = line + (Number.isFinite(margin) ? margin : 0)
+        if (section.getBoundingClientRect().top <= reach) key = item.key
       }
       if (key) setMarked(key)
     }
@@ -73,15 +89,10 @@ export function ShopPanelNav({ label, items, current, follow, sorts, branchOf }:
     }
   }, [follow, items])
 
-  // keep the marked link in sight within the row's sideways scroll (a phone's narrow row)
+  // keep the marked link, and the sort in force, in sight within a phone's narrow rows
   useEffect(() => {
-    const row = rowRef.current
-    const link = row?.querySelector<HTMLElement>('[aria-current]')
-    if (!row || !link || row.scrollWidth <= row.clientWidth) return
-    const left = link.offsetLeft - row.offsetLeft
-    if (left < row.scrollLeft || left + link.offsetWidth > row.scrollLeft + row.clientWidth) {
-      row.scrollTo({ left: Math.max(0, left - row.clientWidth / 3) })
-    }
+    keepInView(rowRef.current)
+    keepInView(sortsRef.current)
   }, [marked])
 
   return (
@@ -105,7 +116,7 @@ export function ShopPanelNav({ label, items, current, follow, sorts, branchOf }:
           <p className={styles.branchTitle} id="shop-sort">
             {sorts.title}
           </p>
-          <ul className={styles.sorts} aria-labelledby="shop-sort">
+          <ul className={styles.sorts} aria-labelledby="shop-sort" ref={sortsRef}>
             {sorts.items.map((sort) => (
               <li key={sort.key}>
                 <a

@@ -54,9 +54,12 @@ function Section({
   count,
   description,
   more,
+  branch = false,
   children,
 }: {
   readonly section: ShopSection
+  /** Shop all: the section a phone's Sort by row opens over, which it lands below. */
+  readonly branch?: boolean
   readonly title: string
   readonly count?: string
   readonly description?: string
@@ -65,7 +68,11 @@ function Section({
 }) {
   const anchor = SECTION_ANCHORS[section]
   return (
-    <section id={anchor} className={frame.section} aria-labelledby={`${anchor}-title`}>
+    <section
+      id={anchor}
+      className={branch ? `${frame.section} ${frame.sectionBranch}` : frame.section}
+      aria-labelledby={`${anchor}-title`}
+    >
       <div className={frame.sectionHead}>
         <h2 id={`${anchor}-title`} className={styles.title}>
           {title}
@@ -225,6 +232,7 @@ export function ShopSections({ locale, data }: Locale & { readonly data: ShopSec
       </Section>
       <Section
         section="all"
+        branch
         title={text('browse.title')}
         count={prints(all)}
         description={text('browse.description')}

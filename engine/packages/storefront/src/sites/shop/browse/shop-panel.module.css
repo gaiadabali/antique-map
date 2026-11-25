@@ -7,6 +7,7 @@
    page glides there, as the stores page does. */
 :global(html[data-site]):has(.page) {
   --shop-panel-row: 0rem;
+  --shop-branch-row: 0rem;
 
   scroll-padding-block-start: calc(var(--shop-chrome) + var(--shop-panel-row) + var(--space-4));
   scroll-behavior: smooth;
@@ -38,6 +39,11 @@
 /* the shop page's sections, one after another */
 .section {
   padding-block-start: var(--space-8);
+}
+
+/* Shop all lands below a phone's Sort by row, which lies over the page while it is read */
+.sectionBranch {
+  scroll-margin-block-start: var(--shop-branch-row);
 }
 
 .sectionHead {
@@ -147,6 +153,8 @@
 @media (max-width: 56.25rem) {
   :global(html[data-site]):has(.page) {
     --shop-panel-row: 3.75rem;
+    /* Sort by's row: one sort and the space under it */
+    --shop-branch-row: calc(2.75rem + var(--space-2));
   }
 
   .layout {
@@ -197,21 +205,36 @@
     box-shadow: none;
   }
 
-  /* Sort by: a second row, its title first */
+  /* while Sort by is open, the rule under the chips moves under its row */
+  .panel:has(.branch) {
+    box-shadow: none;
+  }
+
+  /* Sort by: a second row, its title first, lying over the page just under the chips, so opening
+     and closing it never moves the sections beneath */
   .branch {
+    position: absolute;
+    inset-block-start: 100%;
+    inset-inline: 0;
     flex-direction: row;
     align-items: center;
     gap: 0;
+    padding-block-end: var(--space-2);
     padding-inline-start: var(--shop-gutter);
+    background: var(--color-surface);
+    box-shadow: inset 0 calc(-1 * var(--rule-hair)) 0 var(--shop-rule-soft);
   }
 
   .branchTitle {
     flex: none;
   }
 
+  /* the space after the title sits outside the sorts' own scroll, so a sort scrolled past stops
+     short of the title instead of running into it */
   .sorts {
     min-inline-size: 0;
-    padding-inline-start: var(--space-3);
+    margin-inline-start: var(--space-3);
+    padding-inline-start: 0;
   }
 
   .sort {
