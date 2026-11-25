@@ -63,7 +63,7 @@ const WORDS = {
     contact: 'Contact us',
     flagships: 'Flagship stores',
     drive: 'All reachable within a 30-minute drive.',
-    seeAll: /See all in Ubud \(4\)/,
+    nearby: 'nearby',
     pdf: /\(PDF, opens in a new tab\)$/,
     retailer: 'Become a Retailer',
     wholesale: 'Customised Wholesale Products',
@@ -83,7 +83,7 @@ const WORDS = {
     contact: 'Hubungi kami',
     flagships: 'Toko utama',
     drive: 'Semuanya dapat dicapai dalam 30 menit berkendara.',
-    seeAll: /Lihat semua di Ubud \(4\)/,
+    nearby: 'terdekat',
     pdf: /\(PDF, terbuka di tab baru\)$/,
     retailer: 'Menjadi Pengecer',
     wholesale: 'Produk Grosir Khusus',
@@ -183,10 +183,9 @@ export function feedbackTests(): void {
         )
         const ubud = page.locator('section[aria-labelledby="ubud"]')
         await expect(ubud).toContainText(w.drive)
-        const more = ubud.locator('details')
-        await expect(more.locator('li')).toHaveCount(1)
-        await more.locator('summary', { hasText: w.seeAll }).click()
-        await expect(more.locator('li').first()).toBeVisible()
+        // One store a region (the order of 2026-11-25); Ubud's other three are under Nearby.
+        await expect(ubud.locator('li')).toHaveCount(1)
+        await expect(page.locator(`section[aria-labelledby="${w.nearby}"] li`)).toHaveCount(3)
         await noOverflow(page, `stores ${locale}`)
         await axeClean(page, `stores ${locale} ${viewport.width}`)
       })

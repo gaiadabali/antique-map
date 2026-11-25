@@ -129,7 +129,7 @@ export async function makeFeedbackData(): Promise<FeedbackData> {
         _status: 'published',
       })
     }
-    // Two flagships, four stores in Ubud (one more than a region shows before "See all").
+    // Two flagships, four stores in Ubud (one shown under Ubud, three under Nearby).
     const stores = await docsOf(
       api,
       '/api/stores?depth=0&limit=6&sort=id&where[active][equals]=true&where[listed][equals]=true',

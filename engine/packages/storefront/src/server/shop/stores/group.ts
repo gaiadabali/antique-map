@@ -1,8 +1,8 @@
 /**
  * The stores page's pure shaping (13.2): a raw, projected store doc into a view model, the stores
- * grouped by area, and the map link. Nothing here reads a database or a coordinate — the link is
- * made from the store's name and address alone.
+ * grouped by area, and the map link. Nothing here reads a database or a coordinate.
  */
+import { OWNER_MAP_URL } from './owner-location'
 
 /** A store as the page shows it: the public fields and the map link, nothing else. */
 export type StoreVM = {
@@ -13,31 +13,39 @@ export type StoreVM = {
 }
 
 /**
- * The stores page's sections (TASKS.md 28.2; the owner's feedback of 2026-11-19, F4): the flagships
- * first, then the four regions in the owner's order, then every other store. A store names its
- * region in the admin (`region`); one with none, or `other`, is under Other.
+ * The stores page's sections (TASKS.md 28.2; the owner's feedback of 2026-11-19, F4, and the
+ * order of 2026-11-25): the flagships first, then the four regions in the owner's order with one
+ * store each, then every other store as Nearby. A store names its region in the admin (`region`).
  */
 export const STORE_REGION_ORDER = ['lombok', 'ubud', 'amed', 'canggu'] as const
-export type StoreRegionKey = (typeof STORE_REGION_ORDER)[number] | 'other'
+export type StoreRegionKey = (typeof STORE_REGION_ORDER)[number]
+
+/** How many stores a region shows (the order of 2026-11-25: one each); the rest are Nearby. */
+export const REGION_SHOWS = 1
+
+type Store = StoreVM & { readonly area: string | null }
 
 export type RegionGroup = {
   readonly region: StoreRegionKey
-  readonly stores: readonly (StoreVM & { readonly area: string | null })[]
+  readonly stores: readonly Store[]
 }
 
 export type StoreDirectoryData = {
-  readonly flagships: readonly (StoreVM & { readonly area: string | null })[]
+  readonly flagships: readonly Store[]
   readonly regions: readonly RegionGroup[]
+  /** Every other store, by name: a region's stores past its first, and the stores of no region. */
+  readonly nearby: readonly Store[]
   readonly total: number
 }
 
-const regionOf = (value: unknown): StoreRegionKey =>
-  (STORE_REGION_ORDER as readonly unknown[]).includes(value) ? (value as StoreRegionKey) : 'other'
+const regionOf = (value: unknown): StoreRegionKey | null =>
+  (STORE_REGION_ORDER as readonly unknown[]).includes(value) ? (value as StoreRegionKey) : null
 
-/** Flagships first (by name), then each region with a store, by name, Other last. */
+/** Flagships first (by name), then each region with a store (its first by name), then Nearby. */
 export function groupByRegion(docs: readonly unknown[]): StoreDirectoryData {
-  const flagships: (StoreVM & { area: string | null })[] = []
-  const byRegion = new Map<StoreRegionKey, (StoreVM & { area: string | null })[]>()
+  const flagships: Store[] = []
+  const byRegion = new Map<StoreRegionKey, Store[]>()
+  const nearby: Store[] = []
   let total = 0
   for (const doc of docs) {
     const store = storeFrom(doc)
@@ -49,17 +57,16 @@ export function groupByRegion(docs: readonly unknown[]): StoreDirectoryData {
       continue
     }
     const region = regionOf(record.region)
-    byRegion.set(region, [...(byRegion.get(region) ?? []), store])
+    if (region === null) nearby.push(store)
+    else byRegion.set(region, [...(byRegion.get(region) ?? []), store])
   }
   const byName = (a: StoreVM, b: StoreVM) => compare(a.name, b.name)
-  return {
-    flagships: flagships.sort(byName),
-    regions: [...STORE_REGION_ORDER, 'other' as const].flatMap((region) => {
-      const stores = byRegion.get(region)
-      return stores ? [{ region, stores: stores.sort(byName) }] : []
-    }),
-    total,
-  }
+  const regions = STORE_REGION_ORDER.flatMap((region) => {
+    const stores = (byRegion.get(region) ?? []).sort(byName)
+    nearby.push(...stores.slice(REGION_SHOWS))
+    return stores.length > 0 ? [{ region, stores: stores.slice(0, REGION_SHOWS) }] : []
+  })
+  return { flagships: flagships.sort(byName), regions, nearby: nearby.sort(byName), total }
 }
 
 /** One area's section. `area` is `null` for the stores that name none ("Other areas", last). */
@@ -76,7 +83,11 @@ function text(value: unknown, max: number): string | null {
   return trimmed === '' ? null : trimmed.slice(0, max)
 }
 
-/** A Google Maps search for the store, from its name and address only — never coordinates. */
+/**
+ * A Google Maps search for the store, from its name and address only — never coordinates. Kept
+ * for the day each store has its own address; until then every store opens the owner's one
+ * (`./owner-location`).
+ */
 export function mapUrl(name: string, address: string | null): string {
   const query = address === null ? name : `${name}, ${address}`
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
@@ -94,7 +105,7 @@ export function storeFrom(doc: unknown): ShapedStore | null {
     area: text(record.area, 120),
     address,
     hours: text(record.hours, 600),
-    mapUrl: mapUrl(name, address),
+    mapUrl: OWNER_MAP_URL,
   }
 }
 

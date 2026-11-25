@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 
 import { groupByArea, groupByRegion, mapUrl, storeFrom } from './group'
+import { OWNER_MAP_URL } from './owner-location'
 
 describe('groupByArea', () => {
   const docs = [
@@ -39,33 +40,38 @@ describe('mapUrl', () => {
       'https://www.google.com/maps/search/?api=1&query=Toko%20%26%20Co%2C%20Jl.%20Raya%205%2C%20Ubud',
     )
   })
-  it('falls back to the name alone without an address, and never uses coordinates', () => {
-    expect(storeFrom({ name: 'Solo', lat: 1, lng: 2 })?.mapUrl).toBe(
-      'https://www.google.com/maps/search/?api=1&query=Solo',
+  it('falls back to the name alone without an address', () => {
+    expect(mapUrl('Solo', null)).toBe('https://www.google.com/maps/search/?api=1&query=Solo')
+  })
+  it("opens the owner's one address for every store until each has its own (2026-11-25)", () => {
+    expect(storeFrom({ name: 'Solo', address: 'Jl. X', lat: 1, lng: 2 })?.mapUrl).toBe(
+      OWNER_MAP_URL,
     )
   })
 })
 
-describe('groupByRegion (TASKS.md 28.2)', () => {
-  it('puts the flagships first, then Lombok, Ubud, Amed, Canggu, then every other store', () => {
+describe('groupByRegion (TASKS.md 28.2; the order of 2026-11-25)', () => {
+  it('puts the flagships first, then one store each of Lombok, Ubud, Amed, Canggu, then Nearby', () => {
     const data = groupByRegion([
       { name: 'Zed', region: 'other' },
       { name: 'Beach', region: 'canggu' },
       { name: 'Flag B', region: 'ubud', flagship: true },
       { name: 'Hill', region: 'ubud' },
+      { name: 'Bridge', region: 'ubud' },
       { name: 'No region' },
       { name: 'Flag A', flagship: true },
       { name: 'Gili', region: 'lombok' },
       { name: '' },
     ])
-    expect(data.total).toBe(7)
+    expect(data.total).toBe(8)
     expect(data.flagships.map((s) => s.name)).toEqual(['Flag A', 'Flag B'])
     expect(data.regions.map((g) => [g.region, g.stores.map((s) => s.name)])).toEqual([
       ['lombok', ['Gili']],
-      ['ubud', ['Hill']],
+      ['ubud', ['Bridge']],
       ['canggu', ['Beach']],
-      ['other', ['No region', 'Zed']],
     ])
+    // A region's stores past its first, and the stores of no region, by name.
+    expect(data.nearby.map((s) => s.name)).toEqual(['Hill', 'No region', 'Zed'])
   })
 
   it('has no flagship section when none is set', () => {

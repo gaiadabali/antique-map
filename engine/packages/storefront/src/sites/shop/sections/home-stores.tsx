@@ -1,6 +1,6 @@
 /**
  * The home's "Stores" (TASKS.md 28.2; the owner's feedback of 2026-11-19): the flagship stores by
- * name and area, the regions as links into the stores page, and "See all stores". The read is the
+ * name and area, the regions and Nearby as links into the stores page, and "See all stores". The read is the
  * stores page's own public projection (`server/shop/stores`), streamed; with no listed store, or a
  * failed read, the section is left out.
  */
@@ -10,7 +10,7 @@ import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
 
 import { storeDirectory, type StoreDirectoryData } from '../../../server/shop/stores'
 import { storesText } from '../stores/copy'
-import { areaAnchors } from '../stores/stores-view'
+import { areaAnchors, sectionLabels } from '../stores/stores-view'
 import { CapsLink } from '../ui/caps-link'
 import { sectionsText } from './copy'
 import styles from './sections.module.css'
@@ -26,12 +26,12 @@ async function Stores({ locale }: { readonly locale: SiteLocale }) {
   const t = sectionsText(locale)
   const words = storesText(locale)
   const storesHref = createHref(SITES.shop)('stores', {}, locale)
-  // The stores page's own anchors, so a region link lands on its section.
-  const labels = [
-    ...(data.flagships.length > 0 ? [words('stores.flagships')] : []),
+  // The stores page's own anchors, so a region link (and Nearby) lands on its section.
+  const anchors = areaAnchors(sectionLabels(data, words)).slice(data.flagships.length > 0 ? 1 : 0)
+  const links = [
     ...data.regions.map((group) => words(`stores.region.${group.region}`)),
+    ...(data.nearby.length > 0 ? [words('stores.nearby')] : []),
   ]
-  const anchors = areaAnchors(labels).slice(data.flagships.length > 0 ? 1 : 0)
   return (
     <section className={styles.band} aria-labelledby="home-stores">
       <h2 id="home-stores" className={styles.bandTitle}>
@@ -52,11 +52,9 @@ async function Stores({ locale }: { readonly locale: SiteLocale }) {
         </ul>
       ) : null}
       <ul className={styles.regions}>
-        {data.regions.map((group, index) => (
-          <li key={group.region}>
-            <a href={`${storesHref}#${anchors[index] ?? ''}`}>
-              {words(`stores.region.${group.region}`)}
-            </a>
+        {links.map((label, index) => (
+          <li key={label}>
+            <a href={`${storesHref}#${anchors[index] ?? ''}`}>{label}</a>
           </li>
         ))}
       </ul>

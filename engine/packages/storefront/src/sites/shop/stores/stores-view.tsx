@@ -2,12 +2,13 @@
  * The stores page (13.2; the redesign of 2026-10-20, the handoff's `Stores`; TASKS.md 28.2, the
  * owner's feedback of 2026-11-19): the listing's breadcrumb and head, a hairline sub-nav that
  * sticks under the header (each link to its section's title, and the page glides there), then the
- * two flagship stores, then Lombok, Ubud, Amed and Canggu — each its first stores and "See all",
- * every one of them within a 30-minute drive — then the other stores, also their first and "See
+ * two flagship stores, then Lombok, Ubud, Amed and Canggu — one store each (the order of
+ * 2026-11-25), within a 30-minute drive — then every other store as Nearby, its first and "See
  * all", so a long remainder never stretches the page, above all on a phone. A section with no
  * store is left out (no flagship set: no flagship section). Each store: the name in the serif, its
- * area, address and hours muted, a map link built from name and address only. The title, lede and
- * empty note are the page's `storeDirectory` block when it sets them, else the lexicon's.
+ * area, the owner's one address and the hours muted, and the owner's map link
+ * (`server/shop/stores/owner-location`). The title, lede and empty note are the page's
+ * `storeDirectory` block when it sets them, else the lexicon's.
  */
 import type { SiteLocale } from '@engine/config/sites'
 import { createHref, SITES } from '@engine/config/sites'
@@ -28,8 +29,8 @@ type Props = {
   readonly block: StoreDirectoryVM
 }
 
-/** How many stores a region shows before its "See all". */
-export const REGION_PREVIEW = 3
+/** How many stores Nearby shows before its "See all". */
+export const NEARBY_PREVIEW = 3
 
 type Store = StoreVM & { readonly area: string | null }
 
@@ -68,7 +69,7 @@ function StoreCard({ store, t }: { store: Store; t: StoresText }) {
       <div className={styles.storeBody}>
         <h3 className={styles.name}>{store.name}</h3>
         {store.area !== null && <p className={styles.line}>{store.area}</p>}
-        {store.address !== null && <p className={styles.line}>{store.address}</p>}
+        <p className={styles.line}>{t('stores.address')}</p>
         {store.hours !== null && (
           <p className={styles.line}>
             <span className={styles.hoursLabel}>{t('stores.hours')}</span> {store.hours}
@@ -103,18 +104,23 @@ type Section = {
   readonly stores: readonly Store[]
   /** A region of the four: the drive note. */
   readonly region: boolean
-  /** Its first stores, the rest behind "See all": the four regions and the other stores. */
+  /** Its first stores, the rest behind "See all": Nearby. */
   readonly folds: boolean
+}
+
+/** The page's section titles in order — the stores page and the home's links share them. */
+export function sectionLabels(data: StoreDirectoryData, t: StoresText): readonly string[] {
+  return [
+    ...(data.flagships.length > 0 ? [t('stores.flagships')] : []),
+    ...data.regions.map((group) => t(`stores.region.${group.region}`)),
+    ...(data.nearby.length > 0 ? [t('stores.nearby')] : []),
+  ]
 }
 
 export function StoresView({ data, locale, block }: Props): React.ReactElement {
   const t = storesText(locale)
   const shell = shopShellText(locale)
-  const labels = [
-    ...(data.flagships.length > 0 ? [t('stores.flagships')] : []),
-    ...data.regions.map((group) => t(`stores.region.${group.region}`)),
-  ]
-  const anchors = areaAnchors(labels)
+  const anchors = areaAnchors(sectionLabels(data, t))
   const sections: Section[] = [
     ...(data.flagships.length > 0
       ? [{ label: t('stores.flagships'), stores: data.flagships, region: false, folds: false }]
@@ -122,9 +128,12 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
     ...data.regions.map((group) => ({
       label: t(`stores.region.${group.region}`),
       stores: group.stores,
-      region: group.region !== 'other',
-      folds: true,
+      region: true,
+      folds: false,
     })),
+    ...(data.nearby.length > 0
+      ? [{ label: t('stores.nearby'), stores: data.nearby, region: false, folds: true }]
+      : []),
   ].map((section, index) => ({ ...section, anchor: anchors[index] ?? `area-${index}` }))
   return (
     <div className={styles.page}>
@@ -153,8 +162,8 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
             areas={sections.map(({ anchor, label }) => ({ anchor, label }))}
           />
           {sections.map((section) => {
-            const shown = section.folds ? section.stores.slice(0, REGION_PREVIEW) : section.stores
-            const rest = section.folds ? section.stores.slice(REGION_PREVIEW) : []
+            const shown = section.folds ? section.stores.slice(0, NEARBY_PREVIEW) : section.stores
+            const rest = section.folds ? section.stores.slice(NEARBY_PREVIEW) : []
             return (
               <section
                 key={section.anchor}
@@ -174,12 +183,7 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
                 {rest.length > 0 ? (
                   <details className={styles.more}>
                     <summary className={styles.seeAll}>
-                      {section.region
-                        ? t('stores.seeAll', {
-                            region: section.label,
-                            count: section.stores.length,
-                          })
-                        : t('stores.seeAllOther', { count: section.stores.length })}
+                      {t('stores.seeAllNearby', { count: section.stores.length })}
                     </summary>
                     <Cards stores={rest} t={t} />
                   </details>
