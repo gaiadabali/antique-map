@@ -13,8 +13,9 @@ import type { SiteLocale } from '@engine/config/sites'
 import { createHref, SITES } from '@engine/config/sites'
 
 import type { StoreDirectoryVM } from '../../../server/shop/pages/blocks'
-import type { StoreDirectoryData, StoreVM } from '../../../server/shop/stores'
+import type { StoreDirectoryData, StoreRegionKey, StoreVM } from '../../../server/shop/stores'
 import { shopShellText } from '../shell/shell-messages'
+import { CapsLink } from '../ui/caps-link'
 import { Crumb } from '../ui/crumb'
 import { AreaNav, NearbyStores } from '../ui/lazy-islands'
 import { storesText, type StoresText } from './copy'
@@ -86,6 +87,8 @@ function nearbyWords(t: StoresText, count: number): NearbyWords {
     sorted: t('stores.nearbySorted'),
     failed: t('stores.nearbyFailed'),
     seeAll: t('stores.seeAllNearby', { count }),
+    fewer: t('stores.seeFewer'),
+    every: t('stores.nearbyEvery'),
     distance: t('stores.distance', { distance: '{distance}' }),
     near: t('stores.distanceNear'),
   }
@@ -107,8 +110,11 @@ type Section = {
   readonly anchor: string
   readonly label: string
   readonly stores: readonly Store[]
-  /** A region of the four: the drive note. */
-  readonly region: boolean
+  /**
+   * A region of the four with stores past its first: "3 more stores in Ubud", a link that narrows
+   * Nearby to them (the skill review of 2026-11-25, T1).
+   */
+  readonly more: { readonly region: StoreRegionKey; readonly count: number } | null
   /** Nearby: its first stores, the rest behind "See all", and "nearest to me" (`./nearby`). */
   readonly nearby: boolean
 }
@@ -128,18 +134,26 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
   const anchors = areaAnchors(sectionLabels(data, t))
   const sections: Section[] = [
     ...(data.flagships.length > 0
-      ? [{ label: t('stores.flagships'), stores: data.flagships, region: false, nearby: false }]
+      ? [{ label: t('stores.flagships'), stores: data.flagships, more: null, nearby: false }]
       : []),
     ...data.regions.map((group) => ({
       label: t(`stores.region.${group.region}`),
       stores: group.stores,
-      region: true,
+      more: group.more > 0 ? { region: group.region, count: group.more } : null,
       nearby: false,
     })),
     ...(data.nearby.length > 0
-      ? [{ label: t('stores.nearby'), stores: data.nearby, region: false, nearby: true }]
+      ? [{ label: t('stores.nearby'), stores: data.nearby, more: null, nearby: true }]
       : []),
   ].map((section, index) => ({ ...section, anchor: anchors[index] ?? `area-${index}` }))
+  // A region's "N more stores" link lands on Nearby narrowed to them: `#{nearby}-{region}`.
+  const nearbyAnchor = sections.find((section) => section.nearby)?.anchor ?? null
+  const areas = data.regions
+    .filter((group) => group.more > 0)
+    .map((group) => ({
+      region: group.region,
+      lead: t('stores.nearbyArea', { area: t(`stores.region.${group.region}`) }),
+    }))
   return (
     <div className={styles.page}>
       <Crumb
@@ -173,6 +187,15 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
                 className={styles.area}
                 aria-labelledby={section.anchor}
               >
+                {section.nearby
+                  ? areas.map((area) => (
+                      <span
+                        key={area.region}
+                        id={`${section.anchor}-${area.region}`}
+                        className={styles.landing}
+                      />
+                    ))
+                  : null}
                 <div className={styles.areaHead}>
                   <h2 id={section.anchor} className={styles.areaTitle}>
                     {section.label}
@@ -189,14 +212,24 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
                     stores={data.nearby.map((store) => ({
                       ...cardOf(store, true),
                       position: store.position,
+                      region: store.region,
                     }))}
                     preview={NEARBY_PREVIEW}
                     words={nearbyWords(t, data.nearby.length)}
                     locale={locale}
+                    anchor={section.anchor}
+                    areas={areas}
                   />
                 ) : (
                   <Cards stores={section.stores} t={t} />
                 )}
+                {section.more && nearbyAnchor ? (
+                  <p className={styles.moreIn}>
+                    <CapsLink href={`#${nearbyAnchor}-${section.more.region}`}>
+                      {t('stores.moreIn', { count: section.more.count, area: section.label })}
+                    </CapsLink>
+                  </p>
+                ) : null}
               </section>
             )
           })}

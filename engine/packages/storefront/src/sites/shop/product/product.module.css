@@ -9,10 +9,10 @@
   margin-block-start: calc(var(--space-8) - var(--space-7));
 }
 
-/* The same-day promise, the page's full width above the layout, as on the shop's listing: the page
-   then starts where the listing does, the promise just under the header. */
+/* The same-day promise, the page's full width above the layout, as on the shop's listing: 32 px
+   under the header, as the layout is under it (the skill review of 2026-11-25, B1). */
 .page:has(> .banner) {
-  margin-block-start: calc(1.625rem - var(--space-7));
+  margin-block-start: calc(var(--space-6) - var(--space-7));
 }
 
 .banner {

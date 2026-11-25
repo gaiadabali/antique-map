@@ -107,7 +107,15 @@ export function BrowseView({
               />
             </div>
           )}
-          <p className={styles.count}>{text('browse.results', { count: listing.total })}</p>
+          <p className={styles.count}>
+            {listing.pages > 1
+              ? text('browse.resultsPaged', {
+                  page: listing.page,
+                  pages: listing.pages,
+                  count: listing.total,
+                })
+              : text('browse.results', { count: listing.total })}
+          </p>
         </>
       )}
     </ShopFrame>

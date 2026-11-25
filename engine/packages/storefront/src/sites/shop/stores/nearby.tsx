@@ -13,11 +13,19 @@
 import { useEffect, useRef, useState } from 'react'
 
 import type { Position } from '../../../server/shop/stores/group'
+import { CapsLink } from '../ui/caps-link'
 import { nearestFirst } from './distance'
 import { StoreCard, type StoreCardData, type StoreCardWords } from './store-card'
 import styles from './stores.module.css'
 
-export type NearbyStore = StoreCardData & { readonly position: Position | null }
+export type NearbyStore = StoreCardData & {
+  readonly position: Position | null
+  /** The region it belongs to when it is one of a region's stores past the first. */
+  readonly region: string | null
+}
+
+/** A region whose "N more stores" link narrows Nearby to them, and the words above them then. */
+export type NearbyArea = { readonly region: string; readonly lead: string }
 
 export type NearbyWords = StoreCardWords & {
   /** "Stores nearest to you": a description, not a call to action. */
@@ -30,6 +38,10 @@ export type NearbyWords = StoreCardWords & {
   readonly failed: string
   /** "See all nearby stores (90)", resolved. */
   readonly seeAll: string
+  /** "Show fewer stores": the same control once the list is open. */
+  readonly fewer: string
+  /** "Show every nearby store": back from one region's stores to all of Nearby. */
+  readonly every: string
   /** "{distance} km away": `{distance}` is filled here, in whole kilometres. */
   readonly distance: string
   /** "Under 1 km away": nearer than a whole kilometre. */
@@ -44,15 +56,38 @@ type Props = {
   readonly preview: number
   readonly words: NearbyWords
   readonly locale: 'en' | 'id'
+  /** Nearby's anchor: `#{anchor}-{region}` (a region's link) narrows it to that region's stores. */
+  readonly anchor: string
+  readonly areas: readonly NearbyArea[]
 }
 
-export function NearbyStores({ stores, preview, words, locale }: Props): React.ReactElement {
+export function NearbyStores({
+  stores,
+  preview,
+  words,
+  locale,
+  anchor,
+  areas,
+}: Props): React.ReactElement {
   const [status, setStatus] = useState<Status>('idle')
   const [origin, setOrigin] = useState<Position | null>(null)
+  const [area, setArea] = useState<NearbyArea | null>(null)
   const barRef = useRef<HTMLDivElement>(null)
   const listed = origin
     ? nearestFirst(stores, origin)
     : stores.map((store) => ({ ...store, km: null as number | null }))
+
+  // A region's "N more stores" link lands here as `#{anchor}-{region}`: only that region's stores
+  // show until the address names something else (Back, or "Show every nearby store").
+  useEffect(() => {
+    const read = () => {
+      const id = decodeURIComponent(window.location.hash.slice(1))
+      setArea(areas.find((each) => id === `${anchor}-${each.region}`) ?? null)
+    }
+    read()
+    window.addEventListener('hashchange', read)
+    return () => window.removeEventListener('hashchange', read)
+  }, [anchor, areas])
   // Whole kilometres: the stores' positions are rounded to about one (`server/shop/stores/group`).
   const number = new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-GB', {
     maximumFractionDigits: 0,
@@ -110,21 +145,37 @@ export function NearbyStores({ stores, preview, words, locale }: Props): React.R
   )
   const shown = listed.slice(0, preview)
   const rest = listed.slice(preview)
+  const lead = area ? area.lead : status === 'failed' ? words.leadByArea : words.lead
   return (
     <>
       <div className={styles.nearbyBar} ref={barRef}>
-        <p className={styles.nearbyLead}>{status === 'failed' ? words.leadByArea : words.lead}</p>
+        <p className={styles.nearbyLead}>{lead}</p>
         <p className={styles.nearbyStatus} role="status">
           {line[status]}
         </p>
       </div>
-      {cards(shown)}
-      {rest.length > 0 ? (
-        <details className={styles.more}>
-          <summary className={styles.seeAll}>{words.seeAll}</summary>
-          {cards(rest)}
-        </details>
-      ) : null}
+      {area ? (
+        <>
+          {cards(listed.filter((store) => store.region === area.region))}
+          <p className={styles.every}>
+            <CapsLink href={`#${anchor}`}>{words.every}</CapsLink>
+          </p>
+        </>
+      ) : (
+        <>
+          {cards(shown)}
+          {rest.length > 0 ? (
+            <details className={styles.more}>
+              {/* the words say which way it goes, and a chevron turns with it */}
+              <summary className={styles.seeAll}>
+                <span className={styles.whenClosed}>{words.seeAll}</span>
+                <span className={styles.whenOpen}>{words.fewer}</span>
+              </summary>
+              {cards(rest)}
+            </details>
+          ) : null}
+        </>
+      )}
     </>
   )
 }

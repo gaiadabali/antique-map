@@ -19,6 +19,11 @@ export const STORES_KEYS = defineMessages({
   'stores.region.canggu': 'Canggu',
   'stores.nearby': 'Nearby',
   'stores.seeAllNearby': 'See all nearby stores ({count})',
+  'stores.seeFewer': 'Show fewer stores',
+  'stores.moreIn.other': '{count} more stores in {area}',
+  'stores.moreIn.one': '{count} more store in {area}',
+  'stores.nearbyArea': 'Other stores in {area}',
+  'stores.nearbyEvery': 'Show every nearby store',
   'stores.nearbyLead': 'Stores nearest to you',
   'stores.nearbyLeadByArea': 'Every other store, by area',
   'stores.nearbyNote':

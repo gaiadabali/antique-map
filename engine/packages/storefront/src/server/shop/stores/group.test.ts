@@ -72,6 +72,13 @@ describe('groupByRegion (TASKS.md 28.2; the order of 2026-11-25)', () => {
     ])
     // A region's stores past its first, and the stores of no region, by name.
     expect(data.nearby.map((s) => s.name)).toEqual(['Hill', 'No region', 'Zed'])
+    // Each region counts the stores it left to Nearby, and they keep their region for its link.
+    expect(data.regions.map((g) => [g.region, g.more])).toEqual([
+      ['lombok', 0],
+      ['ubud', 1],
+      ['canggu', 0],
+    ])
+    expect(data.nearby.map((s) => s.region)).toEqual(['ubud', null, null])
   })
 
   it("gives Nearby each store's position to about a kilometre, and the regions none", () => {

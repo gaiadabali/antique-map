@@ -252,7 +252,11 @@ export function ShopSections({ locale, data }: Locale & { readonly data: ShopSec
           </div>
         )}
         {all.items.length > 0 ? (
-          <p className={styles.count}>{text('browse.results', { count: all.total })}</p>
+          <p className={styles.count}>
+            {all.pages > 1
+              ? text('browse.resultsPaged', { page: all.page, pages: all.pages, count: all.total })
+              : text('browse.results', { count: all.total })}
+          </p>
         ) : null}
       </Section>
     </>

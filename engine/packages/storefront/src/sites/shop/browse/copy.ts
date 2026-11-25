@@ -14,8 +14,10 @@ export const BROWSE_KEYS = defineMessages({
   'browse.title': 'Shop all',
   'browse.description':
     'Reproductions of the archive’s maps, prints and photographs, sent from Bali.',
-  'browse.results.other': 'Show {count} products',
-  'browse.results.one': 'Show {count} product',
+  'browse.results.other': '{count} products',
+  'browse.results.one': '{count} product',
+  'browse.resultsPaged.other': 'Page {page} of {pages} · {count} products',
+  'browse.resultsPaged.one': 'Page {page} of {pages} · {count} product',
   'browse.empty': 'Nothing here yet — try another category, or search.',
   'sort.featured': 'Featured',
   'sort.newest': 'Newest',

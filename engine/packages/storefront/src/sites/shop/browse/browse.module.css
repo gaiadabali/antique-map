@@ -14,6 +14,12 @@
   padding: 0 var(--shop-gutter) var(--shop-section);
 }
 
+/* With the same-day promise on top: the promise sits as far under the header as the breadcrumb
+   sits under it, 32 px each side (the skill review of 2026-11-25, B1). */
+.browse:has(> .banner) {
+  margin-block-start: calc(var(--space-6) - var(--space-7));
+}
+
 .head {
   padding-block: 0.625rem;
 }
@@ -72,6 +78,11 @@
   text-align: center;
 }
 
+/* The page's one h1, a step above its sections' titles (the skill review of 2026-11-25, S3). */
+.pageTitle {
+  font: var(--shop-title-hero);
+}
+
 /* the search page's head: the query as the title */
 .searchHead {
   padding-block: var(--space-2) var(--space-5);
@@ -81,6 +92,10 @@
 @media (max-width: 56.25rem) {
   .title {
     font-size: 1.5rem;
+  }
+
+  .pageTitle {
+    font-size: 2rem;
   }
 
   .grid {

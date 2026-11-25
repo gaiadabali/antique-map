@@ -211,6 +211,7 @@
 .seeAll {
   display: inline-flex;
   align-items: center;
+  gap: var(--space-2);
   min-block-size: 44px;
   margin-block-start: var(--space-3);
   font: var(--shop-text-caps);
@@ -219,6 +220,39 @@
   text-decoration: underline;
   text-underline-offset: 0.3em;
   cursor: pointer;
+}
+
+/* a chevron drawn in the text's colour: down while the rest is closed, up once it is open */
+.seeAll::after {
+  content: '';
+  inline-size: 0.4375rem;
+  block-size: 0.4375rem;
+  border-block-end: var(--rule-strong) solid currentColor;
+  border-inline-end: var(--rule-strong) solid currentColor;
+  translate: 0 -0.125rem;
+  rotate: 45deg;
+  transition: rotate var(--dur-out) var(--ease);
+}
+
+.more[open] > .seeAll::after {
+  translate: 0 0.125rem;
+  rotate: -135deg;
+}
+
+.more[open] > .seeAll .whenClosed,
+.more:not([open]) > .seeAll .whenOpen {
+  display: none;
+}
+
+/* a region's "3 more stores in Ubud", under its one card; and back from them, under Nearby's */
+.moreIn,
+.every {
+  margin: var(--space-3) 0 0;
+}
+
+/* where a region's link lands: Nearby's title, under the sticky header and areas */
+.landing {
+  display: block;
 }
 
 /* Nearby's "nearest to me": its plain words, and under them the line that explains or reports. */

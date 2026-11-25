@@ -62,7 +62,7 @@ export function ShopFrame({
         {panel}
         <div className={frame.content}>
           <div className={styles.head}>
-            <h1 id="browse-title" className={styles.title}>
+            <h1 id="browse-title" className={`${styles.title} ${styles.pageTitle}`}>
               {title}
               {total !== undefined ? <sup className={styles.total}>({total})</sup> : null}
             </h1>

@@ -44,12 +44,20 @@ export const REGION_SHOWS = 1
 
 type Store = StoreVM & { readonly area: string | null }
 
-/** A Nearby store: its rounded position, for the page's "nearest to me". */
-export type NearbyStoreVM = Store & { readonly position: Position | null }
+/**
+ * A Nearby store: its rounded position, for the page's "nearest to me", and its region when it is
+ * one of a region's stores past the first (a region's "N more stores" link narrows Nearby to them).
+ */
+export type NearbyStoreVM = Store & {
+  readonly position: Position | null
+  readonly region: StoreRegionKey | null
+}
 
 export type RegionGroup = {
   readonly region: StoreRegionKey
   readonly stores: readonly Store[]
+  /** How many of the region's stores are under Nearby instead (past its first). */
+  readonly more: number
 }
 
 export type StoreDirectoryData = {
@@ -90,8 +98,8 @@ export function groupByRegion(docs: readonly unknown[]): StoreDirectoryData {
       flagships.push(store)
       continue
     }
-    const placed = { ...store, position: positionOf(doc) }
     const region = regionOf(record.region)
+    const placed = { ...store, position: positionOf(doc), region }
     if (region === null) nearby.push(placed)
     else byRegion.set(region, [...(byRegion.get(region) ?? []), placed])
   }
@@ -109,7 +117,8 @@ export function groupByRegion(docs: readonly unknown[]): StoreDirectoryData {
     nearby.push(...stores.slice(REGION_SHOWS))
     // A region's own card needs no position: only Nearby is sorted by distance.
     const shown = stores.slice(0, REGION_SHOWS).map(withoutPosition)
-    return shown.length > 0 ? [{ region, stores: shown }] : []
+    const more = Math.max(0, stores.length - REGION_SHOWS)
+    return shown.length > 0 ? [{ region, stores: shown, more }] : []
   })
   return { flagships: flagships.sort(byName), regions, nearby: nearby.sort(byArea), total }
 }
