@@ -255,7 +255,8 @@ review queue, report. These are the columns and the fields they fill. `*` is req
 rupiah: `95000`) · `related_stock_number` · `image_files` · `active`.
 
 **Stores** (key `store_code`): `store_code*` · `name*` · `address*` · `area` · `lat*`, `lng*` · `whatsapp` ·
-`hours_en`, `hours_id` · `active`.
+`hours_en`, `hours_id` · `active` · and, optional (a sheet may leave both columns out and then changes
+neither field): `region` (`lombok`, `ubud`, `amed` or `canggu`; empty clears it) · `flagship` (`yes`/`no`; empty leaves it).
 
 **Stock** (key `store_code` + `sku`): `store_code*` · `sku*` (a product's or a variant's) · `quantity*` — the
 physical count on the shelf, units packed for an order not yet collected included; the import stores it less the

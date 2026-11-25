@@ -1,9 +1,12 @@
 /**
  * The stores page's pure shaping (13.2): a raw, projected store doc into a view model, the stores
  * grouped by area, and the map link. Nothing here reads a database. A store's coordinates leave
- * only as Nearby's `position`, rounded to two decimals (about a kilometre): enough to sort by
- * distance, never more exact than the street address the store already shows.
+ * only as Nearby's `position`, rounded to two decimals (about a kilometre). The rounding trims
+ * the payload to what sorting by distance needs; it is not a privacy measure, because
+ * `/api/stores` already exposes the stores' coordinates to the public by design, and the cards
+ * show the owner's one address, not the store's own.
  */
+import { imageOf } from '../catalogue/images'
 import { OWNER_MAP_URL } from './owner-location'
 
 /** Where a store is, to about a kilometre (`positionOf`). */
@@ -23,12 +26,23 @@ export function positionOf(doc: unknown): Position | null {
   return lat === null || lng === null ? null : { lat, lng }
 }
 
+/** A store's own photograph: the public derivative, as a product's image is (`imageOf`). */
+export type StoreImage = {
+  readonly url: string
+  readonly alt: string
+  readonly width: number | null
+  readonly height: number | null
+  readonly srcSet?: string
+}
+
 /** A store as the page shows it: the public fields and the map link, nothing else. */
 export type StoreVM = {
   readonly name: string
   readonly address: string | null
   readonly hours: string | null
   readonly mapUrl: string
+  /** Its first uploaded photograph, once published; `null` falls back to the shared photos. */
+  readonly image: StoreImage | null
 }
 
 /**
@@ -78,6 +92,7 @@ const withoutPosition = (store: NearbyStoreVM): Store => ({
   address: store.address,
   hours: store.hours,
   mapUrl: store.mapUrl,
+  image: store.image,
 })
 
 const regionOf = (value: unknown): StoreRegionKey | null =>
@@ -147,7 +162,22 @@ export function mapUrl(name: string, address: string | null): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
 }
 
-/** Shapes one doc defensively; a doc with no name is dropped. Reads the four public fields only. */
+/** The store's first image that is published (a derivative exists), without the product's label. */
+export function firstImageOf(doc: Record<string, unknown>): StoreImage | null {
+  if (!Array.isArray(doc.images)) return null
+  for (const row of doc.images as readonly unknown[]) {
+    const media =
+      typeof row === 'object' && row !== null ? (row as { image?: unknown }).image : null
+    const image = imageOf(media)
+    if (image !== null) {
+      const { url, alt, width, height, srcSet } = image
+      return { url, alt, width, height, ...(srcSet !== undefined ? { srcSet } : {}) }
+    }
+  }
+  return null
+}
+
+/** Shapes one doc defensively; a doc with no name is dropped. Reads the public fields only. */
 export function storeFrom(doc: unknown): ShapedStore | null {
   if (typeof doc !== 'object' || doc === null) return null
   const record = doc as Record<string, unknown>
@@ -160,6 +190,7 @@ export function storeFrom(doc: unknown): ShapedStore | null {
     address,
     hours: text(record.hours, 600),
     mapUrl: OWNER_MAP_URL,
+    image: firstImageOf(record),
   }
 }
 

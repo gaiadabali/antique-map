@@ -10,6 +10,8 @@
  * (`server/shop/stores/owner-location`). The title, lede and empty note are the page's
  * `storeDirectory` block when it sets them, else the lexicon's.
  */
+import type { StaticImageData } from 'next/image'
+
 import type { SiteLocale } from '@engine/config/sites'
 import { createHref, SITES } from '@engine/config/sites'
 
@@ -30,6 +32,9 @@ type Props = {
   readonly locale: SiteLocale
   readonly block: StoreDirectoryVM
 }
+
+/** The size an own photograph is drawn at when its record names none (CSS crops it square). */
+const OWN_PHOTO_SIZE = 600
 
 /** How many stores Nearby shows before its "See all". */
 export const NEARBY_PREVIEW = 3
@@ -54,18 +59,33 @@ export function areaAnchors(names: readonly string[]): readonly string[] {
 }
 
 /**
- * A store as its card draws it: the photo chosen here, from its name and address; the area line
- * for Nearby only (`./store-card`).
+ * A store as its card draws it: its own photograph when it has a published one, else one of the
+ * shared photos chosen here from its name and address (the hash stays on the server). `key` is
+ * the card's React key, a position the caller gives — never the store's name or address, which
+ * would ship to the browser with the Nearby island; the area line is for Nearby only.
  */
-function cardOf(store: Store, withPlace = false): StoreCardData {
-  const key = `${store.name}|${store.address ?? ''}`
-  const photo = storePhotoFor(key)
+export function cardOf(store: Store, key: string, withPlace = false): StoreCardData {
+  const own = store.image
+  const shared = own === null ? storePhotoFor(`${store.name}|${store.address ?? ''}`) : null
   return {
     key,
     place: withPlace ? store.area : null,
     hours: store.hours,
     mapUrl: store.mapUrl,
-    photo: { src: photo.src, width: photo.width, height: photo.height },
+    photo: own
+      ? {
+          src: own.url,
+          ...(own.srcSet !== undefined ? { srcSet: own.srcSet } : {}),
+          width: own.width ?? OWN_PHOTO_SIZE,
+          height: own.height ?? OWN_PHOTO_SIZE,
+          alt: own.alt,
+        }
+      : {
+          src: (shared as StaticImageData).src,
+          width: (shared as StaticImageData).width,
+          height: (shared as StaticImageData).height,
+          alt: '',
+        },
   }
 }
 
@@ -99,8 +119,8 @@ function Cards({ stores, t }: { stores: readonly Store[]; t: StoresText }) {
   const words = cardWords(t)
   return (
     <ul className={styles.grid}>
-      {stores.map((store) => {
-        const card = cardOf(store)
+      {stores.map((store, index) => {
+        const card = cardOf(store, String(index))
         return <StoreCard key={card.key} store={card} words={words} />
       })}
     </ul>
@@ -230,8 +250,8 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
                 {section.region ? <p className={styles.drive}>{t('stores.drive')}</p> : null}
                 {section.nearby ? (
                   <NearbyStores
-                    stores={data.nearby.map((store) => ({
-                      ...cardOf(store, true),
+                    stores={data.nearby.map((store, index) => ({
+                      ...cardOf(store, String(index), true),
                       position: store.position,
                       region: store.region,
                     }))}

@@ -7,6 +7,7 @@
  *
  * Each write happens only where the record differs, so a second run writes nothing.
  */
+import { seedShopKeys } from '../purge'
 import { allOf, writeOf, type Step } from './shared'
 
 const REGIONS = ['lombok', 'ubud', 'amed', 'canggu'] as const
@@ -23,8 +24,16 @@ export function regionOf(area: unknown): string | null {
   return (REGIONS as readonly string[]).includes(text) ? text : null
 }
 
-export async function seedStoreRegions(step: Step): Promise<StoresReport> {
-  const stores = await allOf(step, 'stores')
+/**
+ * `seedCodes` is the seed sheet's store codes. `code` is a staff-only field, which `allOf` reads
+ * (it overrides access); a store without a code in the list is a real one and is left alone.
+ */
+export async function seedStoreRegions(
+  step: Step,
+  seedCodes: readonly string[] = seedShopKeys().storeCodes,
+): Promise<StoresReport> {
+  const seeds = new Set(seedCodes)
+  const stores = (await allOf(step, 'stores')).filter((each) => seeds.has(String(each.code ?? '')))
   const flagshipIds = new Set<number>()
   for (const region of FLAGSHIP_REGIONS) {
     const first = stores.find((each) => regionOf(each.area) === region)

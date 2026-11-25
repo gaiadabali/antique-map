@@ -7,7 +7,7 @@
  */
 import { readFileSync } from 'node:fs'
 
-import { template } from './kinds'
+import { STORE_OPTIONAL_COLUMNS, template } from './kinds'
 import type { ImportKind } from './types'
 
 export const MAX_BYTES = 10 * 1024 * 1024
@@ -202,7 +202,7 @@ export function headerErrorFor(
 const EXTRA: Record<ImportKind, readonly string[]> = {
   antiques: [],
   products: [],
-  stores: ['public'],
+  stores: ['public', ...STORE_OPTIONAL_COLUMNS],
   stock: ['variant_sku'],
   discounts: [],
 }

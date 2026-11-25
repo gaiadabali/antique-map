@@ -5,14 +5,25 @@
  * CONTENT-MODEL.md §9) — with one line on how its rows land. `.jsx`: see `../leads/shared.jsx`'s
  * header.
  */
-import { PRODUCT_COLUMNS, STOCK_COLUMNS, STORE_COLUMNS } from '@engine/cms-core/import/kinds'
+import {
+  PRODUCT_COLUMNS,
+  STOCK_COLUMNS,
+  STORE_COLUMNS,
+  STORE_OPTIONAL_COLUMNS,
+} from '@engine/cms-core/import/kinds'
 
 import { L } from './copy'
 
 export const KINDS = [
   { kind: 'stock', label: 'kindStock', note: 'noteStock', columns: STOCK_COLUMNS },
   { kind: 'products', label: 'kindProducts', note: 'noteProducts', columns: PRODUCT_COLUMNS },
-  { kind: 'stores', label: 'kindStores', note: 'noteStores', columns: STORE_COLUMNS },
+  {
+    kind: 'stores',
+    label: 'kindStores',
+    note: 'noteStores',
+    columns: STORE_COLUMNS,
+    optional: STORE_OPTIONAL_COLUMNS,
+  },
 ]
 
 export function KindPicker({ kind, onChange, disabled, language }) {
@@ -40,6 +51,12 @@ export function KindPicker({ kind, onChange, disabled, language }) {
         {L('columnsLabel', language)}{' '}
         <code className="si-columns">{chosen.columns.join(', ')}</code>
       </p>
+      {chosen.optional ? (
+        <p className="ix-muted si-note">
+          {L('optionalColumnsLabel', language)}{' '}
+          <code className="si-columns">{chosen.optional.join(', ')}</code>
+        </p>
+      ) : null}
     </fieldset>
   )
 }

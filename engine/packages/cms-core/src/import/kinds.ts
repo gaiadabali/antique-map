@@ -2,7 +2,8 @@
  * The five import kinds and their column templates (CONTENT-MODEL.md §9). The template is the
  * header row spelled exactly; a file whose header does not carry every column is refused whole
  * before any row is read, with the first wrong column named. Extra columns the seed repeats
- * (`stores.public`, `stock.variant_sku`) are known too. The `*` in the template's comment marks the
+ * (`stores.public`, `stock.variant_sku`) are known too, and so are the stores' optional
+ * `region` and `flagship` (`STORE_OPTIONAL_COLUMNS`): a sheet may leave them out. The `*` in the template's comment marks the
  * columns a row may not leave empty — refused with the column named, never guessed around.
  */
 import type { ImportKind } from '@engine/cms-core/import/types'
@@ -71,6 +72,9 @@ export const STORE_COLUMNS = [
   'active',
   'public',
 ] as const
+
+/** Columns a stores sheet may add; a sheet without them still imports (the old sheets). */
+export const STORE_OPTIONAL_COLUMNS = ['region', 'flagship'] as const
 
 export const STOCK_COLUMNS = ['store_code', 'sku', 'variant_sku', 'quantity'] as const
 
