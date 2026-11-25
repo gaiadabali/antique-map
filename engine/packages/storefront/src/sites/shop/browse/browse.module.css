@@ -92,4 +92,6 @@
 /* The same-day promise above the page, edge to edge. */
 .banner {
   margin-inline: calc(-1 * var(--shop-gutter));
+  /* the product page's gap under the same promise, so the breadcrumb never touches the band */
+  margin-block-end: var(--space-6);
 }
