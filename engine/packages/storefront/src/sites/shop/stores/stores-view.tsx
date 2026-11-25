@@ -61,7 +61,7 @@ export function areaAnchors(names: readonly string[]): readonly string[] {
 /**
  * A store as its card draws it: its own photograph when it has a published one, else one of the
  * shared photos chosen here from its name and address (the hash stays on the server). `key` is
- * the card's React key, a position the caller gives — never the store's name or address, which
+ * the card's React key, a position the caller gives â€” never the store's name or address, which
  * would ship to the browser with the Nearby island; the area line is for Nearby only.
  */
 export function cardOf(store: Store, key: string, withPlace = false): StoreCardData {
