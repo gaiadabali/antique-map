@@ -1,7 +1,7 @@
 /**
  * The product page's words (6.1.b): the keys and neutral defaults here, the values in the shop's
  * lexicon files (`../lexicon/{en,id}.json`, CONVENTIONS.md §6). The keys the page shares with
- * the app's lexicon (`price.from`, `label.reproduction`, `action.whatsapp`) come from
+ * the app's lexicon (`price.from`, `action.whatsapp`) come from
  * `@/messages/keys`, which the same files supply.
  */
 import type { SiteLocale } from '@engine/config/sites'
@@ -28,7 +28,6 @@ export const PRODUCT_KEYS = defineMessages({
   'product.original': 'Made from {title}, an original at Indies Gallery',
   'product.originalLink': 'See the original',
   'product.description': 'About this product',
-  'product.sku': 'SKU {sku}',
   'product.enlarge': 'Enlarge',
   'product.enlargeTitle': '{name}, enlarged',
   'product.closeEnlarge': 'Close',

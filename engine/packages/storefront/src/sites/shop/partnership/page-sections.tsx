@@ -93,7 +93,11 @@ export function Offer({
             ))}
           </dl>
         ) : null}
-        {block.link ? <CapsLink {...linkProps(block.link)}>{block.link.label}</CapsLink> : null}
+        {block.link ? (
+          <CapsLink {...linkProps(block.link)} className={styles.offerLink}>
+            {block.link.label}
+          </CapsLink>
+        ) : null}
       </div>
       <div className={styles.storyPhotos} role="group" aria-label={block.title} tabIndex={0}>
         <FeaturedPrint

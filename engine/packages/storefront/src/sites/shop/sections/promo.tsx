@@ -37,6 +37,14 @@ export function sameDayOpen(
   return `${part('hour')}:${part('minute')}` < rule.cutoff
 }
 
+/**
+ * The cut-off as the locale writes a time: "15:30" in English, "15.30" in Indonesian — the way the
+ * owner's own condition text writes it, so the banner never shows one time two ways.
+ */
+export function clockOf(cutoff: string, locale: SiteLocale): string {
+  return locale === 'id' ? cutoff.replace(':', '.') : cutoff
+}
+
 export async function PromoBanner({ locale }: { readonly locale: SiteLocale }) {
   let settings
   try {
@@ -52,7 +60,7 @@ export async function PromoBanner({ locale }: { readonly locale: SiteLocale }) {
       <p className={styles.promoText}>{settings.text}</p>
       <p className={styles.promoNote}>
         {settings.condition}
-        {open ? <> {t('promo.today', { time: settings.cutoff })}</> : null}
+        {open ? <> {t('promo.today', { time: clockOf(settings.cutoff, locale) })}</> : null}
       </p>
     </section>
   )

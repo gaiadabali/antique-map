@@ -12,32 +12,23 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
   'partnership.eyebrow': 'Collaboration',
   'partnership.title': 'Buying for a shop, a hotel, or a company.',
   'partnership.lede':
-    'More than 100 shops across Indonesia already stock Old East Indies. Whatever you are buying for, every piece is printed from antique originals we hold.',
+    'More than 100 shops across Bali already stock Old East Indies. Whatever you are buying for, every piece is printed from antique originals we hold.',
   'partnership.ctaApply': 'Start an application',
   'partnership.signalShops': '100+ shops supplied',
-  'partnership.signalShipping': 'Shipping across Indonesia & worldwide',
   'partnership.resellerEyebrow': '01 · Resellers',
   'partnership.resellerTitle': 'Stock Old East Indies in your shop.',
   'partnership.resellerBody':
-    'For galleries, gift shops, bookshops and hotel boutiques. Once your application is approved, your wholesale pricing and reorder terms are agreed directly with our trade desk.',
-  'partnership.resellerPricing': 'Wholesale tiers, agreed with our trade desk',
-  'partnership.resellerMinimum': '20 pieces per design, mixed sizes allowed',
-  'partnership.resellerReorder': 'One click from your order history',
-  'partnership.resellerDisplay': 'Counter stands and signage, on request',
+    'For galleries, gift shops, bookshops and hotel boutiques that want to stock Old East Indies. Tell us about your shop, and we will answer with pricing and terms.',
   'partnership.resellerCta': 'Apply as a reseller',
   'partnership.companyEyebrow': '02 · Company gifting',
   'partnership.companyTitle': 'A gift that carries a story, not a logo.',
   'partnership.companyBody':
-    'For client gifts, anniversaries and conference welcome packs. We can print a map of the city your office sits in, add a discreet mark, and finish each piece in your own packaging.',
-  'partnership.companyCustom': 'Choose the map, the size, the frame and the box',
-  'partnership.companyBranding': 'Embossed card or engraved plate, never printed over the artwork',
-  'partnership.companyQuantity': 'From 25 pieces',
-  'partnership.companyLeadTime': 'Three to four weeks, including a sample',
+    'For companies, hotels and villas: products made to order from our antique originals. Tell us what you have in mind, and we will answer with a quote.',
   'partnership.companyCta': 'Request a gifting quote',
   'partnership.enquireEyebrow': 'Apply',
   'partnership.enquireTitle': 'One form, whichever you are.',
   'partnership.enquireBody':
-    'Tell us what you are buying for and we will only ask what matters for that. Most applications are answered within two working days.',
+    'Choose Become a Retailer or Customised Wholesale Products, and we will only ask what matters for that.',
   'partnership.talkFirst': 'Prefer to talk first?',
   'partnership.talkWhatsapp': 'WhatsApp {number}',
   'partnership.talkWhatsappLabel': 'WhatsApp {number} (opens in a new tab)',
@@ -52,8 +43,7 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
   'partnership.formEmail': 'Email address',
   'partnership.formMessage': 'What are you buying for?',
   'partnership.formSubmit': 'Send enquiry',
-  'partnership.formReplyNote':
-    'Answered within two working days. We will only write back about this enquiry — never anything more.',
+  'partnership.formReplyNote': 'We will only write back about this enquiry — never anything more.',
   'partnership.contactMissing':
     'Contact details are being connected — they will appear here and in the footer.',
   'partnership.formWhatsapp': 'WhatsApp number',
@@ -61,8 +51,7 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
   'partnership.formContactNote': 'Give a WhatsApp number or an email address — one is enough.',
   'partnership.formSending': 'Sending…',
   'partnership.formSuccessTitle': 'Thank you — we have your enquiry.',
-  'partnership.formSuccessBody':
-    'Our trade desk will reply within two working days, on WhatsApp or by email, whichever you gave us.',
+  'partnership.formSuccessBody': 'We will reply on WhatsApp or by email, whichever you gave us.',
   'partnership.formUnavailable':
     'The form is not available right now. Please write to us on WhatsApp or by email instead.',
   'partnership.formChecking': 'A short security check keeps this form free of spam.',
@@ -77,18 +66,9 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
   'lead.error.rate': 'Too many enquiries just now. Please wait a minute and try again.',
   'lead.error.unavailable':
     'We could not save your enquiry. Please try again, or write to us on WhatsApp or by email.',
-  'partnership.labelPricing': 'Pricing',
-  'partnership.labelMinimum': 'Minimum',
-  'partnership.labelReorder': 'Reorder',
-  'partnership.labelDisplay': 'Display',
-  'partnership.labelCustom': 'Custom',
-  'partnership.labelBranding': 'Branding',
-  'partnership.labelQuantity': 'Quantity',
-  'partnership.labelLeadTime': 'Lead time',
   'partnership.signInEyebrow': 'Already a partner',
   'partnership.signInTitle': 'Sign in to your prices.',
-  'partnership.signInBody':
-    'Your wholesale pricing, order history and one-click reorder will live behind this door. Only approved reseller accounts have one.',
+  'partnership.signInBody': 'Only approved reseller accounts can sign in here.',
   'partnership.signInEmail': 'Email address',
   'partnership.signInPassword': 'Password',
   'partnership.signInSubmit': 'Sign in',
@@ -105,7 +85,7 @@ export const PARTNERSHIP_MESSAGES = defineMessages({
     'Signing in is not available just now. Please try again in a moment.',
   'partnership.accountTitle': 'Welcome, {name}.',
   'partnership.accountBody':
-    'You are signed in to your partner account. Your wholesale prices and one-click reorder will appear here as they open; for an order today, write to your trade desk on WhatsApp or by email.',
+    'You are signed in to your partner account. For an order today, write to us on WhatsApp or by email.',
   'partnership.accountEmail': 'Signed in as',
   'partnership.signOut': 'Sign out',
 })

@@ -90,7 +90,7 @@ describe('handlePartnershipForm', () => {
       [
         'What would you like? Customised Wholesale Products',
         'Company, hotel or villa name: Villa Sari',
-        'How many pieces? (from 25): 12 rooms',
+        'How many pieces?: 12 rooms',
         '',
         'Framed maps for three villas.',
       ].join('\n'),

@@ -1,7 +1,7 @@
 /**
  * The browse listing's words (6.1.b): the keys and neutral defaults here, the values in the
  * shop's lexicon files (`../lexicon/{en,id}.json`, CONVENTIONS.md §6) — a component never holds
- * a word. The shared keys the listing borrows (`price.from`, `label.reproduction`) come from the
+ * a word. The shared key the listing borrows (`price.from`) comes from the
  * app's lexicon (`@/messages/keys`), which the same files supply.
  */
 import { createMessages, defineMessages, type Messages, type PluralBase } from '@engine/i18n'

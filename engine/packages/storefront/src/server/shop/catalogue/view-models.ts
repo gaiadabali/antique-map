@@ -25,7 +25,7 @@ export type CategoryVM = {
   readonly label: string
 }
 
-/** A listing card: image, name, price, Reproduction, and Sold out when no store has any. */
+/** A listing card: image, name, price, and Sold out when no store has any. */
 export type ProductCardVM = {
   readonly id: number
   readonly slug: string

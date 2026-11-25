@@ -34,7 +34,6 @@ describe('hero words', () => {
     'home.shop.ctaProcess',
     'home.shop.heroA',
     'home.shop.pricePrefix',
-    'home.shop.signalRestored',
     'home.shop.signalBali',
     'home.shop.signalShops',
   ]

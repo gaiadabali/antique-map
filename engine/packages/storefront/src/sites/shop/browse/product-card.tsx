@@ -1,7 +1,8 @@
 /**
  * A listing card (the redesign of 2026-10-20): the shop's `ShopCard` — the print framed on its
- * well, the name and the price ("From Rp …" when variants are priced apart) on the first row,
- * Reproduction under it, and a badge on the well for Sold out or a synthetic image's label.
+ * well, the name and the price ("From Rp …" when variants are priced apart) on the first row, and a
+ * badge on the well for Sold out or a synthetic image's label (no "Reproduction" line: every print
+ * in the shop is one, the GM's review of 2026-11-24).
  * Everything it says comes from the loader view model and the lexicon; a storefront link is a plain
  * <a>, because prefetching a listing page costs a database read (ARCHITECTURE.md §6).
  */
@@ -47,12 +48,7 @@ export function ProductCard({
           <Price amount={product.price} />
         ) : undefined
       }
-      meta={
-        <>
-          <span>{text.shared('label.reproduction')}</span>
-          {synthetic !== null && !product.available && <span>{synthetic}</span>}
-        </>
-      }
+      meta={synthetic !== null && !product.available ? <span>{synthetic}</span> : undefined}
       picture={
         product.image ? (
           <ResponsiveImage

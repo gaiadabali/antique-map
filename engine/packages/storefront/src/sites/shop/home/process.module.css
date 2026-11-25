@@ -13,9 +13,12 @@
   text-wrap: balance;
 }
 
+/* Three to a row, each a third of the band; fewer steps (the owner's to set, 1 to 6) stay that
+   width and sit in the middle instead of leaving an empty column at the right. */
 .steps {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: var(--shop-gap);
   margin: 0;
   padding: 0;
@@ -23,6 +26,8 @@
 }
 
 .step {
+  flex: 0 1 calc((100% - 2 * var(--shop-gap)) / 3);
+  min-inline-size: 0;
   padding-inline: 1.25rem;
   text-align: center;
 }
@@ -52,7 +57,10 @@
   }
 
   .steps {
-    grid-template-columns: 1fr;
     gap: var(--space-5);
+  }
+
+  .step {
+    flex-basis: 100%;
   }
 }

@@ -1,8 +1,9 @@
 /**
  * The product page (6.1.b; the redesign of 2026-10-20, the handoff's King & McGaw skeleton): a
  * 12-column grid. Columns 1–6 hold the gallery — the print framed on a white stage, the other views
- * under it, Enlarge. Columns 8–12 hold the details: the name large, its collection as a link, the
- * reference line, the price and the sizes (each its own price, which changes with the choice), Add
+ * under it, Enlarge. Columns 8–12 hold the details: the name large, its collection as a link (no
+ * "Reproduction · SKU" line: a tag the visitor does not need, the GM's review of 2026-11-24), the
+ * price and the sizes (each its own price, which changes with the choice), Add
  * to bag, the stock, the delivery note and the original it was made from — the two proof points
  * are gone (the owner's feedback of 2026-11-19, TASKS.md 28.2). "About this product" follows in columns
  * 2–6. The words come from the lexicon, the fixed ones from the settings (`./page-copy`); the prices are whole rupiah the server formats.
@@ -110,9 +111,6 @@ export function ProductView({
             ) : (
               <span className={styles.category}>{product.category.label}</span>
             ))}
-          <p className={styles.meta}>
-            {text.shared('label.reproduction')} · {text('product.sku', { sku: product.sku })}
-          </p>
 
           <VariantPicker
             productId={product.id}

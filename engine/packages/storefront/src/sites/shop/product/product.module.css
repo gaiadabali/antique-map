@@ -59,15 +59,6 @@ a.category:hover {
   text-decoration-thickness: var(--rule-hair);
 }
 
-.meta {
-  margin: var(--space-3) 0 0;
-  font: var(--shop-text-caps);
-  font-weight: 400;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-}
-
 .delivery {
   margin: 2.25rem 0 0;
   font: var(--shop-text-read);

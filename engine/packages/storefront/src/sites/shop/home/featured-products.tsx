@@ -1,6 +1,6 @@
 /**
  * The shop home's "Begin with these" (the redesign of 2026-10-20): the featured products as a rail
- * of framed cards — name and price, then "Reproduction" — with "Shop all prints" under it. The read
+ * of framed cards — name and price — with "Shop all prints" under it. The read
  * is `loadFeaturedProducts()` (`server/shop/home`), public-only, prices formatted through
  * `formatRupiah`; inside `<Suspense>`, and an empty state when the database holds no published
  * product yet — never a crash. The words are the page's `productRail` block; the arrows and the
@@ -85,7 +85,6 @@ async function ProductsRail({ locale, t, block, allHref }: Props) {
                 {t('home.shop.pricePrefix')} <Price amount={product.price} />
               </>
             }
-            meta={words.shared('label.reproduction')}
             picture={
               product.image ? (
                 <ResponsiveImage

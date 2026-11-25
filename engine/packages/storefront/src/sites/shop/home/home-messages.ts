@@ -11,25 +11,21 @@ export const HOME_MESSAGES = defineMessages({
   'home.shop.eyebrow': 'Art souvenirs of the East Indies',
   'home.shop.title': 'The old Indies, on your walls.',
   'home.shop.lede':
-    'Museum-grade prints of antique maps and engravings, made from originals in our own collection.',
+    'Prints of antique maps and engravings, made from originals in our own collection.',
   'home.shop.ctaShop': 'Shop prints',
   'home.shop.ctaProcess': 'How we make them',
   'home.shop.heroA': 'The lead print — shown here as a placeholder until its photograph loads',
-  'home.shop.signalRestored': 'Restored by hand',
   'home.shop.signalBali': 'Printed in Bali',
   'home.shop.signalShops': 'Stocked in 100+ shops',
   'home.shop.pricePrefix': 'From',
   'home.shop.processTitle': 'From an original in our hands to a print on your wall',
   'home.shop.processStep1Title': 'It starts with an original',
   'home.shop.processStep1Body':
-    'Not a file from the internet — an antique map or engraving we physically hold, the same ones our curator certifies.',
-  'home.shop.processStep2Title': 'Restored by hand, scars kept',
-  'home.shop.processStep2Body':
-    'We correct foxing, tears and fading. The marks that give a map its character stay — they are part of its story.',
+    'Not a file from the internet — an antique map or engraving we physically hold.',
   'home.shop.processStep3Title': 'Printed in Bali',
   'home.shop.processStep3Body': 'Every print is made in Bali and sent from Bali.',
   'home.shop.tradeTitle': 'For shops, hotels and companies',
-  'home.shop.tradeLead': 'More than 100 shops across Indonesia already stock Old East Indies.',
+  'home.shop.tradeLead': 'More than 100 shops across Bali already stock Old East Indies.',
   'home.shop.tradeBodyMore':
     'We also make custom gifts for hotels and corporate orders — Bali-themed, printed from the antique originals we hold.',
   'home.shop.tradeCta': 'See collaboration options',
@@ -37,7 +33,7 @@ export const HOME_MESSAGES = defineMessages({
   'home.shop.tradeFact3': 'Custom gifts for hotels and companies',
   'home.shop.originalsTitle': 'Every print begins with a map we hold',
   'home.shop.originalsBody':
-    'Those originals are examined and certified by our curator, and offered to collectors at Antique Maps Indonesia — our sister gallery.',
+    'Those originals are offered to collectors at Antique Maps Indonesia — our sister gallery.',
   'home.shop.originalsCta': 'See the originals',
   'home.shop.originalsLabel': 'Antique Maps Indonesia',
   'home.shop.railPrevious': 'Previous',

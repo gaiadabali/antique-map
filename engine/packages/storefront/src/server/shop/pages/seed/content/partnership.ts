@@ -13,31 +13,12 @@ import {
   type PartnershipMessageKey as Key,
 } from '../../../../../sites/shop/partnership/page-messages'
 
-type OfferKeys = {
-  readonly id: 'reseller' | 'company'
-  readonly terms: readonly (readonly [Key, Key])[]
-}
-
-const OFFERS: readonly OfferKeys[] = [
-  {
-    id: 'reseller',
-    terms: [
-      ['partnership.labelPricing', 'partnership.resellerPricing'],
-      ['partnership.labelMinimum', 'partnership.resellerMinimum'],
-      ['partnership.labelReorder', 'partnership.resellerReorder'],
-      ['partnership.labelDisplay', 'partnership.resellerDisplay'],
-    ],
-  },
-  {
-    id: 'company',
-    terms: [
-      ['partnership.labelCustom', 'partnership.companyCustom'],
-      ['partnership.labelBranding', 'partnership.companyBranding'],
-      ['partnership.labelQuantity', 'partnership.companyQuantity'],
-      ['partnership.labelLeadTime', 'partnership.companyLeadTime'],
-    ],
-  },
-]
+/**
+ * The two offers, with no terms: the minimums, lead times and services the first content listed
+ * were never the owner's (the GM's review of 2026-11-24). The CMS keeps a terms list on each offer
+ * for the owner to fill.
+ */
+const OFFERS = ['reseller', 'company'] as const
 
 export function defaultPartnershipBlocks(locale: SiteLocale): readonly ShopBlockVM[] {
   const t = partnershipText(locale)
@@ -48,13 +29,13 @@ export function defaultPartnershipBlocks(locale: SiteLocale): readonly ShopBlock
   })
   const offers: OfferVM[] = OFFERS.map((offer, index) => ({
     type: 'offer',
-    id: `partnership-${offer.id}`,
-    anchor: offer.id,
-    eyebrow: t(`partnership.${offer.id}Eyebrow`),
-    title: t(`partnership.${offer.id}Title`),
-    body: t(`partnership.${offer.id}Body`),
-    terms: offer.terms.map(([label, value]) => ({ label: t(label), value: t(value) })),
-    link: toSection('apply', `partnership.${offer.id}Cta`),
+    id: `partnership-${offer}`,
+    anchor: offer,
+    eyebrow: t(`partnership.${offer}Eyebrow`),
+    title: t(`partnership.${offer}Title`),
+    body: t(`partnership.${offer}Body`),
+    terms: [],
+    link: toSection('apply', `partnership.${offer}Cta`),
     warm: index === 1,
   }))
   return [
@@ -70,7 +51,7 @@ export function defaultPartnershipBlocks(locale: SiteLocale): readonly ShopBlock
     {
       type: 'factStrip',
       id: 'partnership-facts',
-      facts: [t('partnership.signalShops'), t('partnership.signalShipping')],
+      facts: [t('partnership.signalShops')],
     },
     ...offers,
     {
