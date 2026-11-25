@@ -143,5 +143,5 @@ ssh helios 'bash -s -- --env staging --verify-restart' </tmp/provision.sh
 `gaiada-deploy --rollback` was a no-op for a `subdir` target until it was patched with the owner's go-ahead on
 2026-10-01 (backup `/usr/local/bin/gaiada-deploy.bak-20261001T050150Z`): it now resolves `current` to its release
 directory. Rollback for this site: `gaiada-deploy --rollback --site-user uindies --domain old-east-indies.gaiada.com
---type node --subdir web`. The poller deploys only on a push to `production`, from `.gaiadeploy.yml` at that commit;
-until 3.1 lands nothing goes there, so a hand release is never overwritten behind your back.
+--type node --subdir web`. The poller deploys the newest `deploy/production-*` release, reading `.gaiadeploy.yml` from
+`production`; since 2026-11-25 `release.yml` publishes one on every push to `main` as well as to `production`.

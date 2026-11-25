@@ -1,15 +1,15 @@
 name: Release
 
-# The other half of DEPLOYMENT.md §3's release flow: ci.yml proves main; a
-# merge to `production` (never pushed to directly — CONVENTIONS.md §9) builds
-# the standalone artifact and publishes it as a `deploy/production-*` GitHub
+# The other half of DEPLOYMENT.md §3's release flow. A push to `main` (since
+# 2026-11-25, the agency's usual "main is staging") or a merge to `production`
+# builds the standalone artifact and publishes it as a `deploy/production-*` GitHub
 # release. `gaiada-poll` on Helios (60 s) picks the release up, verifies the
 # `.sha256`, and unpacks per `.gaiadeploy.yml`'s `subdir` — nothing here
 # touches Helios directly (DEPLOYMENT.md §9: Helios writes need the owner's
 # go-ahead every time).
 on:
   push:
-    branches: [production]
+    branches: [main, production]
   workflow_dispatch:
 
 concurrency:

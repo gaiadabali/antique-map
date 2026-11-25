@@ -52,8 +52,8 @@ after a `pg_dump` and removes the two users (CARRY-OVER.md §3, step 8).
 ## 3. The release
 
 ```
-push to main ──► CI (ci.yml, e2e.yml): static checks · unit · *.db.test.ts · e2e on both hosts · Lighthouse
-PR main → production ──► release.yml:
+push to main ──► CI (ci.yml): static checks · unit · secrets (db tests, e2e, Lighthouse: by hand)
+push to main, or PR main → production ──► release.yml (main deploys staging since 2026-11-25):
     build engine/apps/web   no PAYLOAD_SECRET; DATABASE_URL and PGHOST at a sentinel that refuses connections
     assemble web/           standalone server + .next/static + public/ + sharp's native binaries
     smoke                   boot the tarball on a migrated database: each host's home 200 with its site's name,

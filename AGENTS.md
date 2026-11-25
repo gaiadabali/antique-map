@@ -60,6 +60,11 @@ Your task is done when every subtask is done and its **Check** is met **and you 
 screen, signed in, on a production build, on your own port, on a phone viewport (390 px) and a desktop one
 (1280 px). Return the report format in `docs/WORKFLOW.md` §Report, with evidence per subtask. 
 
+**Staging work is lighter (2026-11-25).** `main` deploys to staging by itself (DEPLOYMENT.md §3), so for work that
+only reaches staging, `pnpm verify` is the gate: format, lint, typecheck, unit tests, file size, generated files,
+the board and tokens. The production build, the e2e suites, the database tests and Lighthouse are run by hand
+before the live cutover, not for every staging change.
+
 ## Keep the board live
 
 `TASKS.md` is the single progress tracker, and every task and subtask updates it. From your worktree, run
