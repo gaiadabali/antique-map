@@ -5,9 +5,10 @@
  * when the pop-up opens, and open from the moment it mounts. A real modal dialog (the shared
  * `Dialog`: the page behind is inert, focus stays inside, Esc closes, the title labels it). The
  * form posts an email and the consent to the lead service (`./action`), Turnstile as every lead
- * form. Every word arrives as a prop.
+ * form; a sign-up is remembered in this browser so the pop-up stops opening. Every word arrives
+ * as a prop.
  */
-import { useActionState, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 
 import { Button } from '@engine/ui/button'
 import { Checkbox } from '@engine/ui/checkbox'
@@ -18,7 +19,7 @@ import { Input } from '@engine/ui/input'
 import { TurnstileWidget } from '../partnership/turnstile-widget'
 import { submitNewsletter } from './action'
 import styles from './newsletter.module.css'
-import { INITIAL_NEWSLETTER_STATE, type NewsletterText } from './state'
+import { INITIAL_NEWSLETTER_STATE, NEWSLETTER_JOINED_KEY, type NewsletterText } from './state'
 
 export type NewsletterDialogProps = {
   readonly text: NewsletterText
@@ -30,6 +31,16 @@ export type NewsletterDialogProps = {
 export function NewsletterDialog({ text, locale, siteKey, privacyHref }: NewsletterDialogProps) {
   const [open, setOpen] = useState(true)
   const [state, action, pending] = useActionState(submitNewsletter, INITIAL_NEWSLETTER_STATE)
+
+  // Signed up: remember it in this browser, so the pop-up stops opening (`./newsletter-door`).
+  useEffect(() => {
+    if (state.status !== 'success') return
+    try {
+      window.localStorage.setItem(NEWSLETTER_JOINED_KEY, new Date().toISOString())
+    } catch {
+      // Storage blocked: nothing to remember with; the pop-up will ask again.
+    }
+  }, [state.status])
 
   const say = (key: string | undefined) =>
     key === undefined ? undefined : (text.errors[key] ?? text.errors['lead.error.invalid'])

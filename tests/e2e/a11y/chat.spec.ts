@@ -33,8 +33,8 @@ test('chat: axe, keyboard walk, Escape and accessibility tree', async ({
   let keyboard = `## ${site}: chat (the redesigned panel, 8.2.c, merged), keyboard walk\n\n`
 
   // The shop's newsletter pop-up (TASKS.md 28.2) opens over the landing page a moment after load,
-  // a modal that would sit over the launcher: this browser has already seen it.
-  await page.addInitScript(() => window.localStorage.setItem('oei:newsletter-seen', 'e2e'))
+  // a modal that would sit over the launcher: this browser has already signed up.
+  await page.addInitScript(() => window.localStorage.setItem('oei:newsletter-joined', 'e2e'))
 
   for (const viewport of WIDTHS) {
     await page.setViewportSize(viewport)

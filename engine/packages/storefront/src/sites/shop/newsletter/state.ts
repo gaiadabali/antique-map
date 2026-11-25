@@ -15,8 +15,13 @@ export const INITIAL_NEWSLETTER_STATE: NewsletterState = { status: 'idle', error
 /** The consent the lead records with the time it was given (the box's words, COMPLIANCE.md §6). */
 export const NEWSLETTER_CONSENT_VERSION = 'newsletter-2026-11-19'
 
-/** Where the pop-up remembers, per browser, that this visitor has seen it. */
-export const NEWSLETTER_SEEN_KEY = 'oei:newsletter-seen'
+/**
+ * Where the pop-up remembers, per browser, that this visitor has signed up: the one thing that
+ * stops it (the UI/UX revision of 2026-11-25 — it opens on every visit and every reload until
+ * then). A new key: the old `oei:newsletter-seen` only meant "has seen it", and must not keep it
+ * closed now.
+ */
+export const NEWSLETTER_JOINED_KEY = 'oei:newsletter-joined'
 
 /**
  * How long after the home has loaded the pop-up opens: "upon entering the landing page" (the

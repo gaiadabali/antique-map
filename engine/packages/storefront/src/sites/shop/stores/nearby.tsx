@@ -2,14 +2,14 @@
 
 /**
  * Nearby on the stores page (the order of 2026-11-25): every other store, by name, its first ones
- * and "See all". Above them, a button that reads as running text, with its explanation under it
- * (the UI/UX revision of 2026-11-25): pressed, it asks the browser where the visitor is and puts
- * the stores nearest first, each with its distance. The browser asks only when it is pressed; the
- * position stays on the device (`./distance` runs here) and is never sent anywhere. Without it —
- * refused, unavailable, or no answer in time — the stores stay by name and a line says so. Every
- * word arrives as a prop.
+ * and "See all". Above them, "Show the stores nearest to me" as plain words, not a call to action,
+ * and under it the line that explains or reports (the UI/UX revisions of 2026-11-25). Once the
+ * section comes into view the browser is asked, a single time, where the visitor is, and the
+ * stores are put nearest first, each with its distance. The position stays on the device
+ * (`./distance` runs here) and is never sent anywhere. Without it — refused, unavailable, or no
+ * answer in time — the stores stay by name and the line says so. Every word arrives as a prop.
  */
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import type { Position } from '../../../server/shop/stores/group'
 import { nearestFirst } from './distance'
@@ -43,6 +43,7 @@ type Props = {
 export function NearbyStores({ stores, preview, words, locale }: Props): React.ReactElement {
   const [status, setStatus] = useState<Status>('idle')
   const [origin, setOrigin] = useState<Position | null>(null)
+  const barRef = useRef<HTMLDivElement>(null)
   const listed = origin
     ? nearestFirst(stores, origin)
     : stores.map((store) => ({ ...store, km: null as number | null }))
@@ -52,21 +53,36 @@ export function NearbyStores({ stores, preview, words, locale }: Props): React.R
   const distanceOf = (km: number | null) =>
     km === null ? null : words.distance.replace('{distance}', number.format(km))
 
-  const ask = () => {
-    if (!('geolocation' in navigator)) {
-      setStatus('failed')
+  // Ask once, when Nearby comes into view (at once without an observer to tell).
+  useEffect(() => {
+    const ask = () => {
+      if (!('geolocation' in navigator)) {
+        setStatus('failed')
+        return
+      }
+      setStatus('finding')
+      navigator.geolocation.getCurrentPosition(
+        (found) => {
+          setOrigin({ lat: found.coords.latitude, lng: found.coords.longitude })
+          setStatus('sorted')
+        },
+        () => setStatus('failed'),
+        { enableHighAccuracy: false, timeout: 10_000, maximumAge: 600_000 },
+      )
+    }
+    const bar = barRef.current
+    if (bar === null || !('IntersectionObserver' in window)) {
+      ask()
       return
     }
-    setStatus('finding')
-    navigator.geolocation.getCurrentPosition(
-      (found) => {
-        setOrigin({ lat: found.coords.latitude, lng: found.coords.longitude })
-        setStatus('sorted')
-      },
-      () => setStatus('failed'),
-      { enableHighAccuracy: false, timeout: 10_000, maximumAge: 600_000 },
-    )
-  }
+    const observer = new IntersectionObserver((entries) => {
+      if (!entries.some((entry) => entry.isIntersecting)) return
+      observer.disconnect()
+      ask()
+    })
+    observer.observe(bar)
+    return () => observer.disconnect()
+  }, [])
 
   const line = {
     idle: words.note,
@@ -85,15 +101,8 @@ export function NearbyStores({ stores, preview, words, locale }: Props): React.R
   const rest = listed.slice(preview)
   return (
     <>
-      <div className={styles.nearbyBar}>
-        <button
-          type="button"
-          className={styles.nearbyAsk}
-          onClick={ask}
-          disabled={status === 'finding'}
-        >
-          {words.ask}
-        </button>
+      <div className={styles.nearbyBar} ref={barRef}>
+        <p className={styles.nearbyLead}>{words.ask}</p>
         <p className={styles.nearbyStatus} role="status">
           {line[status]}
         </p>

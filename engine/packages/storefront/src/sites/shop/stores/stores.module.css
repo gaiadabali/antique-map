@@ -221,7 +221,7 @@
   cursor: pointer;
 }
 
-/* Nearby's "nearest to me": the words to press, and under them the line that explains or reports. */
+/* Nearby's "nearest to me": its plain words, and under them the line that explains or reports. */
 .nearbyBar {
   display: flex;
   flex-direction: column;
@@ -230,35 +230,11 @@
   margin: calc(-1 * var(--space-2)) 0 var(--space-4);
 }
 
-/* the words to press: running text, underlined, no box — still a 44 px target */
-.nearbyAsk {
-  display: inline-flex;
-  align-items: center;
-  min-block-size: 44px;
-  padding: 0;
-  border: 0;
-  background: none;
+/* "Show the stores nearest to me": plain words in ink, not a call to action */
+.nearbyLead {
+  margin: 0;
   font: var(--shop-text-body);
   color: var(--color-text);
-  text-align: start;
-  text-decoration: underline;
-  text-decoration-thickness: var(--rule-hair);
-  text-underline-offset: 0.25em;
-  cursor: pointer;
-}
-
-.nearbyAsk:hover:not(:disabled) {
-  text-decoration-thickness: var(--rule-strong);
-}
-
-.nearbyAsk:focus-visible {
-  outline: var(--focus-width) solid var(--color-focus);
-  outline-offset: 3px;
-}
-
-.nearbyAsk:disabled {
-  color: var(--color-text-muted);
-  cursor: progress;
 }
 
 .nearbyStatus {

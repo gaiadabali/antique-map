@@ -16,7 +16,8 @@ export const CONTACT = {
   email: 'hello-e2e@example.test',
 }
 /** The newsletter pop-up's "seen" key in the browser's storage (`newsletter/state.ts`). */
-export const SEEN = 'oei:newsletter-seen'
+/** The browser's note that it has signed up: the one thing that keeps the pop-up closed. */
+export const JOINED = 'oei:newsletter-joined'
 
 /** A one-page PDF, as small as a valid one gets. */
 function pdfBytes(): Buffer {
@@ -145,7 +146,7 @@ export async function makeFeedbackData(): Promise<FeedbackData> {
   }
 }
 
-/** A page with the newsletter pop-up already seen: it never opens over the checks. */
+/** A page whose browser has signed up: the newsletter pop-up never opens over the checks. */
 export async function quiet(page: Page): Promise<void> {
-  await page.addInitScript((key) => window.localStorage.setItem(key, 'e2e'), SEEN)
+  await page.addInitScript((key) => window.localStorage.setItem(key, 'e2e'), JOINED)
 }

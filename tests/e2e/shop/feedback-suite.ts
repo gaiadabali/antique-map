@@ -14,7 +14,7 @@ import { expect, test, type Page } from '@playwright/test'
 
 import { createHref, SITES } from '../../../engine/packages/config/src/sites'
 import { axeClean, noOverflow, SHOP_ORIGIN, WIDTHS } from '../shop-app/support'
-import { CONTACT, makeFeedbackData, quiet, SEEN, type FeedbackData } from './feedback-data'
+import { CONTACT, makeFeedbackData, quiet, type FeedbackData } from './feedback-data'
 
 const href = createHref(SITES.shop)
 const at = (path: string) => `${SHOP_ORIGIN}${path}`
@@ -244,7 +244,9 @@ export function feedbackTests(): void {
     }
   })
 
-  test('the newsletter pop-up: once, labelled, Esc closes it', async ({ page }) => {
+  test('the newsletter pop-up: labelled, Esc closes it, and every reload opens it again', async ({
+    page,
+  }) => {
     test.setTimeout(60_000)
     await page.goto(at(href('home', {}, 'en')))
     const dialog = page.getByRole('dialog', { name: 'Join our newsletter' })
@@ -253,9 +255,8 @@ export function feedbackTests(): void {
     await axeClean(page, 'newsletter pop-up')
     await page.keyboard.press('Escape')
     await expect(dialog).toBeHidden()
-    expect(await page.evaluate((key) => window.localStorage.getItem(key), SEEN)).not.toBeNull()
+    // The UI/UX revision of 2026-11-25: until the visitor signs up, it asks on every load.
     await page.reload()
-    await page.waitForTimeout(10_000)
-    await expect(dialog).toBeHidden()
+    await expect(dialog).toBeVisible({ timeout: 20_000 })
   })
 }
