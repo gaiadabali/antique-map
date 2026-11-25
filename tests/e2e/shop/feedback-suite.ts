@@ -59,6 +59,8 @@ const WORDS = {
     articles: 'Our latest articles',
     stores: 'Stores',
     shopBy: ['Best sellers', 'Shop by theme', 'Shop by product type', 'Wall decor'],
+    shopAll: 'Shop all',
+    panel: 'Shop sections',
     promo: 'Delivery promise',
     contact: 'Contact us',
     flagships: 'Flagship stores',
@@ -79,6 +81,8 @@ const WORDS = {
       'Belanja menurut jenis produk',
       'Dekorasi dinding',
     ],
+    shopAll: 'Belanja semua',
+    panel: 'Bagian toko',
     promo: 'Janji pengiriman',
     contact: 'Hubungi kami',
     flagships: 'Toko utama',
@@ -157,21 +161,20 @@ export function feedbackTests(): void {
         await quiet(page)
         await page.setViewportSize(viewport)
         // Fresh once the best seller and the theme saved for this suite show (cached a while).
+        // The left panel (the UI/UX revision of 2026-11-25): the shop opens on the best sellers.
+        const panel = page.getByRole('navigation', { name: w.panel })
         await openFresh(page, href('browse', {}, locale), async () => {
-          await expect(page.getByRole('heading', { level: 1, name: w.shop })).toBeVisible({
+          await expect(page.getByRole('heading', { level: 1, name: w.shopBy[0] })).toBeVisible({
             timeout: 5_000,
           })
-          for (const name of w.shopBy) {
-            await expect(page.getByRole('heading', { name, exact: true })).toBeVisible({
-              timeout: 5_000,
-            })
-          }
         })
-        // Best sellers → themes → product types → wall decor (the owner's order).
-        await inOrder(page, w.shopBy)
+        // Best sellers → themes → product types → wall decor (the owner's order), then Shop all.
+        await expect(panel.getByRole('link')).toHaveText([...w.shopBy, w.shopAll])
         await noOverflow(page, `shop ${locale}`)
         await axeClean(page, `shop ${locale} ${viewport.width}`)
-        // The theme's card narrows the shop to it.
+        // Shop by theme, then the theme's card narrows the shop to it.
+        await panel.getByRole('link', { name: w.shopBy[1] }).click()
+        await expect(page.getByRole('heading', { level: 1, name: w.shopBy[1] })).toBeVisible()
         await page.getByRole('link', { name: data.theme }).first().click()
         await expect(page).toHaveURL(/[?&]subject=e2e-bali/)
         await expect(page.getByRole('heading', { level: 1, name: data.theme })).toBeVisible()

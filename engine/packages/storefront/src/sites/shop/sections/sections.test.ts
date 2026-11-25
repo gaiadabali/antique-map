@@ -9,7 +9,7 @@ vi.mock('server-only', () => ({}))
 
 import type { ShopBlockVM } from '../../../server/shop/pages/blocks'
 import { homeOrder } from './home-order'
-import { shopFilterHref, shopFilterOf } from './links'
+import { SHOP_VIEWS, shopFilterHref, shopFilterOf, shopViewHref, viewOf } from './links'
 import { sameDayOpen } from './promo'
 import { contactLinesOf } from '../shell/contact-strip'
 
@@ -74,6 +74,25 @@ describe('the shop page’s narrowed addresses', () => {
     expect(shopFilterHref({ kind: 'set', set: 'best-sellers' }, 'id')).toBe(
       '/id/belanja?productType=best-sellers',
     )
+  })
+})
+
+describe('the shop page’s left panel (the UI/UX revision of 2026-11-25)', () => {
+  it('lists the five views in the owner’s order, the best sellers first', () => {
+    expect(SHOP_VIEWS).toEqual(['best-sellers', 'themes', 'product-types', 'wall-decor', 'all'])
+  })
+
+  it('opens on the best sellers, and puts a theme’s prints under the themes', () => {
+    expect(viewOf(null)).toBe('best-sellers')
+    expect(viewOf(shopFilterOf({ productType: 'all' }))).toBe('all')
+    expect(viewOf(shopFilterOf({ productType: 'product-types' }))).toBe('product-types')
+    expect(viewOf(shopFilterOf({ subject: 'bali' }))).toBe('themes')
+  })
+
+  it('gives the best sellers the shop’s own address, every other view its set', () => {
+    expect(shopViewHref('best-sellers', 'en')).toBe('/shop')
+    expect(shopViewHref('themes', 'en')).toBe('/shop?productType=themes')
+    expect(shopViewHref('all', 'id')).toBe('/id/belanja?productType=all')
   })
 })
 

@@ -1,14 +1,19 @@
 /**
- * The shop page's narrowed views (TASKS.md 28.2): the shop listing at its own address narrowed by
- * one of the listing facets the URL contract already carries (`@engine/config` `FACET_KEYS`, which
- * the proxy keeps): a theme as `subject` (`?subject=bali` — what a print shows), and a set as
- * `productType` (`?productType=best-sellers`, `?productType=wall-decor`). The page
- * (`pages/browse`) reads them back with `shopFilterOf()`; anything else is the whole shop.
+ * The shop page's views (TASKS.md 28.2; the UI/UX revision of 2026-11-25, a left panel "like
+ * Tokopedia"): the shop at its own address, narrowed or switched by one of the listing facets the
+ * URL contract already carries (`@engine/config` `FACET_KEYS`, which the proxy keeps): a theme as
+ * `subject` (`?subject=bali` — what a print shows), and a view as `productType`
+ * (`?productType=themes`, `product-types`, `wall-decor`, `all`, and `best-sellers`, which is also
+ * the shop's own address). The page (`pages/browse`) reads them back with `shopFilterOf()`.
  */
 import { createHref, SITES, type SiteLocale } from '@engine/config/sites'
 
-export const SHOP_SETS = ['best-sellers', 'wall-decor'] as const
-export type ShopSet = (typeof SHOP_SETS)[number]
+/** The panel's views in the owner's order (the feedback of 2026-11-19): the first is the default. */
+export const SHOP_VIEWS = ['best-sellers', 'themes', 'product-types', 'wall-decor', 'all'] as const
+export type ShopView = (typeof SHOP_VIEWS)[number]
+
+export const SHOP_SETS = SHOP_VIEWS
+export type ShopSet = ShopView
 
 export type ShopFilter =
   | { readonly kind: 'theme'; readonly slug: string }
@@ -37,4 +42,17 @@ export function shopFilterOf(
   if (theme !== undefined) return SLUG.test(theme) ? { kind: 'theme', slug: theme } : null
   const set = SHOP_SETS.find((each) => each === firstOf(query.productType))
   return set === undefined ? null : { kind: 'set', set }
+}
+
+/** The view a filter shows: a theme's prints under the themes; no filter, the best sellers. */
+export function viewOf(filter: ShopFilter | null | undefined): ShopView {
+  if (filter === null || filter === undefined) return 'best-sellers'
+  return filter.kind === 'theme' ? 'themes' : filter.set
+}
+
+/** A view's one address: the best sellers at the shop's own, every other as its set. */
+export function shopViewHref(view: ShopView, locale: SiteLocale): string {
+  return view === 'best-sellers'
+    ? createHref(SITES.shop)('browse', {}, locale)
+    : shopFilterHref({ kind: 'set', set: view }, locale)
 }

@@ -1,0 +1,168 @@
+/* The shop's left panel and the view beside it (the UI/UX revision of 2026-11-25, "like
+   Tokopedia"): on a laptop a quiet column that stays in view while the cards scroll; on a phone two
+   rows above the view, each scrolling sideways inside itself. Every value is a token. */
+
+.layout {
+  display: grid;
+  grid-template-columns: 13.75rem minmax(0, 1fr);
+  gap: var(--space-7);
+  align-items: start;
+  margin-block-start: var(--space-4);
+}
+
+.content {
+  min-inline-size: 0;
+}
+
+.panel {
+  position: sticky;
+  inset-block-start: calc(var(--shop-chrome) + var(--space-4));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.views,
+.sorts {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* one view: a line of ink-muted words; the current one in ink, set off by a rule at its left */
+.view {
+  display: flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  padding-inline-start: var(--space-3);
+  box-shadow: inset var(--rule-hair) 0 0 var(--shop-rule-soft);
+  font: var(--shop-text-body);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color var(--dur-out) var(--ease);
+}
+
+.view:hover {
+  color: var(--color-text);
+}
+
+.view[aria-current] {
+  box-shadow: inset var(--rule-strong) 0 0 var(--color-text);
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+/* Shop all's branch: Sort by under it, set in from the views */
+.branch {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding-inline-start: var(--space-5);
+}
+
+.branchTitle {
+  margin: 0;
+  font: var(--shop-text-caps);
+  letter-spacing: var(--shop-tracking-caps);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.sort {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-block-size: 2.25rem;
+  font: var(--shop-text-meta);
+  color: var(--color-text-muted);
+  text-decoration: none;
+}
+
+/* a small ring for each sort, filled for the one in force */
+.sort::before {
+  content: '';
+  flex: none;
+  inline-size: 0.625rem;
+  block-size: 0.625rem;
+  border: var(--rule-hair) solid currentColor;
+  border-radius: 50%;
+}
+
+.sort:hover {
+  color: var(--color-text);
+}
+
+.sort[aria-current='true'] {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.sort[aria-current='true']::before {
+  background: currentColor;
+}
+
+@media (max-width: 56.25rem) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-3);
+  }
+
+  .panel {
+    position: static;
+    gap: var(--space-2);
+    margin-inline: calc(-1 * var(--shop-gutter));
+  }
+
+  /* the views as one row of chips, scrolling inside itself */
+  .views,
+  .sorts {
+    flex-direction: row;
+    gap: var(--space-2);
+    padding-inline: var(--shop-gutter);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .views::-webkit-scrollbar,
+  .sorts::-webkit-scrollbar {
+    display: none;
+  }
+
+  .view {
+    flex: none;
+    padding-inline: var(--space-3);
+    border: var(--rule-hair) solid var(--shop-rule-mid);
+    box-shadow: none;
+    white-space: nowrap;
+  }
+
+  .view[aria-current] {
+    border-color: var(--color-text);
+    box-shadow: none;
+  }
+
+  /* Sort by: a second row, its title first */
+  .branch {
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    padding-inline-start: var(--shop-gutter);
+  }
+
+  .branchTitle {
+    flex: none;
+  }
+
+  .sorts {
+    min-inline-size: 0;
+    padding-inline-start: var(--space-3);
+  }
+
+  .sort {
+    flex: none;
+    min-block-size: 2.75rem;
+    white-space: nowrap;
+  }
+}

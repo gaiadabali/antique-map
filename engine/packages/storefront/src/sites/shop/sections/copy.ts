@@ -19,6 +19,8 @@ export const SECTIONS_KEYS = defineMessages({
   'shopBy.wallDecor': 'Wall decor',
   'shopBy.seeAll': 'See all',
   'shopBy.seeAllOf': 'See all: {name}',
+  // The shop's left panel, as a screen reader names it (the UI/UX revision of 2026-11-25).
+  'shopBy.panel': 'Shop sections',
   'articles.title': 'Our latest articles',
   'articles.pageTitle': 'Articles',
   'articles.pageLede': 'Stories behind our maps and prints, each one a PDF to read or keep.',

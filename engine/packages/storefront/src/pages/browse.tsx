@@ -1,21 +1,25 @@
 /**
- * The shop page (6.1.b; TASKS.md 28.2): every published product, sort and page in the URL. The whole
- * shop's first page starts with "Shop by" — best sellers, themes, product types, wall decor — and
- * the same-day promise; `?subject=` (a theme) and `?productType=` (a set) narrow it to a theme, the best sellers or wall
- * decor (`../sites/shop/sections/links`). An unknown theme is a 404, never an empty listing.
+ * The shop page (6.1.b; TASKS.md 28.2; the UI/UX revision of 2026-11-25, a left panel "like
+ * Tokopedia"): one view at a time beside the panel, in the owner's order — the best sellers (the
+ * shop's own address), Shop by theme, Shop by product type, Wall decor, Shop all with its sort and
+ * pages in the URL — and the same-day promise above. `?productType=` names the view and
+ * `?subject=` (a theme) narrows the listing to a theme's prints
+ * (`../sites/shop/sections/links`). An unknown theme is a 404, never an empty listing.
  */
 import { notFound } from 'next/navigation'
+import { connection } from 'next/server'
 import type { Metadata } from 'next'
 
-import { categories, listing, type ListingOptions } from '../server/shop/catalogue'
-import { themeBySlug, wallDecorCategoryIds } from '../server/shop/catalogue/shop-by'
+import { listing, type ListingOptions } from '../server/shop/catalogue'
+import { collections } from '../server/shop/catalogue/collections'
+import { themeBySlug, themes, wallDecorCategoryIds } from '../server/shop/catalogue/shop-by'
 import { sectionsText } from '../sites/shop/sections/copy'
-import { shopFilterOf, type ShopFilter } from '../sites/shop/sections/links'
+import { shopFilterOf, viewOf, type ShopFilter } from '../sites/shop/sections/links'
 import { PromoBanner } from '../sites/shop/sections/promo'
-import { ShopByRails } from '../sites/shop/sections/shop-by-rails'
 import type { ListingSort } from '../server/shop/catalogue/queries'
 import { browseText } from '../sites/shop/browse/copy'
 import { BrowseView } from '../sites/shop/browse/browse-view'
+import { ShopByView } from '../sites/shop/browse/shop-by-view'
 import { currentSite, siteHref } from '../shell/site'
 import { siteLocale } from '../shell/messages'
 import { pageMetadata } from '@engine/site/seo'
@@ -53,22 +57,35 @@ export async function generateMetadata({ params }: ListingProps): Promise<Metada
   })
 }
 
-/** What a filter narrows the listing to, and the title it gives the page; `null`: no such theme. */
+/**
+ * What a listing view narrows the shop to, and its title; `null`: no such theme. No filter is the
+ * best sellers, the shop's first view.
+ */
 async function narrowed(
-  filter: ShopFilter,
+  filter: ShopFilter | undefined,
   locale: 'en' | 'id',
 ): Promise<{ readonly options: ListingOptions; readonly title: string } | null> {
   const t = sectionsText(locale)
-  if (filter.kind === 'theme') {
+  if (filter?.kind === 'theme') {
     const theme = await themeBySlug(filter.slug, locale)
     return theme === null ? null : { options: { themeId: theme.id }, title: theme.label }
   }
-  if (filter.set === 'best-sellers') {
-    return { options: { bestSeller: true }, title: t('shopBy.bestSellers') }
+  if (filter?.set === 'all') return { options: {}, title: browseText(locale)('browse.title') }
+  if (filter?.set === 'wall-decor') {
+    const ids = await wallDecorCategoryIds()
+    // No category marked Wall Decor: an empty set, never the whole shop under its name.
+    return { options: { categoryIds: ids.length > 0 ? ids : [0] }, title: t('shopBy.wallDecor') }
   }
-  const ids = await wallDecorCategoryIds()
-  // No category marked Wall Decor: an empty set, never the whole shop under its name.
-  return { options: { categoryIds: ids.length > 0 ? ids : [0] }, title: t('shopBy.wallDecor') }
+  return { options: { bestSeller: true }, title: t('shopBy.bestSellers') }
+}
+
+/** The themes' or the product types' cards; a failed read is an empty view, never an error. */
+async function cardsOf(view: 'themes' | 'product-types', locale: 'en' | 'id') {
+  try {
+    return view === 'themes' ? await themes(locale) : await collections()
+  } catch {
+    return []
+  }
 }
 
 export default async function ShopBrowse({ params, searchParams }: ListingProps) {
@@ -77,30 +94,34 @@ export default async function ShopBrowse({ params, searchParams }: ListingProps)
   if (locale === null) notFound() // the segment's not-found answers an unknown locale
 
   const state = await searchParams
-  const text = browseText(locale)
   const filter = shopFilterOf(state) ?? undefined
-  const narrow = filter ? await narrowed(filter, locale) : null
-  if (filter && narrow === null) notFound()
+  const view = viewOf(filter)
+  const banner = <PromoBanner locale={locale} />
+  if (filter?.kind === 'set' && (view === 'themes' || view === 'product-types')) {
+    // Request time, as a listing read is (`server/shop/catalogue`): the cards' reads are cached,
+    // and the same-day promise above them reads the clock.
+    await connection()
+    return (
+      <ShopByView locale={locale} view={view} cards={await cardsOf(view, locale)} banner={banner} />
+    )
+  }
+  const narrow = await narrowed(filter, locale)
+  if (narrow === null) notFound()
   const page = pageOf(state.page)
-  const [list, allCategories] = await Promise.all([
-    listing({ ...narrow?.options, sort: sortOf(state.sort), page }),
-    categories(),
-  ])
-  const t = sectionsText(locale)
-  // The whole shop's first page starts with "Shop by"; a narrowed or later page is the listing.
-  const intro =
-    filter === undefined && page === undefined
-      ? { title: t('shopBy.title'), lede: t('shopBy.lede'), rails: <ShopByRails locale={locale} /> }
-      : undefined
+  const list = await listing({ ...narrow.options, sort: sortOf(state.sort), page })
   return (
     <BrowseView
       listing={list}
-      categories={allCategories}
       locale={locale}
-      title={narrow?.title ?? text('browse.title')}
+      title={narrow.title}
       filter={filter}
-      intro={intro}
-      banner={<PromoBanner locale={locale} />}
+      // The shop's own address opens on the best sellers, with the line that starts the shop.
+      {...(filter === undefined
+        ? { description: sectionsText(locale)('shopBy.lede') }
+        : view === 'all'
+          ? { description: browseText(locale)('browse.description') }
+          : {})}
+      banner={banner}
     />
   )
 }

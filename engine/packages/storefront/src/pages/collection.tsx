@@ -79,7 +79,6 @@ export default async function CategoryPage({ params, searchParams }: SlugListing
   return (
     <BrowseView
       listing={list}
-      categories={allCategories}
       locale={locale}
       categorySlug={slug}
       title={category.label}
