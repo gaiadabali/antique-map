@@ -1,9 +1,11 @@
 /**
  * One store's card on the stores page (13.2): one of the stores' photographs, the address and
  * hours muted, how far it is once the visitor has asked for the nearest (Nearby), and the map
- * link. No name and no area line (the UI/UX revision of 2026-11-25): the section's title says
- * where the store is. Every word arrives resolved, so the page (a Server Component) and Nearby
- * (a client island, `./nearby`) draw the same card.
+ * link. No name (the UI/UX revision of 2026-11-25): a flagship's or a region's section title says
+ * where the store is; a Nearby card, under a title that says nothing of where, opens on its area
+ * instead, in ink (the skill review of 2026-11-25), so its cards can be told apart. Every word
+ * arrives resolved, so the page (a Server Component) and Nearby (a client island, `./nearby`) draw
+ * the same card.
  */
 import { CapsLink } from '../ui/caps-link'
 import styles from './stores.module.css'
@@ -11,6 +13,8 @@ import styles from './stores.module.css'
 /** A card's own data, ready to draw. */
 export type StoreCardData = {
   readonly key: string
+  /** The store's area, drawn first — Nearby's cards only; `null` elsewhere. */
+  readonly place: string | null
   readonly hours: string | null
   readonly mapUrl: string
   readonly photo: { readonly src: string; readonly width: number; readonly height: number }
@@ -49,6 +53,7 @@ export function StoreCard({
         decoding="async"
       />
       <div className={styles.storeBody}>
+        {store.place !== null && <p className={`${styles.line} ${styles.place}`}>{store.place}</p>}
         <p className={styles.line}>{words.address}</p>
         {store.hours !== null && (
           <p className={styles.line}>

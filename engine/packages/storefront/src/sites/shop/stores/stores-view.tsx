@@ -52,12 +52,16 @@ export function areaAnchors(names: readonly string[]): readonly string[] {
   })
 }
 
-/** A store as its card draws it: the photo chosen here, from its name and address. */
-function cardOf(store: Store): StoreCardData {
+/**
+ * A store as its card draws it: the photo chosen here, from its name and address; the area line
+ * for Nearby only (`./store-card`).
+ */
+function cardOf(store: Store, withPlace = false): StoreCardData {
   const key = `${store.name}|${store.address ?? ''}`
   const photo = storePhotoFor(key)
   return {
     key,
+    place: withPlace ? store.area : null,
     hours: store.hours,
     mapUrl: store.mapUrl,
     photo: { src: photo.src, width: photo.width, height: photo.height },
@@ -76,13 +80,14 @@ function cardWords(t: StoresText): StoreCardWords {
 function nearbyWords(t: StoresText, count: number): NearbyWords {
   return {
     ...cardWords(t),
-    ask: t('stores.nearbyAsk'),
+    lead: t('stores.nearbyLead'),
     note: t('stores.nearbyNote'),
     finding: t('stores.nearbyFinding'),
     sorted: t('stores.nearbySorted'),
     failed: t('stores.nearbyFailed'),
     seeAll: t('stores.seeAllNearby', { count }),
     distance: t('stores.distance', { distance: '{distance}' }),
+    near: t('stores.distanceNear'),
   }
 }
 
@@ -172,15 +177,18 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
                   <h2 id={section.anchor} className={styles.areaTitle}>
                     {section.label}
                   </h2>
-                  <span className={styles.count}>
-                    {t('stores.count', { count: section.stores.length })}
-                  </span>
+                  {/* A count of one says nothing the single card does not (the skill review of 2026-11-25). */}
+                  {section.stores.length > 1 ? (
+                    <span className={styles.count}>
+                      {t('stores.count', { count: section.stores.length })}
+                    </span>
+                  ) : null}
                 </div>
                 {section.region ? <p className={styles.drive}>{t('stores.drive')}</p> : null}
                 {section.nearby ? (
                   <NearbyStores
                     stores={data.nearby.map((store) => ({
-                      ...cardOf(store),
+                      ...cardOf(store, true),
                       position: store.position,
                     }))}
                     preview={NEARBY_PREVIEW}

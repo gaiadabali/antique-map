@@ -172,6 +172,12 @@
 }
 
 .hoursLabel {
+  /* a label, not the news: as quiet as the hours it names (the skill review of 2026-11-25) */
+  color: inherit;
+}
+
+/* Nearby's area, the line that tells one card from the next: in ink, above the address */
+.place {
   color: var(--color-text);
 }
 
@@ -230,7 +236,7 @@
   margin: calc(-1 * var(--space-2)) 0 var(--space-4);
 }
 
-/* "Show the stores nearest to me": plain words in ink, not a call to action */
+/* "Stores nearest to you": plain words in ink, not a call to action */
 .nearbyLead {
   margin: 0;
   font: var(--shop-text-body);

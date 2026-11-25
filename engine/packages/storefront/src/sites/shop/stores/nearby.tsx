@@ -2,7 +2,7 @@
 
 /**
  * Nearby on the stores page (the order of 2026-11-25): every other store, by name, its first ones
- * and "See all". Above them, "Show the stores nearest to me" as plain words, not a call to action,
+ * and "See all". Above them, "Stores nearest to you" as plain words, not a call to action,
  * and under it the line that explains or reports (the UI/UX revisions of 2026-11-25). Once the
  * section comes into view the browser is asked, a single time, where the visitor is, and the
  * stores are put nearest first, each with its distance. The position stays on the device
@@ -19,15 +19,18 @@ import styles from './stores.module.css'
 export type NearbyStore = StoreCardData & { readonly position: Position | null }
 
 export type NearbyWords = StoreCardWords & {
-  readonly ask: string
+  /** "Stores nearest to you": a description, not a call to action. */
+  readonly lead: string
   readonly note: string
   readonly finding: string
   readonly sorted: string
   readonly failed: string
   /** "See all nearby stores (90)", resolved. */
   readonly seeAll: string
-  /** "{distance} km away": `{distance}` is filled here. */
+  /** "{distance} km away": `{distance}` is filled here, in whole kilometres. */
   readonly distance: string
+  /** "Under 1 km away": nearer than a whole kilometre. */
+  readonly near: string
 }
 
 type Status = 'idle' | 'finding' | 'sorted' | 'failed'
@@ -47,11 +50,16 @@ export function NearbyStores({ stores, preview, words, locale }: Props): React.R
   const listed = origin
     ? nearestFirst(stores, origin)
     : stores.map((store) => ({ ...store, km: null as number | null }))
+  // Whole kilometres: the stores' positions are rounded to about one (`server/shop/stores/group`).
   const number = new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-GB', {
-    maximumFractionDigits: 1,
+    maximumFractionDigits: 0,
   })
   const distanceOf = (km: number | null) =>
-    km === null ? null : words.distance.replace('{distance}', number.format(km))
+    km === null
+      ? null
+      : km < 1
+        ? words.near
+        : words.distance.replace('{distance}', number.format(Math.round(km)))
 
   // Ask once, when Nearby comes into view (at once without an observer to tell).
   useEffect(() => {
@@ -102,7 +110,7 @@ export function NearbyStores({ stores, preview, words, locale }: Props): React.R
   return (
     <>
       <div className={styles.nearbyBar} ref={barRef}>
-        <p className={styles.nearbyLead}>{words.ask}</p>
+        <p className={styles.nearbyLead}>{words.lead}</p>
         <p className={styles.nearbyStatus} role="status">
           {line[status]}
         </p>
