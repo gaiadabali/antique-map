@@ -799,7 +799,7 @@
   "stores.lede.one": "Old East Indies is stocked in {count} shop in Bali.",
   "stores.lede.other": "Old East Indies is stocked in {count} shops across Bali.",
   "stores.map": "Open in Maps",
-  "stores.mapFor": "Open {name} in Maps (opens in a new tab)",
+  "stores.mapLabel": "Open in Maps (opens in a new tab)",
   "stores.region.amed": "Amed",
   "stores.region.canggu": "Canggu",
   "stores.nearby": "Nearby",

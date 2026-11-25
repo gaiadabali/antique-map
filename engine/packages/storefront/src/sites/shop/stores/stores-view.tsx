@@ -52,23 +52,25 @@ export function areaAnchors(names: readonly string[]): readonly string[] {
   })
 }
 
-/** A store as its card draws it: the photo chosen and the map link's name resolved here. */
-function cardOf(store: Store, t: StoresText): StoreCardData {
+/** A store as its card draws it: the photo chosen here, from its name and address. */
+function cardOf(store: Store): StoreCardData {
   const key = `${store.name}|${store.address ?? ''}`
   const photo = storePhotoFor(key)
   return {
     key,
-    name: store.name,
-    area: store.area,
     hours: store.hours,
     mapUrl: store.mapUrl,
-    mapLabel: t('stores.mapFor', { name: store.name }),
     photo: { src: photo.src, width: photo.width, height: photo.height },
   }
 }
 
 function cardWords(t: StoresText): StoreCardWords {
-  return { address: t('stores.address'), hours: t('stores.hours'), map: t('stores.map') }
+  return {
+    address: t('stores.address'),
+    hours: t('stores.hours'),
+    map: t('stores.map'),
+    mapLabel: t('stores.mapLabel'),
+  }
 }
 
 function nearbyWords(t: StoresText, count: number): NearbyWords {
@@ -89,7 +91,7 @@ function Cards({ stores, t }: { stores: readonly Store[]; t: StoresText }) {
   return (
     <ul className={styles.grid}>
       {stores.map((store) => {
-        const card = cardOf(store, t)
+        const card = cardOf(store)
         return <StoreCard key={card.key} store={card} words={words} />
       })}
     </ul>
@@ -178,7 +180,7 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
                 {section.nearby ? (
                   <NearbyStores
                     stores={data.nearby.map((store) => ({
-                      ...cardOf(store, t),
+                      ...cardOf(store),
                       position: store.position,
                     }))}
                     preview={NEARBY_PREVIEW}

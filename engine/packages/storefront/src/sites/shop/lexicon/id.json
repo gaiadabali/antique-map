@@ -792,7 +792,7 @@
   "stores.hours": "Jam buka",
   "stores.lede.other": "Old East Indies tersedia di {count} toko di seluruh Bali.",
   "stores.map": "Buka di Maps",
-  "stores.mapFor": "Buka {name} di Maps (terbuka di tab baru)",
+  "stores.mapLabel": "Buka di Maps (terbuka di tab baru)",
   "stores.region.amed": "Amed",
   "stores.region.canggu": "Canggu",
   "stores.nearby": "Terdekat",

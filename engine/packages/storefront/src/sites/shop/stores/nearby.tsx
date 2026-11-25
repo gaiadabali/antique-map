@@ -2,15 +2,14 @@
 
 /**
  * Nearby on the stores page (the order of 2026-11-25): every other store, by name, its first ones
- * and "See all", and a button that asks the browser where the visitor is and puts the stores
- * nearest first, each with its distance. The browser asks only when the button is pressed; the
+ * and "See all". Above them, a button that reads as running text, with its explanation under it
+ * (the UI/UX revision of 2026-11-25): pressed, it asks the browser where the visitor is and puts
+ * the stores nearest first, each with its distance. The browser asks only when it is pressed; the
  * position stays on the device (`./distance` runs here) and is never sent anywhere. Without it —
  * refused, unavailable, or no answer in time — the stores stay by name and a line says so. Every
  * word arrives as a prop.
  */
 import { useState } from 'react'
-
-import { Button } from '@engine/ui/button'
 
 import type { Position } from '../../../server/shop/stores/group'
 import { nearestFirst } from './distance'
@@ -87,15 +86,14 @@ export function NearbyStores({ stores, preview, words, locale }: Props): React.R
   return (
     <>
       <div className={styles.nearbyBar}>
-        <Button
+        <button
           type="button"
-          variant="secondary"
-          size="small"
+          className={styles.nearbyAsk}
           onClick={ask}
           disabled={status === 'finding'}
         >
           {words.ask}
-        </Button>
+        </button>
         <p className={styles.nearbyStatus} role="status">
           {line[status]}
         </p>

@@ -32,7 +32,7 @@ export const STORES_KEYS = defineMessages({
   'stores.count.one': '{count} store',
   'stores.hours': 'Opening hours',
   'stores.map': 'Open in Maps',
-  'stores.mapFor': 'Open {name} in Maps (opens in a new tab)',
+  'stores.mapLabel': 'Open in Maps (opens in a new tab)',
   'stores.empty': 'No stores are listed yet — please check back soon.',
 })
 
