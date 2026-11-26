@@ -64,7 +64,7 @@ const WORDS = {
     promo: 'Delivery promise',
     contact: 'Contact us',
     flagships: 'Flagship stores',
-    drive: 'Within a 30-minute drive.',
+    drive: '3 more stores within a 30-minute drive',
     nearby: 'nearby',
     pdf: /\(PDF, opens in a new tab\)$/,
     retailer: 'Become a Retailer',
@@ -86,7 +86,7 @@ const WORDS = {
     promo: 'Janji pengiriman',
     contact: 'Hubungi kami',
     flagships: 'Toko utama',
-    drive: 'Dapat dicapai dalam 30 menit berkendara.',
+    drive: '3 toko lain dalam 30 menit berkendara',
     nearby: 'terdekat',
     pdf: /\(PDF, terbuka di tab baru\)$/,
     retailer: 'Menjadi Pengecer',
@@ -189,7 +189,8 @@ export function feedbackTests(): void {
           expect(sections.first()).toHaveText(w.flagships, { timeout: 5_000 }),
         )
         const ubud = page.locator('section[aria-labelledby="ubud"]')
-        await expect(ubud).toContainText(w.drive)
+        // The owner's 30-minute drive, on the link to Ubud's other stores (2026-11-26).
+        await expect(ubud.getByRole('link', { name: w.drive })).toBeVisible()
         // One store a region (the order of 2026-11-25); Ubud's other three are under Nearby.
         await expect(ubud.locator('li')).toHaveCount(1)
         await expect(page.locator(`section[aria-labelledby="${w.nearby}"] li`)).toHaveCount(3)
