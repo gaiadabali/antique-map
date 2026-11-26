@@ -3,8 +3,9 @@
  * owner's feedback of 2026-11-19): the listing's breadcrumb and head, a hairline sub-nav that
  * sticks under the header (each link to its section's title, and the page glides there), then the
  * two flagship stores, then Lombok, Ubud, Amed and Canggu — one store each (the order of
- * 2026-11-25), within a 30-minute drive — then every other store as Nearby, its first and "See
- * all", so a long remainder never stretches the page, above all on a phone. A section with no
+ * 2026-11-25), two to a row (2026-11-26), within a 30-minute drive — then every other store as
+ * Nearby, its first and "See all", so a long remainder never stretches the page, above all on a
+ * phone. A section with no
  * store is left out (no flagship set: no flagship section). Each store: the name in the serif, its
  * area, the owner's one address and the hours muted, and the owner's map link
  * (`server/shop/stores/owner-location`). The title, lede and empty note are the page's
@@ -194,6 +195,55 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
       region: group.region,
       lead: t('stores.nearbyArea', { area: t(`stores.region.${group.region}`) }),
     }))
+  const draw = (section: (typeof sections)[number]) => (
+    <section key={section.anchor} className={styles.area} aria-labelledby={section.anchor}>
+      {section.nearby
+        ? areas.map((area) => (
+            <span
+              key={area.region}
+              id={`${section.anchor}-${area.region}`}
+              className={styles.landing}
+            />
+          ))
+        : null}
+      <div className={styles.areaHead}>
+        <h2 id={section.anchor} className={styles.areaTitle}>
+          {section.label}
+        </h2>
+        {/* A count of one says nothing the single card does not (the skill review of 2026-11-25). */}
+        {section.stores.length > 1 ? (
+          <span className={styles.count}>
+            {t('stores.count', { count: section.stores.length })}
+          </span>
+        ) : null}
+      </div>
+      {section.region ? <p className={styles.drive}>{t('stores.drive')}</p> : null}
+      {section.nearby ? (
+        <NearbyStores
+          stores={data.nearby.map((store, index) => ({
+            ...cardOf(store, String(index), true),
+            position: store.position,
+            region: store.region,
+          }))}
+          preview={NEARBY_PREVIEW}
+          words={nearbyWords(t, data.nearby.length)}
+          locale={locale}
+          anchor={section.anchor}
+          areas={areas}
+        />
+      ) : (
+        <Cards stores={section.stores} t={t} />
+      )}
+      {section.more && nearbyAnchor ? (
+        <p className={styles.moreIn}>
+          <CapsLink href={`#${nearbyAnchor}-${section.more.region}`}>
+            {t('stores.moreIn', { count: section.more.count, area: section.label })}
+          </CapsLink>
+        </p>
+      ) : null}
+    </section>
+  )
+  const regions = sections.filter((section) => section.region)
   return (
     <div className={styles.page}>
       <Crumb
@@ -220,60 +270,11 @@ export function StoresView({ data, locale, block }: Props): React.ReactElement {
             label={t('stores.areas')}
             areas={sections.map(({ anchor, label }) => ({ anchor, label }))}
           />
-          {sections.map((section) => {
-            return (
-              <section
-                key={section.anchor}
-                className={styles.area}
-                aria-labelledby={section.anchor}
-              >
-                {section.nearby
-                  ? areas.map((area) => (
-                      <span
-                        key={area.region}
-                        id={`${section.anchor}-${area.region}`}
-                        className={styles.landing}
-                      />
-                    ))
-                  : null}
-                <div className={styles.areaHead}>
-                  <h2 id={section.anchor} className={styles.areaTitle}>
-                    {section.label}
-                  </h2>
-                  {/* A count of one says nothing the single card does not (the skill review of 2026-11-25). */}
-                  {section.stores.length > 1 ? (
-                    <span className={styles.count}>
-                      {t('stores.count', { count: section.stores.length })}
-                    </span>
-                  ) : null}
-                </div>
-                {section.region ? <p className={styles.drive}>{t('stores.drive')}</p> : null}
-                {section.nearby ? (
-                  <NearbyStores
-                    stores={data.nearby.map((store, index) => ({
-                      ...cardOf(store, String(index), true),
-                      position: store.position,
-                      region: store.region,
-                    }))}
-                    preview={NEARBY_PREVIEW}
-                    words={nearbyWords(t, data.nearby.length)}
-                    locale={locale}
-                    anchor={section.anchor}
-                    areas={areas}
-                  />
-                ) : (
-                  <Cards stores={section.stores} t={t} />
-                )}
-                {section.more && nearbyAnchor ? (
-                  <p className={styles.moreIn}>
-                    <CapsLink href={`#${nearbyAnchor}-${section.more.region}`}>
-                      {t('stores.moreIn', { count: section.more.count, area: section.label })}
-                    </CapsLink>
-                  </p>
-                ) : null}
-              </section>
-            )
-          })}
+          {sections.filter((section) => !section.region && !section.nearby).map(draw)}
+          {/* Lombok, Ubud, Amed and Canggu two to a row, one under another on a phone (the
+              UI/UX revision of 2026-11-26). */}
+          {regions.length > 0 ? <div className={styles.regions}>{regions.map(draw)}</div> : null}
+          {sections.filter((section) => section.nearby).map(draw)}
         </>
       )}
     </div>

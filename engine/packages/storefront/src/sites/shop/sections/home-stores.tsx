@@ -1,6 +1,6 @@
 /**
  * The home's "Stores" (TASKS.md 28.2; the owner's feedback of 2026-11-19): the flagship stores by
- * name and area, the regions and Nearby as links into the stores page, and "See all stores". The read is the
+ * area, the regions and Nearby as links into the stores page, and "See all stores". The read is the
  * stores page's own public projection (`server/shop/stores`), streamed; with no listed store, or a
  * failed read, the section is left out.
  */
@@ -40,13 +40,12 @@ async function Stores({ locale }: { readonly locale: SiteLocale }) {
       <p className={styles.bandLede}>{t('homeStores.lede')}</p>
       {data.flagships.length > 0 ? (
         <ul className={styles.flagships}>
-          {data.flagships.map((store) => (
-            <li key={`${store.name}|${store.address ?? ''}`} className={styles.flagship}>
+          {/* Where each flagship is, not its name (as the stores page's cards; the UI/UX
+              revision of 2026-11-26): the area is the title, the name only for a store with none. */}
+          {data.flagships.map((store, index) => (
+            <li key={index} className={styles.flagship}>
               <span className={styles.flagshipLabel}>{t('homeStores.flagship')}</span>
-              <h3 className={styles.flagshipName}>{store.name}</h3>
-              {(store.area ?? store.address) ? (
-                <p className={styles.flagshipLine}>{store.area ?? store.address}</p>
-              ) : null}
+              <h3 className={styles.flagshipName}>{store.area ?? store.name}</h3>
             </li>
           ))}
         </ul>

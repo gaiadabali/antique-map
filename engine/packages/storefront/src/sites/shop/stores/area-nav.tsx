@@ -17,11 +17,38 @@ type Props = { readonly areas: readonly Area[]; readonly label: string }
 export function AreaNav({ areas, label }: Props): React.ReactElement {
   const [current, setCurrent] = useState(areas[0]?.anchor ?? null)
   const navRef = useRef<HTMLElement>(null)
+  // A clicked link stays marked while the page glides to it: two regions share a row
+  // (2026-11-26), and on the way the page passes others, so the observer waits until it stops.
+  const gliding = useRef(false)
+  const settleRef = useRef<(() => void) | null>(null)
+
+  function mark(anchor: string): void {
+    settleRef.current?.()
+    setCurrent(anchor)
+    gliding.current = true
+    // The browser first jumps, then glides: a scroll that ends within 250 ms is that jump.
+    const clicked = performance.now()
+    let timer = 0
+    const settle = () => {
+      gliding.current = false
+      window.clearTimeout(timer)
+      window.removeEventListener('scrollend', ended)
+      settleRef.current = null
+    }
+    const ended = () => {
+      if (performance.now() - clicked > 250) settle()
+    }
+    timer = window.setTimeout(settle, 1500)
+    window.addEventListener('scrollend', ended)
+    settleRef.current = settle
+  }
 
   useEffect(() => {
     if (!('IntersectionObserver' in window)) return
     const observer = new IntersectionObserver(
       (entries) => {
+        if (gliding.current) return
+        // of two side by side, the left one: the first observed wins a tie (the sort is stable)
         const hit = entries
           .filter((entry) => entry.isIntersecting)
           .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0]
@@ -56,7 +83,7 @@ export function AreaNav({ areas, label }: Props): React.ReactElement {
           href={`#${area.anchor}`}
           className={styles.areaLink}
           aria-current={area.anchor === current ? 'location' : undefined}
-          onClick={() => setCurrent(area.anchor)}
+          onClick={() => mark(area.anchor)}
         >
           {area.label}
         </a>

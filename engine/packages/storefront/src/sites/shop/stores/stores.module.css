@@ -125,6 +125,17 @@
   list-style: none;
 }
 
+/* Lombok, Ubud, Amed, Canggu: two to a row, each its one card across its own column */
+.regions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: var(--shop-gap);
+}
+
+.regions .grid {
+  grid-template-columns: 1fr;
+}
+
 /* a photograph at the left, the words beside it */
 .store {
   display: grid;
@@ -194,7 +205,8 @@
     font-size: 1.5rem;
   }
 
-  .grid {
+  .grid,
+  .regions {
     grid-template-columns: 1fr;
   }
 

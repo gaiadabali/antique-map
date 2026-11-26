@@ -133,12 +133,6 @@
   font: var(--shop-title-sub);
 }
 
-.flagshipLine {
-  margin: var(--space-1) 0 0;
-  font: var(--shop-text-meta);
-  color: var(--color-text-muted);
-}
-
 .regions {
   display: flex;
   flex-wrap: wrap;
