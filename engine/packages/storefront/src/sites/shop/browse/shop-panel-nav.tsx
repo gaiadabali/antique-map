@@ -14,6 +14,11 @@ import { useEffect, useRef, useState } from 'react'
 
 import styles from './shop-panel.module.css'
 
+/** How long the page must stay still after a panel click before the follower marks again. */
+const SETTLE_MS = 150
+/** The longest a click holds its mark when the page never scrolls (already at its section). */
+const GLIDE_MAX_MS = 1500
+
 /** Scrolls a sideways row (a phone's) so its marked link sits whole in sight, near the middle. */
 function keepInView(row: HTMLElement | null): void {
   const link = row?.querySelector<HTMLElement>('[aria-current]')
@@ -55,6 +60,27 @@ export function ShopPanelNav({ label, items, current, follow, sorts, branchOf }:
   const [marked, setMarked] = useState(current)
   const rowRef = useRef<HTMLUListElement>(null)
   const sortsRef = useRef<HTMLUListElement>(null)
+  // A clicked link stays marked while the page glides to its section (the owner, 2026-11-27): on
+  // the way the page passes the sections above it, so the scroll follower waits until it stops —
+  // no scroll for `SETTLE_MS`, or `GLIDE_MAX_MS` at most when the click scrolls nothing.
+  const gliding = useRef(false)
+  const settleTimer = useRef(0)
+  const updateRef = useRef<(() => void) | null>(null)
+
+  function settleAfter(ms: number): void {
+    window.clearTimeout(settleTimer.current)
+    settleTimer.current = window.setTimeout(() => {
+      gliding.current = false
+      updateRef.current?.()
+    }, ms)
+  }
+
+  function choose(key: string): void {
+    setMarked(key)
+    if (!follow) return
+    gliding.current = true
+    settleAfter(GLIDE_MAX_MS)
+  }
 
   useEffect(() => {
     if (!follow) return
@@ -76,7 +102,12 @@ export function ShopPanelNav({ label, items, current, follow, sorts, branchOf }:
       }
       if (key) setMarked(key)
     }
+    updateRef.current = update
     const onScroll = () => {
+      if (gliding.current) {
+        settleAfter(SETTLE_MS)
+        return
+      }
       if (frame === 0) frame = requestAnimationFrame(update)
     }
     update()
@@ -86,6 +117,8 @@ export function ShopPanelNav({ label, items, current, follow, sorts, branchOf }:
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
       cancelAnimationFrame(frame)
+      window.clearTimeout(settleTimer.current)
+      updateRef.current = null
     }
   }, [follow, items])
 
@@ -104,7 +137,7 @@ export function ShopPanelNav({ label, items, current, follow, sorts, branchOf }:
               href={item.href}
               className={styles.view}
               aria-current={item.key === marked ? 'true' : undefined}
-              onClick={() => setMarked(item.key)}
+              onClick={() => choose(item.key)}
             >
               {item.label}
             </a>
