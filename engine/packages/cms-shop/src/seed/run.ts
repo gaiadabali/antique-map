@@ -82,10 +82,17 @@ export async function seedMockShop(
  * beside the repo, as the gallery's seed looks); `null` on a server, which never does — the
  * committed export stands in for it.
  */
-export function catalogueDir(env: Readonly<Record<string, string | undefined>> = process.env) {
+export function catalogueDir(
+  env: Readonly<Record<string, string | undefined>> = process.env,
+  here: string | undefined = import.meta.dirname,
+) {
+  // Inside the built server (the admin's seed button) `import.meta.dirname` names no folder: there
+  // is then no sibling folder to look in, and the committed export stands in.
   const candidates = [
     ...(env.LEGACY_DATA_DIR ? [env.LEGACY_DATA_DIR] : []),
-    resolve(import.meta.dirname, '..', '..', '..', '..', '..', '..', 'indies-legacy-data'),
+    ...(typeof here === 'string'
+      ? [resolve(here, '..', '..', '..', '..', '..', '..', 'indies-legacy-data')]
+      : []),
   ]
   return candidates.find((candidate) => existsSync(candidate)) ?? null
 }
