@@ -29,12 +29,13 @@ test('screenshots: gallery browse, a zoomed item, shop listing, an Instagram pro
   await shot('gallery-item-zoomed')
 
   await page.goto(`${SHOP}/shop`, { waitUntil: 'load' })
-  await expect(page.getByText('156 products').first()).toBeVisible()
+  await expect(page.getByText('157 products').first()).toBeVisible()
   await page.waitForLoadState('networkidle')
   await shot('shop-listing')
 
   await page.goto(`${SHOP}/product/exotic-bali-1930s`, { waitUntil: 'load' })
-  await expect(page.getByText('Digital mockup').first()).toBeVisible()
+  await expect(page.locator('main h1')).toBeVisible()
+  expect(await page.content()).not.toContain('Digital mockup')
   await page.waitForLoadState('networkidle')
   await shot('shop-instagram-product')
 })

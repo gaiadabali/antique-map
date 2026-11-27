@@ -14,7 +14,7 @@ import { cms } from '@engine/cms/instance'
 
 import { shopOnly } from '@engine/cms-shop/site'
 import { PUBLIC_IMAGE_SELECT } from '@engine/site/media/public-image'
-import { imageOf } from '../catalogue/images'
+import { firstImageOf } from '../catalogue/images'
 import type { CatalogueImage } from '../catalogue/view-models'
 
 export type BagDisplay = {
@@ -84,7 +84,7 @@ export async function displayFor(productIds: readonly number[]): Promise<readonl
       productId: id,
       slug: doc.slug,
       name: doc.name,
-      image: imageOf((asArray(doc.images)[0] as { image?: unknown } | undefined)?.image),
+      image: firstImageOf(asArray(doc.images)),
       variantLabels: labels,
     })
   }

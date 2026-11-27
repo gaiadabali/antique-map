@@ -25,38 +25,6 @@ tool drafts listings from photographs.
 | **Hosting**  | Helios (CloudPanel · pm2 · Node 22) via the pull-based GDA deploy pipeline          |
 | **Locales**  | English + Indonesian                                                                |
 
-## Where to start
-
-| Document | For |
-| -------- | --- |
-| [docs/PLAN-V2.md](docs/PLAN-V2.md) | **The spine** — two apps, two CMSs, two databases (DR-17): the target shape, what moves where, phases 21–26 |
-| [docs/PLAN.md](docs/PLAN.md) | What we are building and the settled decisions (DR-2…16 stand; DR-1 retired by DR-17), the first 11 phases |
-| [TASKS.md](TASKS.md) | The progress board: phases → tasks → subtasks, each task ending in a Check; the owner's open decisions |
-| [AGENTS.md](AGENTS.md) | Rules every agent follows; read before touching anything |
-| [docs/WORKFLOW.md](docs/WORKFLOW.md) | Lanes, file ownership, migrations, dispatch and the report format |
-| [docs/CARRY-OVER.md](docs/CARRY-OVER.md) | What the code written under the earlier plan keeps, simplifies and deletes |
-| [.claude/specs/indies-platform/requirements.md](.claude/specs/indies-platform/requirements.md) | The numbered requirements every task traces to |
-| [.claude/specs/indies-platform/design.md](.claude/specs/indies-platform/design.md) | The design summary agents read first |
-
-### Reference
-
-| Document | For |
-| -------- | --- |
-| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Topology, stack, layout, rendering and caching, media, search |
-| [docs/CONTENT-MODEL.md](docs/CONTENT-MODEL.md) | Collections, fields, access — the glossary |
-| [docs/COMMERCE.md](docs/COMMERCE.md) | The shop: cart, checkout, payment, stock per store, nearest store, statuses, tracking |
-| [docs/AI.md](docs/AI.md) | The chat, the drafting tool, their guardrails and evaluation |
-| [docs/SECURITY.md](docs/SECURITY.md) | Threat model and the checklist per area |
-| [docs/COMPLIANCE.md](docs/COMPLIANCE.md) | Personal data, retention, legal pages |
-| [docs/ANALYTICS.md](docs/ANALYTICS.md) | First-party events and the dashboard |
-| [docs/EXPERIENCE-GALLERY.md](docs/EXPERIENCE-GALLERY.md), [docs/EXPERIENCE-SHOP.md](docs/EXPERIENCE-SHOP.md) | What each site does, page by page |
-| [docs/DESIGN-SYSTEM.md](docs/DESIGN-SYSTEM.md) | The shared base and each site's accents |
-| [docs/CONTENT-OPERATIONS.md](docs/CONTENT-OPERATIONS.md) | How the owner's team runs the admin |
-| [docs/DATA.md](docs/DATA.md) | Seeding, the spreadsheet import, redirects |
-| [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md), [docs/CONVENTIONS.md](docs/CONVENTIONS.md) | Hosting and backups; code conventions |
-| [docs/RESEARCH.md](docs/RESEARCH.md) | Background market research (from the earlier plan) |
-| [docs/archive/2026-10-replan/](docs/archive/2026-10-replan/) | The superseded 44-phase plan and its docs — history only |
-
 ## Run it
 
 ```bash

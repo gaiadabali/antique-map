@@ -32,6 +32,10 @@ export function imageOf(media: unknown): CatalogueImage | null {
   if (typeof media !== 'object' || media === null) return null
   const record = media as Record<string, unknown>
   if (typeof record.alt !== 'string') return null
+  // The shop shows no digital mockups at all (the owner's request, 2026-11-25): a rendered image
+  // (the print in a mat or a frame) is no image here, so a product shows its next real picture.
+  // A composite — the artwork itself with the shop's logo tile on it — stays, unlabelled.
+  if (isMockup(record.provenance)) return null
   const url = derivativeUrlOf(record)
   if (url === null) return null
   const srcSet = derivativeSrcSetOf(record)
@@ -43,6 +47,21 @@ export function imageOf(media: unknown): CatalogueImage | null {
     ...(srcSet !== null ? { srcSet } : {}),
     syntheticLabel: syntheticLabelOf(record.provenance),
   }
+}
+
+/** Whether a stored provenance is a mock-up the shop hides: a rendered print in a mat or frame. */
+function isMockup(provenance: unknown): boolean {
+  return provenance === ('rendered' satisfies MediaProvenance)
+}
+
+/** A product's first picture the shop shows: its first image that is not a mockup, or null. */
+export function firstImageOf(images: unknown): CatalogueImage | null {
+  if (!Array.isArray(images)) return null
+  for (const row of images) {
+    const image = imageOf((row as { image?: unknown } | null)?.image)
+    if (image !== null) return image
+  }
+  return null
 }
 
 export function imagesOf(doc: {

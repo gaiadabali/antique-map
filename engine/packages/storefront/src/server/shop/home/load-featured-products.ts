@@ -31,7 +31,7 @@ import type { SiteLocale } from '@engine/config/sites'
 
 import { shopOnly } from '@engine/cms-shop/site'
 import { PUBLIC_IMAGE_SELECT } from '@engine/site/media/public-image'
-import { imageOf } from '../catalogue/images'
+import { firstImageOf } from '../catalogue/images'
 import type { CatalogueImage } from '../catalogue/view-models'
 import { inPickedOrder, railQuery, type RailSelection } from '../pages/rail'
 
@@ -95,7 +95,7 @@ export async function loadFeaturedProducts(
       // The catalogue's own image reading (`../catalogue/images`): the public derivative once the
       // media pipeline has made it, its srcSet ladder and its synthetic label (10.6) — never
       // Payload's staff-only file route, which a not-ready record shows no image instead of.
-      image: imageOf(images?.[0]?.image),
+      image: firstImageOf(images),
     }
   })
 }

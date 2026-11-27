@@ -44,12 +44,17 @@ describe('the shop product image', () => {
   })
 
   it.each([
-    ['rendered', null], // the shop shows no "Digital mockup" label (the owner, 2026-11-24)
-    ['composite', null],
     ['ai-generated', 'ai-generated'],
     ['photograph', null],
+    // The artwork with the shop's logo tile on it: shown, with no "Digital mockup" label.
+    ['composite', null],
   ])('labels a %s image %s', (provenance, label) => {
     expect(imageOf(media({ provenance }))?.syntheticLabel).toBe(label)
+  })
+
+  // The shop shows no digital mockups at all (the owner, 2026-11-25): no print in a mat or frame.
+  it('shows no rendered image', () => {
+    expect(imageOf(media({ provenance: 'rendered' }))).toBeNull()
   })
 
   it('treats a missing or unknown provenance as a photograph', () => {
