@@ -3,11 +3,12 @@
  *
  * - **stores** — on the seed stores only (a real store keeps what the owner set): a store's region is its `area` when that is exactly Lombok, Ubud, Amed or Canggu
  *   (any case), else none; the flagships are the first Ubud store and the first Canggu store by id.
+ *   While no store is in Lombok, one seed store stands in for it (`lombokPlaceholderId`).
  * - **settings** — the newsletter pop-up on, and the shop's WhatsApp set to the preview's number.
  *
  * Each write happens only where the record differs, so a second run writes nothing.
  */
-import { allOf, writeOf, type Step } from './shared'
+import { allOf, writeOf, type Doc, type Step } from './shared'
 
 const REGIONS = ['lombok', 'ubud', 'amed', 'canggu'] as const
 const FLAGSHIP_REGIONS = ['ubud', 'canggu'] as const
@@ -30,16 +31,32 @@ const SEED_NAME = /^Seed store, /
 export const isSeedStore = (store: object): boolean =>
   SEED_NAME.test(String((store as { name?: unknown }).name ?? ''))
 
+/**
+ * The Lombok placeholder (the owner's request, 2026-11-27): the seed sheet has no Lombok store, so
+ * the stores page would never show its Lombok card. While no store at all is in Lombok, the first
+ * seed store (by id) with no region of its own stands in for one. A real Lombok store retires it on
+ * the next run.
+ */
+function lombokPlaceholderId(all: readonly Doc[], seeds: readonly Doc[]): number | null {
+  const inLombok = (each: Doc) =>
+    regionOf(each.area) === 'lombok' || (!isSeedStore(each) && each.region === 'lombok')
+  if (all.some(inLombok)) return null
+  const free = seeds.filter((each) => regionOf(each.area) === null).sort((a, b) => a.id - b.id)
+  return free[0]?.id ?? null
+}
+
 export async function seedStoreRegions(step: Step): Promise<StoresReport> {
-  const stores = (await allOf(step, 'stores')).filter((each) => isSeedStore(each))
+  const all = await allOf(step, 'stores')
+  const stores = all.filter((each) => isSeedStore(each))
   const flagshipIds = new Set<number>()
   for (const region of FLAGSHIP_REGIONS) {
     const first = stores.find((each) => regionOf(each.area) === region)
     if (first) flagshipIds.add(first.id)
   }
+  const lombokId = lombokPlaceholderId(all, stores)
   let changed = 0
   for (const store of stores) {
-    const region = regionOf(store.area)
+    const region = store.id === lombokId ? 'lombok' : regionOf(store.area)
     const flagship = flagshipIds.has(store.id)
     if ((store.region ?? null) === region && (store.flagship === true) === flagship) continue
     await step.payload.update({

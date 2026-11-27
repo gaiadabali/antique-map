@@ -30,11 +30,38 @@ describe('seedStoreRegions', () => {
       { id: 3, name: 'Seed store, Area 003', area: 'Denpasar' },
     )
     const report = await seedStoreRegions(step)
-    expect(report).toEqual({ stores: 3, changed: 2, flagships: 1 })
+    expect(report).toEqual({ stores: 3, changed: 3, flagships: 1 })
     expect(updates).toEqual([
       { id: 1, data: { region: 'ubud', flagship: true } },
       { id: 2, data: { region: 'ubud', flagship: false } },
+      // No store in Lombok: the seed store with no region of its own stands in for one.
+      { id: 3, data: { region: 'lombok', flagship: false } },
     ])
+  })
+
+  it('the Lombok placeholder is the first seed store without a region, and only one', async () => {
+    docs.length = 0
+    updates.length = 0
+    docs.push(
+      { id: 7, name: 'Seed store, Area 007', area: 'Denpasar' },
+      { id: 5, name: 'Seed store, Area 005', area: 'Kuta' },
+      { id: 4, name: 'Seed store, Area 004', area: 'Ubud' },
+    )
+    await seedStoreRegions(step)
+    expect(updates.filter((u) => u.data.region === 'lombok')).toEqual([
+      { id: 5, data: { region: 'lombok', flagship: false } },
+    ])
+  })
+
+  it('no placeholder once a real store is in Lombok: the seed one goes back to no region', async () => {
+    docs.length = 0
+    updates.length = 0
+    docs.push(
+      { id: 30, name: 'Toko Mataram', region: 'lombok' },
+      { id: 31, name: 'Seed store, Area 031', area: 'Denpasar', region: 'lombok', flagship: false },
+    )
+    await seedStoreRegions(step)
+    expect(updates).toEqual([{ id: 31, data: { region: null, flagship: false } }])
   })
 
   it("never touches a real store: it keeps the owner's region and flagship", async () => {

@@ -1,8 +1,9 @@
 /**
  * 10.6.f clause 5 (browser half), at 390 and 1280 px: the shop listing (page 1 and 2) shows 24 real design
  * cards each, every card image carries a srcset, loads (naturalWidth > 0) and its derivative answers 200
- * image/webp; 3 catalogue products and 2 Instagram products open with their pictures loaded, the variants
- * Mounted print Rp 450.000 and Framed print Rp 950.000, and the "Digital mockup" label on exactly the Instagram ones.
+ * image/webp; catalogue and Instagram products open with their pictures loaded, the variants Mounted
+ * print Rp 450.000 and Framed print Rp 950.000. The shop shows no digital mockup at all (the owner,
+ * 2026-11-25): no print in a mat or a frame, and no "Digital mockup" label anywhere.
  */
 import { expect, test, type Page } from '@playwright/test'
 
@@ -10,7 +11,7 @@ import { SHOP } from './support'
 
 const MOCK = /SEED-SHOP-|Mock seed|Produk seed/
 const INSTAGRAM = ['exotic-bali-1930s', 'balinese-legong-dancer-1925']
-/** The other two Instagram designs: Knott's dancer (label on its lead) and the Lombok turtle (its lead is the plain artwork; its mock-up pictures carry the label on the product page). */
+/** The other two Instagram designs: Knott's dancer and the Lombok turtle. */
 const INSTAGRAM_OTHER = ['balinese-dancer-photograph-c-1927', 'lombok-turtle-snorkelling']
 const CATALOGUE = ['bali-island-road-map-1937']
 const norm = (s: string) => s.replace(/\u00a0/g, ' ')
@@ -26,10 +27,11 @@ for (const pageNo of [1, 2]) {
     const cards = page.locator('a[href^="/product/"][class*="card"]')
     await expect(cards).toHaveCount(24)
     expect(await page.content(), 'no mock marker').not.toMatch(MOCK)
-    await expect(page.getByText('156 products').first()).toBeVisible()
+    await expect(page.getByText('157 products').first()).toBeVisible()
 
     const images = cards.locator('img')
-    expect(await images.count()).toBe(24)
+    const count = await images.count()
+    expect(count).toBe(24)
     const info = await images.evaluateAll((els) =>
       els.map((e) => ({
         src: (e as HTMLImageElement).src,
@@ -41,7 +43,7 @@ for (const pageNo of [1, 2]) {
       'every card has a srcset',
     ).toEqual([])
     // Each lazy image, scrolled into view, decodes.
-    for (let i = 0; i < 24; i++) {
+    for (let i = 0; i < count; i++) {
       const img = images.nth(i)
       await img.scrollIntoViewIfNeeded()
       await expect
@@ -60,7 +62,7 @@ for (const pageNo of [1, 2]) {
     }
     expect(statuses, 'derivatives 200 image/webp').toEqual([])
     console.log(
-      `[${testInfo.project.name}] /shop page ${pageNo}: 24 cards, 24 images decoded, 24 derivatives 200 image/webp, all with srcset`,
+      `[${testInfo.project.name}] /shop page ${pageNo}: 24 cards, ${count} images decoded, derivatives 200 image/webp, all with srcset`,
     )
   })
 }
@@ -132,22 +134,25 @@ test('two more catalogue designs from /shop page 2: pictures, variants, no mock-
 })
 
 for (const slug of [...INSTAGRAM, ...INSTAGRAM_OTHER]) {
-  test(`Instagram product ${slug}: pictures load, variants and prices, "Digital mockup" label`, async ({
+  test(`Instagram product ${slug}: pictures load, variants and prices, no digital mockup`, async ({
     page,
   }) => {
     const main = await openProduct(page, slug)
     await expectVariants(page, main)
-    await expect(main.getByText('Digital mockup').first()).toBeVisible()
+    // No print in a mat or a frame: every picture is the artwork itself.
+    expect(await main.locator('img[alt*="frame"], img[alt*="mat with"]').count()).toBe(0)
+    expect(await page.content(), 'no mock-up label').not.toContain('Digital mockup')
     expect(await page.content()).not.toMatch(MOCK)
   })
 }
 
-test('Instagram product in Indonesian says "Mockup digital"', async ({ page }) => {
+test('Instagram product in Indonesian has no "Mockup digital" label', async ({ page }) => {
   // The id product route is found from the en page's language link.
   await page.goto(`${SHOP}/product/${INSTAGRAM[0]}`, { waitUntil: 'load' })
   const href = await page.locator('nav[aria-label="Language"] a[lang="id"]').getAttribute('href')
   expect(href).toMatch(/^\/id\//)
   const res = await page.goto(`${SHOP}${href}`, { waitUntil: 'load' })
   expect(res?.status()).toBe(200)
-  await expect(page.locator('main').getByText('Mockup digital').first()).toBeVisible()
+  await expect(page.locator('main h1')).toBeVisible()
+  expect(await page.content()).not.toContain('Mockup digital')
 })
